@@ -407,13 +407,18 @@
     });
 
     // RUNTIME AUXILIARY: REAL TIME STRING LOOKUP FILTER MATCHING
-    searchInput.addEventListener('input', (e) => {
-      const query = e.target.value.toLowerCase().trim();
-      const cardNodes = listContainer.getElementsByClassName('premium-target-btn');
-      Array.from(cardNodes).forEach(card => {
-        if (card.innerText.toLowerCase().includes(query)) card.style.display = 'block';
-        else card.style.display = 'none';
-      });
+    searchInput.addEventListener('input', () => {
+      if (activeSystemMode === 'fault_code') {
+        const query = searchInput.value.toLowerCase().trim();
+        Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(card => {
+          card.style.display = card.innerText.toLowerCase().includes(query) ? 'block' : 'none';
+        });
+      } else {
+        const query = searchInput.value.toLowerCase().trim();
+        Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(card => {
+          card.style.display = card.innerText.toLowerCase().includes(query) ? 'block' : 'none';
+        });
+      }
     });
 
     function populateEmissionDropdown() {
@@ -461,11 +466,54 @@
         `;
         
         btnNode.onclick = () => {
-          btnNode.classList.toggle('active-node');
           const operationalOutputs = appRuntime.toggleFaultCode(manifestItem.code_id);
+          renderContentBlocks();
           processOutputMatrix(operationalOutputs);
         };
         listContainer.appendChild(btnNode);
+      });
+    }
+
+    function renderContentBlocks() {
+      listContainer.innerHTML = '';
+      clearDisplayMatrix();
+
+      if (activeSystemMode === 'symptom') {
+        const trees = faultCodeDatabase.symptom_trees || {};
+        const entries = Object.entries(trees);
+        if (!entries.length) {
+          listContainer.textContent = 'No symptom trees are configured yet.';
+          return;
+        }
+        entries.forEach(([treeKey, tree]) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'premium-target-btn';
+          button.dataset.key = treeKey;
+          const title = document.createElement('div');
+          title.className = 'btn-fault-id';
+          title.textContent = tree.title || treeKey;
+          const info = document.createElement('div');
+          info.className = 'btn-fault-info';
+          info.textContent = 'Open step-by-step diagnostic workflow';
+          button.append(title, info);
+          button.addEventListener('click', () => {
+            Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(node => node.classList.toggle('active-node', node === button));
+            processSymptomOutputMatrix(tree);
+          });
+          listContainer.appendChild(button);
+        });
+        return;
+      }
+
+      renderActiveFaultBlocks();
+      const activeCodes = new Set(appRuntime.activeStack);
+      Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(button => {
+        button.classList.toggle('active-node', activeCodes.has(button.dataset.key));
+      });
+      const query = searchInput.value.toLowerCase().trim();
+      Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(button => {
+        button.style.display = button.innerText.toLowerCase().includes(query) ? 'block' : 'none';
       });
     }
 
@@ -484,8 +532,8 @@
       } else {
         circuitDisplay.innerHTML = `<span style="color: var(--text-muted); font-weight: normal; font-size: 14px;">No circuit intersections located for this fault sequence.</span>`;
       }
-      document.getElementById('culpritDisplayList').innerHTML = matrix.inferredCulprits.map(txt => `<li>${txt}</li>`).join('');
-      document.getElementById('toolLinkManifestContainer').innerHTML = matrix.allocatedTools.map(tool => `<a href="${tool.affiliate_url}" target="_blank" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>`).join('');
+      document.getElementById('culpritDisplayList').innerHTML = (matrix.inferredCulprits || []).map(txt => `<li>${txt}</li>`).join('');
+      document.getElementById('toolLinkManifestContainer').innerHTML = (matrix.allocatedTools || []).map(tool => `<a href="${tool.affiliate_url}" target="_blank" rel="noopener noreferrer" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>`).join('');
     }
 
     function processSymptomOutputMatrix(tree) {
@@ -497,9 +545,9 @@
       indicator.innerText = tree.triage_priority; indicator.classList.add('alert-active');
       
       document.getElementById('culpritDisplayList').innerHTML = tree.steps.map(step => `<li>${step}</li>`).join('');
-      document.getElementById('toolLinkManifestContainer').innerHTML = tree.required_tools.map(tId => {
+      document.getElementById('toolLinkManifestContainer').innerHTML = (tree.required_tools || []).map(tId => {
         const tool = faultCodeDatabase.tools[tId];
-        return `<a href="${tool.affiliate_url}" target="_blank" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>`;
+        return tool ? `<a href="${tool.affiliate_url}" target="_blank" rel="noopener noreferrer" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>` : '';
       }).join('');
     }
 
