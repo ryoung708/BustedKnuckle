@@ -276,17 +276,27 @@
 <body>
 
   <div class="master-wrapper">
-    <!-- HEADER BAR: ENGINE DROP DOWN AND LOGO -->
-    <header class="premium-header">
-      <div class="brand-logo-frame">
-        <img src="logo.png" alt="IronKnuckle Diagnostics" class="brand-logo-img">
-      </div>
-      <select class="platform-selector-pill" id="engineSelect">
-        <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option>
-        <option value="mack_mp7">MACK MP7 (11L PLATFORM)</option>
-        <option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
-      </select>
-    </header>
+   <!-- ========================================== -->
+<!-- UPDATE: ENGINE & EMISSIONS SELECTOR LABELS -->
+<!-- ========================================== -->
+<header class="premium-header">
+  <div class="brand-logo-frame">
+    <img src="logo.png" alt="IronKnuckle Diagnostics" class="brand-logo-img">
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <!-- DROPDOWN 1: MASTER ENGINE BASE -->
+    <select class="platform-selector-pill" id="engineSelect">
+      <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option>
+      <option value="mack_mp7">MACK MP7 (11L PLATFORM)</option>
+      <option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
+    </select>
+    
+    <!-- DROPDOWN 2: DYNAMIC EMISSIONS FILTER SYSTEM -->
+    <select class="platform-selector-pill" id="emissionSelect">
+      <!-- Injected dynamically by the script engine based on selections -->
+    </select>
+  </div>
+</header>
 
     <!-- INTERFACE ELEMENT: SEARCH FIELD FILTER INPUT -->
     <div class="search-container">
