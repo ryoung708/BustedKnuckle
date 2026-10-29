@@ -331,6 +331,10 @@
           <h4 id="actionTargetLabel">Probable Diagnostic Targets</h4>
           <ul class="bullet-action-stream" id="culpritDisplayList"></ul>
         </div>
+        <div class="matrix-node-segment" id="diagnosticStepsSegment">
+          <h4>Recommended Diagnostic Sequence</h4>
+          <ol class="bullet-action-stream" id="diagnosticStepsDisplay"></ol>
+        </div>
 
         <div class="matrix-node-segment">
           <h4>Specialized Tooling Manifest</h4>
@@ -347,6 +351,26 @@
   <script type="module">
     import { BustedKnuckleCore } from './js/app.js';
     import { faultCodeDatabase, globalFaultLibrary } from './js/database.js';
+
+    // Load the separately maintained fault additions before starting the diagnostic runtime.
+    try {
+      const response = await fetch('./data/fault-overrides.json', { cache: 'no-store' });
+      if (response.ok) {
+        const additions = await response.json();
+        Object.assign(globalFaultLibrary, additions.faults || {});
+        Object.entries(additions.engine_manifests || {}).forEach(([engineId, entries]) => {
+          const engine = faultCodeDatabase.engines[engineId];
+          if (!engine) return;
+          const existing = new Set((engine.code_manifest || []).map(item => item.code_id));
+          (entries || []).forEach(item => {
+            if (!existing.has(item.code_id)) engine.code_manifest.push(item);
+          });
+        });
+        Object.assign(faultCodeDatabase.tools, additions.tools || {});
+      }
+    } catch (error) {
+      console.warn('Fault additions file could not be loaded; using the built-in library.', error);
+    }
 
     let activeSystemMode = 'fault_code'; 
     let currentSelectorKey = 'mack_mp8';
@@ -538,6 +562,8 @@
         circuitDisplay.innerHTML = `<span style="color: var(--text-muted); font-weight: normal; font-size: 14px;">No circuit intersections located for this fault sequence.</span>`;
       }
       document.getElementById('culpritDisplayList').innerHTML = (matrix.inferredCulprits || []).map(txt => `<li>${txt}</li>`).join('');
+      document.getElementById('diagnosticStepsDisplay').innerHTML = (matrix.diagnosticSteps || []).map(step => `<li>${step}</li>`).join('');
+      document.getElementById('diagnosticStepsSegment').style.display = matrix.diagnosticSteps?.length ? 'block' : 'none';
       document.getElementById('toolLinkManifestContainer').innerHTML = (matrix.allocatedTools || []).map(tool => `<a href="${tool.affiliate_url}" target="_blank" rel="noopener noreferrer" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>`).join('');
     }
 
@@ -562,6 +588,8 @@
       indicator.innerText = 'SYSTEM RUNNING MONITOR'; indicator.classList.remove('alert-active');
       document.getElementById('circuitDisplay').innerHTML = '';
       document.getElementById('culpritDisplayList').innerHTML = '';
+      document.getElementById('diagnosticStepsDisplay').innerHTML = '';
+      document.getElementById('diagnosticStepsSegment').style.display = 'none';
       document.getElementById('toolLinkManifestContainer').innerHTML = '';
     }
 
