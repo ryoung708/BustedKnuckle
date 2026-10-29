@@ -1,6 +1,6 @@
 // ========================================================
-// IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 1 - PART A
-// GLOBAL REGISTER FAULT REGISTRY POOL #1                 
+// IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 1 - COMPACT A
+// GLOBAL FAULT POOL REGISTER FILE - BASE INITIALIZATION
 // ========================================================
 
 export const globalFaultLibrary = {
@@ -80,10 +80,6 @@ export const globalFaultLibrary = {
     ],
     "required_tools": ["TOOL_DEF_VOLUME_TESTER", "TOOL_DEF_REFRACTOMETER"]
   },
-  // ========================================================
-  // IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 1 - PART B
-  // GLOBAL REGISTER FAULT REGISTRY POOL #2                 
-  // ========================================================
   "P1026_00": {
     "spn": 3659, "fmi": 5, "p_code": "P1026-00",
     "description": "Engine Variable Valve Timing Control Solenoid (Booster Valve) - Open Circuit",
@@ -115,6 +111,10 @@ export const globalFaultLibrary = {
     ],
     "required_tools": ["TOOL_DMM", "TOOL_DEF_VOLUME_TESTER"]
   },
+  // ========================================================
+  // IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 1 - COMPACT B
+  // RESIDUAL FAULT CODES MAPPED CLOSURE OBJECTS
+  // ========================================================
   "P1496_00": {
     "spn": 2791, "fmi": 7, "p_code": "P1496-00",
     "description": "EGR Valve Actuator - Mechanism Performance / Response Sluggish or Stuck",
@@ -213,8 +213,20 @@ export const globalFaultLibrary = {
       "Corrosion track bridging pins inside the main engine block coolant temp sensor breakout plug body."
     ],
     "required_tools": ["TOOL_DMM"]
+  },
+  "SPN_4364_FMI_18": {
+    "spn": 4364, "fmi": 18, "p_code": "N/A",
+    "description": "SCR Catalyst NOx Conversion Efficiency Low - Legacy Unit Layout",
+    "shared_circuits": ["scr_efficiency_loop"],
+    "common_causes": [
+      "DEF dosing valve face-plugged or crystalized loop restrictions.",
+      "Biased upstream Exhaust NOx sensor reading out of calibration tracking profiles.",
+      "Exhaust flex pipe leakage upstream of the SCR catalyst inlet box shroud joints."
+    ],
+    "required_tools": ["TOOL_DEF_REFRACTOMETER", "TOOL_DMM"]
   }
 };
+
 // ========================================================
 // IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 2 OF 3  
 // ENGINE MAP INDEXES & LOCAL BAY RUB-POINT TIPS          
