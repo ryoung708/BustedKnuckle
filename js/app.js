@@ -53,6 +53,7 @@ export class BustedKnuckleCore {
       currentSelection: validSelections.map(item => item.key),
       matchedCircuits,
       inferredCulprits: [...new Set(targetSuspects)],
+      diagnosticSteps: validSelections.flatMap(item => item.spec.diagnostic_steps || []),
       allocatedTools,
       priorityCode: validSelections.some(item => String(item.spec.spn) === '3513')
         ? 'PRIORITY: VERIFY 5-VOLT REFERENCE SUPPLY'
