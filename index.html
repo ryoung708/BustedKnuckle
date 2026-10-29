@@ -1,353 +1,53 @@
-<!-- ======================================================== -->
-<!-- IRONKNUCKLE DIAGNOSTICS // INDEX.HTML SECTION 1 OF 3      -->
-<!-- PLATFORM LAYOUT & PREMIUM STEALTH-TITANIUM STYLING       -->
-<!-- ======================================================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>IronKnuckle Diagnostics</title>
-  <style>
-    :root {
-      --slate-black: #08090a;
-      --deep-titanium: #111316;
-      --control-charcoal: #1a1d22;
-      --border-tint: #2c323b;
-      --nitrogen-amber: #ff9f1c;
-      --text-bright: #f0f2f5;
-      --text-muted: #7e8b9b;
-    }
-
-    body {
-      background-color: var(--slate-black);
-      color: var(--text-bright);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .master-wrapper {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 24px;
-      box-sizing: border-box;
-    }
-
-    /* HEADER SPACE CONTROLS */
-    .premium-header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 32px;
-      border-bottom: 2px solid var(--border-tint);
-      padding-bottom: 32px;
-      margin-bottom: 32px;
-    }
-
-    @media (min-width: 768px) {
-      .premium-header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
-    }
-
-    .brand-logo-img {
-      height: 180px; 
-      width: auto;
-      max-width: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 0 20px rgba(255, 159, 28, 0.35));
-    }
-
-    .platform-selector-pill {
-      background-color: var(--control-charcoal);
-      border: 1px solid var(--border-tint);
-      color: var(--text-bright);
-      font-weight: bold;
-      padding: 14px 20px;
-      border-radius: 6px;
-      font-size: 14px;
-      outline: none;
-      cursor: pointer;
-    }
-
-    /* DUAL MODE SELECTION SWITCHES */
-    .mode-nav-bar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .mode-tab-button {
-      background-color: var(--deep-titanium);
-      border: 2px solid var(--border-tint);
-      color: var(--text-muted);
-      padding: 16px;
-      font-size: 16px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      border-radius: 6px;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s ease;
-    }
-
-    .mode-tab-button.active {
-      border-color: var(--nitrogen-amber);
-      color: var(--nitrogen-amber);
-      background-color: #1e1910;
-    }
-
-    /* SEARCH ENGINE CONTROLS */
-    .search-container {
-      width: 100%;
-      margin-bottom: 24px;
-    }
-
-    .live-search-input {
-      width: 100%;
-      background-color: var(--deep-titanium);
-      border: 2px solid var(--border-tint);
-      border-radius: 8px;
-      padding: 18px 24px;
-      box-sizing: border-box;
-      color: var(--text-bright);
-      font-size: 18px;
-      font-weight: bold;
-      outline: none;
-    }
-
-    .live-search-input:focus {
-      border-color: var(--nitrogen-amber);
-      box-shadow: 0 0 15px rgba(255, 159, 28, 0.15);
-    }
-
-    .live-search-input::placeholder {
-      color: var(--text-muted);
-    }
-
-    .workspace-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
-
-    @media (min-width: 992px) {
-      .workspace-layout {
-        grid-template-columns: 1.1fr 0.9fr;
-      }
-    }
-
-    .interactive-card-group {
-      background-color: var(--deep-titanium);
-      border: 1px solid var(--border-tint);
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    .card-block-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-
-    .engine-fault-button-list {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-
-    .premium-target-btn {
-      background-color: var(--control-charcoal);
-      border: 1px solid var(--border-tint);
-      padding: 18px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      text-align: left;
-    }
-
-    .premium-target-btn.active-node {
-      border-color: var(--nitrogen-amber);
-      background-color: #261b0c;
-    }
-
-    .btn-fault-id {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--text-bright);
-    }
-
-    .premium-target-btn.active-node .btn-fault-id {
-      color: var(--nitrogen-amber);
-    }
-
-    .btn-fault-info {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 6px;
-      line-height: 1.4;
-    }
-
-    /* TRIAGE VAULT MATRIX STYLING */
-    .diagnostic-matrix-vault {
-      background-color: var(--deep-titanium);
-      border: 1px solid var(--border-tint);
-      border-radius: 8px;
-      padding: 24px;
-      align-self: start;
-    }
-
-    .diagnostic-matrix-vault.active-triage {
-      border-color: var(--nitrogen-amber);
-    }
-
-    .status-matrix-banner {
-      background-color: var(--control-charcoal);
-      border: 1px solid var(--border-tint);
-      color: var(--text-muted);
-      font-weight: 800;
-      font-size: 13px;
-      padding: 12px;
-      border-radius: 4px;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 24px;
-    }
-
-    .status-matrix-banner.alert-active {
-      background-color: var(--nitrogen-amber);
-      color: var(--slate-black);
-      border-color: var(--nitrogen-amber);
-    }
-
-    .matrix-node-segment {
-      margin-bottom: 24px;
-    }
-
-    .matrix-node-segment h4 {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      margin: 0 0 10px 0;
-    }
-
-    .circuit-value-display {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-bright);
-      line-height: 1.5;
-    }
-
-    .bullet-action-stream {
-      padding-left: 18px;
-      margin: 8px 0 0 0;
-    }
-
-    .bullet-action-stream li {
-      font-size: 14px;
-      line-height: 1.5;
-      color: var(--text-bright);
-      margin-bottom: 10px;
-    }
-
-    .premium-affiliate-anchor {
-      display: inline-block;
-      background-color: var(--control-charcoal);
-      border: 1px solid var(--border-tint);
-      color: var(--nitrogen-amber);
-      font-size: 13px;
-      font-weight: 700;
-      text-decoration: none;
-      padding: 12px 16px;
-      border-radius: 4px;
-      margin-top: 8px;
-      margin-right: 8px;
-      text-transform: uppercase;
-    }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#090b0e"><title>IronKnuckle Diagnostics</title>
+<style>
+:root{color-scheme:dark;--bg:#090b0e;--panel:#11151a;--raised:#191f27;--line:#303b48;--amber:#ff9f1c;--text:#f1f4f7;--muted:#9aa7b5;--green:#70c69a}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -18%,rgba(255,159,28,.09),transparent 38%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:auto;padding:22px 28px 48px}
+.premium-header{display:flex;flex-direction:column;align-items:center;gap:18px;padding:6px 0 24px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.brand-logo-frame{width:100%;display:flex;justify-content:center}.brand-logo-img{display:block;height:180px;width:auto;max-width:min(100%,620px);object-fit:contain;filter:drop-shadow(0 0 22px rgba(255,159,28,.22))}
+.header-controls{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.platform-selector-pill{width:100%;min-width:0;min-height:48px;padding:0 15px;color:var(--text);background:var(--raised);border:1px solid #465363;border-radius:8px;font-size:13px;font-weight:750}
+.workspace-intro{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:4px 0 16px}.eyebrow{color:var(--amber);font-size:11px;font-weight:850;letter-spacing:.16em;text-transform:uppercase}.intro-title{margin:5px 0 0;font-size:clamp(20px,3vw,27px);letter-spacing:-.035em}.intro-copy{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+.session-chip{flex:none;display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.07em;text-transform:uppercase}.session-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px #70c69a88}
+.mode-nav-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.mode-tab-button{min-height:48px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:9px;color:var(--muted);font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.mode-tab-button.active{color:var(--amber);border-color:#ff9f1caa;background:#ff9f1c1f}
+.search-container{position:relative;margin-bottom:16px}.search-label{display:block;margin:0 0 8px 2px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.live-search-input{display:block;width:100%;min-height:58px;padding:0 18px 0 48px;color:var(--text);background:var(--panel);border:1px solid #465363;border-radius:10px;outline:none;font-size:16px;font-weight:600;box-shadow:0 14px 38px #0004}.live-search-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px #ff9f1c1a}.live-search-input::placeholder{color:#758292;font-weight:500}.search-icon{position:absolute;left:17px;bottom:17px;color:var(--muted);font-size:19px;pointer-events:none}.search-hint{margin:8px 2px 0;color:#748191;font-size:11px}
+.workspace-layout{display:grid;grid-template-columns:minmax(300px,.92fr) minmax(0,1.45fr);gap:16px;align-items:start}.interactive-card-group,.diagnostic-matrix-vault{min-width:0;padding:18px;background:linear-gradient(180deg,#ffffff05,transparent),var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 38px #0004}.panel-heading,.matrix-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.card-block-title{color:var(--text);font-size:13px;font-weight:850;letter-spacing:.09em;text-transform:uppercase}.panel-kicker,.matrix-label{color:var(--muted);font-size:10px}.engine-fault-button-list{display:grid;grid-template-columns:1fr;gap:9px}
+.premium-target-btn{display:block;width:100%;padding:15px 16px;color:var(--text);text-align:left;cursor:pointer;background:var(--raised);border:1px solid var(--line);border-radius:9px;transition:border-color .16s,background .16s}.premium-target-btn:hover{border-color:#647184;background:#202833}.premium-target-btn.active-node{border-color:var(--amber);background:#ff9f1c1f;box-shadow:inset 3px 0 var(--amber)}.btn-fault-id{color:var(--text);font-size:15px;font-weight:850}.premium-target-btn.active-node .btn-fault-id{color:var(--amber)}.btn-fault-info{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.45}
+.diagnostic-matrix-vault{position:sticky;top:14px;padding:20px;transition:border-color .18s,opacity .18s}.diagnostic-matrix-vault.active-triage{border-color:#ff9f1caa}.matrix-title{margin:0;font-size:16px;font-weight:850;letter-spacing:-.02em}.matrix-label{font-weight:850;letter-spacing:.12em;text-transform:uppercase}.status-matrix-banner{padding:12px 14px;color:var(--muted);background:var(--raised);border:1px solid var(--line);border-radius:8px;font-size:11px;font-weight:850;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}.status-matrix-banner.alert-active{color:var(--amber);background:#ff9f1c1f;border-color:#ff9f1c66}
+.matrix-node-segment{margin:0 0 19px;padding-bottom:17px;border-bottom:1px solid #46536370}.matrix-node-segment:last-child{margin-bottom:0;padding-bottom:0;border-bottom:0}.matrix-node-segment h4{margin:0 0 9px;color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}.circuit-value-display{color:var(--text);font-size:14px;font-weight:600;line-height:1.6}.bullet-action-stream{margin:0;padding-left:20px}.bullet-action-stream li{margin:0 0 10px;padding-left:3px;color:#dce2e8;font-size:13px;line-height:1.55}.bullet-action-stream li::marker{color:var(--amber);font-weight:800}
+.premium-affiliate-anchor{display:inline-flex;align-items:center;gap:7px;margin:4px 7px 4px 0;padding:9px 12px;color:var(--amber);background:var(--raised);border:1px solid #465363;border-radius:7px;font-size:11px;font-weight:800;text-decoration:none;text-transform:uppercase}.premium-affiliate-anchor:hover{border-color:var(--amber)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media(max-width:900px){.workspace-layout{grid-template-columns:1fr}.diagnostic-matrix-vault{position:static}}
+@media(max-width:600px){.master-wrapper{padding:12px 12px 32px}.premium-header{padding-bottom:17px;margin-bottom:17px;gap:14px}.brand-logo-img{height:155px;max-width:100%}.header-controls{grid-template-columns:1fr;gap:8px}.platform-selector-pill{min-height:46px}.workspace-intro{align-items:flex-start}.session-chip{margin-top:3px;font-size:9px}.intro-copy{max-width:330px}.interactive-card-group,.diagnostic-matrix-vault{padding:14px}.mode-tab-button{min-height:46px;padding:10px 8px;font-size:10px;letter-spacing:.045em}.live-search-input{min-height:54px;font-size:14px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+</style>
 </head>
-  <!-- ======================================================== -->
-<!-- IRONKNUCKLE DIAGNOSTICS // INDEX.HTML SECTION 2 OF 3      -->
-<!-- PHYSICAL HTML ELEMENT PLACEMENT FRAMEWORK                -->
-<!-- ======================================================== -->
 <body>
-
-  <div class="master-wrapper">
-    <!-- HEADER CONTROLS PLACEMENT -->
-    <header class="premium-header">
-      <div class="brand-logo-frame">
-        <img src="logo.png" alt="IronKnuckle Diagnostics" class="brand-logo-img">
-      </div>
-      <div id="engineFilterSubGroup" style="display: flex; flex-direction: column; gap: 12px;">
-        <select class="platform-selector-pill" id="engineSelect">
-          <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option>
-          <option value="mack_mp7">MACK MP7 (11L PLATFORM)</option>
-          <option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
-        </select>
-        <select class="platform-selector-pill" id="emissionSelect"></select>
-      </div>
-    </header>
-
-    <!-- NAVIGATION TABS COMPONENT -->
-    <nav class="mode-nav-bar">
-      <div class="mode-tab-button active" id="tabFaultMode">Fault Code Tracker</div>
-      <div class="mode-tab-button" id="tabSymptomMode">Symptom Trees</div>
-    </nav>
-
-    <!-- INTERACTIVE INPUT: FILTER SYSTEM SEARCH BAR -->
-    <div class="search-container">
-      <input type="text" id="liveSearch" class="live-search-input" placeholder="SEARCH ACTIVE CODES...">
-    </div>
-
-    <!-- MAIN PANELS SPLIT WORKSPACE WINDOWS -->
-    <main class="workspace-layout">
-      
-      <!-- ENGINE DATA BLOCKS SELECTOR MOUNT (LEFT SIDE) -->
-      <section class="interactive-card-group">
-        <div class="card-block-title" id="listBlockTitle">Select Active Bay Fault Stacking Sequence</div>
-        <div class="engine-fault-button-list" id="faultListContainer"></div>
-      </section>
-
-      <!-- DIAGNOSTIC ANALYSIS ENGINE DISPLAY VAULT (RIGHT SIDE) -->
-      <section class="diagnostic-matrix-vault" id="matrixVault" style="opacity: 0.25; pointer-events: none;">
-        <div class="status-matrix-banner" id="priorityIndicator">SYSTEM RUNNING MONITOR</div>
-        
-        <div class="matrix-node-segment" id="circuitSegmentFrame">
-          <h4>Shared Loop Core Intersect</h4>
-          <div class="circuit-value-display" id="circuitDisplay"></div>
-        </div>
-
-        <div class="matrix-node-segment">
-          <h4 id="actionTargetLabel">Probable Diagnostic Targets</h4>
-          <ul class="bullet-action-stream" id="culpritDisplayList"></ul>
-        </div>
-        <div class="matrix-node-segment" id="diagnosticStepsSegment">
-          <h4>Recommended Diagnostic Sequence</h4>
-          <ol class="bullet-action-stream" id="diagnosticStepsDisplay"></ol>
-        </div>
-
-        <div class="matrix-node-segment">
-          <h4>Specialized Tooling Manifest</h4>
-          <div id="toolLinkManifestContainer"></div>
-        </div>
-      </section>
-
-    </main>
+<div class="master-wrapper">
+<header class="premium-header">
+  <div class="brand-logo-frame"><img src="logo.png" alt="IronKnuckle Diagnostics" class="brand-logo-img"></div>
+  <div id="engineFilterSubGroup" class="header-controls">
+    <select class="platform-selector-pill" id="engineSelect" aria-label="Engine platform">
+      <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option><option value="mack_mp7">MACK MP7 (11L PLATFORM)</option><option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
+    </select>
+    <select class="platform-selector-pill" id="emissionSelect" aria-label="Emissions configuration"></select>
   </div>
-  <!-- ======================================================== -->
-<!-- IRONKNUCKLE DIAGNOSTICS // INDEX.HTML SECTION 3 OF 3      -->
-<!-- INTERACTIVE JAVASCRIPT CONTROLLER EXECUTOR                -->
-<!-- ======================================================== -->
+</header>
+<section class="workspace-intro"><div><div class="eyebrow">Heavy-duty diagnostic workspace</div><h1 class="intro-title">Find the fault. Follow the evidence.</h1><p class="intro-copy">Select an engine, narrow the fault, then work through the diagnostic information.</p></div><div class="session-chip"><span class="session-dot"></span> Workspace ready</div></section>
+<nav class="mode-nav-bar" aria-label="Diagnostic modes"><button type="button" class="mode-tab-button active" id="tabFaultMode">Fault code lookup</button><button type="button" class="mode-tab-button" id="tabSymptomMode">Symptom diagnostics</button></nav>
+<div class="search-container"><label class="search-label" for="liveSearch">Search diagnostic library</label><span class="search-icon" aria-hidden="true">⌕</span><input type="search" id="liveSearch" class="live-search-input" placeholder="Search SPN, FMI, P-code or description..." autocomplete="off"><p class="search-hint">Examples: SPN 4364 · FMI 18 · P205B · aftertreatment</p></div>
+<main class="workspace-layout">
+<section class="interactive-card-group" aria-label="Fault library"><div class="panel-heading"><div class="card-block-title" id="listBlockTitle">Fault library</div><div class="panel-kicker">Select one or more faults</div></div><div class="engine-fault-button-list" id="faultListContainer"></div></section>
+<section class="diagnostic-matrix-vault" id="matrixVault" style="opacity:0.25;pointer-events:none" aria-label="Diagnostic analysis">
+<div class="matrix-topline"><h2 class="matrix-title">Diagnostic workspace</h2><span class="matrix-label">Analysis panel</span></div>
+<div class="status-matrix-banner" id="priorityIndicator">Select a fault to begin analysis</div>
+<div class="matrix-node-segment" id="circuitSegmentFrame"><h4>Shared circuits &amp; system intersections</h4><div class="circuit-value-display" id="circuitDisplay"></div></div>
+<div class="matrix-node-segment"><h4 id="actionTargetLabel">Potential causes to investigate</h4><ul class="bullet-action-stream" id="culpritDisplayList"></ul></div>
+<div class="matrix-node-segment" id="diagnosticStepsSegment"><h4>Recommended diagnostic sequence</h4><ol class="bullet-action-stream" id="diagnosticStepsDisplay"></ol></div>
+<div class="matrix-node-segment"><h4>Tools &amp; equipment</h4><div id="toolLinkManifestContainer"></div></div>
+</section></main></div>
   <script type="module">
     import { BustedKnuckleCore } from './js/app.js';
     import { faultCodeDatabase, globalFaultLibrary } from './js/database.js';
