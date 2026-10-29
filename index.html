@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BustedKnuckle Studio Triage</title>
+  <title>IronKnuckle Diagnostics</title>
   <style>
     :root {
       --slate-black: #0c0d0e;
@@ -215,14 +215,16 @@
 <body>
 
   <div class="master-wrapper">
-    <header class="premium-header">
-      <div class="brand-logo-text">Busted<span>Knuckle</span> Pro</div>
-      <select class="platform-selector-pill" id="engineSelect">
-        <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option>
-        <option value="mack_mp7">MACK MP7 (11L PLATFORM)</option>
-        <option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
-      </select>
-    </header>
+    <header class="premium-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-tint); padding-bottom: 16px; margin-bottom: 24px;">
+  <!-- This line drops your premium asset directly into the top left of the app -->
+  <img src="logo.png" alt="IronKnuckle Diagnostics" style="height: 65px; width: auto; object-fit: contain;">
+  
+  <select class="platform-selector-pill" id="engineSelect">
+    <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option>
+    <option value="mack_mp7">MACK MP7 (11L PLATFORM)</option>
+    <option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
+  </select>
+</header>
 
     <main class="workspace-layout">
       <section class="interactive-card-group">
