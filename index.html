@@ -428,42 +428,45 @@
       });
     }
 
-    // DISPATCH LOGIC BUILDER
-    function renderContentBlocks() {
+       // ========================================================
+    // UPDATE: NEW LIGHTWEIGHT CROSS-PLATFORM MAPPING ROUTINE
+    // PLACE THIS INSIDE INDEX.HTML INSTEAD OF THE OLD RENDER FUNCTIONS
+    // ========================================================
+    function renderActiveFaultBlocks() {
       listContainer.innerHTML = '';
-      if (activeSystemMode === 'fault_code') {
-        const platformCodes = faultCodeDatabase.engines[currentSelectorKey].fault_codes;
-        Object.keys(platformCodes).forEach(key => {
-          const structuralRecord = platformCodes[key];
-          if (structuralRecord.emission_level !== currentEmissionKey) return;
+      
+      // Pull down the active engine's code map registry
+      const engineManifest = faultCodeDatabase.engines[currentSelectorKey].code_manifest;
+      if (!engineManifest) return;
 
-          const btnNode = document.createElement('div');
-          btnNode.className = 'premium-target-btn';
-          const primaryId = structuralRecord.p_code !== "N/A" ? `${structuralRecord.p_code} (SPN ${structuralRecord.spn})` : `SPN ${structuralRecord.spn} // FMI ${structuralRecord.fmi}`;
-          btnNode.innerHTML = `<div class="btn-fault-id">${primaryId}</div><div class="btn-fault-info">${structuralRecord.description}</div>`;
-          
-          btnNode.onclick = () => {
-            btnNode.classList.toggle('active-node');
-            const operationalOutputs = appRuntime.toggleFaultCode(key);
-            processOutputMatrix(operationalOutputs);
-          };
-          listContainer.appendChild(btnNode);
-        });
-      } else {
-        Object.keys(faultCodeDatabase.symptom_trees).forEach(key => {
-          const tree = faultCodeDatabase.symptom_trees[key];
-          const btnNode = document.createElement('div');
-          btnNode.className = 'premium-target-btn';
-          btnNode.innerHTML = `<div class="btn-fault-id">⚠️ ${tree.title}</div>`;
-          
-          btnNode.onclick = () => {
-            Array.from(listContainer.children).forEach(c => c.classList.remove('active-node'));
-            btnNode.classList.add('active-node');
-            processSymptomOutputMatrix(tree);
-          };
-          listContainer.appendChild(btnNode);
-        });
-      }
+      engineManifest.forEach(manifestItem => {
+        // FILTER GATEWAY: Only build codes matching the active emissions dropdown selection tier
+        if (manifestItem.emission_level !== currentEmissionKey) return;
+
+        // GLOBAL KEY LOOKUP: Pull common failure specs instantly out of our shared repository library
+        const structuralRecord = globalFaultLibrary[manifestItem.code_id];
+        if (!structuralRecord) return;
+
+        const btnNode = document.createElement('div');
+        btnNode.className = 'premium-target-btn';
+        btnNode.dataset.key = manifestItem.code_id;
+
+        const primaryId = structuralRecord.p_code !== "N/A" 
+          ? `${structuralRecord.p_code} (SPN ${structuralRecord.spn})` 
+          : `SPN ${structuralRecord.spn} // FMI ${structuralRecord.fmi}`;
+
+        btnNode.innerHTML = `
+          <div class="btn-fault-id">${primaryId}</div>
+          <div class="btn-fault-info">${structuralRecord.description}</div>
+        `;
+        
+        btnNode.onclick = () => {
+          btnNode.classList.toggle('active-node');
+          const operationalOutputs = appRuntime.toggleFaultCode(manifestItem.code_id);
+          processOutputMatrix(operationalOutputs);
+        };
+        listContainer.appendChild(btnNode);
+      });
     }
 
     function processOutputMatrix(matrix) {
