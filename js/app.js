@@ -1,57 +1,58 @@
 // js/app.js
 import { faultCodeDatabase } from './database.js';
 
-export class BustedKnuckleEngine {
-  constructor(platformKey) {
-    this.platform = faultCodeDatabase.engines[platformKey];
-    this.selectedCodes = [];
+export class BustedKnuckleCore {
+  constructor(activePlatformId) {
+    this.setEnginePlatform(activePlatformId);
   }
 
-  toggleCode(codeId) {
-    const position = this.selectedCodes.indexOf(codeId);
-    if (position > -1) {
-      this.selectedCodes.splice(position, 1);
+  setEnginePlatform(platformId) {
+    this.platformData = faultCodeDatabase.engines[platformId];
+    this.activeStack = [];
+  }
+
+  toggleFaultCode(codeIndexKey) {
+    const activeIndex = this.activeStack.indexOf(codeIndexKey);
+    if (activeIndex > -1) {
+      this.activeStack.splice(activeIndex, 1);
     } else {
-      this.selectedCodes.push(codeId);
+      this.activeStack.push(codeIndexKey);
     }
-    return this.runTriageAnalysis();
+    return this.generateTriageMatrix();
   }
 
-  runTriageAnalysis() {
-    if (this.selectedCodes.length === 0) return null;
+  generateTriageMatrix() {
+    if (this.activeStack.length === 0) return null;
 
-    let overlappingCircuits = null;
-    let consolidatedCauses = [];
-    let requiredToolsList = new Set();
+    let systemIntersections = null;
+    let targetSuspects = [];
+    let requiredGearSet = new Set();
 
-    this.selectedCodes.forEach((codeId, index) => {
-      const fault = this.platform.fault_codes[codeId];
-      if (!fault) return;
+    this.activeStack.forEach((codeKey, idx) => {
+      const faultSpec = this.platformData.fault_codes[codeKey];
+      if (!faultSpec) return;
 
-      // Extract electrical/mechanical intersection loops
-      if (index === 0) {
-        overlappingCircuits = [...fault.shared_circuits];
+      if (idx === 0) {
+        systemIntersections = [...faultSpec.shared_circuits];
       } else {
-        overlappingCircuits = overlappingCircuits.filter(circuit => fault.shared_circuits.includes(circuit));
+        systemIntersections = systemIntersections.filter(circuitKey => faultSpec.shared_circuits.includes(circuitKey));
       }
 
-      // Collect potential suspects and tool assignments
-      consolidatedCauses.push(...fault.common_causes);
-      fault.required_tools.forEach(toolId => requiredToolsList.add(toolId));
+      targetSuspects.push(...faultSpec.common_causes);
+      faultSpec.required_tools.forEach(toolKey => requiredGearSet.add(toolKey));
     });
 
-    // Evaluate absolute triage severity priority
-    const has5vReferenceShort = this.selectedCodes.some(id => id.includes("3513") || id.includes("3509"));
-    const criticalActionPriority = has5vReferenceShort 
-      ? "CRITICAL ALERT: 5V Reference Short Grounded Out (Fix Voltage First)" 
-      : "STANDARD TRIAGE: Evaluate Mechanical Component Delta Pressures";
+    const isVoltageFaultPresent = this.activeStack.some(key => key.includes("3513"));
+    const structuralPriority = isVoltageFaultPresent 
+      ? "CRITICAL BUS DISRUPTION // RESOLVE 5V REF VOLTAGE SUPPLY FIRST" 
+      : "MECHANICAL FAULT TRACK // MONITOR FLOW AND TARGET FEED VALUES";
 
     return {
-      activeStack: this.selectedCodes,
-      sharedCircuits: overlappingCircuits.map(cId => ({ id: cId, ...this.platform.circuit_intersections[cId] })),
-      culpritTargets: [...new Set(consolidatedCauses)],
-      gearNeeded: Array.from(requiredToolsList).map(tId => faultCodeDatabase.tools[tId]),
-      priorityStatus: criticalActionPriority
+      currentSelection: this.activeStack,
+      matchedCircuits: systemIntersections.map(id => ({ id, ...this.platformData.circuit_intersections[id] })),
+      inferredCulprits: [...new Set(targetSuspects)],
+      allocatedTools: Array.from(requiredGearSet).map(tId => faultCodeDatabase.tools[tId]),
+      priorityCode: structuralPriority
     };
   }
 }
