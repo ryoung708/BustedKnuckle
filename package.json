@@ -1,0 +1,8 @@
+{
+  "name": "ironknuckle-diagnostics",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate:faults": "node scripts/validate-fault-library.mjs"
+  }
+}
