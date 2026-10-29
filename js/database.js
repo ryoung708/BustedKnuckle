@@ -1,8 +1,8 @@
 // ========================================================
-// IRONKNUCKLE DIAGNOSTICS // GLOBAL MASTER REFRESH (js/database.js)
+// IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 1 - PART A
+// GLOBAL REGISTER FAULT REGISTRY POOL #1                 
 // ========================================================
 
-// 1. GLOBAL FAULT REPOSITORY: Add hundreds of codes here once, and they scale everywhere automatically!
 export const globalFaultLibrary = {
   "P205B_64": {
     "spn": 3515, "fmi": 4, "p_code": "P205B-64",
@@ -46,11 +46,7 @@ export const globalFaultLibrary = {
       "DPF delta pressure sensor sensor internal element failing under high exhaust heat load conditions."
     ],
     "required_tools": ["TOOL_DMM", "TOOL_PRESSURE_MANOMETER"]
-  }
-},
-    // ==========================================
-  // BATCH 1: HIGH-VOLUME PATTERN FAULTS
-  // ==========================================
+  },
   "P0046_00": {
     "spn": 641, "fmi": 7, "p_code": "P0046-00",
     "description": "Turbocharger Variable Geometry Actuator (VGT) Control Circuit - Performance Failure",
@@ -84,6 +80,10 @@ export const globalFaultLibrary = {
     ],
     "required_tools": ["TOOL_DEF_VOLUME_TESTER", "TOOL_DEF_REFRACTOMETER"]
   },
+  // ========================================================
+  // IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 1 - PART B
+  // GLOBAL REGISTER FAULT REGISTRY POOL #2                 
+  // ========================================================
   "P1026_00": {
     "spn": 3659, "fmi": 5, "p_code": "P1026-00",
     "description": "Engine Variable Valve Timing Control Solenoid (Booster Valve) - Open Circuit",
@@ -214,22 +214,30 @@ export const globalFaultLibrary = {
     ],
     "required_tools": ["TOOL_DMM"]
   }
-    };
+};
+// ========================================================
+// IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 2 OF 3  
+// ENGINE MAP INDEXES & LOCAL BAY RUB-POINT TIPS          
+// ========================================================
 
-// 2. MASTER ENGINE PLATFORM REFERENCE INDEX
 export const faultCodeDatabase = {
   "engines": {
     "mack_mp7": {
       "name": "Mack MP7 (11L Platform)",
       "emission_levels": { "us10_us14": "EPA10 / GHG14", "ghg17_plus": "GHG17 / GHG21+" },
-      // Simply declare which global codes apply to this engine & what emission tier they live on!
       "code_manifest": [
         { "code_id": "P0201_00", "emission_level": "ghg17_plus" },
         { "code_id": "P205B_64", "emission_level": "ghg17_plus" },
-        { "code_id": "P0401_00", "emission_level": "ghg17_plus" }
+        { "code_id": "P0401_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P0046_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P228F_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P20AA_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P1026_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P1496_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P0108_00", "emission_level": "ghg17_plus" }
       ],
       "circuit_intersections": {
-        "valve_cover_loom": { "name": "Under-Valve-Cover High-Torque Electronic Loom", "triage_tip": "MP7 Specific: Check harness clips holding lines clear of the valvetrain rocking frame." },
+        "valve_cover_loom": { "name": "Under-Valve-Cover High-Torque Electronic Loom", "triage_tip": "MP7 Specific: Check harness clips holding lines clear of the valvetrain rocking frame layout." },
         "circuit_5v_ems": { "name": "EMS 5-Volt Reference Bus Loop", "triage_tip": "Inspect common trunk routing right where the harness leaves the block conduit shroud near the oil module." }
       }
     },
@@ -238,11 +246,28 @@ export const faultCodeDatabase = {
       "emission_levels": { "us10_us14": "EPA10 / GHG14", "ghg17_plus": "GHG17 / GHG21+" },
       "code_manifest": [
         { "code_id": "P205B_64", "emission_level": "ghg17_plus" },
-        { "code_id": "P0401_00", "emission_level": "ghg17_plus" }
+        { "code_id": "P0401_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P0046_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P228F_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P20AA_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P1026_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P1031_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P204B_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P1496_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P2080_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P0108_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P205C_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P0263_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P102A_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P24A4_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P20E8_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P0117_00", "emission_level": "ghg17_plus" }
       ],
       "circuit_intersections": {
         "circuit_5v_ems": { "name": "EMS 5-Volt Reference Bus Loop", "triage_tip": "GHG17 Rub Point: Unplug the outlet NOx sensor first. The harness rubs raw directly against frame rail bolts." },
-        "def_tank_bus": { "name": "DEF Tank Quality Node Network", "triage_tip": "Perform a standard connector cavity pin-drag test at the sensor harness plug before component condemnation." }
+        "def_tank_bus": { "name": "DEF Tank Quality Node Network", "triage_tip": "Perform a standard connector cavity pin-drag test at the sensor harness plug before component condemnation." },
+        "low_pressure_fuel": { "name": "Low-Pressure Supply Orifice Gallery", "triage_tip": "Always measure actual gallery supply pressure before condemning the high dollar common rail pump mechanics." },
+        "def_pump_bus": { "name": "DEF Pressure Delivery Pump Loop", "triage_tip": "Before throwing a pump module at it, inspect the lower main block harness pins for green corrosion tracks." }
       }
     },
     "mack_mp10": {
@@ -251,21 +276,28 @@ export const faultCodeDatabase = {
       "code_manifest": [
         { "code_id": "P226E_00", "emission_level": "ghg17_plus" },
         { "code_id": "P205B_64", "emission_level": "ghg17_plus" },
-        { "code_id": "P0401_00", "emission_level": "ghg17_plus" }
+        { "code_id": "P0401_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P0046_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P20AA_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P2080_00", "emission_level": "ghg17_plus" },
+        { "code_id": "P20E8_00", "emission_level": "ghg17_plus" }
       ],
       "circuit_intersections": {
         "turbo_boost_loop": { "name": "MP10 High-Volume Air Management Loop", "triage_tip": "The 16L engine produces severe exhaust heat soak. Check backpressure lines for hairline cracks." }
       }
     }
   },
-  
-  // 3. MASTER SYMPTOM TREES (INCORPORATING MASTER-TECH SHOP INSIGHTS)
+// ========================================================
+// IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 3 OF 3  
+// NO-CODE SYMPTOM TREES & TOOLBOX PARTS MANIFESTS        
+// ========================================================
+
   "symptom_trees": {
     "cranks_no_start": {
       "title": "Engine Cranks But Won't Start (Zero Active Codes)",
       "triage_priority": "CRITICAL MASTER FIX // CHECK FUEL ORIFICE RESTRICTIONS FIRST",
       "steps": [
-        "PATTERN CRITICAL CHECK: Remove the low-pressure fuel line fuel gallery inlet banjo bolt fitting. Inspect the inner bore orifices for debris plugs, composite fuel cap plastic fragments, or shredding hose line liner material.",
+        "PATTERN CRITICAL CHECK: Remove the low-pressure fuel line fuel gallery inlet banjo bolt fitting. Inspect the inner orifices for debris plugs, composite fuel cap plastic fragments, or shredding hose line liner material.",
         "Check ECM system status sync speed parameters using active diagnostic tools while cranking. Must see at least 150 RPM for injector pulses to unlock.",
         "Verify low-pressure fuel delivery supply gallery pressure output. Target parameter sequence needs a minimum of 45-60 PSI during cranking speeds.",
         "Inspect clear fuel sight-glass block lines for immediate signs of massive aerated fuel foaming or total suction draw cavitation loops."
