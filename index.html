@@ -342,9 +342,11 @@
     import { faultCodeDatabase } from './js/database.js';
 
     let currentSelectorKey = 'mack_mp8';
+    let currentEmissionKey = 'us10_us14';
     const appRuntime = new BustedKnuckleCore(currentSelectorKey);
 
     const selectorWidget = document.getElementById('engineSelect');
+    const emissionWidget = document.getElementById('emissionSelect');
     const listContainer = document.getElementById('faultListContainer');
     const matrixVault = document.getElementById('matrixVault');
     const searchInput = document.getElementById('liveSearch');
@@ -353,7 +355,16 @@
     selectorWidget.addEventListener('change', (e) => {
       currentSelectorKey = e.target.value;
       appRuntime.setEnginePlatform(currentSelectorKey);
+      populateEmissionDropdown();
       searchInput.value = ''; 
+      renderActiveFaultBlocks();
+      clearDisplayMatrix();
+    });
+
+    // CONTROL EVENT: EMISSION SELECT DROPDOWN CHANGED
+    emissionWidget.addEventListener('change', (e) => {
+      currentEmissionKey = e.target.value;
+      searchInput.value = '';
       renderActiveFaultBlocks();
       clearDisplayMatrix();
     });
@@ -373,18 +384,41 @@
       });
     });
 
-    // BUILD MECHANISM: INJECT CODES FROM DATABASE INTO LIVE INTERFACE BUTTONS
+    // RUNTIME AUXILIARY: REBUILD EMISSIONS OPTION LISTS BASED ON SELECTION
+    function populateEmissionDropdown() {
+      emissionWidget.innerHTML = '';
+      const levels = faultCodeDatabase.engines[currentSelectorKey].emission_levels;
+      Object.keys(levels).forEach((key, idx) => {
+        if (idx === 0) currentEmissionKey = key; // Lock first item as default active
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.innerText = levels[key].toUpperCase();
+        emissionWidget.appendChild(opt);
+      });
+    }
+
+    // BUILD MECHANISM: INJECT CODES FILTERED BY EMISSIONS LEVEL INTO LIVE INTERFACE BUTTONS
     function renderActiveFaultBlocks() {
       listContainer.innerHTML = '';
       const platformCodes = faultCodeDatabase.engines[currentSelectorKey].fault_codes;
       
       Object.keys(platformCodes).forEach(key => {
         const structuralRecord = platformCodes[key];
+        
+        // FILTER GATEWAY: Only show codes matching selected engine AND active emissions profile
+        if (structuralRecord.emission_level !== currentEmissionKey) return;
+
         const btnNode = document.createElement('div');
         btnNode.className = 'premium-target-btn';
         btnNode.dataset.key = key;
+
+        // Display check: Render P-code designators alongside SPN if available
+        const primaryId = structuralRecord.p_code !== "N/A" 
+          ? `${structuralRecord.p_code} (SPN ${structuralRecord.spn})` 
+          : `SPN ${structuralRecord.spn} // FMI ${structuralRecord.fmi}`;
+
         btnNode.innerHTML = `
-          <div class="btn-fault-id">SPN ${structuralRecord.spn} // FMI ${structuralRecord.fmi}</div>
+          <div class="btn-fault-id">${primaryId}</div>
           <div class="btn-fault-info">${structuralRecord.description}</div>
         `;
         
@@ -445,8 +479,7 @@
       document.getElementById('toolLinkManifestContainer').innerHTML = '';
     }
 
-    // RUNTIME INITIAL TRIGGER
+    // INITIAL STARTUP SEQUENCE TRIGGER
+    populateEmissionDropdown();
     renderActiveFaultBlocks();
   </script>
-</body>
-</html>
