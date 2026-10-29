@@ -57,8 +57,7 @@ export const globalFaultLibrary = {
       "Actuator wire bundle pigtail linkage rubbed raw against the coolant return tube structural framework."
     ],
     "required_tools": ["TOOL_DMM"]
-  }
-},
+  },
     // ========================================================
   // IRONKNUCKLE DIAGNOSTICS // DATABASE.JS SECTION 2 OF 4  
   // GLOBAL REGISTER FAULT REGISTRY POOL MASTER STORAGE - PART B   
