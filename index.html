@@ -3,224 +3,333 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BustedKnuckle Diagnostic Triage</title>
+  <title>BustedKnuckle Studio Triage</title>
   <style>
     :root {
-      --bg-matte-black: #0d0d0d;
-      --panel-charcoal: #1a1a1a;
-      --border-hard-gray: #2e2e2e;
-      --text-clean-white: #f5f5f5;
-      --safety-orange: #ff5722;
-      --diagnostic-yellow: #ffeb3b;
+      --slate-black: #0c0d0e;
+      --deep-titanium: #141619;
+      --control-charcoal: #1e2227;
+      --border-tint: #2b313a;
+      --nitrogen-amber: #ff9f1c;
+      --text-bright: #f0f2f5;
+      --text-muted: #8a95a5;
     }
 
     body {
-      background-color: var(--bg-matte-black);
-      color: var(--text-clean-white);
-      font-family: 'Impact', 'Arial Black', sans-serif;
+      background-color: var(--slate-black);
+      color: var(--text-bright);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
-      padding: 15px;
+      padding: 0;
       -webkit-font-smoothing: antialiased;
     }
 
-    .app-title {
-      color: var(--safety-orange);
-      font-size: 28px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 4px solid var(--safety-orange);
-      padding-bottom: 8px;
-      margin-bottom: 15px;
-    }
-
-    .platform-banner {
-      width: 100%;
-      background-color: var(--panel-charcoal);
-      border: 2px solid var(--border-hard-gray);
-      color: var(--diagnostic-yellow);
-      font-size: 20px;
-      padding: 15px;
+    .master-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
       box-sizing: border-box;
-      border-radius: 4px;
-      margin-bottom: 20px;
-      text-transform: uppercase;
     }
 
-    .section-label {
-      font-size: 18px;
+    .premium-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--border-tint);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+
+    .brand-logo-text {
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: -0.5px;
       text-transform: uppercase;
-      color: #aaa;
-      margin-bottom: 10px;
+      color: var(--text-bright);
+    }
+
+    .brand-logo-text span {
+      color: var(--nitrogen-amber);
+    }
+
+    .platform-selector-pill {
+      background-color: var(--control-charcoal);
+      border: 1px solid var(--border-tint);
+      color: var(--text-bright);
+      font-weight: bold;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .workspace-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 992px) {
+      .workspace-layout {
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+    }
+
+    .interactive-card-group {
+      background-color: var(--deep-titanium);
+      border: 1px solid var(--border-tint);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .card-block-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      font-weight: 800;
       letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
     }
 
-    .grid-stack {
+    .engine-fault-button-list {
       display: grid;
       grid-template-columns: 1fr;
       gap: 12px;
-      margin-bottom: 25px;
     }
 
-    .code-block-btn {
-      background-color: var(--panel-charcoal);
-      border-left: 8px solid #444;
-      border-top: 1px solid var(--border-hard-gray);
-      border-right: 1px solid var(--border-hard-gray);
-      border-bottom: 1px solid var(--border-hard-gray);
-      padding: 20px;
-      border-radius: 4px;
+    .premium-target-btn {
+      background-color: var(--control-charcoal);
+      border: 1px solid var(--border-tint);
+      padding: 16px 20px;
+      border-radius: 6px;
       cursor: pointer;
       text-align: left;
+      transition: all 0.2s ease;
     }
 
-    .code-block-btn.selected {
-      border-left-color: var(--safety-orange);
-      background-color: #24120c;
+    .premium-target-btn:hover {
+      border-color: var(--text-muted);
     }
 
-    .code-header-txt {
-      font-size: 22px;
-      color: var(--text-clean-white);
+    .premium-target-btn.active-node {
+      border-color: var(--nitrogen-amber);
+      background-color: #241c10;
     }
 
-    .code-desc-txt {
-      font-family: sans-serif;
-      font-size: 14px;
-      font-weight: bold;
-      color: #999;
+    .btn-fault-id {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    .premium-target-btn.active-node .btn-fault-id {
+      color: var(--nitrogen-amber);
+    }
+
+    .btn-fault-info {
+      font-size: 13px;
+      color: var(--text-muted);
       margin-top: 6px;
+      line-height: 1.4;
     }
 
-    .triage-output-panel {
-      background-color: var(--panel-charcoal);
-      border: 3px solid var(--safety-orange);
-      padding: 20px;
+    .diagnostic-matrix-vault {
+      background-color: var(--deep-titanium);
+      border: 1px solid var(--nitrogen-amber);
+      border-radius: 8px;
+      padding: 24px;
+      align-self: start;
+    }
+
+    .status-matrix-banner {
+      background-color: var(--nitrogen-amber);
+      color: var(--slate-black);
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px;
       border-radius: 4px;
-      margin-top: 20px;
-    }
-
-    .priority-banner {
-      background-color: var(--safety-orange);
-      color: var(--bg-matte-black);
-      padding: 12px;
-      font-size: 18px;
-      font-weight: bold;
       text-align: center;
-      margin-bottom: 20px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 24px;
     }
 
-    .loop-highlight-box {
-      font-size: 18px;
-      color: var(--diagnostic-yellow);
+    .matrix-node-segment {
       margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px dashed #444;
     }
 
-    .bullet-spec-list {
-      padding-left: 20px;
-      margin: 10px 0;
+    .matrix-node-segment h4 {
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 0 0 8px 0;
     }
 
-    .bullet-spec-list li {
-      margin-bottom: 12px;
-      font-family: sans-serif;
-      font-weight: bold;
+    .circuit-value-display {
       font-size: 16px;
+      font-weight: 600;
+      color: var(--text-bright);
+      line-height: 1.5;
     }
 
-    .affiliate-tool-button {
-      display: block;
-      background: #2b2b2b;
-      border: 1px solid #444;
-      color: var(--diagnostic-yellow);
-      padding: 16px;
-      margin-top: 10px;
+    .bullet-action-stream {
+      padding-left: 18px;
+      margin: 8px 0 0 0;
+    }
+
+    .bullet-action-stream li {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+    }
+
+    .premium-affiliate-anchor {
+      display: inline-block;
+      background-color: var(--control-charcoal);
+      border: 1px solid var(--border-tint);
+      color: var(--nitrogen-amber);
+      font-size: 13px;
+      font-weight: 700;
       text-decoration: none;
+      padding: 12px 16px;
       border-radius: 4px;
-      font-size: 16px;
+      margin-top: 8px;
+      margin-right: 8px;
       text-transform: uppercase;
-      font-weight: bold;
+    }
+
+    .premium-affiliate-anchor:hover {
+      background-color: var(--border-tint);
+    }
+
+    .empty-state-notice {
+      color: var(--text-muted);
+      font-size: 14px;
+      text-align: center;
+      padding: 40px 0;
     }
   </style>
 </head>
 <body>
 
-  <div class="app-title">BUSTEDKNUCKLE // MP8 DIAG</div>
-  
-  <div class="platform-banner">
-    ACTIVE ENGINE: MACK MP8 PERFORMANCE PLATFORM
-  </div>
+  <div class="master-wrapper">
+    <header class="premium-header">
+      <div class="brand-logo-text">Busted<span>Knuckle</span> Pro</div>
+      <select class="platform-selector-pill" id="engineSelect">
+        <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option>
+        <option value="mack_mp7">MACK MP7 (11L PLATFORM)</option>
+        <option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
+      </select>
+    </header>
 
-  <div class="section-label">Tap Active Faults to Stack:</div>
-  <div class="grid-stack" id="btnContainer"></div>
+    <main class="workspace-layout">
+      <section class="interactive-card-group">
+        <div class="card-block-title">Select Active Bay Fault Stacking Sequence</div>
+        <div class="engine-fault-button-list" id="faultListContainer"></div>
+      </section>
 
-  <div class="triage-output-panel" id="triagePanel" style="display: none;">
-    <div class="priority-banner" id="priorityStatus"></div>
-    
-    <div class="section-label">Shared Electrical/Mechanical Circuit Overlap:</div>
-    <div id="sharedCircuitSection" class="loop-highlight-box"></div>
+      <section class="diagnostic-matrix-vault" id="matrixVault" style="opacity: 0.2; pointer-events: none;">
+        <div class="status-matrix-banner" id="priorityIndicator">SYSTEM RUNNING MONITOR</div>
+        
+        <div class="matrix-node-segment">
+          <h4>Shared Loop Core Intersect</h4>
+          <div class="circuit-value-display" id="circuitDisplay"></div>
+        </div>
 
-    <div class="section-label">Probable Diagnostic Suspects:</div>
-    <ul id="suspectsList" class="bullet-spec-list"></ul>
+        <div class="matrix-node-segment">
+          <h4>Probable Diagnostic Targets</h4>
+          <ul class="bullet-action-stream" id="culpritDisplayList"></ul>
+        </div>
 
-    <div class="section-label">Required Specialty Gear:</div>
-    <div id="toolKitSection"></div>
+        <div class="matrix-node-segment">
+          <h4>Specialized Tooling Manifest</h4>
+          <div id="toolLinkManifestContainer"></div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script type="module">
-    import { BustedKnuckleEngine } from './js/app.js';
+    import { BustedKnuckleCore } from './js/app.js';
     import { faultCodeDatabase } from './js/database.js';
 
-    const bkApp = new BustedKnuckleEngine('mack_mp8');
-    const container = document.getElementById('btnContainer');
-    const panel = document.getElementById('triagePanel');
+    let currentSelectorKey = 'mack_mp8';
+    const appRuntime = new BustedKnuckleCore(currentSelectorKey);
 
-    // Dynamically build big target selection buttons for the grease bay
-    Object.keys(faultCodeDatabase.engines.mack_mp8.fault_codes).forEach(key => {
-      const codeData = faultCodeDatabase.engines.mack_mp8.fault_codes[key];
-      const buttonElement = document.createElement('div');
-      buttonElement.className = 'code-block-btn';
-      buttonElement.innerHTML = `
-        <div class="code-header-txt">SPN ${codeData.spn} // FMI ${codeData.fmi}</div>
-        <div class="code-desc-txt">${codeData.description}</div>
-      `;
-      
-      buttonElement.onclick = () => {
-        buttonElement.classList.toggle('selected');
-        const triageData = bkApp.toggleCode(key);
-        updateTriageDisplay(triageData);
-      };
-      container.appendChild(buttonElement);
+    const selectorWidget = document.getElementById('engineSelect');
+    const listContainer = document.getElementById('faultListContainer');
+    const matrixVault = document.getElementById('matrixVault');
+
+    selectorWidget.addEventListener('change', (e) => {
+      currentSelectorKey = e.target.value;
+      appRuntime.setEnginePlatform(currentSelectorKey);
+      renderActiveFaultBlocks();
+      clearDisplayMatrix();
     });
 
-    function updateTriageDisplay(data) {
-      if (!data) {
-        panel.style.display = 'none';
+    function renderActiveFaultBlocks() {
+      listContainer.innerHTML = '';
+      const platformCodes = faultCodeDatabase.engines[currentSelectorKey].fault_codes;
+      
+      Object.keys(platformCodes).forEach(key => {
+        const structuralRecord = platformCodes[key];
+        const btnNode = document.createElement('div');
+        btnNode.className = 'premium-target-btn';
+        btnNode.innerHTML = `
+          <div class="btn-fault-id">SPN ${structuralRecord.spn} // FMI ${structuralRecord.fmi}</div>
+          <div class="btn-fault-info">${structuralRecord.description}</div>
+        `;
+        
+        btnNode.onclick = () => {
+          btnNode.classList.toggle('active-node');
+          const operationalOutputs = appRuntime.toggleFaultCode(key);
+          processOutputMatrix(operationalOutputs);
+        };
+        listContainer.appendChild(btnNode);
+      });
+    }
+
+    function processOutputMatrix(matrix) {
+      if (!matrix) {
+        clearDisplayMatrix();
         return;
       }
-      panel.style.display = 'block';
-      document.getElementById('priorityStatus').innerText = data.priorityStatus;
+      matrixVault.style.opacity = '1';
+      matrixVault.style.pointerEvents = 'auto';
+      document.getElementById('priorityIndicator').innerText = matrix.priorityCode;
 
-      const circuitSection = document.getElementById('sharedCircuitSection');
-      if (data.sharedCircuits.length > 0) {
-        circuitSection.innerHTML = data.sharedCircuits.map(circuit => `
-          <strong>${circuit.name}</strong><br/>
-          <span style="font-family: sans-serif; font-size: 14px; color: #fff;">🔧 Pro-Tip: ${circuit.triage_tip}</span>
-        `).join('<br/><br/>');
+      const circuitDisplay = document.getElementById('circuitDisplay');
+      if (matrix.matchedCircuits.length > 0) {
+        circuitDisplay.innerHTML = matrix.matchedCircuits.map(c => `
+          <div style="color: var(--nitrogen-amber); margin-bottom: 4px;">${c.name}</div>
+          <div style="font-size: 13px; color: var(--text-bright); font-weight: normal;">${c.triage_tip}</div>
+        `).join('<br/>');
       } else {
-        circuitSection.innerHTML = "<span style='color: var(--safety-orange);'>No shared loop detected. Isolate components individually.</span>";
+        circuitDisplay.innerHTML = `<span style="color: var(--text-muted); font-weight: normal; font-size: 14px;">No circuit intersections located for this specific fault code stack combination.</span>`;
       }
 
-      document.getElementById('suspectsList').innerHTML = data.culpritTargets.map(target => `
-        <li>${target}</li>
+      document.getElementById('culpritDisplayList').innerHTML = matrix.inferredCulprits.map(txt => `
+        <li>${txt}</li>
       `).join('');
 
-      document.getElementById('toolKitSection').innerHTML = data.gearNeeded.map(tool => `
-        <a href="${tool.affiliate_url}" target="_blank" class="affiliate-tool-button">🛠️ Grab: ${tool.name}</a>
+      document.getElementById('toolLinkManifestContainer').innerHTML = matrix.allocatedTools.map(tool => `
+        <a href="${tool.affiliate_url}" target="_blank" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>
       `).join('');
     }
+
+    function clearDisplayMatrix() {
+      matrixVault.style.opacity = '0.2';
+      matrixVault.style.pointerEvents = 'none';
+      document.getElementById('priorityIndicator').innerText = 'SYSTEM RUNNING MONITOR';
+      document.getElementById('circuitDisplay').innerHTML = '';
+      document.getElementById('culpritDisplayList').innerHTML = '';
+      document.getElementById('toolLinkManifestContainer').innerHTML = '';
+    }
+
+    // Initial load
+    renderActiveFaultBlocks();
   </script>
 </body>
 </html>
