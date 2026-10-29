@@ -47,7 +47,174 @@ export const globalFaultLibrary = {
     ],
     "required_tools": ["TOOL_DMM", "TOOL_PRESSURE_MANOMETER"]
   }
-};
+},
+    // ==========================================
+  // BATCH 1: HIGH-VOLUME PATTERN FAULTS
+  // ==========================================
+  "P0046_00": {
+    "spn": 641, "fmi": 7, "p_code": "P0046-00",
+    "description": "Turbocharger Variable Geometry Actuator (VGT) Control Circuit - Performance Failure",
+    "shared_circuits": ["circuit_5v_ems"],
+    "common_causes": [
+      "CRITICAL PATTERN: Mechanical VGT sector arm actuator lever binding or locking up due to heavy exhaust soot and carbon packing.",
+      "Internal sector gear teeth stripped or worn out inside the electronic VGT actuator gear drive housing.",
+      "Actuator wire bundle pigtail linkage rubbed raw against the coolant return tube structural framework."
+    ],
+    "required_tools": ["TOOL_DMM"]
+  },
+  "P228F_00": {
+    "spn": 5418, "fmi": 15, "p_code": "P228F-00",
+    "description": "Fuel Pressure Regulator 1 Exceeded Learning Limits - Too High",
+    "shared_circuits": ["low_pressure_fuel"],
+    "common_causes": [
+      "CRITICAL SHOP FIX: Mechanical fuel overflow valve (PRV) mounted on the fuel gallery has a weakened internal spring or debris on the seat.",
+      "High-pressure common rail fuel control actuator (FCA/MPROP) sticking or responding sluggishly.",
+      "Internal bypass leakage inside one or more high-pressure electronic fuel injectors."
+    ],
+    "required_tools": ["TOOL_FUEL_PRESS_KIT", "TOOL_SIGHT_GLASS"]
+  },
+  "P20AA_00": {
+    "spn": 5246, "fmi": 7, "p_code": "P20AA-00",
+    "description": "Reductant Dosing Valve Circuit - Performance Malfunction or Stuck Closed",
+    "shared_circuits": ["scr_efficiency_loop"],
+    "common_causes": [
+      "CRITICAL PATTERN: DEF injector face plate completely blocked with solid DEF crust or hard carbon exhaust deposits.",
+      "DEF pressure line linking line pinched, kinked, or crushed behind the transmission harness mounting tray.",
+      "Internal solenoid mechanical coil binding or opening up inside the DEF doser nozzle unit itself."
+    ],
+    "required_tools": ["TOOL_DEF_VOLUME_TESTER", "TOOL_DEF_REFRACTOMETER"]
+  },
+  "P1026_00": {
+    "spn": 3659, "fmi": 5, "p_code": "P1026-00",
+    "description": "Engine Variable Valve Timing Control Solenoid (Booster Valve) - Open Circuit",
+    "shared_circuits": ["valve_cover_loom"],
+    "common_causes": [
+      "CRITICAL PATTERN: Internal brake assembly/rocker control valve (Rocker Arm Shaft Solenoid) harness wire break right at the solenoid connector tail under the valve cover.",
+      "Oil intrusion bridging the pins inside the internal pass-through connector housing terminal block."
+    ],
+    "required_tools": ["TOOL_DMM", "TOOL_PIN_TENSION_KIT"]
+  },
+  "P1031_00": {
+    "spn": 3511, "fmi": 4, "p_code": "P1031-00",
+    "description": "Sensor Supply Voltage #2 Circuit (EMS 5V Ref B) - Voltage Below Normal / Shorted Low",
+    "shared_circuits": ["circuit_5v_ems"],
+    "common_causes": [
+      "CRITICAL PATTERN: Variable Geometry Turbocharger (VGT) actuator internal 5V circuit shorted to ground internally.",
+      "EGR Valve position sensor harness rubbed raw against the hot metal EGR crossover pipe shield casting."
+    ],
+    "required_tools": ["TOOL_DMM", "TOOL_MACK_BO_BOX"]
+  },
+  "P204B_00": {
+    "spn": 4331, "fmi": 2, "p_code": "P204B-00",
+    "description": "Reductant Pressure Sensor Circuit - Erratic, Intermittent, or Incorrect Signal",
+    "shared_circuits": ["def_pump_bus"],
+    "common_causes": [
+      "CRITICAL SHOP FIX: DEF pump internal ceramic pressure sensor element cracked due to trapped freezing fluid/moisture expansion.",
+      "Debris or crystallized DEF particles restriction inside the main pump filter element cartridge loop.",
+      "Harness pins corroded or pushed out inside the main 12-pin DEF pump assembly electrical connector housing."
+    ],
+    "required_tools": ["TOOL_DMM", "TOOL_DEF_VOLUME_TESTER"]
+  },
+  "P1496_00": {
+    "spn": 2791, "fmi": 7, "p_code": "P1496-00",
+    "description": "EGR Valve Actuator - Mechanism Performance / Response Sluggish or Stuck",
+    "shared_circuits": ["circuit_5v_ems"],
+    "common_causes": [
+      "CRITICAL PATTERN: Heavy soot carbon loading binding the internal exhaust gas butterfly shaft mechanism.",
+      "Internal sector gear fracture or motor winding burning up inside the electronic EGR valve actuator housing assembly.",
+      "Coolant tracking internally across the actuator electrical pins due to a leaking internal actuator housing gasket."
+    ],
+    "required_tools": ["TOOL_DMM"]
+  },
+  "P2080_00": {
+    "spn": 3242, "fmi": 2, "p_code": "P2080-00",
+    "description": "Exhaust Gas Temperature (EGT) Sensor 1 Circuit (DPF Inlet) - Range/Performance Failure",
+    "shared_circuits": ["aftertreatment_temp_loop"],
+    "common_causes": [
+      "CRITICAL PATTERN: EGT sensor tip coated or heavily glazed by upstream unburned fuel from a leaking 7th injector/hydrocarbon valve.",
+      "Sensor wire lead thermal fatigue or fracture inside the mineral-insulated metal shielding jacket near the exhaust manifold tube.",
+      "High resistance or loose pins inside the intermediate chassis breakout harness barrel connector block."
+    ],
+    "required_tools": ["TOOL_DMM"]
+  },
+  "P0108_00": {
+    "spn": 102, "fmi": 3, "p_code": "P0108-00",
+    "description": "Boost Pressure Sensor Circuit - Voltage Above Normal or Shorted High",
+    "shared_circuits": ["circuit_5v_ems"],
+    "common_causes": [
+      "CRITICAL SHOP FIX: Intake manifold pressure (boost) sensor sensing port completely plugged solid with thick carbon/EGR soot mud.",
+      "5V reference circuit shorted to the signal return line inside the sensor harness trunk wrapper near the intake horn.",
+      "Internal sensor circuit board failure due to constant engine vibration harmonics."
+    ],
+    "required_tools": ["TOOL_DMM"]
+  },
+  "P205C_00": {
+    "spn": 4354, "fmi": 4, "p_code": "P205C-00",
+    "description": "Reductant Tank Temperature Sensor Circuit - Voltage Below Normal or Shorted Low",
+    "shared_circuits": ["def_tank_bus"],
+    "common_causes": [
+      "CRITICAL PATTERN: Internal heating element or temperature thermistor circuit failure inside the combined DEF pickup tank unit module.",
+      "DEF tank harness layout rub point: Wiring loom rubbing raw against the sharp upper edges of the aluminum fuel tank support brackets.",
+      "Moisture tracking or road salt bridging pins inside the intermediate 4-pin tank connector shell casing."
+    ],
+    "required_tools": ["TOOL_DMM"]
+  },
+  "P0263_00": {
+    "spn": 5214, "fmi": 7, "p_code": "P0263-00",
+    "description": "Cylinder 1 Contribution/Balance Fault - Mechanical Component Failure",
+    "shared_circuits": ["low_pressure_fuel"],
+    "common_causes": [
+      "CRITICAL PATTERN: High-pressure common rail fuel injector internal nozzle tip spray holes partially blocked or carbonized.",
+      "Cylinder 1 valvetrain mechanical wear, loose rocker arm adjusting screws, or weak valve spring seating tension.",
+      "Combustion gas blowing past the copper injector sleeve sealing washer face down into the fuel galley rail channel."
+    ],
+    "required_tools": ["TOOL_PIN_TENSION_KIT", "TOOL_DMM"]
+  },
+  "P102A_00": {
+    "spn": 3480, "fmi": 16, "p_code": "P102A-00",
+    "description": "Fuel Pressure After Fuel Filter - Data Valid But Below Normal Range - Moderately Severe",
+    "shared_circuits": ["low_pressure_fuel"],
+    "common_causes": [
+      "CRITICAL SHOP FIX: Primary water separator or secondary fuel filter elements plugged. Always replace filters before checking fuel lines.",
+      "Air induction sucking past a cracked or distorted primary fuel filter clear bowl seal gasket track.",
+      "Gear-driven low pressure transfer pump internal gear face clearance out of spec, losing priming volume."
+    ],
+    "required_tools": ["TOOL_FUEL_PRESS_KIT", "TOOL_SIGHT_GLASS"]
+  },
+  "P24A4_00": {
+    "spn": 3936, "fmi": 18, "p_code": "P24A4-00",
+    "description": "Particulate Matter (PM) Sensor Regeneration Incomplete - Soot Accumulation Failure",
+    "shared_circuits": ["circuit_5v_ems"],
+    "common_causes": [
+      "CRITICAL PATTERN: Downstream PM sensor face heavily masked with heavy soot due to an upstream micro-crack split inside the DPF ceramic brick filter core.",
+      "The PM sensor internal heating element failed, preventing the module from completing its self-cleaning burn off routine.",
+      "Frequent short-trip operational duty cycles preventing the exhaust system from sustaining required catalyst threshold temperatures."
+    ],
+    "required_tools": ["TOOL_DMM"]
+  },
+  "P20E8_00": {
+    "spn": 4334, "fmi": 18, "p_code": "P20E8-00",
+    "description": "Reductant Pressure Too Low - Mechanical Component Malfunction",
+    "shared_circuits": ["def_pump_bus"],
+    "common_causes": [
+      "CRITICAL SHOP FIX: Main air extraction block valve or internal check valve leaking pressure straight back to the tank reservoir lines.",
+      "DEF tank suction line internal wall collapsed or drawing air at the quick-disconnect lock collar interface.",
+      "DEF dosing fluid filter completely plugged with solid contaminants or crystallized chemical salts."
+    ],
+    "required_tools": ["TOOL_DEF_VOLUME_TESTER", "TOOL_DEF_REFRACTOMETER"]
+  },
+  "P0117_00": {
+    "spn": 110, "fmi": 4, "p_code": "P0117-00",
+    "description": "Engine Coolant Temperature (ECT) Sensor Circuit - Voltage Below Normal or Shorted Low",
+    "shared_circuits": ["circuit_5v_ems"],
+    "common_causes": [
+      "ECT sensor wiring loom rubbed raw against the sharp radius corner of the thermostat housing casting frame block.",
+      "Internal short to sensor body ground inside the thermistor probe assembly casing.",
+      "Corrosion track bridging pins inside the main engine block coolant temp sensor breakout plug body."
+    ],
+    "required_tools": ["TOOL_DMM"]
+  }
+    };
 
 // 2. MASTER ENGINE PLATFORM REFERENCE INDEX
 export const faultCodeDatabase = {
