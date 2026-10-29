@@ -423,12 +423,17 @@
 
     function populateEmissionDropdown() {
       emissionWidget.innerHTML = '';
-      const levels = faultCodeDatabase.engines[currentSelectorKey].emission_levels;
-      Object.keys(levels).forEach((key, idx) => {
-        if (idx === 0) currentEmissionKey = key;
+      const engineData = faultCodeDatabase.engines[currentSelectorKey];
+      const levels = engineData.emission_levels || {};
+      const manifest = engineData.code_manifest || [];
+      const keys = Object.keys(levels);
+      // Select a tier that actually has codes configured, otherwise the list starts empty.
+      currentEmissionKey = keys.find(key => manifest.some(item => item.emission_level === key)) || keys[0] || '';
+      keys.forEach(key => {
         const opt = document.createElement('option');
         opt.value = key;
         opt.innerText = levels[key].toUpperCase();
+        opt.selected = key === currentEmissionKey;
         emissionWidget.appendChild(opt);
       });
     }
