@@ -7,6 +7,7 @@ export const faultCodeDatabase = {
         "us10_us14": "EPA10 / GHG14 (Legacy Catalysts)",
         "ghg17_plus": "GHG17 / GHG21+ (Common Rail / Wave Catalyst)"
       },
+      // js/database.js - Updated fault_codes section for mack_mp8
       "fault_codes": {
         "SPN_4364_FMI_18": {
           "spn": 4364, "fmi": 18, "p_code": "N/A",
@@ -23,14 +24,26 @@ export const faultCodeDatabase = {
         "P205B_64": {
           "spn": 3515, "fmi": 4, "p_code": "P205B-64",
           "emission_level": "ghg17_plus",
-          "description": "Reductant (DEF) Tank Temperature Sensor Circuit - Signal Signal Missing / Shorted Low",
+          "description": "Reductant (DEF) Tank Temperature Sensor Circuit - Signal Missing / Shorted Low",
           "shared_circuits": ["circuit_5v_ems", "def_tank_bus"],
           "common_causes": [
-            "DEF tank wiring loom rubbed raw against the sub-frame chassis mounting brackets",
-            "Internal circuit short inside the combined DEF pump/heating element sensor assembly",
-            "Corrosion on the pins of the primary DEF tank main multi-pin connector plug"
+            "CRITICAL BULLETIN NOTE: Internal circuit failure inside the DEF Level/Temp sensor assembly. High-probability replacement target.",
+            "SERVICE ALERT: Corroded pins at the primary DEF tank multi-pin connector plug. ALWAYS install the updated OEM harness connector pigtail kit when replacing the sensor.",
+            "DEF tank wiring loom rubbed raw against the sub-frame chassis mounting brackets"
           ],
           "required_tools": ["TOOL_DMM", "TOOL_MACK_BO_BOX"]
+        },
+        "P0401_00": {
+          "spn": 3936, "fmi": 7, "p_code": "P0401-00",
+          "emission_level": "ghg17_plus",
+          "description": "Exhaust Particulate Matter (PM) Sensor - Conversion Tracking Performance Failure",
+          "shared_circuits": ["circuit_5v_ems"],
+          "common_causes": [
+            "CRITICAL PATTERN ACTION: Particulate Matter (PM) sensor internal ceramic element cracked or soot-blinded. Standard action requires a PM Sensor replacement kit.",
+            "Moisture condensation forming in the tailpipe section causing cold-start sensor thermal shock",
+            "Upstream engine oil consumption coating the PM sensing face plate"
+          ],
+          "required_tools": ["TOOL_DMM"]
         }
       },
       "circuit_intersections": {
