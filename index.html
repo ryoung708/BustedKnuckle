@@ -1,243 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BustedKnuckle Diagnostics</title>
-    <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background: #0d0d0d; 
-            color: #e0e0e0; 
-            padding: 20px; 
-            margin: 0;
-        }
-        .container { 
-            max-width: 500px; 
-            margin: auto; 
-            padding-bottom: 40px;
-        }
-        h1 { 
-            color: #ff5722; 
-            text-align: center; 
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #a0a0a0;
-            font-size: 14px;
-            margin-top: 0;
-            margin-bottom: 25px;
-        }
-        .search-box {
-            background: #1a1a1a;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #2a2a2a;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-        label {
-            display: block;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #ff9800;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        input { 
-            width: 100%; 
-            padding: 16px; 
-            background: #262626; 
-            color: #fff; 
-            border: 2px solid #3a3a3a;
-            border-radius: 8px;
-            font-size: 18px; 
-            font-weight: bold;
-            box-sizing: border-box; 
-            transition: border-color 0.2s;
-        }
-        input:focus {
-            outline: none;
-            border-color: #ff5722;
-        }
-        button { 
-            width: 100%; 
-            padding: 16px; 
-            margin-top: 15px;
-            background: #ff5722; 
-            color: #000; 
-            font-size: 16px;
-            font-weight: 900; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-        button:active {
-            background: #e64a19;
-            transform: translateY(1px);
-        }
-        .result-card { 
-            background: #1a1a1a; 
-            padding: 20px; 
-            border-radius: 12px; 
-            border-left: 6px solid #ff5722; 
-            border-top: 1px solid #2a2a2a;
-            border-right: 1px solid #2a2a2a;
-            border-bottom: 1px solid #2a2a2a;
-            display: none; 
-            margin-top: 25px; 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.6);
-        }
-        .result-card h3 { 
-            color: #ff9800; 
-            margin-top: 0;
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
-        .section-title {
-            color: #ff5722;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 5px;
-        }
-        .suspect-text {
-            font-size: 16px;
-            line-height: 1.4;
-            margin: 0 0 15px 0;
-        }
-        ol {
-            margin: 0;
-            padding-left: 20px;
-        }
-        li {
-            margin-bottom: 10px;
-            line-height: 1.4;
-            font-size: 15px;
-        }
-        .tools-container {
-            margin-top: 5px;
-        }
-        .tool-tag { 
-            background: #2a2a2a; 
-            color: #ff9800;
-            padding: 6px 12px; 
-            border-radius: 6px; 
-            display: inline-block; 
-            font-size: 13px; 
-            font-weight: bold;
-            margin: 4px 4px 4px 0; 
-            border: 1px solid #3a3a3a;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BustedKnuckle Diagnostic Triage</title>
+  <style>
+    :root {
+      --bg-matte-black: #0d0d0d;
+      --panel-charcoal: #1a1a1a;
+      --border-hard-gray: #2e2e2e;
+      --text-clean-white: #f5f5f5;
+      --safety-orange: #ff5722;
+      --diagnostic-yellow: #ffeb3b;
+    }
+
+    body {
+      background-color: var(--bg-matte-black);
+      color: var(--text-clean-white);
+      font-family: 'Impact', 'Arial Black', sans-serif;
+      margin: 0;
+      padding: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-title {
+      color: var(--safety-orange);
+      font-size: 28px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-bottom: 4px solid var(--safety-orange);
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+    }
+
+    .platform-banner {
+      width: 100%;
+      background-color: var(--panel-charcoal);
+      border: 2px solid var(--border-hard-gray);
+      color: var(--diagnostic-yellow);
+      font-size: 20px;
+      padding: 15px;
+      box-sizing: border-box;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .section-label {
+      font-size: 18px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .grid-stack {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .code-block-btn {
+      background-color: var(--panel-charcoal);
+      border-left: 8px solid #444;
+      border-top: 1px solid var(--border-hard-gray);
+      border-right: 1px solid var(--border-hard-gray);
+      border-bottom: 1px solid var(--border-hard-gray);
+      padding: 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .code-block-btn.selected {
+      border-left-color: var(--safety-orange);
+      background-color: #24120c;
+    }
+
+    .code-header-txt {
+      font-size: 22px;
+      color: var(--text-clean-white);
+    }
+
+    .code-desc-txt {
+      font-family: sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      color: #999;
+      margin-top: 6px;
+    }
+
+    .triage-output-panel {
+      background-color: var(--panel-charcoal);
+      border: 3px solid var(--safety-orange);
+      padding: 20px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+
+    .priority-banner {
+      background-color: var(--safety-orange);
+      color: var(--bg-matte-black);
+      padding: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .loop-highlight-box {
+      font-size: 18px;
+      color: var(--diagnostic-yellow);
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px dashed #444;
+    }
+
+    .bullet-spec-list {
+      padding-left: 20px;
+      margin: 10px 0;
+    }
+
+    .bullet-spec-list li {
+      margin-bottom: 12px;
+      font-family: sans-serif;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .affiliate-tool-button {
+      display: block;
+      background: #2b2b2b;
+      border: 1px solid #444;
+      color: var(--diagnostic-yellow);
+      padding: 16px;
+      margin-top: 10px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 16px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🛠️ BUSTEDKNUCKLE</h1>
-    <p class="subtitle">Fast, Mobile Diagnostic Utility for Shop Technicians</p>
+  <div class="app-title">BUSTEDKNUCKLE // MP8 DIAG</div>
+  
+  <div class="platform-banner">
+    ACTIVE ENGINE: MACK MP8 PERFORMANCE PLATFORM
+  </div>
+
+  <div class="section-label">Tap Active Faults to Stack:</div>
+  <div class="grid-stack" id="btnContainer"></div>
+
+  <div class="triage-output-panel" id="triagePanel" style="display: none;">
+    <div class="priority-banner" id="priorityStatus"></div>
     
-    <div class="search-box">
-        <label for="faultInput">Enter Diagnostic Trouble Code</label>
-        <input type="text" id="faultInput" placeholder="e.g., SPN 94, SPN 3251" autocomplete="off" autocapitalize="none">
-        <button onclick="checkFault()">Analyze Code</button>
-    </div>
+    <div class="section-label">Shared Electrical/Mechanical Circuit Overlap:</div>
+    <div id="sharedCircuitSection" class="loop-highlight-box"></div>
 
-    <div id="result" class="result-card">
-        <h3 id="faultTitle"></h3>
-        
-        <div class="section-title">Primary Suspect</div>
-        <p id="suspect" class="suspect-text"></p>
-        
-        <div class="section-title">Action Triage Steps</div>
-        <ol id="steps"></ol>
-        
-        <div class="section-title">Required Tool Kit</div>
-        <div id="tools" class="tools-container"></div>
-    </div>
-</div>
+    <div class="section-label">Probable Diagnostic Suspects:</div>
+    <ul id="suspectsList" class="bullet-spec-list"></ul>
 
-<script>
-// Local diagnostic knowledge engine
-const faultDatabase = {
-    "spn 94": {
-        title: "SPN 94 FMI 1 - Low Fuel Delivery Pressure",
-        suspect: "Primary fuel filter restriction, collapsed filter element, or mechanical fuel lift pump failure.",
-        steps: [
-            "Check primary and secondary fuel filter restriction levels/service history.",
-            "Install a mechanical test gauge into the low-pressure fuel gallery diagnostic port.",
-            "Cranks engine or monitor live data to verify gallery pressure meets minimum OEM specifications.",
-            "Inspect low-pressure lines and connection seals for signs of aeration or suction leaks."
-        ],
-        tools: ["Mechanical Fuel Pressure Gauge", "Fuel Line Disconnect Tool"]
-    },
-    "spn 3251": {
-        title: "SPN 3251 FMI 2 - DPF Pressure Out of Calibration",
-        suspect: "Plugged, cracked, or loose DPF differential pressure sensor tubes, or a drifted internal sensor element.",
-        steps: [
-            "Disconnect the rubber lines from the DPF differential sensor and verify sensor voltage at key-on engine-off.",
-            "Remove the metal delta pressure tubes from the exhaust pipe and blow shop air through them to check for soot packing.",
-            "Inspect the metal lines for microscopic cracks, rub marks, or loose exhaust compression fittings.",
-            "Reconnect lines and perform a stationary DPF service regeneration using your diagnostic laptop to monitor sensor stability."
-        ],
-        tools: ["Digital Multimeter", "Diagnostic Laptop (PTT/Insite)", "Shop Air Blow Gun"]
+    <div class="section-label">Required Specialty Gear:</div>
+    <div id="toolKitSection"></div>
+  </div>
+
+  <script type="module">
+    import { BustedKnuckleEngine } from './js/app.js';
+    import { faultCodeDatabase } from './js/database.js';
+
+    const bkApp = new BustedKnuckleEngine('mack_mp8');
+    const container = document.getElementById('btnContainer');
+    const panel = document.getElementById('triagePanel');
+
+    // Dynamically build big target selection buttons for the grease bay
+    Object.keys(faultCodeDatabase.engines.mack_mp8.fault_codes).forEach(key => {
+      const codeData = faultCodeDatabase.engines.mack_mp8.fault_codes[key];
+      const buttonElement = document.createElement('div');
+      buttonElement.className = 'code-block-btn';
+      buttonElement.innerHTML = `
+        <div class="code-header-txt">SPN ${codeData.spn} // FMI ${codeData.fmi}</div>
+        <div class="code-desc-txt">${codeData.description}</div>
+      `;
+      
+      buttonElement.onclick = () => {
+        buttonElement.classList.toggle('selected');
+        const triageData = bkApp.toggleCode(key);
+        updateTriageDisplay(triageData);
+      };
+      container.appendChild(buttonElement);
+    });
+
+    function updateTriageDisplay(data) {
+      if (!data) {
+        panel.style.display = 'none';
+        return;
+      }
+      panel.style.display = 'block';
+      document.getElementById('priorityStatus').innerText = data.priorityStatus;
+
+      const circuitSection = document.getElementById('sharedCircuitSection');
+      if (data.sharedCircuits.length > 0) {
+        circuitSection.innerHTML = data.sharedCircuits.map(circuit => `
+          <strong>${circuit.name}</strong><br/>
+          <span style="font-family: sans-serif; font-size: 14px; color: #fff;">🔧 Pro-Tip: ${circuit.triage_tip}</span>
+        `).join('<br/><br/>');
+      } else {
+        circuitSection.innerHTML = "<span style='color: var(--safety-orange);'>No shared loop detected. Isolate components individually.</span>";
+      }
+
+      document.getElementById('suspectsList').innerHTML = data.culpritTargets.map(target => `
+        <li>${target}</li>
+      `).join('');
+
+      document.getElementById('toolKitSection').innerHTML = data.gearNeeded.map(tool => `
+        <a href="${tool.affiliate_url}" target="_blank" class="affiliate-tool-button">🛠️ Grab: ${tool.name}</a>
+      `).join('');
     }
-};
-
-function checkFault() {
-    // Clean up input spacing and text casing
-    const input = document.getElementById("faultInput").value.trim().toLowerCase().replace(/\s+/g, ' ');
-    const resultCard = document.getElementById("result");
-    
-    if (faultDatabase[input]) {
-        // Populate display elements
-        document.getElementById("faultTitle").innerText = faultDatabase[input].title;
-        document.getElementById("suspect").innerText = faultDatabase[input].suspect;
-        
-        // Build interactive step list
-        const stepsList = document.getElementById("steps");
-        stepsList.innerHTML = "";
-        faultDatabase[input].steps.forEach(step => {
-            let li = document.createElement("li");
-            li.innerText = step;
-            stepsList.appendChild(li);
-        });
-
-        // Build tool asset tags
-        const toolsDiv = document.getElementById("tools");
-        toolsDiv.innerHTML = "";
-        faultDatabase[input].tools.forEach(tool => {
-            let span = document.createElement("span");
-            span.className = "tool-tag";
-            span.innerText = tool;
-            toolsDiv.appendChild(span);
-        });
-
-        // Render card block smoothly
-        resultCard.style.display = "block";
-    } else {
-        alert("Code not found in the initial system prototype database. Try entering exactly 'SPN 94' or 'SPN 3251' to test the architecture!");
-    }
-}
-
-// Allow pressing the Enter key on mobile keyboard to execute analysis instantly
-document.getElementById("faultInput").addEventListener("keyup", function(event) {
-    if (event.key === "Enter") {
-        checkFault();
-    }
-});
-</script>
-
+  </script>
 </body>
 </html>
