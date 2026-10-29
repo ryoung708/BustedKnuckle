@@ -1,60 +1,62 @@
 // ========================================================
-// IRONKNUCKLE DIAGNOSTICS // VERIFIED MASTER LOGIC ENGINE
+// IRONKNUCKLE DIAGNOSTICS // REPAIRED LOGIC ENGINE
 // ========================================================
 import { faultCodeDatabase, globalFaultLibrary } from './database.js';
 
 export class BustedKnuckleCore {
   constructor(activePlatformId) {
+    this.activeStack = [];
     this.setEnginePlatform(activePlatformId);
   }
 
   setEnginePlatform(platformId) {
-    this.platformData = faultCodeDatabase.engines[platformId];
-    this.activeStack = []; 
+    this.platformData = faultCodeDatabase.engines[platformId] || null;
+    this.activeStack = [];
   }
 
   toggleFaultCode(codeIndexKey) {
+    if (!globalFaultLibrary[codeIndexKey]) return this.generateTriageMatrix();
     const activeIndex = this.activeStack.indexOf(codeIndexKey);
-    if (activeIndex > -1) {
-      this.activeStack.splice(activeIndex, 1); 
-    } else {
-      this.activeStack.push(codeIndexKey); 
-    }
+    if (activeIndex > -1) this.activeStack.splice(activeIndex, 1);
+    else this.activeStack.push(codeIndexKey);
     return this.generateTriageMatrix();
   }
 
   generateTriageMatrix() {
-    if (this.activeStack.length === 0) return null;
+    if (this.activeStack.length === 0 || !this.platformData) return null;
 
     let systemIntersections = null;
-    let targetSuspects = [];
-    let requiredGearSet = new Set();
+    const targetSuspects = [];
+    const requiredGearSet = new Set();
+    const validSelections = this.activeStack
+      .map(codeKey => ({ key: codeKey, spec: globalFaultLibrary[codeKey] }))
+      .filter(item => item.spec);
 
-    this.activeStack.forEach((codeKey, idx) => {
-      const faultSpec = globalFaultLibrary[codeKey];
-      if (!faultSpec) return;
-
-      if (idx === 0) {
-        systemIntersections = [...faultSpec.shared_circuits];
-      } else {
-        systemIntersections = systemIntersections.filter(circuitKey => 
-          faultSpec.shared_circuits.includes(circuitKey)
-        );
-      }
-
-      targetSuspects.push(...faultSpec.common_causes);
-      faultSpec.required_tools.forEach(toolKey => requiredGearSet.add(toolKey));
+    validSelections.forEach(({ spec }, idx) => {
+      const circuits = Array.isArray(spec.shared_circuits) ? spec.shared_circuits : [];
+      if (idx === 0) systemIntersections = [...circuits];
+      else systemIntersections = systemIntersections.filter(circuitKey => circuits.includes(circuitKey));
+      targetSuspects.push(...(spec.common_causes || []));
+      (spec.required_tools || []).forEach(toolKey => requiredGearSet.add(toolKey));
     });
 
+    const matchedCircuits = (systemIntersections || []).map(id => {
+      const circuit = this.platformData.circuit_intersections?.[id];
+      return circuit ? { id, ...circuit } : null;
+    }).filter(Boolean);
+
+    const allocatedTools = Array.from(requiredGearSet)
+      .map(tId => faultCodeDatabase.tools?.[tId])
+      .filter(Boolean);
+
     return {
-      currentSelection: this.activeStack,
-      matchedCircuits: systemIntersections.map(id => ({ 
-        id, 
-        ...this.platformData.circuit_intersections[id] 
-      })),
+      currentSelection: validSelections.map(item => item.key),
+      matchedCircuits,
       inferredCulprits: [...new Set(targetSuspects)],
-      allocatedTools: Array.from(requiredGearSet).map(tId => faultCodeDatabase.tools[tId]),
-      priorityCode: "DIAGNOSTIC MATRIX ENGAGED"
+      allocatedTools,
+      priorityCode: validSelections.some(item => String(item.spec.spn) === '3513')
+        ? 'PRIORITY: VERIFY 5-VOLT REFERENCE SUPPLY'
+        : 'DIAGNOSTIC MATRIX ENGAGED'
     };
   }
 }
