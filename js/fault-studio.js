@@ -10,7 +10,7 @@ function splitLines(v){return v.split(/\r?\n/).map(x=>x.trim()).filter(Boolean)}
 function splitKeys(v){return v.split(',').map(x=>x.trim()).filter(Boolean)}
 function validate(record,engineId,emission){
  const errors=[];
- if(globalFaultLibrary[record.code_id]||staged.faults[record.code_id])errors.push('Fault key already exists in the live or staged library.');
+ if(globalFaultLibrary[record.code_id])errors.push('Fault key already exists in the live library. Use the existing master record instead of duplicating it.');
  if(!record.description)errors.push('Description is required.');
  if(!record.common_causes.length)errors.push('At least one common cause is required.');
  if(!record.diagnostic_steps.length)errors.push('At least one diagnostic step is required.');
@@ -32,9 +32,21 @@ function refresh(){
 }
 $('faultForm').addEventListener('submit',e=>{e.preventDefault();
  const record={code_id:$('codeId').value.trim().toUpperCase(),spn:Number($('spn').value),fmi:Number($('fmi').value),p_code:$('pCode').value.trim()||'N/A',description:$('description').value.trim(),common_causes:splitLines($('causes').value),diagnostic_steps:splitLines($('steps').value),shared_circuits:splitKeys($('circuits').value),required_tools:splitKeys($('tools').value),source_note:$('source').value.trim()};
+ const existing=staged.faults[record.code_id];
  const errors=validate(record,engineSelect.value,emissionSelect.value);
+ if(existing) {
+   const comparable = value => JSON.stringify({
+     spn:value.spn,fmi:value.fmi,p_code:value.p_code,description:value.description,
+     common_causes:value.common_causes,diagnostic_steps:value.diagnostic_steps,
+     shared_circuits:value.shared_circuits,required_tools:value.required_tools
+   });
+   if(comparable(existing)!==comparable(record)) errors.push('This fault is already staged with different diagnostic content. Keep one master record and edit it consistently.');
+   const links=staged.engine_manifests[engineSelect.value]||[];
+   if(links.some(item=>item.code_id===record.code_id && item.emission_level===emissionSelect.value)) errors.push('This fault is already linked to the selected engine and emissions tier.');
+ }
  const box=$('validation');if(errors.length){box.className='validation bad';box.textContent='RECORD REJECTED: '+errors.join(' ');$('countErrors').textContent=errors.length;return}
- staged.faults[record.code_id]=record;staged.engine_manifests[engineSelect.value]??=[];
+ if(!existing) staged.faults[record.code_id]=record;
+ staged.engine_manifests[engineSelect.value]??=[];
  staged.engine_manifests[engineSelect.value].push({code_id:record.code_id,emission_level:emissionSelect.value});
  box.className='validation good';box.textContent='RECORD ACCEPTED: '+record.code_id+' staged and linked to '+engines[engineSelect.value].name+'.';
  $('faultForm').reset();engineSelect.value=Object.keys(engines)[0];fillEmissions();refresh();
