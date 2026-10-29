@@ -34,21 +34,22 @@
       box-sizing: border-box;
     }
 
-    /* HEADER BLOCK: SCALES THE LOGO MOUNT */
-        .premium-header {
+       /* HEADER SPACER: EXPANDED FOR MAXIMUM footprint Vertical CLEARANCE */
+    .premium-header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 30px; /* Gives the large asset breathing room */
+      gap: 32px;
       border-bottom: 2px solid var(--border-tint);
-      padding-bottom: 30px;
-      margin-bottom: 30px;
+      padding-bottom: 32px;
+      margin-bottom: 32px;
     }
 
     @media (min-width: 768px) {
       .premium-header {
         flex-direction: row;
         justify-content: space-between;
+        align-items: center; /* Locks alignment perfectly on desktops */
       }
     }
 
@@ -58,12 +59,13 @@
       gap: 15px;
     }
 
-       .brand-logo-img {
-      height: 180px; /* Blows up the visual asset profile significantly */
+       /* THE LOGO ASSET: DRIVEN TO HIGH-VISIBILITY INDUSTRIAL SCALE */
+    .brand-logo-img {
+      height: 260px; /* Maxed out size for massive, aggressive shop-bay visibility */
       width: auto;
-      max-width: 100%; /* Keeps it from breaking on narrow phone screens */
+      max-width: 100%; /* Guarantees asset doesn't clip on small smartphones */
       object-fit: contain;
-      filter: drop-shadow(0 0 15px rgba(255, 159, 28, 0.25));
+      filter: drop-shadow(0 0 20px rgba(255, 159, 28, 0.35)); /* Boosted ambient amber halo glow */
     }
 
     .platform-selector-pill {
