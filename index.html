@@ -1,6 +1,7 @@
-<!-- ========================================== -->
-<!-- SECTION 1: MASTER LAYOUT & PREMIUM STYLES  -->
-<!-- ========================================== -->
+<!-- ======================================================== -->
+<!-- IRONKNUCKLE DIAGNOSTICS // INDEX.HTML SECTION 1 OF 3      -->
+<!-- PLATFORM LAYOUT & PREMIUM STEALTH-TITANIUM STYLING       -->
+<!-- ======================================================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,7 +35,7 @@
       box-sizing: border-box;
     }
 
-       /* HEADER SPACER: EXPANDED FOR MAXIMUM footprint Vertical CLEARANCE */
+    /* HEADER SPACE CONTROLS */
     .premium-header {
       display: flex;
       flex-direction: column;
@@ -49,23 +50,16 @@
       .premium-header {
         flex-direction: row;
         justify-content: space-between;
-        align-items: center; /* Locks alignment perfectly on desktops */
+        align-items: center;
       }
     }
 
-    .brand-logo-frame {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-       /* THE LOGO ASSET: DRIVEN TO HIGH-VISIBILITY INDUSTRIAL SCALE */
     .brand-logo-img {
-      height: 260px; /* Maxed out size for massive, aggressive shop-bay visibility */
+      height: 180px; 
       width: auto;
-      max-width: 100%; /* Guarantees asset doesn't clip on small smartphones */
+      max-width: 100%;
       object-fit: contain;
-      filter: drop-shadow(0 0 20px rgba(255, 159, 28, 0.35)); /* Boosted ambient amber halo glow */
+      filter: drop-shadow(0 0 20px rgba(255, 159, 28, 0.35));
     }
 
     .platform-selector-pill {
@@ -78,14 +72,38 @@
       font-size: 14px;
       outline: none;
       cursor: pointer;
-      transition: border-color 0.2s;
     }
 
-    .platform-selector-pill:focus {
+    /* DUAL MODE SELECTION SWITCHES */
+    .mode-nav-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .mode-tab-button {
+      background-color: var(--deep-titanium);
+      border: 2px solid var(--border-tint);
+      color: var(--text-muted);
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .mode-tab-button.active {
       border-color: var(--nitrogen-amber);
+      color: var(--nitrogen-amber);
+      background-color: #1e1910;
     }
 
-    /* COMPONENT: SEARCH BAR ENGINE CONTROL */
+    /* SEARCH ENGINE CONTROLS */
     .search-container {
       width: 100%;
       margin-bottom: 24px;
@@ -102,7 +120,6 @@
       font-size: 18px;
       font-weight: bold;
       outline: none;
-      transition: all 0.2s ease;
     }
 
     .live-search-input:focus {
@@ -155,11 +172,6 @@
       border-radius: 6px;
       cursor: pointer;
       text-align: left;
-      transition: all 0.2s ease;
-    }
-
-    .premium-target-btn:hover {
-      border-color: var(--text-muted);
     }
 
     .premium-target-btn.active-node {
@@ -184,19 +196,17 @@
       line-height: 1.4;
     }
 
-    /* COMPONENT: RIGHT HAND SIDE DIAGNOSTIC VAULT */
+    /* TRIAGE VAULT MATRIX STYLING */
     .diagnostic-matrix-vault {
       background-color: var(--deep-titanium);
       border: 1px solid var(--border-tint);
       border-radius: 8px;
       padding: 24px;
       align-self: start;
-      transition: all 0.3s ease;
     }
 
     .diagnostic-matrix-vault.active-triage {
       border-color: var(--nitrogen-amber);
-      box-shadow: 0 0 20px rgba(255, 159, 28, 0.05);
     }
 
     .status-matrix-banner {
@@ -264,65 +274,61 @@
       margin-right: 8px;
       text-transform: uppercase;
     }
-
-    .premium-affiliate-anchor:hover {
-      background-color: var(--border-tint);
-    }
   </style>
 </head>
-<!-- ========================================== -->
-<!-- SECTION 2: VIEWPORT HTML COMPONENT FRAMES  -->
-<!-- ========================================== -->
+  <!-- ======================================================== -->
+<!-- IRONKNUCKLE DIAGNOSTICS // INDEX.HTML SECTION 2 OF 3      -->
+<!-- PHYSICAL HTML ELEMENT PLACEMENT FRAMEWORK                -->
+<!-- ======================================================== -->
 <body>
 
   <div class="master-wrapper">
-   <!-- ========================================== -->
-<!-- UPDATE: ENGINE & EMISSIONS SELECTOR LABELS -->
-<!-- ========================================== -->
-<header class="premium-header">
-  <div class="brand-logo-frame">
-    <img src="logo.png" alt="IronKnuckle Diagnostics" class="brand-logo-img">
-  </div>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <!-- DROPDOWN 1: MASTER ENGINE BASE -->
-    <select class="platform-selector-pill" id="engineSelect">
-      <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option>
-      <option value="mack_mp7">MACK MP7 (11L PLATFORM)</option>
-      <option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
-    </select>
-    
-    <!-- DROPDOWN 2: DYNAMIC EMISSIONS FILTER SYSTEM -->
-    <select class="platform-selector-pill" id="emissionSelect">
-      <!-- Injected dynamically by the script engine based on selections -->
-    </select>
-  </div>
-</header>
+    <!-- HEADER CONTROLS PLACEMENT -->
+    <header class="premium-header">
+      <div class="brand-logo-frame">
+        <img src="logo.png" alt="IronKnuckle Diagnostics" class="brand-logo-img">
+      </div>
+      <div id="engineFilterSubGroup" style="display: flex; flex-direction: column; gap: 12px;">
+        <select class="platform-selector-pill" id="engineSelect">
+          <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option>
+          <option value="mack_mp7">MACK MP7 (11L PLATFORM)</option>
+          <option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
+        </select>
+        <select class="platform-selector-pill" id="emissionSelect"></select>
+      </div>
+    </header>
 
-    <!-- INTERFACE ELEMENT: SEARCH FIELD FILTER INPUT -->
+    <!-- NAVIGATION TABS COMPONENT -->
+    <nav class="mode-nav-bar">
+      <div class="mode-tab-button active" id="tabFaultMode">Fault Code Tracker</div>
+      <div class="mode-tab-button" id="tabSymptomMode">Symptom Trees</div>
+    </nav>
+
+    <!-- INTERACTIVE INPUT: FILTER SYSTEM SEARCH BAR -->
     <div class="search-container">
-      <input type="text" id="liveSearch" class="live-search-input" placeholder="SEARCH CODES... (e.g., SPN 4364, P205B, FC 239)">
+      <input type="text" id="liveSearch" class="live-search-input" placeholder="SEARCH ACTIVE CODES...">
     </div>
 
-    <!-- MAIN INTERACTIVE WORKSPACE SPLIT PANELS -->
+    <!-- MAIN PANELS SPLIT WORKSPACE WINDOWS -->
     <main class="workspace-layout">
       
-      <!-- LEFT MODULE: CODES CONTAINER SELECTOR -->
+      <!-- ENGINE DATA BLOCKS SELECTOR MOUNT (LEFT SIDE) -->
       <section class="interactive-card-group">
-        <div class="card-block-title">Select Active Bay Fault Stacking Sequence</div>
+        <div class="card-block-title" id="listBlockTitle">Select Active Bay Fault Stacking Sequence</div>
         <div class="engine-fault-button-list" id="faultListContainer"></div>
       </section>
 
-      <!-- RIGHT MODULE: OUTPUT RESULTS VAULT -->
+      <!-- DIAGNOSTIC ANALYSIS ENGINE DISPLAY VAULT (RIGHT SIDE) -->
       <section class="diagnostic-matrix-vault" id="matrixVault" style="opacity: 0.25; pointer-events: none;">
         <div class="status-matrix-banner" id="priorityIndicator">SYSTEM RUNNING MONITOR</div>
         
-        <div class="matrix-node-segment">
+        <div class="matrix-node-segment" id="circuitSegmentFrame">
           <h4>Shared Loop Core Intersect</h4>
           <div class="circuit-value-display" id="circuitDisplay"></div>
         </div>
 
         <div class="matrix-node-segment">
-          <h4>Probable Diagnostic Targets</h4>
+          <h4 id="actionTargetLabel">Probable Diagnostic Targets</h4>
           <ul class="bullet-action-stream" id="culpritDisplayList"></ul>
         </div>
 
@@ -334,62 +340,87 @@
 
     </main>
   </div>
-<!-- ========================================== -->
-<!-- SECTION 3: SYSTEM INTERACTIVE CONTROLLER   -->
-<!-- ========================================== -->
+  <!-- ======================================================== -->
+<!-- IRONKNUCKLE DIAGNOSTICS // INDEX.HTML SECTION 3 OF 3      -->
+<!-- INTERACTIVE JAVASCRIPT CONTROLLER EXECUTOR                -->
+<!-- ======================================================== -->
   <script type="module">
     import { BustedKnuckleCore } from './js/app.js';
     import { faultCodeDatabase } from './js/database.js';
 
+    let activeSystemMode = 'fault_code'; 
     let currentSelectorKey = 'mack_mp8';
     let currentEmissionKey = 'us10_us14';
     const appRuntime = new BustedKnuckleCore(currentSelectorKey);
 
-    const selectorWidget = document.getElementById('engineSelect');
+    const engineWidget = document.getElementById('engineSelect');
     const emissionWidget = document.getElementById('emissionSelect');
+    const filterContainerBlock = document.getElementById('engineFilterSubGroup');
     const listContainer = document.getElementById('faultListContainer');
     const matrixVault = document.getElementById('matrixVault');
     const searchInput = document.getElementById('liveSearch');
+    
+    const btnFaultMode = document.getElementById('tabFaultMode');
+    const btnSymptomMode = document.getElementById('tabSymptomMode');
+    const listBlockTitle = document.getElementById('listBlockTitle');
 
-    // CONTROL EVENT: ENGINE SELECT DROPDOWN CHANGED
-    selectorWidget.addEventListener('change', (e) => {
+    // MANAGEMENT TERMINAL: NAVIGATION INTERCEPT TABS
+    btnFaultMode.onclick = () => {
+      activeSystemMode = 'fault_code';
+      btnFaultMode.classList.add('active');
+      btnSymptomMode.classList.remove('active');
+      filterContainerBlock.style.visibility = 'visible';
+      listBlockTitle.innerText = "Select Active Bay Fault Stacking Sequence";
+      searchInput.placeholder = "SEARCH ACTIVE CODES... (e.g. SPN 4364, P205B)";
+      searchInput.value = '';
+      renderContentBlocks();
+      clearDisplayMatrix();
+    };
+
+    btnSymptomMode.onclick = () => {
+      activeSystemMode = 'symptom';
+      btnSymptomMode.classList.add('active');
+      btnFaultMode.classList.remove('active');
+      filterContainerBlock.style.visibility = 'hidden'; 
+      listBlockTitle.innerText = "Select Observed Vehicle Operating Malfunction";
+      searchInput.placeholder = "SEARCH SYMPTOMS... (e.g. No Start, Power Loss)";
+      searchInput.value = '';
+      renderContentBlocks();
+      clearDisplayMatrix();
+    };
+
+    // MANAGEMENT TERMINAL: ENGINE AND EMISSIONS PICK FILTERS
+    engineWidget.addEventListener('change', (e) => {
       currentSelectorKey = e.target.value;
       appRuntime.setEnginePlatform(currentSelectorKey);
       populateEmissionDropdown();
       searchInput.value = ''; 
-      renderActiveFaultBlocks();
+      renderContentBlocks();
       clearDisplayMatrix();
     });
 
-    // CONTROL EVENT: EMISSION SELECT DROPDOWN CHANGED
     emissionWidget.addEventListener('change', (e) => {
       currentEmissionKey = e.target.value;
       searchInput.value = '';
-      renderActiveFaultBlocks();
+      renderContentBlocks();
       clearDisplayMatrix();
     });
 
-    // CONTROL EVENT: INTERACTIVE LIVE FILTER SEARCH ENGINE
+    // RUNTIME AUXILIARY: REAL TIME STRING LOOKUP FILTER MATCHING
     searchInput.addEventListener('input', (e) => {
       const query = e.target.value.toLowerCase().trim();
       const cardNodes = listContainer.getElementsByClassName('premium-target-btn');
-      
       Array.from(cardNodes).forEach(card => {
-        const textContent = card.innerText.toLowerCase();
-        if (textContent.includes(query)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
+        if (card.innerText.toLowerCase().includes(query)) card.style.display = 'block';
+        else card.style.display = 'none';
       });
     });
 
-    // RUNTIME AUXILIARY: REBUILD EMISSIONS OPTION LISTS BASED ON SELECTION
     function populateEmissionDropdown() {
       emissionWidget.innerHTML = '';
       const levels = faultCodeDatabase.engines[currentSelectorKey].emission_levels;
       Object.keys(levels).forEach((key, idx) => {
-        if (idx === 0) currentEmissionKey = key; // Lock first item as default active
+        if (idx === 0) currentEmissionKey = key;
         const opt = document.createElement('option');
         opt.value = key;
         opt.innerText = levels[key].toUpperCase();
@@ -397,89 +428,92 @@
       });
     }
 
-    // BUILD MECHANISM: INJECT CODES FILTERED BY EMISSIONS LEVEL INTO LIVE INTERFACE BUTTONS
-    function renderActiveFaultBlocks() {
+    // DISPATCH LOGIC BUILDER
+    function renderContentBlocks() {
       listContainer.innerHTML = '';
-      const platformCodes = faultCodeDatabase.engines[currentSelectorKey].fault_codes;
-      
-      Object.keys(platformCodes).forEach(key => {
-        const structuralRecord = platformCodes[key];
-        
-        // FILTER GATEWAY: Only show codes matching selected engine AND active emissions profile
-        if (structuralRecord.emission_level !== currentEmissionKey) return;
+      if (activeSystemMode === 'fault_code') {
+        const platformCodes = faultCodeDatabase.engines[currentSelectorKey].fault_codes;
+        Object.keys(platformCodes).forEach(key => {
+          const structuralRecord = platformCodes[key];
+          if (structuralRecord.emission_level !== currentEmissionKey) return;
 
-        const btnNode = document.createElement('div');
-        btnNode.className = 'premium-target-btn';
-        btnNode.dataset.key = key;
-
-        // Display check: Render P-code designators alongside SPN if available
-        const primaryId = structuralRecord.p_code !== "N/A" 
-          ? `${structuralRecord.p_code} (SPN ${structuralRecord.spn})` 
-          : `SPN ${structuralRecord.spn} // FMI ${structuralRecord.fmi}`;
-
-        btnNode.innerHTML = `
-          <div class="btn-fault-id">${primaryId}</div>
-          <div class="btn-fault-info">${structuralRecord.description}</div>
-        `;
-        
-        btnNode.onclick = () => {
-          btnNode.classList.toggle('active-node');
-          const operationalOutputs = appRuntime.toggleFaultCode(key);
-          processOutputMatrix(operationalOutputs);
-        };
-        listContainer.appendChild(btnNode);
-      });
+          const btnNode = document.createElement('div');
+          btnNode.className = 'premium-target-btn';
+          const primaryId = structuralRecord.p_code !== "N/A" ? `${structuralRecord.p_code} (SPN ${structuralRecord.spn})` : `SPN ${structuralRecord.spn} // FMI ${structuralRecord.fmi}`;
+          btnNode.innerHTML = `<div class="btn-fault-id">${primaryId}</div><div class="btn-fault-info">${structuralRecord.description}</div>`;
+          
+          btnNode.onclick = () => {
+            btnNode.classList.toggle('active-node');
+            const operationalOutputs = appRuntime.toggleFaultCode(key);
+            processOutputMatrix(operationalOutputs);
+          };
+          listContainer.appendChild(btnNode);
+        });
+      } else {
+        Object.keys(faultCodeDatabase.symptom_trees).forEach(key => {
+          const tree = faultCodeDatabase.symptom_trees[key];
+          const btnNode = document.createElement('div');
+          btnNode.className = 'premium-target-btn';
+          btnNode.innerHTML = `<div class="btn-fault-id">⚠️ ${tree.title}</div>`;
+          
+          btnNode.onclick = () => {
+            Array.from(listContainer.children).forEach(c => c.classList.remove('active-node'));
+            btnNode.classList.add('active-node');
+            processSymptomOutputMatrix(tree);
+          };
+          listContainer.appendChild(btnNode);
+        });
+      }
     }
 
-    // UPDATE RENDER: DISPLAY RESULTS IF FAULTS STACK MATCHES AN OVERLAP
     function processOutputMatrix(matrix) {
-      if (!matrix) {
-        clearDisplayMatrix();
-        return;
-      }
-      matrixVault.style.opacity = '1';
-      matrixVault.style.pointerEvents = 'auto';
-      matrixVault.classList.add('active-triage');
+      if (!matrix) { clearDisplayMatrix(); return; }
+      document.getElementById('circuitSegmentFrame').style.display = 'block';
+      document.getElementById('actionTargetLabel').innerText = "Probable Diagnostic Targets";
+      matrixVault.style.opacity = '1'; matrixVault.style.pointerEvents = 'auto'; matrixVault.classList.add('active-triage');
       
       const indicator = document.getElementById('priorityIndicator');
-      indicator.innerText = matrix.priorityCode;
-      indicator.classList.add('alert-active');
+      indicator.innerText = matrix.priorityCode; indicator.classList.add('alert-active');
 
       const circuitDisplay = document.getElementById('circuitDisplay');
       if (matrix.matchedCircuits.length > 0) {
-        circuitDisplay.innerHTML = matrix.matchedCircuits.map(c => `
-          <div style="color: var(--nitrogen-amber); margin-bottom: 4px; font-weight: 800;">${c.name}</div>
-          <div style="font-size: 13px; color: var(--text-bright); font-weight: normal;">${c.triage_tip}</div>
-        `).join('<br/>');
+        circuitDisplay.innerHTML = matrix.matchedCircuits.map(c => `<div style="color: var(--nitrogen-amber); margin-bottom: 4px; font-weight: 800;">${c.name}</div><div style="font-size: 13px; color: var(--text-bright); font-weight: normal;">${c.triage_tip}</div>`).join('<br/>');
       } else {
-        circuitDisplay.innerHTML = `<span style="color: var(--text-muted); font-weight: normal; font-size: 14px;">No circuit intersections located for this specific fault code stack combination.</span>`;
+        circuitDisplay.innerHTML = `<span style="color: var(--text-muted); font-weight: normal; font-size: 14px;">No circuit intersections located for this fault sequence.</span>`;
       }
-
-      document.getElementById('culpritDisplayList').innerHTML = matrix.inferredCulprits.map(txt => `
-        <li>${txt}</li>
-      `).join('');
-
-      document.getElementById('toolLinkManifestContainer').innerHTML = matrix.allocatedTools.map(tool => `
-        <a href="${tool.affiliate_url}" target="_blank" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>
-      `).join('');
+      document.getElementById('culpritDisplayList').innerHTML = matrix.inferredCulprits.map(txt => `<li>${txt}</li>`).join('');
+      document.getElementById('toolLinkManifestContainer').innerHTML = matrix.allocatedTools.map(tool => `<a href="${tool.affiliate_url}" target="_blank" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>`).join('');
     }
 
-    // CLEANER SYSTEM: FLUSH DATA AND LOCK VAULT PANEL WHEN NO BUTTONS ARE CHECKED
-    function clearDisplayMatrix() {
-      matrixVault.style.opacity = '0.25';
-      matrixVault.style.pointerEvents = 'none';
-      matrixVault.classList.remove('active-triage');
+    function processSymptomOutputMatrix(tree) {
+      document.getElementById('circuitSegmentFrame').style.display = 'none'; 
+      document.getElementById('actionTargetLabel').innerText = "Step-By-Step Triage Execution Path";
+      matrixVault.style.opacity = '1'; matrixVault.style.pointerEvents = 'auto'; matrixVault.classList.add('active-triage');
       
       const indicator = document.getElementById('priorityIndicator');
-      indicator.innerText = 'SYSTEM RUNNING MONITOR';
-      indicator.classList.remove('alert-active');
+      indicator.innerText = tree.triage_priority; indicator.classList.add('alert-active');
       
+      document.getElementById('culpritDisplayList').innerHTML = tree.steps.map(step => `<li>${step}</li>`).join('');
+      document.getElementById('toolLinkManifestContainer').innerHTML = tree.required_tools.map(tId => {
+        const tool = faultCodeDatabase.tools[tId];
+        return `<a href="${tool.affiliate_url}" target="_blank" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>`;
+      }).join('');
+    }
+
+    function clearDisplayMatrix() {
+      matrixVault.style.opacity = '0.25'; matrixVault.style.pointerEvents = 'none'; matrixVault.classList.remove('active-triage');
+      const indicator = document.getElementById('priorityIndicator');
+      indicator.innerText = 'SYSTEM RUNNING MONITOR'; indicator.classList.remove('alert-active');
       document.getElementById('circuitDisplay').innerHTML = '';
       document.getElementById('culpritDisplayList').innerHTML = '';
       document.getElementById('toolLinkManifestContainer').innerHTML = '';
     }
 
-    // INITIAL STARTUP SEQUENCE TRIGGER
+    // FIRST LAUNCH INITIALIZATION
     populateEmissionDropdown();
-    renderActiveFaultBlocks();
+    renderContentBlocks();
   </script>
+</body>
+</html>
+
+
