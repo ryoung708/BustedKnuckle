@@ -35,6 +35,11 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
     <select class="platform-selector-pill" id="emissionSelect" aria-label="Emissions configuration"></select>
   </div>
 </header>
+<div style="display:flex;justify-content:flex-end;margin:0 0 16px">
+  <a href="./wiringhound.html" style="display:inline-flex;align-items:center;gap:9px;padding:12px 16px;border:1px solid #ff9f1c88;border-radius:9px;background:#ff9f1c12;color:#ffb34d;text-decoration:none;font-size:11px;font-weight:900;letter-spacing:.12em">
+    ⌁ OPEN WIRINGHOUND <span style="color:#9aa7b5;font-weight:600;letter-spacing:0">J1939 NETWORK DIAGNOSTICS →</span>
+  </a>
+</div>
 <section class="workspace-intro"><div><div class="eyebrow">Heavy-duty diagnostic workspace</div><h1 class="intro-title">Find the fault. Follow the evidence.</h1><p class="intro-copy">Select an engine, narrow the fault, then work through the diagnostic information.</p></div><div class="session-chip"><span class="session-dot"></span> Workspace ready</div></section>
 <nav class="mode-nav-bar" aria-label="Diagnostic modes"><button type="button" class="mode-tab-button active" id="tabFaultMode">Fault code lookup</button><button type="button" class="mode-tab-button" id="tabSymptomMode">Symptom diagnostics</button></nav>
 <div class="search-container"><label class="search-label" for="liveSearch">Search diagnostic library</label><span class="search-icon" aria-hidden="true">⌕</span><input type="search" id="liveSearch" class="live-search-input" placeholder="Search SPN, FMI, P-code or description..." autocomplete="off"><p class="search-hint">Examples: SPN 4364 · FMI 18 · P205B · aftertreatment</p></div>
