@@ -22,34 +22,15 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
 @media(max-width:900px){.workspace-layout{grid-template-columns:1fr}.diagnostic-matrix-vault{position:static}}
 @media(max-width:600px){.master-wrapper{padding:12px 12px 32px}.premium-header{padding-bottom:17px;margin-bottom:17px;gap:14px}.brand-logo-img{height:155px;max-width:100%}.header-controls{grid-template-columns:1fr;gap:8px}.platform-selector-pill{min-height:46px}.workspace-intro{align-items:flex-start}.session-chip{margin-top:3px;font-size:9px}.intro-copy{max-width:330px}.interactive-card-group,.diagnostic-matrix-vault{padding:14px}.mode-tab-button{min-height:46px;padding:10px 8px;font-size:10px;letter-spacing:.045em}.live-search-input{min-height:54px;font-size:14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+.command-center-card{display:flex;align-items:center;gap:14px;width:100%;margin:0 0 10px;padding:14px 18px;border:1px solid #ff9f1c88;border-radius:10px;background:linear-gradient(105deg,#ff9f1c20,#151a20 65%);color:var(--text);text-decoration:none}.command-center-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:10px;background:#ff9f1c18;color:var(--amber);font-size:27px}.command-center-card span:nth-child(2){flex:1}.command-center-card b{display:block;color:#fff;font-size:12px;letter-spacing:.12em}.command-center-card small{display:block;color:var(--muted);font-size:11px;margin-top:5px}.command-center-card strong{color:var(--amber);font-size:10px;letter-spacing:.1em}@media(max-width:600px){.command-center-card{padding:12px}.command-center-card small{font-size:10px}.command-center-card strong{font-size:9px}}
 </style>
 </head>
 <body>
 <div class="master-wrapper">
 <header class="premium-header">
   <div class="brand-logo-frame"><img src="logo.png" alt="IronKnuckle Diagnostics" class="brand-logo-img"></div>
-  <div id="engineFilterSubGroup" class="header-controls">
-    <select class="platform-selector-pill" id="engineSelect" aria-label="Engine platform">
-      <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option><option value="mack_mp7">MACK MP7 (11L PLATFORM)</option><option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
-    </select>
-    <select class="platform-selector-pill" id="emissionSelect" aria-label="Emissions configuration"></select>
-  </div>
-</header>
-<style>
-.wiringhound-launch-wrap{margin:0 0 20px}
-.wiringhound-launch-card{position:relative;display:flex;align-items:center;gap:20px;min-height:150px;padding:18px 22px;overflow:hidden;border:1px solid #a85e16;border-radius:13px;background:radial-gradient(ellipse at 18% 50%,#ff9f1c20,transparent 42%),linear-gradient(115deg,#1b2027,#101419 70%);color:var(--text);text-decoration:none;box-shadow:0 12px 32px #0005;transition:transform .18s,border-color .18s,box-shadow .18s}
-.wiringhound-launch-card:hover{transform:translateY(-2px);border-color:var(--amber);box-shadow:0 16px 38px #0008,0 0 0 1px #ff9f1c30}
-.wiringhound-mark{flex:0 0 116px;width:116px;height:116px;display:grid;place-items:center;border:1px solid #ff9f1c66;border-radius:50%;background:#080b0e;box-shadow:inset 0 0 25px #ff9f1c18,0 0 22px #ff9f1c12}
-.wiringhound-mark svg{width:94px;height:94px;display:block}
-.wiringhound-copy{min-width:0;flex:1}
-.wiringhound-eyebrow{color:#ffb34d;font-size:10px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
-.wiringhound-title{margin:5px 0 4px;color:#fff;font-size:clamp(21px,3vw,30px);font-weight:950;letter-spacing:.025em;line-height:1}
-.wiringhound-title span{color:var(--amber)}
-.wiringhound-description{margin:0;color:#aeb8c3;font-size:13px;line-height:1.5}
-.wiringhound-cta{display:inline-flex;align-items:center;gap:8px;margin-top:11px;padding:9px 13px;border:1px solid #ff9f1c88;border-radius:6px;background:#ff9f1c18;color:#ffb34d;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
-.wiringhound-arrow{flex:none;color:var(--amber);font-size:24px;padding:0 5px}
-@media(max-width:600px){.wiringhound-launch-card{gap:13px;min-height:126px;padding:13px}.wiringhound-mark{flex-basis:82px;width:82px;height:82px}.wiringhound-mark svg{width:68px;height:68px}.wiringhound-description{font-size:11px}.wiringhound-arrow{font-size:19px}}
-</style>
+  <a class="command-center-card" href="./diagnostics.html"><span class="command-center-icon">⌖</span><span><b>DIAGNOSTIC COMMAND CENTER</b><small>Start a guided investigation · capture evidence · save the case</small></span><strong>OPEN →</strong></a>
 <div class="wiringhound-launch-wrap">
   <a class="wiringhound-launch-card" href="./wiringhound.html" aria-label="Open WiringHound J1939 and electrical diagnostics">
     <span class="wiringhound-mark" aria-hidden="true">
@@ -77,6 +58,28 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
     <span class="wiringhound-arrow" aria-hidden="true">›</span>
   </a>
 </div>
+<div id="engineFilterSubGroup" class="header-controls">
+    <select class="platform-selector-pill" id="engineSelect" aria-label="Engine platform">
+      <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option><option value="mack_mp7">MACK MP7 (11L PLATFORM)</option><option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
+    </select>
+    <select class="platform-selector-pill" id="emissionSelect" aria-label="Emissions configuration"></select>
+  </div>
+</header>
+<style>
+.wiringhound-launch-wrap{margin:0 0 20px}
+.wiringhound-launch-card{position:relative;display:flex;align-items:center;gap:20px;min-height:150px;padding:18px 22px;overflow:hidden;border:1px solid #a85e16;border-radius:13px;background:radial-gradient(ellipse at 18% 50%,#ff9f1c20,transparent 42%),linear-gradient(115deg,#1b2027,#101419 70%);color:var(--text);text-decoration:none;box-shadow:0 12px 32px #0005;transition:transform .18s,border-color .18s,box-shadow .18s}
+.wiringhound-launch-card:hover{transform:translateY(-2px);border-color:var(--amber);box-shadow:0 16px 38px #0008,0 0 0 1px #ff9f1c30}
+.wiringhound-mark{flex:0 0 116px;width:116px;height:116px;display:grid;place-items:center;border:1px solid #ff9f1c66;border-radius:50%;background:#080b0e;box-shadow:inset 0 0 25px #ff9f1c18,0 0 22px #ff9f1c12}
+.wiringhound-mark svg{width:94px;height:94px;display:block}
+.wiringhound-copy{min-width:0;flex:1}
+.wiringhound-eyebrow{color:#ffb34d;font-size:10px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
+.wiringhound-title{margin:5px 0 4px;color:#fff;font-size:clamp(21px,3vw,30px);font-weight:950;letter-spacing:.025em;line-height:1}
+.wiringhound-title span{color:var(--amber)}
+.wiringhound-description{margin:0;color:#aeb8c3;font-size:13px;line-height:1.5}
+.wiringhound-cta{display:inline-flex;align-items:center;gap:8px;margin-top:11px;padding:9px 13px;border:1px solid #ff9f1c88;border-radius:6px;background:#ff9f1c18;color:#ffb34d;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.wiringhound-arrow{flex:none;color:var(--amber);font-size:24px;padding:0 5px}
+@media(max-width:600px){.wiringhound-launch-card{gap:13px;min-height:126px;padding:13px}.wiringhound-mark{flex-basis:82px;width:82px;height:82px}.wiringhound-mark svg{width:68px;height:68px}.wiringhound-description{font-size:11px}.wiringhound-arrow{font-size:19px}}
+</style>
 <section class="workspace-intro"><div><div class="eyebrow">Heavy-duty diagnostic workspace</div><h1 class="intro-title">Find the fault. Follow the evidence.</h1><p class="intro-copy">Select an engine, narrow the fault, then work through the diagnostic information.</p></div><div class="session-chip"><span class="session-dot"></span> Workspace ready</div></section>
 <nav class="mode-nav-bar" aria-label="Diagnostic modes"><button type="button" class="mode-tab-button active" id="tabFaultMode">Fault code lookup</button><button type="button" class="mode-tab-button" id="tabSymptomMode">Symptom diagnostics</button></nav>
 <div class="search-container"><label class="search-label" for="liveSearch">Search diagnostic library</label><span class="search-icon" aria-hidden="true">⌕</span><input type="search" id="liveSearch" class="live-search-input" placeholder="Search SPN, FMI, P-code or description..." autocomplete="off"><p class="search-hint">Examples: SPN 4364 · FMI 18 · P205B · aftertreatment</p></div>
