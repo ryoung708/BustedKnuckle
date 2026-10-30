@@ -23,14 +23,47 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
 @media(max-width:600px){.master-wrapper{padding:12px 12px 32px}.premium-header{padding-bottom:17px;margin-bottom:17px;gap:14px}.brand-logo-img{height:155px;max-width:100%}.header-controls{grid-template-columns:1fr;gap:8px}.platform-selector-pill{min-height:46px}.workspace-intro{align-items:flex-start}.session-chip{margin-top:3px;font-size:9px}.intro-copy{max-width:330px}.interactive-card-group,.diagnostic-matrix-vault{padding:14px}.mode-tab-button{min-height:46px;padding:10px 8px;font-size:10px;letter-spacing:.045em}.live-search-input{min-height:54px;font-size:14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 
-.command-center-card{display:flex;align-items:center;gap:14px;width:100%;margin:0 0 10px;padding:14px 18px;border:1px solid #ff9f1c88;border-radius:10px;background:linear-gradient(105deg,#ff9f1c20,#151a20 65%);color:var(--text);text-decoration:none}.command-center-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:10px;background:#ff9f1c18;color:var(--amber);font-size:27px}.command-center-card span:nth-child(2){flex:1}.command-center-card b{display:block;color:#fff;font-size:12px;letter-spacing:.12em}.command-center-card small{display:block;color:var(--muted);font-size:11px;margin-top:5px}.command-center-card strong{color:var(--amber);font-size:10px;letter-spacing:.1em}@media(max-width:600px){.command-center-card{padding:12px}.command-center-card small{font-size:10px}.command-center-card strong{font-size:9px}}
+.command-center-wrap{margin:0 0 20px}
+.command-center-card{position:relative;display:flex;align-items:center;gap:20px;min-height:150px;width:100%;padding:18px 22px;overflow:hidden;border:1px solid #a85e16;border-radius:13px;background:radial-gradient(ellipse at 18% 50%,#ff9f1c20,transparent 42%),linear-gradient(115deg,#1b2027,#101419 70%);color:var(--text);text-decoration:none;box-shadow:0 12px 32px #0005;transition:transform .18s,border-color .18s,box-shadow .18s}
+.command-center-card:hover{transform:translateY(-2px);border-color:var(--amber);box-shadow:0 16px 38px #0008,0 0 0 1px #ff9f1c30}
+.command-center-icon{flex:0 0 116px;width:116px;height:116px;display:grid;place-items:center;border:1px solid #ff9f1c66;border-radius:50%;background:#080b0e;box-shadow:inset 0 0 25px #ff9f1c18,0 0 22px #ff9f1c12}
+.command-center-icon svg{width:88px;height:88px;display:block}
+.command-center-copy{min-width:0;flex:1}
+.command-center-eyebrow{color:#ffb34d;font-size:10px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
+.command-center-title{margin:5px 0 4px;color:#fff;font-size:clamp(21px,3vw,30px);font-weight:950;letter-spacing:.025em;line-height:1}
+.command-center-title span{color:var(--amber)}
+.command-center-description{margin:0;color:#aeb8c3;font-size:13px;line-height:1.5}
+.command-center-cta{display:inline-flex;align-items:center;gap:8px;margin-top:11px;padding:9px 13px;border:1px solid #ff9f1c88;border-radius:6px;background:#ff9f1c18;color:#ffb34d;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.command-center-arrow{flex:none;color:var(--amber);font-size:24px;padding:0 5px}
+@media(max-width:600px){.command-center-card{gap:13px;min-height:126px;padding:13px}.command-center-icon{flex-basis:82px;width:82px;height:82px}.command-center-icon svg{width:64px;height:64px}.command-center-description{font-size:11px}.command-center-arrow{font-size:19px}}
 </style>
 </head>
 <body>
 <div class="master-wrapper">
 <header class="premium-header">
   <div class="brand-logo-frame"><img src="logo.png" alt="IronKnuckle Diagnostics" class="brand-logo-img"></div>
-  <a class="command-center-card" href="./diagnostics.html"><span class="command-center-icon">⌖</span><span><b>DIAGNOSTIC COMMAND CENTER</b><small>Start a guided investigation · capture evidence · save the case</small></span><strong>OPEN →</strong></a>
+  <div class="command-center-wrap">
+  <a class="command-center-card" href="./diagnostics.html" aria-label="Open the IronKnuckle Diagnostic Command Center">
+    <span class="command-center-icon" aria-hidden="true">
+      <svg viewBox="0 0 120 120" role="img">
+        <circle cx="60" cy="60" r="54" fill="none" stroke="#ff9f1c" stroke-width="2" stroke-dasharray="8 5"/>
+        <path d="M60 17 L60 29 M60 91 L60 103 M17 60 L29 60 M91 60 L103 60" stroke="#ffb34d" stroke-width="3" stroke-linecap="round"/>
+        <rect x="29" y="32" width="62" height="56" rx="8" fill="#202832" stroke="#ff9f1c" stroke-width="3"/>
+        <path d="M38 61 H48 L55 47 L65 73 L73 56 L81 56" fill="none" stroke="#ffb34d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="82" cy="56" r="4" fill="#70c69a"/>
+        <path d="M43 97 L51 88 M77 97 L69 88" stroke="#4ba3d9" stroke-width="3" stroke-linecap="round"/>
+        <path d="M47 21 L53 14 L60 21 M73 21 L67 14 L60 21" fill="none" stroke="#ff9f1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="command-center-copy">
+      <span class="command-center-eyebrow">IronKnuckle diagnostic workspace</span>
+      <span class="command-center-title">DIAGNOSTIC <span>COMMAND CENTER</span></span>
+      <p class="command-center-description">Build a guided investigation. Record symptoms, tests and measurements. Keep the evidence together in one case.</p>
+      <span class="command-center-cta">Launch Command Center <span aria-hidden="true">→</span></span>
+    </span>
+    <span class="command-center-arrow" aria-hidden="true">›</span>
+  </a>
+</div>
 <div class="wiringhound-launch-wrap">
   <a class="wiringhound-launch-card" href="./wiringhound.html" aria-label="Open WiringHound J1939 and electrical diagnostics">
     <span class="wiringhound-mark" aria-hidden="true">
