@@ -1,0 +1,21 @@
+name: Diagnostic Engine Tests
+on:
+  pull_request:
+    paths:
+      - "js/diagnostic-engine.js"
+      - "scripts/test-diagnostic-engine.mjs"
+      - "diagnostics.html"
+      - "package.json"
+  push:
+    branches:
+      - main
+      - ironknuckle-diagnostic-engine-v1
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm run test:diagnostics
