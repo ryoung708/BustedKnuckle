@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#090b0e"><title>IronKnuckle Diagnostics</title>
+<style>
+:root{color-scheme:dark;--bg:#090b0e;--panel:#11151a;--raised:#191f27;--line:#303b48;--amber:#ff9f1c;--text:#f1f4f7;--muted:#9aa7b5;--green:#70c69a}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -18%,rgba(255,159,28,.09),transparent 38%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:auto;padding:22px 28px 48px}
+.premium-header{display:flex;flex-direction:column;align-items:center;gap:18px;padding:6px 0 24px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.brand-logo-frame{width:100%;display:flex;justify-content:center}.brand-logo-img{display:block;height:180px;width:auto;max-width:min(100%,620px);object-fit:contain;filter:drop-shadow(0 0 22px rgba(255,159,28,.22))}
+.header-controls{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.platform-selector-pill{width:100%;min-width:0;min-height:48px;padding:0 15px;color:var(--text);background:var(--raised);border:1px solid #465363;border-radius:8px;font-size:13px;font-weight:750}
+.workspace-intro{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:4px 0 16px}.eyebrow{color:var(--amber);font-size:11px;font-weight:850;letter-spacing:.16em;text-transform:uppercase}.intro-title{margin:5px 0 0;font-size:clamp(20px,3vw,27px);letter-spacing:-.035em}.intro-copy{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+.session-chip{flex:none;display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.07em;text-transform:uppercase}.session-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px #70c69a88}
+.mode-nav-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.mode-tab-button{min-height:48px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:9px;color:var(--muted);font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.mode-tab-button.active{color:var(--amber);border-color:#ff9f1caa;background:#ff9f1c1f}
+.search-container{position:relative;margin-bottom:16px}.search-label{display:block;margin:0 0 8px 2px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.live-search-input{display:block;width:100%;min-height:58px;padding:0 18px 0 48px;color:var(--text);background:var(--panel);border:1px solid #465363;border-radius:10px;outline:none;font-size:16px;font-weight:600;box-shadow:0 14px 38px #0004}.live-search-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px #ff9f1c1a}.live-search-input::placeholder{color:#758292;font-weight:500}.search-icon{position:absolute;left:17px;bottom:17px;color:var(--muted);font-size:19px;pointer-events:none}.search-hint{margin:8px 2px 0;color:#748191;font-size:11px}
+.workspace-layout{display:grid;grid-template-columns:minmax(300px,.92fr) minmax(0,1.45fr);gap:16px;align-items:start}.interactive-card-group,.diagnostic-matrix-vault{min-width:0;padding:18px;background:linear-gradient(180deg,#ffffff05,transparent),var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 38px #0004}.panel-heading,.matrix-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.card-block-title{color:var(--text);font-size:13px;font-weight:850;letter-spacing:.09em;text-transform:uppercase}.panel-kicker,.matrix-label{color:var(--muted);font-size:10px}.engine-fault-button-list{display:grid;grid-template-columns:1fr;gap:9px}
+.premium-target-btn{display:block;width:100%;padding:15px 16px;color:var(--text);text-align:left;cursor:pointer;background:var(--raised);border:1px solid var(--line);border-radius:9px;transition:border-color .16s,background .16s}.premium-target-btn:hover{border-color:#647184;background:#202833}.premium-target-btn.active-node{border-color:var(--amber);background:#ff9f1c1f;box-shadow:inset 3px 0 var(--amber)}.btn-fault-id{color:var(--text);font-size:15px;font-weight:850}.premium-target-btn.active-node .btn-fault-id{color:var(--amber)}.btn-fault-info{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.45}
+.diagnostic-matrix-vault{position:sticky;top:14px;padding:20px;transition:border-color .18s,opacity .18s}.diagnostic-matrix-vault.active-triage{border-color:#ff9f1caa}.matrix-title{margin:0;font-size:16px;font-weight:850;letter-spacing:-.02em}.matrix-label{font-weight:850;letter-spacing:.12em;text-transform:uppercase}.status-matrix-banner{padding:12px 14px;color:var(--muted);background:var(--raised);border:1px solid var(--line);border-radius:8px;font-size:11px;font-weight:850;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}.status-matrix-banner.alert-active{color:var(--amber);background:#ff9f1c1f;border-color:#ff9f1c66}
+.matrix-node-segment{margin:0 0 19px;padding-bottom:17px;border-bottom:1px solid #46536370}.matrix-node-segment:last-child{margin-bottom:0;padding-bottom:0;border-bottom:0}.matrix-node-segment h4{margin:0 0 9px;color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}.circuit-value-display{color:var(--text);font-size:14px;font-weight:600;line-height:1.6}.bullet-action-stream{margin:0;padding-left:20px}.bullet-action-stream li{margin:0 0 10px;padding-left:3px;color:#dce2e8;font-size:13px;line-height:1.55}.bullet-action-stream li::marker{color:var(--amber);font-weight:800}
+.premium-affiliate-anchor{display:inline-flex;align-items:center;gap:7px;margin:4px 7px 4px 0;padding:9px 12px;color:var(--amber);background:var(--raised);border:1px solid #465363;border-radius:7px;font-size:11px;font-weight:800;text-decoration:none;text-transform:uppercase}.premium-affiliate-anchor:hover{border-color:var(--amber)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media(max-width:900px){.workspace-layout{grid-template-columns:1fr}.diagnostic-matrix-vault{position:static}}
+@media(max-width:600px){.master-wrapper{padding:12px 12px 32px}.premium-header{padding-bottom:17px;margin-bottom:17px;gap:14px}.brand-logo-img{height:155px;max-width:100%}.header-controls{grid-template-columns:1fr;gap:8px}.platform-selector-pill{min-height:46px}.workspace-intro{align-items:flex-start}.session-chip{margin-top:3px;font-size:9px}.intro-copy{max-width:330px}.interactive-card-group,.diagnostic-matrix-vault{padding:14px}.mode-tab-button{min-height:46px;padding:10px 8px;font-size:10px;letter-spacing:.045em}.live-search-input{min-height:54px;font-size:14px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="master-wrapper">
+<header class="premium-header">
+  <div class="brand-logo-frame"><img src="logo.png" alt="IronKnuckle Diagnostics" class="brand-logo-img"></div>
+  <div id="engineFilterSubGroup" class="header-controls">
+    <select class="platform-selector-pill" id="engineSelect" aria-label="Engine platform">
+      <option value="mack_mp8">MACK MP8 (13L PLATFORM)</option><option value="mack_mp7">MACK MP7 (11L PLATFORM)</option><option value="mack_mp10">MACK MP10 (16L HEAVY-HAUL)</option>
+    </select>
+    <select class="platform-selector-pill" id="emissionSelect" aria-label="Emissions configuration"></select>
+  </div>
+</header>
+<style>
+.wiringhound-launch-wrap{margin:0 0 20px}
+.wiringhound-launch-card{position:relative;display:flex;align-items:center;gap:20px;min-height:150px;padding:18px 22px;overflow:hidden;border:1px solid #a85e16;border-radius:13px;background:radial-gradient(ellipse at 18% 50%,#ff9f1c20,transparent 42%),linear-gradient(115deg,#1b2027,#101419 70%);color:var(--text);text-decoration:none;box-shadow:0 12px 32px #0005;transition:transform .18s,border-color .18s,box-shadow .18s}
+.wiringhound-launch-card:hover{transform:translateY(-2px);border-color:var(--amber);box-shadow:0 16px 38px #0008,0 0 0 1px #ff9f1c30}
+.wiringhound-mark{flex:0 0 116px;width:116px;height:116px;display:grid;place-items:center;border:1px solid #ff9f1c66;border-radius:50%;background:#080b0e;box-shadow:inset 0 0 25px #ff9f1c18,0 0 22px #ff9f1c12}
+.wiringhound-mark svg{width:94px;height:94px;display:block}
+.wiringhound-copy{min-width:0;flex:1}
+.wiringhound-eyebrow{color:#ffb34d;font-size:10px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
+.wiringhound-title{margin:5px 0 4px;color:#fff;font-size:clamp(21px,3vw,30px);font-weight:950;letter-spacing:.025em;line-height:1}
+.wiringhound-title span{color:var(--amber)}
+.wiringhound-description{margin:0;color:#aeb8c3;font-size:13px;line-height:1.5}
+.wiringhound-cta{display:inline-flex;align-items:center;gap:8px;margin-top:11px;padding:9px 13px;border:1px solid #ff9f1c88;border-radius:6px;background:#ff9f1c18;color:#ffb34d;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.wiringhound-arrow{flex:none;color:var(--amber);font-size:24px;padding:0 5px}
+@media(max-width:600px){.wiringhound-launch-card{gap:13px;min-height:126px;padding:13px}.wiringhound-mark{flex-basis:82px;width:82px;height:82px}.wiringhound-mark svg{width:68px;height:68px}.wiringhound-description{font-size:11px}.wiringhound-arrow{font-size:19px}}
+</style>
+<div class="wiringhound-launch-wrap">
+  <a class="wiringhound-launch-card" href="./wiringhound.html" aria-label="Open WiringHound J1939 and electrical diagnostics">
+    <span class="wiringhound-mark" aria-hidden="true">
+      <svg viewBox="0 0 120 120" role="img">
+        <circle cx="60" cy="60" r="55" fill="none" stroke="#ff9f1c" stroke-width="2" stroke-dasharray="9 5"/>
+        <path d="M24 43 Q18 23 34 20 Q48 18 54 37 L70 35 Q83 23 96 34 Q106 44 96 56 L89 68 Q87 82 73 86 L58 88 Q48 84 45 72 L34 68 Q24 61 24 43Z" fill="#202832" stroke="#ff9f1c" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M29 40 Q35 26 44 42 L49 59 Q45 68 34 62Z" fill="#101419" stroke="#9aa7b5" stroke-width="2"/>
+        <path d="M71 38 Q83 27 94 39 Q101 48 89 61 L79 69 Q70 63 70 53Z" fill="#101419" stroke="#9aa7b5" stroke-width="2"/>
+        <path d="M45 49 Q58 40 73 48 L81 66 Q78 80 62 83 Q48 78 45 65Z" fill="#c87520" stroke="#ffb34d" stroke-width="2"/>
+        <path d="M53 57 Q60 52 68 57" fill="none" stroke="#111820" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="51" cy="48" r="3.5" fill="#ffb34d"/><circle cx="77" cy="48" r="3.5" fill="#ffb34d"/>
+        <path d="M55 72 Q62 66 70 72 Q68 80 62 80 Q56 79 55 72Z" fill="#080b0e" stroke="#d8e0e8" stroke-width="1.5"/>
+        <path d="M59 81 L59 92 M67 81 L67 92" stroke="#ff9f1c" stroke-width="2" stroke-linecap="round"/>
+        <path d="M15 93 C29 87 33 101 46 95 S64 88 78 96 S96 101 108 91" fill="none" stroke="#ff9f1c" stroke-width="3" stroke-linecap="round"/>
+        <path d="M15 102 C29 96 33 110 46 104 S64 97 78 105 S96 110 108 100" fill="none" stroke="#4ba3d9" stroke-width="3" stroke-linecap="round"/>
+        <path d="M90 15 L84 26 L94 26 L87 38" fill="none" stroke="#ffb34d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="wiringhound-copy">
+      <span class="wiringhound-eyebrow">IronKnuckle diagnostic tool</span>
+      <span class="wiringhound-title">WIRING<span>HOUND</span></span>
+      <p class="wiringhound-description">Sniff out the fault. Follow the circuit. Guided J1939 network and electrical diagnostics.</p>
+      <span class="wiringhound-cta">Launch WiringHound <span aria-hidden="true">→</span></span>
+    </span>
+    <span class="wiringhound-arrow" aria-hidden="true">›</span>
+  </a>
+</div>
+<section class="workspace-intro"><div><div class="eyebrow">Heavy-duty diagnostic workspace</div><h1 class="intro-title">Find the fault. Follow the evidence.</h1><p class="intro-copy">Select an engine, narrow the fault, then work through the diagnostic information.</p></div><div class="session-chip"><span class="session-dot"></span> Workspace ready</div></section>
+<nav class="mode-nav-bar" aria-label="Diagnostic modes"><button type="button" class="mode-tab-button active" id="tabFaultMode">Fault code lookup</button><button type="button" class="mode-tab-button" id="tabSymptomMode">Symptom diagnostics</button></nav>
+<div class="search-container"><label class="search-label" for="liveSearch">Search diagnostic library</label><span class="search-icon" aria-hidden="true">⌕</span><input type="search" id="liveSearch" class="live-search-input" placeholder="Search SPN, FMI, P-code or description..." autocomplete="off"><p class="search-hint">Examples: SPN 4364 · FMI 18 · P205B · aftertreatment</p></div>
+<main class="workspace-layout">
+<section class="interactive-card-group" aria-label="Fault library"><div class="panel-heading"><div class="card-block-title" id="listBlockTitle">Fault library</div><div class="panel-kicker">Select one or more faults</div></div><div class="engine-fault-button-list" id="faultListContainer"></div></section>
+<section class="diagnostic-matrix-vault" id="matrixVault" style="opacity:0.25;pointer-events:none" aria-label="Diagnostic analysis">
+<div class="matrix-topline"><h2 class="matrix-title">Diagnostic workspace</h2><span class="matrix-label">Analysis panel</span></div>
+<div class="status-matrix-banner" id="priorityIndicator">Select a fault to begin analysis</div>
+<div class="matrix-node-segment" id="circuitSegmentFrame"><h4>Shared circuits &amp; system intersections</h4><div class="circuit-value-display" id="circuitDisplay"></div></div>
+<div class="matrix-node-segment"><h4 id="actionTargetLabel">Potential causes to investigate</h4><ul class="bullet-action-stream" id="culpritDisplayList"></ul></div>
+<div class="matrix-node-segment" id="diagnosticStepsSegment"><h4>Recommended diagnostic sequence</h4><ol class="bullet-action-stream" id="diagnosticStepsDisplay"></ol></div>
+<div class="matrix-node-segment"><h4>Tools &amp; equipment</h4><div id="toolLinkManifestContainer"></div></div>
+</section></main></div>
+  <script type="module">
+    import { BustedKnuckleCore } from './js/app.js';
+    import { faultCodeDatabase, globalFaultLibrary } from './js/database.js';
+
+    // Load the separately maintained fault additions before starting the diagnostic runtime.
+    try {
+      const response = await fetch('./data/fault-overrides.json', { cache: 'no-store' });
+      if (response.ok) {
+        const additions = await response.json();
+        Object.assign(globalFaultLibrary, additions.faults || {});
+        Object.entries(additions.engine_manifests || {}).forEach(([engineId, entries]) => {
+          const engine = faultCodeDatabase.engines[engineId];
+          if (!engine) return;
+          const existing = new Set((engine.code_manifest || []).map(item => item.code_id));
+          (entries || []).forEach(item => {
+            if (!existing.has(item.code_id)) engine.code_manifest.push(item);
+          });
+        });
+        Object.assign(faultCodeDatabase.tools, additions.tools || {});
+      }
+    } catch (error) {
+      console.warn('Fault additions file could not be loaded; using the built-in library.', error);
+    }
+
+    let activeSystemMode = 'fault_code'; 
+    let currentSelectorKey = 'mack_mp8';
+    let currentEmissionKey = 'us10_us14';
+    const appRuntime = new BustedKnuckleCore(currentSelectorKey);
+
+    const engineWidget = document.getElementById('engineSelect');
+    const emissionWidget = document.getElementById('emissionSelect');
+    const filterContainerBlock = document.getElementById('engineFilterSubGroup');
+    const listContainer = document.getElementById('faultListContainer');
+    const matrixVault = document.getElementById('matrixVault');
+    const searchInput = document.getElementById('liveSearch');
+    
+    const btnFaultMode = document.getElementById('tabFaultMode');
+    const btnSymptomMode = document.getElementById('tabSymptomMode');
+    const listBlockTitle = document.getElementById('listBlockTitle');
+
+    // MANAGEMENT TERMINAL: NAVIGATION INTERCEPT TABS
+    btnFaultMode.onclick = () => {
+      activeSystemMode = 'fault_code';
+      btnFaultMode.classList.add('active');
+      btnSymptomMode.classList.remove('active');
+      filterContainerBlock.style.visibility = 'visible';
+      listBlockTitle.innerText = "Select Active Bay Fault Stacking Sequence";
+      searchInput.placeholder = "SEARCH ACTIVE CODES... (e.g. SPN 4364, P205B)";
+      searchInput.value = '';
+      renderContentBlocks();
+      clearDisplayMatrix();
+    };
+
+    btnSymptomMode.onclick = () => {
+      activeSystemMode = 'symptom';
+      btnSymptomMode.classList.add('active');
+      btnFaultMode.classList.remove('active');
+      filterContainerBlock.style.visibility = 'hidden'; 
+      listBlockTitle.innerText = "Select Observed Vehicle Operating Malfunction";
+      searchInput.placeholder = "SEARCH SYMPTOMS... (e.g. No Start, Power Loss)";
+      searchInput.value = '';
+      renderContentBlocks();
+      clearDisplayMatrix();
+    };
+
+    // MANAGEMENT TERMINAL: ENGINE AND EMISSIONS PICK FILTERS
+    engineWidget.addEventListener('change', (e) => {
+      currentSelectorKey = e.target.value;
+      appRuntime.setEnginePlatform(currentSelectorKey);
+      populateEmissionDropdown();
+      searchInput.value = ''; 
+      renderContentBlocks();
+      clearDisplayMatrix();
+    });
+
+    emissionWidget.addEventListener('change', (e) => {
+      currentEmissionKey = e.target.value;
+      searchInput.value = '';
+      renderContentBlocks();
+      clearDisplayMatrix();
+    });
+
+    // RUNTIME AUXILIARY: REAL TIME STRING LOOKUP FILTER MATCHING
+    searchInput.addEventListener('input', () => {
+      if (activeSystemMode === 'fault_code') {
+        const query = searchInput.value.toLowerCase().trim();
+        Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(card => {
+          card.style.display = card.innerText.toLowerCase().includes(query) ? 'block' : 'none';
+        });
+      } else {
+        const query = searchInput.value.toLowerCase().trim();
+        Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(card => {
+          card.style.display = card.innerText.toLowerCase().includes(query) ? 'block' : 'none';
+        });
+      }
+    });
+
+    function populateEmissionDropdown() {
+      emissionWidget.innerHTML = '';
+      const engineData = faultCodeDatabase.engines[currentSelectorKey];
+      const levels = engineData.emission_levels || {};
+      const manifest = engineData.code_manifest || [];
+      const keys = Object.keys(levels);
+      // Select a tier that actually has codes configured, otherwise the list starts empty.
+      currentEmissionKey = keys.find(key => manifest.some(item => item.emission_level === key)) || keys[0] || '';
+      keys.forEach(key => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.innerText = levels[key].toUpperCase();
+        opt.selected = key === currentEmissionKey;
+        emissionWidget.appendChild(opt);
+      });
+    }
+
+       // ========================================================
+    // UPDATE: NEW LIGHTWEIGHT CROSS-PLATFORM MAPPING ROUTINE
+    // PLACE THIS INSIDE INDEX.HTML INSTEAD OF THE OLD RENDER FUNCTIONS
+    // ========================================================
+    function renderActiveFaultBlocks() {
+      listContainer.innerHTML = '';
+      
+      // Pull down the active engine's code map registry
+      const engineManifest = faultCodeDatabase.engines[currentSelectorKey].code_manifest;
+      if (!engineManifest) return;
+
+      engineManifest.forEach(manifestItem => {
+        // FILTER GATEWAY: Only build codes matching the active emissions dropdown selection tier
+        if (manifestItem.emission_level !== currentEmissionKey) return;
+
+        // GLOBAL KEY LOOKUP: Pull common failure specs instantly out of our shared repository library
+        const structuralRecord = globalFaultLibrary[manifestItem.code_id];
+        if (!structuralRecord) return;
+
+        const btnNode = document.createElement('div');
+        btnNode.className = 'premium-target-btn';
+        btnNode.dataset.key = manifestItem.code_id;
+
+        const primaryId = structuralRecord.p_code !== "N/A" 
+          ? `${structuralRecord.p_code} (SPN ${structuralRecord.spn})` 
+          : `SPN ${structuralRecord.spn} // FMI ${structuralRecord.fmi}`;
+
+        btnNode.innerHTML = `
+          <div class="btn-fault-id">${primaryId}</div>
+          <div class="btn-fault-info">${structuralRecord.description}</div>
+        `;
+        
+        btnNode.onclick = () => {
+          const operationalOutputs = appRuntime.toggleFaultCode(manifestItem.code_id);
+          renderContentBlocks();
+          processOutputMatrix(operationalOutputs);
+        };
+        listContainer.appendChild(btnNode);
+      });
+    }
+
+    function renderContentBlocks() {
+      listContainer.innerHTML = '';
+      clearDisplayMatrix();
+
+      if (activeSystemMode === 'symptom') {
+        const trees = faultCodeDatabase.symptom_trees || {};
+        const entries = Object.entries(trees);
+        if (!entries.length) {
+          listContainer.textContent = 'No symptom trees are configured yet.';
+          return;
+        }
+        entries.forEach(([treeKey, tree]) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'premium-target-btn';
+          button.dataset.key = treeKey;
+          const title = document.createElement('div');
+          title.className = 'btn-fault-id';
+          title.textContent = tree.title || treeKey;
+          const info = document.createElement('div');
+          info.className = 'btn-fault-info';
+          info.textContent = 'Open step-by-step diagnostic workflow';
+          button.append(title, info);
+          button.addEventListener('click', () => {
+            Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(node => node.classList.toggle('active-node', node === button));
+            processSymptomOutputMatrix(tree);
+          });
+          listContainer.appendChild(button);
+        });
+        return;
+      }
+
+      renderActiveFaultBlocks();
+      const activeCodes = new Set(appRuntime.activeStack);
+      Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(button => {
+        button.classList.toggle('active-node', activeCodes.has(button.dataset.key));
+      });
+      const query = searchInput.value.toLowerCase().trim();
+      Array.from(listContainer.querySelectorAll('.premium-target-btn')).forEach(button => {
+        button.style.display = button.innerText.toLowerCase().includes(query) ? 'block' : 'none';
+      });
+    }
+
+    function processOutputMatrix(matrix) {
+      if (!matrix) { clearDisplayMatrix(); return; }
+      document.getElementById('circuitSegmentFrame').style.display = 'block';
+      document.getElementById('actionTargetLabel').innerText = "Probable Diagnostic Targets";
+      matrixVault.style.opacity = '1'; matrixVault.style.pointerEvents = 'auto'; matrixVault.classList.add('active-triage');
+      
+      const indicator = document.getElementById('priorityIndicator');
+      indicator.innerText = matrix.priorityCode; indicator.classList.add('alert-active');
+
+      const circuitDisplay = document.getElementById('circuitDisplay');
+      if (matrix.matchedCircuits.length > 0) {
+        circuitDisplay.innerHTML = matrix.matchedCircuits.map(c => `<div style="color: var(--nitrogen-amber); margin-bottom: 4px; font-weight: 800;">${c.name}</div><div style="font-size: 13px; color: var(--text-bright); font-weight: normal;">${c.triage_tip}</div>`).join('<br/>');
+      } else {
+        circuitDisplay.innerHTML = `<span style="color: var(--text-muted); font-weight: normal; font-size: 14px;">No circuit intersections located for this fault sequence.</span>`;
+      }
+      document.getElementById('culpritDisplayList').innerHTML = (matrix.inferredCulprits || []).map(txt => `<li>${txt}</li>`).join('');
+      document.getElementById('diagnosticStepsDisplay').innerHTML = (matrix.diagnosticSteps || []).map(step => `<li>${step}</li>`).join('');
+      document.getElementById('diagnosticStepsSegment').style.display = matrix.diagnosticSteps?.length ? 'block' : 'none';
+      document.getElementById('toolLinkManifestContainer').innerHTML = (matrix.allocatedTools || []).map(tool => `<a href="${tool.affiliate_url}" target="_blank" rel="noopener noreferrer" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>`).join('');
+    }
+
+    function processSymptomOutputMatrix(tree) {
+      document.getElementById('circuitSegmentFrame').style.display = 'none'; 
+      document.getElementById('actionTargetLabel').innerText = "Step-By-Step Triage Execution Path";
+      matrixVault.style.opacity = '1'; matrixVault.style.pointerEvents = 'auto'; matrixVault.classList.add('active-triage');
+      
+      const indicator = document.getElementById('priorityIndicator');
+      indicator.innerText = tree.triage_priority; indicator.classList.add('alert-active');
+      
+      document.getElementById('culpritDisplayList').innerHTML = tree.steps.map(step => `<li>${step}</li>`).join('');
+      document.getElementById('toolLinkManifestContainer').innerHTML = (tree.required_tools || []).map(tId => {
+        const tool = faultCodeDatabase.tools[tId];
+        return tool ? `<a href="${tool.affiliate_url}" target="_blank" rel="noopener noreferrer" class="premium-affiliate-anchor">🛠️ ${tool.name}</a>` : '';
+      }).join('');
+    }
+
+    function clearDisplayMatrix() {
+      matrixVault.style.opacity = '0.25'; matrixVault.style.pointerEvents = 'none'; matrixVault.classList.remove('active-triage');
+      const indicator = document.getElementById('priorityIndicator');
+      indicator.innerText = 'SYSTEM RUNNING MONITOR'; indicator.classList.remove('alert-active');
+      document.getElementById('circuitDisplay').innerHTML = '';
+      document.getElementById('culpritDisplayList').innerHTML = '';
+      document.getElementById('diagnosticStepsDisplay').innerHTML = '';
+      document.getElementById('diagnosticStepsSegment').style.display = 'none';
+      document.getElementById('toolLinkManifestContainer').innerHTML = '';
+    }
+
+    // FIRST LAUNCH INITIALIZATION
+    populateEmissionDropdown();
+    renderContentBlocks();
+  </script>
+</body>
+</html>
+
+

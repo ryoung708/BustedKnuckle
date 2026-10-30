@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import {workflows,createSession,recordStep,evaluateSession,exportSession} from "../js/diagnostic-engine.js";
+assert.ok(Object.keys(workflows).length>=8);
+const s=createSession({workflowId:"j1939_dropout",make:"Example"});
+assert.equal(evaluateSession(s).status,"in-progress");
+recordStep(s,0,{choice:"Multiple modules offline",notes:"baseline"});
+assert.equal(s.entries.baseline.choice,"Multiple modules offline");
+recordStep(s,1,{choice:"Both legs collapse / drop out",measurements:{canH:"0.4V",canL:"0.3V"}});
+assert.match(evaluateSession(s).nextActions.join(" "),/add-on network devices/i);
+assert.match(exportSession(s),/"schemaVersion": 1/);
+const last=workflows.j1939_dropout.steps.length-1;
+recordStep(s,last,{choice:"Repair verified under original conditions"});
+assert.equal(evaluateSession(s).status,"ready-for-review");
+console.log("Diagnostic engine tests passed.");

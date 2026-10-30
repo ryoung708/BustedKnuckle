@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate:faults": "node scripts/validate-fault-library.mjs"
+    "validate:faults": "node scripts/validate-fault-library.mjs",
+    "test:diagnostics": "node scripts/test-diagnostic-engine.mjs"
   }
 }
