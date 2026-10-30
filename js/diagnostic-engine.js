@@ -148,9 +148,13 @@ export function evaluateSession(session) {
   else if(answer.toLowerCase().includes("unconfirmed") || answer.toLowerCase().includes("uncertain")) result.nextActions.push("Do not close the case as diagnosed. Identify the missing measurement, vehicle specification or repeatability evidence.");
   else result.nextActions.push("Continue to the next workflow stage. Change one variable at a time and record actual readings and test conditions.");
   if(completed.length===flow.steps.length && latest.terminal) {
-    result.status="ready-for-review";
-    result.headline="Investigation ready for technician review";
-    result.nextActions=["Review every observation and measurement. Mark the cause confirmed only when physical or test evidence supports it and the original complaint has been re-tested."];
+    const finalAnswer=String(session.entries[latest.id]?.choice||"").toLowerCase();
+    const verified=finalAnswer.includes("verified") || finalAnswer.includes("no longer occurs");
+    result.status=verified ? "ready-for-review" : "needs-more-evidence";
+    result.headline=verified ? "Repair verification recorded — technician review required" : "Investigation complete — cause or repair still unconfirmed";
+    result.nextActions=verified
+      ? ["Review every observation and measurement. Confirm that the original complaint was re-tested under the same conditions and no related faults returned."]
+      : ["Do not label this case as a confirmed repair. Identify the missing evidence, complete the repair verification, or document why the cause remains unknown."];
   }
   return result;
 }
