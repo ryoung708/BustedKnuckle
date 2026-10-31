@@ -4,13 +4,92 @@
 :root{color-scheme:dark;--bg:#090b0e;--panel:#11171d;--raised:#1a232c;--line:#354250;--amber:#ff9f1c;--text:#f1f4f7;--muted:#a2afbc;--green:#70c69a;--blue:#69b7e8}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#ff9f1c13,transparent 40%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}.wrap{width:min(1100px,100%);margin:auto;padding:18px 20px 50px}.top{display:flex;justify-content:space-between;gap:12px;padding:8px 0 18px;border-bottom:1px solid var(--line)}.brand{font-size:13px;font-weight:950;letter-spacing:.15em}.brand span,.eyebrow{color:var(--amber)}a{color:inherit}.back{font-size:12px;color:var(--muted);text-decoration:none}.hero{padding:32px 0 20px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.04;margin:8px 0}.hero p{max-width:680px;color:var(--muted);line-height:1.6;margin:0}.layout{display:grid;grid-template-columns:255px minmax(0,1fr);gap:15px}.list,.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px}.choice{display:block;width:100%;text-align:left;padding:13px;margin-bottom:7px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--text);cursor:pointer}.choice.active{border-color:var(--amber);background:#ff9f1c18}.choice b{display:block;font-size:13px}.choice small{display:block;margin-top:4px;color:var(--muted);line-height:1.4}.panel{padding:20px}.panel h2{font-size:23px;margin:6px 0}.intro{color:var(--muted);font-size:13px;line-height:1.5}.diagram{margin:17px 0;padding:12px;border:1px solid var(--line);border-radius:9px;background:#0c1217}.diagram svg{width:100%;height:auto;display:block;max-height:260px}.note{font-size:11px;color:var(--muted);line-height:1.5}.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fact{padding:12px;background:var(--raised);border:1px solid var(--line);border-radius:8px}.fact b{font-size:12px}.fact p{font-size:12px;line-height:1.5;color:var(--muted);margin:5px 0 0}.tip{margin-top:13px;padding:13px;border-left:3px solid var(--green);background:#70c69a12;border-radius:5px;font-size:12px;line-height:1.55}.tip.warn{border-color:var(--amber);background:#ff9f1c12}.quiz{margin-top:17px;padding-top:14px;border-top:1px solid var(--line)}.quiz h3{font-size:14px}.answers{display:flex;flex-wrap:wrap;gap:8px}.answers button,.tab{padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--text);cursor:pointer;font-size:11px}.feedback{min-height:24px;color:var(--muted);font-size:12px;line-height:1.5;margin-top:9px}.tabs{display:flex;gap:7px;overflow:auto;margin:0 0 14px}.tab.active{border-color:var(--amber);color:var(--amber)}.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.action{padding:11px 13px;border:1px solid #ff9f1c88;border-radius:7px;color:var(--amber);text-decoration:none;font-size:11px;font-weight:900;text-transform:uppercase}@media(max-width:720px){.wrap{padding:13px}.layout{grid-template-columns:1fr}.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.choice{margin:0;padding:10px}.panel{padding:14px}.facts{grid-template-columns:1fr}}:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
 
 .learning-path{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:0 0 16px}.path-step{padding:10px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}.path-step b{display:block;color:var(--amber);font-size:10px;letter-spacing:.08em;text-transform:uppercase}.path-step span{display:block;margin-top:4px;color:var(--muted);font-size:11px;line-height:1.35}.simulator{margin:16px 0;padding:18px;background:linear-gradient(135deg,#171f27,#0e1318);border:1px solid #a85e16;border-radius:12px}.simulator h2{margin:0 0 6px;font-size:19px}.simulator>p{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}.sim-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.sim-controls label{display:block;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.sim-controls select{display:block;width:100%;margin-top:6px;padding:10px;background:var(--raised);border:1px solid var(--line);border-radius:7px;color:var(--text)}.sim-readout{display:flex;align-items:center;gap:14px;margin-top:12px;padding:13px;background:#090d11;border:1px solid var(--line);border-radius:8px}.meter-face{flex:none;min-width:112px;padding:12px;border:2px solid #69b7e8;border-radius:9px;background:#10202a;text-align:center}.meter-face small{display:block;color:#9bc9e6;font-size:9px;font-weight:900;letter-spacing:.1em}.meter-face strong{display:block;margin-top:5px;color:#fff;font-size:20px}.sim-explain{color:var(--muted);font-size:12px;line-height:1.5}.sim-warning{margin-top:10px;color:#ffca7a;font-size:11px;line-height:1.5}.verify-panel{margin-top:13px;padding:12px;border-left:3px solid var(--green);background:#70c69a12;border-radius:5px;color:var(--muted);font-size:12px;line-height:1.5}@media(max-width:720px){.learning-path{grid-template-columns:repeat(2,minmax(0,1fr))}.sim-controls{grid-template-columns:1fr}.sim-readout{align-items:flex-start;flex-direction:column}}
+
+/* Interactive circuit bench */
+.bench{margin:18px 0;padding:18px;background:linear-gradient(135deg,#17212a,#0b1116);border:1px solid #a85e16;border-radius:12px}
+.bench h2{font-size:21px;margin:4px 0 6px}.bench p{font-size:12px;line-height:1.55;color:var(--muted)}
+.bench-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.bench-controls label{display:block;color:var(--muted);font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.07em}
+.bench select{display:block;width:100%;margin-top:6px;padding:10px;background:var(--raised);border:1px solid var(--line);border-radius:7px;color:var(--text)}
+.circuit-board{margin-top:12px;padding:10px;background:#080d11;border:1px solid var(--line);border-radius:9px}
+.circuit-board svg{width:100%;height:auto;display:block;max-height:390px}
+.wire{fill:none;stroke:#668276;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.wire.live{stroke:#70c69a;filter:drop-shadow(0 0 4px #70c69a88)}
+.wire.fault{stroke:#ff9f1c;stroke-dasharray:9 7}
+.part{fill:#1a2630;stroke:#69b7e8;stroke-width:2}
+.part-label{fill:#f1f4f7;font-size:15px;font-weight:800;text-anchor:middle}
+.sub-label{fill:#a2afbc;font-size:11px;text-anchor:middle}
+.probe-point{cursor:pointer;fill:#111a22;stroke:#e6edf4;stroke-width:3}
+.probe-point:hover{stroke:#ff9f1c;stroke-width:5}
+.probe-point.red{stroke:#ff6868;stroke-width:5}.probe-point.black{stroke:#69b7e8;stroke-width:5}
+.bench-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px}
+.bench-legend span{display:flex;align-items:center;gap:5px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;background:#70c69a}.dot.red{background:#ff6868}.dot.blue{background:#69b7e8}.dot.amber{background:#ff9f1c}
+.bench-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bench-actions button{padding:9px 12px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--text);cursor:pointer;font-size:11px}
+.bench-actions button.active{border-color:var(--amber);color:var(--amber)}
+.meter-console{display:grid;grid-template-columns:160px minmax(0,1fr);gap:12px;margin-top:12px}
+.virtual-meter{padding:14px;border:2px solid #69b7e8;border-radius:10px;background:#10202a;text-align:center}
+.virtual-meter small{display:block;color:#9bc9e6;font-size:9px;font-weight:900;letter-spacing:.1em}
+.virtual-meter strong{display:block;font-size:26px;margin:8px 0;color:#fff;font-variant-numeric:tabular-nums}
+.meter-console .explain{padding:12px;background:#0a1015;border:1px solid var(--line);border-radius:8px;color:var(--muted);font-size:12px;line-height:1.55}
+.bench-status{margin-top:10px;padding:11px;border-left:3px solid var(--green);background:#70c69a12;color:var(--muted);font-size:12px;line-height:1.5}
+.bench-status.warn{border-color:var(--amber);background:#ff9f1c12}
+@media(max-width:720px){.bench-controls{grid-template-columns:1fr}.meter-console{grid-template-columns:1fr}.circuit-board svg{min-width:620px}.circuit-board{overflow-x:auto}}
+
 </style></head><body><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./index.html">← Back to workspace</a></header>
 <section class="hero"><div class="eyebrow">Technician learning • visual first</div><h1>See the circuit.<br>Understand the test.</h1><p>Short, practical lessons for the bay. Pick a topic, study the diagram, then check your understanding. No textbook required.</p></section>
 <section class="learning-path" aria-label="IronKnuckle lesson method"><div class="path-step"><b>01 Understand</b><span>How the circuit or system works</span></div><div class="path-step"><b>02 Set up</b><span>Tools, safety and test conditions</span></div><div class="path-step"><b>03 Test</b><span>Where and how to measure</span></div><div class="path-step"><b>04 Interpret</b><span>What the evidence supports</span></div><div class="path-step"><b>05 Verify</b><span>Confirm the fault and repair</span></div></section>
 <nav class="tabs"><button class="tab active" data-filter="all">All</button><button class="tab" data-filter="circuits">Circuit basics</button><button class="tab" data-filter="meter">Meter skills</button><button class="tab" data-filter="testing">Testing tips</button></nav>
 <div class="layout"><aside class="list" id="lessonList"></aside><main class="panel" id="lessonPanel" aria-live="polite"></main></div>
-<section class="simulator" aria-labelledby="simTitle"><div class="eyebrow">Hands-on practice • simulated only</div><h2 id="simTitle">Voltage-drop test simulator</h2><p>Change the circuit condition and move the virtual probes. Watch how the example meter response changes. This is a teaching model—not a vehicle specification or a substitute for an OEM procedure.</p><div class="sim-controls"><label for="simLoad">Circuit condition<select id="simLoad"><option value="loaded">Operating under load</option><option value="off">Circuit off / no load</option></select></label><label for="simFault">Example connection<select id="simFault"><option value="sound">Sound connection</option><option value="resistive">Connection with added resistance</option></select></label><label for="simProbe">Probe placement<select id="simProbe"><option value="connection">Across the connection</option><option value="feed">Across the full feed path</option><option value="battery">Across the battery source</option></select></label></div><div class="sim-readout" aria-live="polite"><div class="meter-face"><small>SIMULATED METER</small><strong id="simValue">LOW DROP</strong></div><div class="sim-explain" id="simExplain">With the circuit loaded, the example connection shows a low voltage drop.</div></div><div class="sim-warning">Training note: “low” and “elevated” are qualitative teaching labels only. Actual readings depend on circuit design, current, test points, conditions and OEM limits. Never use this simulation as a pass/fail threshold.</div><div class="verify-panel"><b>Verification habit:</b> If a test points toward a connection, inspect it, test the relevant sections under the specified conditions, repair only what evidence supports, then repeat the original test to verify the result.</div></section>
+
+<section class="bench" aria-labelledby="benchTitle">
+ <div class="eyebrow">Interactive training bench • simulated only</div>
+ <h2 id="benchTitle">Build a fault. Test the circuit.</h2>
+ <p>Choose a fault, switch the circuit on, then select meter mode and place the virtual probes on the diagram. Watch the circuit and meter respond. All values are illustrative training examples—not vehicle specifications.</p>
+ <div class="bench-controls">
+  <label for="benchFault">Insert a fault
+   <select id="benchFault"><option value="good">Healthy circuit</option><option value="open">Open feed wire</option><option value="resistive">High resistance at connection</option><option value="ground">Poor ground connection</option><option value="fuse">Open fuse</option><option value="short">Short to ground (fuse opens)</option></select>
+  </label>
+  <label for="benchSwitch">Circuit switch
+   <select id="benchSwitch"><option value="on">ON — operating</option><option value="off">OFF</option></select>
+  </label>
+  <label for="benchMode">Meter mode
+   <select id="benchMode"><option value="voltage">DC voltage</option><option value="resistance">Resistance (isolated circuit)</option><option value="continuity">Continuity (isolated circuit)</option></select>
+  </label>
+ </div>
+ <div class="circuit-board">
+  <svg viewBox="0 0 760 370" role="img" aria-label="Interactive simplified 12 volt battery, fuse, switch, lamp and ground circuit. Select circular test points to place meter probes.">
+   <defs><filter id="lampGlow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+   <path id="feedA" class="wire" d="M115 145 H190"/><path id="feedB" class="wire" d="M260 145 H330"/><path id="feedC" class="wire" d="M405 145 H525"/>
+   <path id="returnA" class="wire" d="M585 205 V275 H115 V205"/>
+   <rect class="part" x="35" y="115" width="80" height="90" rx="9"/><text class="part-label" x="75" y="151">12V</text><text class="sub-label" x="75" y="173">BATTERY</text><text class="sub-label" x="75" y="190">SOURCE</text>
+   <rect class="part" x="190" y="120" width="70" height="50" rx="7"/><path d="M201 145 H249" stroke="#ff9f1c" stroke-width="5"/><text class="sub-label" x="225" y="190">FUSE</text>
+   <circle cx="330" cy="145" r="6" fill="#ff9f1c"/><circle cx="405" cy="145" r="6" fill="#ff9f1c"/><path id="switchBlade" d="M330 145 L397 111" stroke="#ff9f1c" stroke-width="6" stroke-linecap="round"/><text class="sub-label" x="367" y="190">SWITCH</text>
+   <rect class="part" x="525" y="115" width="120" height="90" rx="9"/><circle id="lampBulb" cx="585" cy="155" r="24" fill="#29343e" stroke="#ff9f1c" stroke-width="3"/><path d="M569 139 L601 171 M601 139 L569 171" stroke="#ffca7a" stroke-width="3"/><text class="sub-label" x="585" y="226">LAMP / LOAD</text>
+   <path d="M550 275 H620 M560 286 H610 M572 297 H598" stroke="#a2afbc" stroke-width="4" stroke-linecap="round"/><text class="sub-label" x="585" y="324">GROUND RETURN</text>
+   <text x="380" y="42" fill="#a2afbc" font-size="13" text-anchor="middle">Select a test point to place the active probe</text>
+   <g id="testPoints">
+    <circle class="probe-point" data-point="battery" cx="115" cy="145" r="10"/><text class="sub-label" x="115" y="105">A • B+</text>
+    <circle class="probe-point" data-point="fuse" cx="260" cy="145" r="10"/><text class="sub-label" x="260" y="105">B • FUSE OUT</text>
+    <circle class="probe-point" data-point="switch" cx="405" cy="145" r="10"/><text class="sub-label" x="405" y="85">C • SWITCH OUT</text>
+    <circle class="probe-point" data-point="load" cx="525" cy="145" r="10"/><text class="sub-label" x="525" y="105">D • LOAD FEED</text>
+    <circle class="probe-point" data-point="ground" cx="585" cy="275" r="10"/><text class="sub-label" x="665" y="279">E • GROUND</text>
+    <circle class="probe-point" data-point="negative" cx="115" cy="275" r="10"/><text class="sub-label" x="115" y="305">F • B−</text>
+   </g>
+   <text id="lampState" x="585" y="355" fill="#a2afbc" font-size="12" text-anchor="middle">LAMP OFF</text>
+  </svg>
+  <div class="bench-legend"><span><i class="dot"></i> Normal path</span><span><i class="dot amber"></i> Fault area</span><span><i class="dot red"></i> Red probe</span><span><i class="dot blue"></i> Black probe</span></div>
+ </div>
+ <div class="bench-actions"><button type="button" id="selectRed" class="active">Place RED probe</button><button type="button" id="selectBlack">Place BLACK probe</button><button type="button" id="resetProbes">Reset probe positions</button></div>
+ <div class="meter-console" aria-live="polite">
+  <div class="virtual-meter"><small>VIRTUAL METER</small><strong id="benchReading">12.6 V</strong><small id="benchMeterMode">DC VOLTS</small></div>
+  <div class="explain" id="benchExplain">Healthy example: the lamp has a complete path. Select two test points to measure the potential difference between them.</div>
+ </div>
+ <div class="bench-status" id="benchStatus">Training task: introduce a fault, then use the meter to find which section is affected.</div>
+ <p class="note">Safety and scope: this is a simplified low-voltage teaching model. The short-to-ground option represents a protective fuse opening in the simulation; it does not model real fault energy. Never use simulated values as pass/fail limits or apply this diagram to a vehicle without its wiring diagram and OEM procedure. Resistance/continuity modes are disabled for energized conditions.</p>
+</section>
 <div class="links"><a class="action" href="./diagnostics.html">Diagnostic Command Center →</a><a class="action" href="./wiringhound.html">WiringHound →</a></div></div>
 <script>
 const lessons=[
@@ -24,9 +103,54 @@ const lessons=[
 let active="basic",filter="all";const list=document.getElementById("lessonList"),panel=document.getElementById("lessonPanel");
 function render(){list.innerHTML="";lessons.filter(x=>filter==="all"||x.cat===filter).forEach(x=>{const b=document.createElement("button");b.className="choice"+(x.id===active?" active":"");b.innerHTML="<b>"+x.title+"</b><small>"+x.desc+"</small>";b.onclick=()=>{active=x.id;render()};list.appendChild(b)});const l=lessons.find(x=>x.id===active);panel.innerHTML='<div class="eyebrow">'+l.cat.toUpperCase()+'</div><h2>'+l.title+'</h2><p class="intro">'+l.intro+'</p><div class="diagram">'+l.svg+'<p class="note">Simplified educational illustration. Use the correct vehicle wiring diagram and OEM procedure for actual testing.</p></div><div class="facts">'+l.facts.map(x=>'<div class="fact"><b>'+x[0]+'</b><p>'+x[1]+'</p></div>').join("")+'</div><div class="tip '+(l.cat==="meter"||l.cat==="testing"?"warn":"")+'">'+l.tip+'</div><section class="quiz"><h3>'+l.q+'</h3><div class="answers">'+l.a.map((x,i)=>'<button data-a="'+i+'">'+x+'</button>').join("")+'</div><div class="feedback" id="feedback">Quick check: choose an answer.</div></section>';panel.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const ok=Number(b.dataset.a)===l.correct;const f=document.getElementById("feedback");f.textContent=(ok?"Correct. ":"Not quite. ")+l.why;f.style.color=ok?"#70c69a":"#ffb34d"})}
 
-const simLoad=document.getElementById("simLoad"),simFault=document.getElementById("simFault"),simProbe=document.getElementById("simProbe");
-function updateSimulator(){const load=simLoad.value,fault=simFault.value,probe=simProbe.value;const value=document.getElementById("simValue"),explain=document.getElementById("simExplain");if(load==="off"){value.textContent="NO LOAD";explain.textContent="This example cannot demonstrate loaded voltage drop with the circuit off. Restore the specified operating condition before interpreting a loaded test.";}else if(probe==="battery"){value.textContent="SOURCE REF";explain.textContent="These probes are across the battery source in this simplified model. This does not isolate voltage lost across the connection.";}else if(probe==="feed"&&fault==="resistive"){value.textContent="ELEVATED";explain.textContent="The simulated added resistance contributes to voltage loss across the feed path. Narrow the test to smaller sections to localize it.";}else if(probe==="feed"){value.textContent="LOW DROP";explain.textContent="The example feed path has no added resistance. A real result still needs comparison with the applicable OEM procedure and limits.";}else if(fault==="resistive"){value.textContent="ELEVATED";explain.textContent="The probes span the example connection with added resistance while current flows. This implicates the connection area; it does not identify the exact failed part.";}else{value.textContent="LOW DROP";explain.textContent="The example connection has low voltage loss under this simulated load. Confirm actual test points, current and OEM criteria on the vehicle."}}
-[simLoad,simFault,simProbe].forEach(control=>control.addEventListener("change",updateSimulator));updateSimulator();
+const benchFault=document.getElementById("benchFault"),benchSwitch=document.getElementById("benchSwitch"),benchMode=document.getElementById("benchMode");
+let activeProbe="red",probeRed="battery",probeBlack="negative";
+const nodeNames={battery:"Battery positive",fuse:"Fuse output",switch:"Switch output",load:"Load feed",ground:"Ground return",negative:"Battery negative"};
+function benchModel(){
+ const fault=benchFault.value,on=benchSwitch.value==="on",mode=benchMode.value;
+ const fuseOpen=fault==="fuse"||fault==="short",energized=on&&!fuseOpen;
+ const volts={battery:12.6, fuse:12.6, switch:12.6, load:12.6, ground:0, negative:0};
+ if(fault==="open"){volts.switch=0;volts.load=0}
+ if(fault==="resistive"){volts.switch=10.1;volts.load=10.1}
+ if(fault==="ground"){volts.ground=2.5}
+ if(fuseOpen){volts.fuse=0;volts.switch=0;volts.load=0}
+ if(!energized){Object.keys(volts).forEach(k=>{if(k!=="battery")volts[k]=0})}
+ const lampOn=energized&&fault==="good";
+ document.getElementById("lampBulb").setAttribute("fill",lampOn?"#ffca7a":"#29343e");
+ document.getElementById("lampBulb").setAttribute("filter",lampOn?"url(#lampGlow)":"");
+ document.getElementById("lampState").textContent=lampOn?"LAMP ON — HEALTHY EXAMPLE":(fault==="short"?"FUSE OPENED — LAMP OFF":"LAMP OFF");
+ ["feedA","feedB","feedC","returnA"].forEach(id=>{const el=document.getElementById(id);el.classList.toggle("live",energized&&fault==="good");el.classList.toggle("fault",(fault==="open"&&id==="feedB")||(fault==="resistive"&&id==="feedB")||(fault==="ground"&&id==="returnA")||(fuseOpen&&id==="feedA"))});
+ document.getElementById("switchBlade").setAttribute("d",on?"M330 145 L397 145":"M330 145 L397 111");
+ const activePoints=document.querySelectorAll(".probe-point");
+ activePoints.forEach(p=>{p.classList.toggle("red",p.dataset.point===probeRed);p.classList.toggle("black",p.dataset.point===probeBlack)});
+ const status=document.getElementById("benchStatus"),reading=document.getElementById("benchReading"),explain=document.getElementById("benchExplain");
+ if(mode!=="voltage"&&on){reading.textContent="—";document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";status.className="bench-status warn";status.textContent="Safety interlock: switch the simulated circuit OFF before using resistance or continuity mode.";explain.textContent="Resistance and continuity measurements are only meaningful on a de-energized, appropriately isolated circuit. Turn the simulated switch off to continue.";return}
+ if(mode==="voltage"){
+  document.getElementById("benchMeterMode").textContent="DC VOLTS";
+  if(!on){reading.textContent="0.0 V";explain.textContent="Circuit switch is OFF. This voltage reading is not a loaded voltage-drop test."}
+  else{const delta=Math.abs(volts[probeRed]-volts[probeBlack]);reading.textContent=delta.toFixed(1)+" V";explain.textContent="Red probe: "+nodeNames[probeRed]+". Black probe: "+nodeNames[probeBlack]+". The meter displays the potential difference between those selected points in this simplified model."}
+ }else{
+  document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
+  const pair=[probeRed,probeBlack].sort().join("-");
+  let ohms="OL",continuity="OPEN";
+  if(pair==="battery-fuse"||pair==="fuse-switch"||pair==="load-switch"){ohms="0.2 Ω";continuity="BEEP"}
+  if(pair==="ground-negative"){ohms=fault==="ground"?"4.8 Ω":"0.1 Ω";continuity=fault==="ground"?"HIGH RESISTANCE":"BEEP"}
+  if(fault==="open"&&(pair==="fuse-switch"||pair==="load-switch")){ohms="OL";continuity="OPEN"}
+  if(fault==="resistive"&&(pair==="fuse-switch"||pair==="load-switch")){ohms="1.5 Ω";continuity="BEEP"}
+  if(fuseOpen&&(pair==="battery-fuse"||pair==="fuse-switch")){ohms="OL";continuity="OPEN"}
+  reading.textContent=mode==="resistance"?ohms:continuity;
+  explain.textContent="Illustrative isolated-circuit example between "+nodeNames[probeRed]+" and "+nodeNames[probeBlack]+". Actual continuity/resistance depends on isolation, parallel paths, meter and circuit design.";
+ }
+ status.className="bench-status";
+ const faultText={good:"Healthy circuit selected. Try measuring across the load, then introduce a fault and compare.",open:"Open feed selected. The break is between the fuse output and switch output; use test points to localize the interrupted path.",resistive:"Added resistance selected at the feed connection. Under load, voltage is lost across that section; a continuity beep alone may not reveal its effect.",ground:"Poor ground selected. The return side is elevated in this teaching model; compare the load ground with battery negative under load.",fuse:"Open fuse selected. The downstream circuit is de-energized in this model; verify protection and downstream condition before replacing a real fuse.",short:"Short-to-ground scenario selected. The simulated protective fuse opens and the lamp goes out; real short-circuit behavior depends on protection and circuit design."};
+ status.textContent=faultText[fault]+(on?"":" Switch is OFF, so loaded voltage-drop conclusions do not apply.");
+}
+document.querySelectorAll(".probe-point").forEach(point=>point.addEventListener("click",()=>{if(activeProbe==="red")probeRed=point.dataset.point;else probeBlack=point.dataset.point;benchModel()}));
+document.getElementById("selectRed").addEventListener("click",()=>{activeProbe="red";document.getElementById("selectRed").classList.add("active");document.getElementById("selectBlack").classList.remove("active")});
+document.getElementById("selectBlack").addEventListener("click",()=>{activeProbe="black";document.getElementById("selectBlack").classList.add("active");document.getElementById("selectRed").classList.remove("active")});
+document.getElementById("resetProbes").addEventListener("click",()=>{probeRed="battery";probeBlack="negative";benchModel()});
+[benchFault,benchSwitch,benchMode].forEach(el=>el.addEventListener("change",benchModel));
+benchModel();
 
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t===b));const first=lessons.find(x=>filter==="all"||x.cat===filter);if(first)active=first.id;render()});render();
 </script></body></html>
