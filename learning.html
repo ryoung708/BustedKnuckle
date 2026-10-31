@@ -17,6 +17,8 @@
 .wire.live{stroke:#70c69a;filter:drop-shadow(0 0 4px #70c69a88)}
 .wire.fault{stroke:#ff9f1c;stroke-dasharray:9 7}
 .part{fill:#1a2630;stroke:#69b7e8;stroke-width:2}
+.part.fault{stroke:#ff6868;stroke-width:4;filter:drop-shadow(0 0 5px #ff686888)}
+#fuseElement.fault{stroke:#ff6868;stroke-dasharray:5 5;stroke-width:4}
 .part-label{fill:#f1f4f7;font-size:15px;font-weight:800;text-anchor:middle}
 .sub-label{fill:#a2afbc;font-size:11px;text-anchor:middle}
 .probe-point{cursor:pointer;fill:#111a22;stroke:#e6edf4;stroke-width:3}
@@ -75,7 +77,7 @@
    <path id="feedA" class="wire" d="M115 145 H190"/><path id="feedB" class="wire" d="M260 145 H330"/><path id="feedC" class="wire" d="M405 145 H525"/>
    <path id="returnA" class="wire" d="M585 205 V275 H115 V205"/>
    <rect class="part" x="35" y="115" width="80" height="190" rx="9"/><text x="75" y="144" fill="#70c69a" font-size="22" font-weight="950" text-anchor="middle">+</text><text class="part-label" x="75" y="166">12V</text><text class="sub-label" x="75" y="190">BATTERY</text><text x="75" y="245" fill="#69b7e8" font-size="22" font-weight="950" text-anchor="middle">−</text><text class="sub-label" x="75" y="266">NEGATIVE</text>
-   <rect class="part" x="190" y="120" width="70" height="50" rx="7"/><path d="M201 145 H249" stroke="#ff9f1c" stroke-width="5"/><text class="sub-label" x="225" y="190">FUSE</text>
+   <rect id="fuseBody" class="part" x="190" y="120" width="70" height="50" rx="7"/><path id="fuseElement" d="M201 145 H249" stroke="#ff9f1c" stroke-width="5"/><text class="sub-label" x="225" y="190">FUSE</text>
    <circle cx="330" cy="145" r="6" fill="#ff9f1c"/><circle cx="405" cy="145" r="6" fill="#ff9f1c"/><path id="switchBlade" d="M330 145 L397 111" stroke="#ff9f1c" stroke-width="6" stroke-linecap="round"/><text class="sub-label" x="367" y="190">SWITCH</text>
    <rect class="part" x="525" y="115" width="120" height="90" rx="9"/><circle id="lampBulb" cx="585" cy="155" r="24" fill="#29343e" stroke="#ff9f1c" stroke-width="3"/><path d="M569 139 L601 171 M601 139 L569 171" stroke="#ffca7a" stroke-width="3"/><text class="sub-label" x="585" y="226">LAMP / LOAD</text>
    <path d="M550 275 H620 M560 286 H610 M572 297 H598" stroke="#a2afbc" stroke-width="4" stroke-linecap="round"/><text class="sub-label" x="585" y="324">GROUND RETURN</text>
@@ -194,10 +196,12 @@ function benchModel(){
  let totalCurrent=0, lampVoltage=0,groundDrop=0;
  if(on&&!fuseOpen&&fault!=="open"){
   try{
-   volts=solveNetwork(resistors,{battery:12.6,negative:0});
-   totalCurrent=(volts.load-volts.loadOut)/3.0;
-   lampVoltage=volts.load-volts.loadOut;
-   groundDrop=volts.loadOut-volts.ground;
+   // A detached battery-negative cable leaves no closed source loop.
+   // The connected vehicle-side nodes float toward B+, but carry no current.
+   volts=solveNetwork(resistors,batteryIsolated?{battery:12.6}:{battery:12.6,negative:0});
+   totalCurrent=batteryIsolated?0:(volts.load-volts.loadOut)/3.0;
+   lampVoltage=batteryIsolated?0:(volts.load-volts.loadOut);
+   groundDrop=batteryIsolated?0:(volts.loadOut-volts.ground);
   }catch(_){ }
  }else{
   // Unpowered downstream nodes are not assigned an artificial live voltage.
@@ -213,9 +217,9 @@ function benchModel(){
  ["feedA","feedB","feedC","returnA"].forEach(id=>{
   const el=document.getElementById(id);
   el.classList.toggle("live",on&&totalCurrent>0);
-  el.classList.toggle("fault",(fault==="open"&&id==="feedB")||(fault==="resistive"&&id==="feedB")||(fault==="ground"&&id==="returnA")||(fuseOpen&&id==="feedA"));
+  el.classList.toggle("fault",(fault==="open"&&id==="feedB")||(fault==="resistive"&&id==="feedB")||(fault==="ground"&&id==="returnA"));
  });
- document.getElementById("switchBlade").setAttribute("d",on?"M330 145 L397 145":"M330 145 L397 111");
+ document.getElementById("switchBlade").setAttribute("d",on?"M330 145 L397 145":"M330 145 L397 111");\n document.getElementById("fuseBody").classList.toggle("fault",fuseOpen);\n document.getElementById("fuseElement").classList.toggle("fault",fuseOpen);
  document.querySelectorAll(".probe-point").forEach(p=>{p.classList.toggle("red",p.dataset.point===probeRed);p.classList.toggle("black",p.dataset.point===probeBlack);});
  drawProbeLeads();
  const status=document.getElementById("benchStatus"),reading=document.getElementById("benchReading"),explain=document.getElementById("benchExplain");
@@ -247,7 +251,7 @@ function benchModel(){
   resistive:"Added 1.5 Ω feed connection resistance. Under load it reduces current and creates a measurable voltage drop.",
   ground:"Poor ground selected: 4.8 Ω added between load output (G) and chassis ground (H). Under load, current falls, the ground side rises above battery negative, and the lamp dims. With power isolated, G-to-H resistance measures 4.8 Ω.",
   fuse:"Open fuse selected. The downstream load is disconnected from battery positive.",
-  short:"Short-to-ground selected downstream of the fuse. The protective fuse opens in this simplified training scenario."
+  short:"Short-to-ground selected downstream of the fuse. The protective fuse is shown OPEN at the fuse itself; the upstream feed wire is not the fault. Downstream wiring remains available for isolated resistance testing."
  };
  status.textContent=faultText[fault];
 }
