@@ -16,7 +16,9 @@
 .wire{fill:none;stroke:#668276;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
 .wire.live{stroke:#70c69a;filter:drop-shadow(0 0 4px #70c69a88)}
 .wire.fault{stroke:#ff9f1c;stroke-dasharray:9 7}
-.part{fill:#1a2630;stroke:#69b7e8;stroke-width:2}\n+.part.fault{stroke:#ff6868;stroke-width:4;filter:drop-shadow(0 0 5px #ff686888)}\n+#fuseElement.fault{stroke:#ff6868;stroke-dasharray:5 5;stroke-width:4}
+.part{fill:#1a2630;stroke:#69b7e8;stroke-width:2}
+.part.fault{stroke:#ff6868;stroke-width:4;filter:drop-shadow(0 0 5px #ff686888)}
+#fuseElement.fault{stroke:#ff6868;stroke-dasharray:5 5;stroke-width:4}
 .part-label{fill:#f1f4f7;font-size:15px;font-weight:800;text-anchor:middle}
 .sub-label{fill:#a2afbc;font-size:11px;text-anchor:middle}
 .probe-point{cursor:pointer;fill:#111a22;stroke:#e6edf4;stroke-width:3}
@@ -194,10 +196,12 @@ function benchModel(){
  let totalCurrent=0, lampVoltage=0,groundDrop=0;
  if(on&&!fuseOpen&&fault!=="open"){
   try{
-   volts=solveNetwork(resistors,{battery:12.6,negative:0});
-   totalCurrent=(volts.load-volts.loadOut)/3.0;
-   lampVoltage=volts.load-volts.loadOut;
-   groundDrop=volts.loadOut-volts.ground;
+   // A detached battery-negative cable leaves no closed source loop.
+   // The connected vehicle-side nodes float toward B+, but carry no current.
+   volts=solveNetwork(resistors,batteryIsolated?{battery:12.6}:{battery:12.6,negative:0});
+   totalCurrent=batteryIsolated?0:(volts.load-volts.loadOut)/3.0;
+   lampVoltage=batteryIsolated?0:(volts.load-volts.loadOut);
+   groundDrop=batteryIsolated?0:(volts.loadOut-volts.ground);
   }catch(_){ }
  }else{
   // Unpowered downstream nodes are not assigned an artificial live voltage.
