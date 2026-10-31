@@ -63,7 +63,10 @@
    <select id="benchSwitch"><option value="on">ON — operating</option><option value="off">OFF</option></select>
   </label>
   <label for="benchMode">Meter mode
-   <select id="benchMode"><option value="voltage">DC voltage</option><option value="resistance">Resistance (isolated circuit)</option><option value="continuity">Continuity (isolated circuit)</option></select>
+   <select id="benchMode"><option value="voltage">DC voltage</option><option value="resistance">Resistance</option><option value="continuity">Continuity</option></select>
+  </label>
+  <label for="batteryIsolation">Battery negative connection
+   <select id="batteryIsolation"><option value="connected">Connected</option><option value="isolated">Disconnected — circuit isolated</option></select>
   </label>
  </div>
  <div class="circuit-board">
@@ -106,7 +109,7 @@
   <div class="explain" id="benchExplain">Healthy example: the lamp has a complete path. Select two test points to measure the potential difference between them.</div>
  </div>
  <div class="bench-status" id="benchStatus">Training task: introduce a fault, then use the meter to find which section is affected.</div>
- <p class="note">Safety and scope: this is a simplified low-voltage teaching model. The short-to-ground option represents a protective fuse opening in the simulation; it does not model real fault energy. Never use simulated values as pass/fail limits or apply this diagram to a vehicle without its wiring diagram and OEM procedure. Resistance/continuity modes are disabled for energized conditions.</p>
+ <p class="note">Safety and scope: this is a simplified low-voltage teaching model. The short-to-ground option represents a protective fuse opening in the simulation; it does not model real fault energy. Never use simulated values as pass/fail limits or apply this diagram to a vehicle without its wiring diagram and OEM procedure. Resistance/continuity modes require battery negative to be disconnected in this simulation; the switch may remain closed once the circuit is isolated.</p>
 </section>
 <div class="links"><a class="action" href="./diagnostics.html">Diagnostic Command Center →</a><a class="action" href="./wiringhound.html">WiringHound →</a></div></div>
 <script>
@@ -121,7 +124,7 @@ const lessons=[
 let active="basic",filter="all";const list=document.getElementById("lessonList"),panel=document.getElementById("lessonPanel");
 function render(){list.innerHTML="";lessons.filter(x=>filter==="all"||x.cat===filter).forEach(x=>{const b=document.createElement("button");b.className="choice"+(x.id===active?" active":"");b.innerHTML="<b>"+x.title+"</b><small>"+x.desc+"</small>";b.onclick=()=>{active=x.id;render()};list.appendChild(b)});const l=lessons.find(x=>x.id===active);panel.innerHTML='<div class="eyebrow">'+l.cat.toUpperCase()+'</div><h2>'+l.title+'</h2><p class="intro">'+l.intro+'</p><div class="diagram">'+l.svg+'<p class="note">Simplified educational illustration. Use the correct vehicle wiring diagram and OEM procedure for actual testing.</p></div><div class="facts">'+l.facts.map(x=>'<div class="fact"><b>'+x[0]+'</b><p>'+x[1]+'</p></div>').join("")+'</div><div class="tip '+(l.cat==="meter"||l.cat==="testing"?"warn":"")+'">'+l.tip+'</div><section class="quiz"><h3>'+l.q+'</h3><div class="answers">'+l.a.map((x,i)=>'<button data-a="'+i+'">'+x+'</button>').join("")+'</div><div class="feedback" id="feedback">Quick check: choose an answer.</div></section>';panel.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const ok=Number(b.dataset.a)===l.correct;const f=document.getElementById("feedback");f.textContent=(ok?"Correct. ":"Not quite. ")+l.why;f.style.color=ok?"#70c69a":"#ffb34d"})}
 
-const benchFault=document.getElementById("benchFault"),benchSwitch=document.getElementById("benchSwitch"),benchMode=document.getElementById("benchMode");
+const benchFault=document.getElementById("benchFault"),benchSwitch=document.getElementById("benchSwitch"),benchMode=document.getElementById("benchMode"),batteryIsolation=document.getElementById("batteryIsolation");
 let activeProbe="red",probeRed="battery",probeBlack="negative";
 const nodeNames={battery:"Battery positive (+)",fuseIn:"Fuse input",fuseOut:"Fuse output",switchIn:"Switch input",switch:"Switch output",load:"Load input",loadOut:"Load output",ground:"Ground return",negative:"Battery negative (−)"};
 const probeCoords={battery:[115,145],fuseIn:[190,145],fuseOut:[260,145],switchIn:[330,145],switch:[405,145],load:[525,145],loadOut:[585,205],ground:[585,275],negative:[115,275]};
@@ -137,7 +140,7 @@ function drawProbeLeads(){
  document.getElementById("activeProbeHint").textContent=(activeProbe==="red"?"RED":"BLACK")+" lead selected — click a test point.";
 }
 function benchModel(){
- const fault=benchFault.value,on=benchSwitch.value==="on",mode=benchMode.value;
+ const fault=benchFault.value,on=benchSwitch.value==="on",mode=benchMode.value,batteryIsolated=batteryIsolation.value==="isolated";
  const fuseOpen=fault==="fuse"||fault==="short";
  const volts={battery:12.6,fuseIn:12.6,fuseOut:12.6,switchIn:12.6,switch:0,load:0,loadOut:0,ground:0,negative:0};
 
@@ -159,7 +162,7 @@ function benchModel(){
   volts.loadOut=fault==="ground"?2.5:0;
   volts.ground=fault==="ground"?2.5:0;
  }
- const lampOn=on&&!fuseOpen&&fault==="good";
+ const lampOn=on&&!batteryIsolated&&!fuseOpen&&fault==="good";
  document.getElementById("lampBulb").setAttribute("fill",lampOn?"#ffca7a":"#29343e");
  document.getElementById("lampBulb").setAttribute("filter",lampOn?"url(#lampGlow)":"");
  document.getElementById("lampState").textContent=lampOn?"LAMP ON — HEALTHY EXAMPLE":(fault==="short"?"FUSE OPENED — LAMP OFF":"LAMP OFF");
@@ -175,12 +178,12 @@ function benchModel(){
  });
  drawProbeLeads();
  const status=document.getElementById("benchStatus"),reading=document.getElementById("benchReading"),explain=document.getElementById("benchExplain");
- if(mode!=="voltage"&&on){
+ if(mode!=="voltage"&&!batteryIsolated){
   reading.textContent="—";
   document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
   status.className="bench-status warn";
-  status.textContent="Safety interlock: switch the simulated circuit OFF before using resistance or continuity mode.";
-  explain.textContent="Resistance and continuity measurements are only meaningful on a de-energized, appropriately isolated circuit. Turn the simulated switch OFF to continue.";
+  status.textContent="Safety interlock: disconnect battery negative before resistance or continuity testing. The switch may remain closed after the circuit is isolated.";
+  explain.textContent="Resistance and continuity tests require a de-energized, isolated circuit. Select “Disconnected — circuit isolated” for battery negative. You can then test with the switch ON or OFF.";
   return;
  }
  if(mode==="voltage"){
@@ -190,21 +193,40 @@ function benchModel(){
   explain.textContent="Red probe: "+nodeNames[probeRed]+" ("+volts[probeRed].toFixed(1)+" V to battery negative). Black probe: "+nodeNames[probeBlack]+" ("+volts[probeBlack].toFixed(1)+" V to battery negative). Meter shows red minus black; reversing the leads reverses the sign.";
  }else{
   document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
-  const pair=[probeRed,probeBlack].sort().join("-");
-  let ohms="OL",continuity="OPEN";
-  const closedSections=["battery-fuseIn","fuseIn-fuseOut","fuseOut-switchIn","switchIn-switch","load-loadOut"];
-  if(closedSections.includes(pair)){ohms="0.2 Ω";continuity="BEEP";}
-  if(pair==="ground-negative"){ohms=fault==="ground"?"4.8 Ω":"0.1 Ω";continuity=fault==="ground"?"HIGH RESISTANCE":"BEEP";}
-  if(fault==="open"&&pair==="fuseOut-switchIn"){ohms="OL";continuity="OPEN";}
-  if(fault==="resistive"&&pair==="fuseOut-switchIn"){ohms="1.5 Ω";continuity="BEEP";}
-  if(fuseOpen&&pair==="fuseIn-fuseOut"){ohms="OL";continuity="OPEN";}
-  // The simulated short is downstream of the fuse: when isolated and
-  // de-energized, its affected load-feed point is shorted to ground.
-  if(fault==="short"&&(pair==="ground-load"||pair==="ground-loadOut"||pair==="load-ground"||pair==="loadOut-ground")){
-   ohms="0.1 Ω";continuity="BEEP";
+  // Trace connected circuit sections. The switch is the normal open point;
+  // selected faults add their own interruption or resistance.
+  const edges=[
+   ["battery","fuseIn",0.1],
+   ["fuseIn","fuseOut",fuseOpen?null:0.1],
+   ["fuseOut","switchIn",fault==="open"?null:(fault==="resistive"?1.5:0.1)],
+   ["switchIn","switch",on?0.1:null],
+   ["switch","load",0.1],
+   ["load","loadOut",3.0],
+   ["loadOut","ground",0.1],
+   ["ground","negative",batteryIsolated?null:(fault==="ground"?4.8:0.1)]
+  ];
+  if(fault==="short")edges.push(["load","ground",0.1]);
+  function measurePath(from,to){
+   if(from===to)return 0;
+   const names=Object.keys(nodeNames),dist=Object.fromEntries(names.map(n=>[n,Infinity])),visited=new Set();
+   dist[from]=0;
+   while(true){
+    let current=null;
+    for(const n of names)if(!visited.has(n)&&(current===null||dist[n]<dist[current]))current=n;
+    if(current===null||!Number.isFinite(dist[current])||current===to)break;
+    visited.add(current);
+    for(const [left,right,ohms] of edges){
+     if(ohms===null)continue;
+     const next=left===current?right:(right===current?left:null);
+     if(next!==null&&dist[current]+ohms<dist[next])dist[next]=dist[current]+ohms;
+    }
+   }
+   return dist[to];
   }
-  reading.textContent=mode==="resistance"?ohms:continuity;
-  explain.textContent="Illustrative isolated-circuit example between "+nodeNames[probeRed]+" and "+nodeNames[probeBlack]+". Short-to-ground is modeled from the downstream load feed to ground; actual readings depend on isolation and parallel paths.";
+  const ohms=measurePath(probeRed,probeBlack),hasPath=Number.isFinite(ohms);
+  const continuity=hasPath?(ohms<=5?"BEEP":"HIGH RESISTANCE"):"OPEN";
+  reading.textContent=mode==="resistance"?(hasPath?ohms.toFixed(1)+" Ω":"OL"):continuity;
+  explain.textContent="Isolated-circuit measurement from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+". "+(hasPath?ohms.toFixed(1)+" Ω measured along the connected path.":"OL — no continuous path between these points.")+" Same-point probe placement reads 0.0 Ω. The switch is the normal open point when OFF; selected faults add their own interruption or resistance. Continuity threshold is illustrative, not universal."
  }
  status.className="bench-status";
  const faultText={
@@ -221,7 +243,7 @@ document.querySelectorAll(".probe-point").forEach(point=>point.addEventListener(
 document.getElementById("selectRed").addEventListener("click",()=>{activeProbe="red";document.getElementById("selectRed").classList.add("active");document.getElementById("selectBlack").classList.remove("active")});
 document.getElementById("selectBlack").addEventListener("click",()=>{activeProbe="black";document.getElementById("selectBlack").classList.add("active");document.getElementById("selectRed").classList.remove("active");drawProbeLeads()});
 document.getElementById("resetProbes").addEventListener("click",()=>{probeRed="battery";probeBlack="negative";benchModel()});
-[benchFault,benchSwitch,benchMode].forEach(el=>el.addEventListener("change",benchModel));
+[benchFault,benchSwitch,benchMode,batteryIsolation].forEach(el=>el.addEventListener("change",benchModel));
 benchModel();
 
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t===b));const first=lessons.find(x=>filter==="all"||x.cat===filter);if(first)active=first.id;render()});render();
