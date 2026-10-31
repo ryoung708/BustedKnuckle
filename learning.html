@@ -138,43 +138,84 @@ function drawProbeLeads(){
 }
 function benchModel(){
  const fault=benchFault.value,on=benchSwitch.value==="on",mode=benchMode.value;
- const fuseOpen=fault==="fuse"||fault==="short",energized=on&&!fuseOpen;
- const volts={battery:12.6,fuseIn:12.6,fuseOut:12.6,switchIn:12.6,switch:12.6,load:12.6,loadOut:0,ground:0,negative:0};
- if(fault==="open"){volts.switchIn=0;volts.switch=0;volts.load=0}
- if(fault==="resistive"){volts.switchIn=10.1;volts.switch=10.1;volts.load=10.1}
- if(fault==="ground"){volts.loadOut=2.5;volts.ground=2.5}
- if(fuseOpen){volts.fuseOut=0;volts.switchIn=0;volts.switch=0;volts.load=0}
- if(!energized){Object.keys(volts).forEach(k=>{if(k!=="battery"&&k!=="fuseIn")volts[k]=0})}
- const lampOn=energized&&fault==="good";
+ const fuseOpen=fault==="fuse"||fault==="short";
+ const volts={battery:12.6,fuseIn:12.6,fuseOut:12.6,switchIn:12.6,switch:0,load:0,loadOut:0,ground:0,negative:0};
+
+ // A-D are on the battery side of the open switch. They retain source
+ // voltage with the switch OFF because no open switch is between them and B+.
+ // E/F are downstream of the switch and only receive power when it is closed.
+ if(fault==="fuse"||fault==="short"){
+  volts.fuseOut=0;volts.switchIn=0;
+ }
+ if(fault==="open"){
+  volts.switchIn=0;
+ }
+ if(fault==="resistive"&&on){
+  volts.switchIn=10.1;
+ }
+ if(on&&!fuseOpen&&fault!=="open"){
+  volts.switch=volts.switchIn;
+  volts.load=volts.switchIn;
+  volts.loadOut=fault==="ground"?2.5:0;
+  volts.ground=fault==="ground"?2.5:0;
+ }
+ const lampOn=on&&!fuseOpen&&fault==="good";
  document.getElementById("lampBulb").setAttribute("fill",lampOn?"#ffca7a":"#29343e");
  document.getElementById("lampBulb").setAttribute("filter",lampOn?"url(#lampGlow)":"");
  document.getElementById("lampState").textContent=lampOn?"LAMP ON — HEALTHY EXAMPLE":(fault==="short"?"FUSE OPENED — LAMP OFF":"LAMP OFF");
- ["feedA","feedB","feedC","returnA"].forEach(id=>{const el=document.getElementById(id);el.classList.toggle("live",energized&&fault==="good");el.classList.toggle("fault",(fault==="open"&&id==="feedB")||(fault==="resistive"&&id==="feedB")||(fault==="ground"&&id==="returnA")||(fuseOpen&&id==="feedA"))});
+ ["feedA","feedB","feedC","returnA"].forEach(id=>{
+  const el=document.getElementById(id);
+  el.classList.toggle("live",on&&fault==="good");
+  el.classList.toggle("fault",(fault==="open"&&id==="feedB")||(fault==="resistive"&&id==="feedB")||(fault==="ground"&&id==="returnA")||(fuseOpen&&id==="feedA"));
+ });
  document.getElementById("switchBlade").setAttribute("d",on?"M330 145 L397 145":"M330 145 L397 111");
- const activePoints=document.querySelectorAll(".probe-point");
- activePoints.forEach(p=>{p.classList.toggle("red",p.dataset.point===probeRed);p.classList.toggle("black",p.dataset.point===probeBlack)});
+ document.querySelectorAll(".probe-point").forEach(p=>{
+  p.classList.toggle("red",p.dataset.point===probeRed);
+  p.classList.toggle("black",p.dataset.point===probeBlack);
+ });
  drawProbeLeads();
  const status=document.getElementById("benchStatus"),reading=document.getElementById("benchReading"),explain=document.getElementById("benchExplain");
- if(mode!=="voltage"&&on){reading.textContent="—";document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";status.className="bench-status warn";status.textContent="Safety interlock: switch the simulated circuit OFF before using resistance or continuity mode.";explain.textContent="Resistance and continuity measurements are only meaningful on a de-energized, appropriately isolated circuit. Turn the simulated switch off to continue.";return}
+ if(mode!=="voltage"&&on){
+  reading.textContent="—";
+  document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
+  status.className="bench-status warn";
+  status.textContent="Safety interlock: switch the simulated circuit OFF before using resistance or continuity mode.";
+  explain.textContent="Resistance and continuity measurements are only meaningful on a de-energized, appropriately isolated circuit. Turn the simulated switch OFF to continue.";
+  return;
+ }
  if(mode==="voltage"){
   document.getElementById("benchMeterMode").textContent="DC VOLTS";
-  if(!on){reading.textContent="0.0 V";explain.textContent="Circuit switch is OFF. This voltage reading is not a loaded voltage-drop test."}
-  else{const delta=Math.abs(volts[probeRed]-volts[probeBlack]);reading.textContent=delta.toFixed(1)+" V";explain.textContent="Red probe: "+nodeNames[probeRed]+". Black probe: "+nodeNames[probeBlack]+". The meter displays the potential difference between those selected points in this simplified model."}
+  const delta=volts[probeRed]-volts[probeBlack];
+  reading.textContent=(Math.abs(delta)<0.05?"0.0":delta.toFixed(1))+" V";
+  explain.textContent="Red probe: "+nodeNames[probeRed]+" ("+volts[probeRed].toFixed(1)+" V to battery negative). Black probe: "+nodeNames[probeBlack]+" ("+volts[probeBlack].toFixed(1)+" V to battery negative). Meter shows red minus black; reversing the leads reverses the sign.";
  }else{
   document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
   const pair=[probeRed,probeBlack].sort().join("-");
   let ohms="OL",continuity="OPEN";
-  if(pair==="battery-fuseIn"||pair==="fuseIn-fuseOut"||pair==="fuseOut-switchIn"||pair==="switchIn-switch"||pair==="load-loadOut"){ohms="0.2 Ω";continuity="BEEP"}
-  if(pair==="ground-negative"){ohms=fault==="ground"?"4.8 Ω":"0.1 Ω";continuity=fault==="ground"?"HIGH RESISTANCE":"BEEP"}
-  if(fault==="open"&&pair==="fuseOut-switchIn"){ohms="OL";continuity="OPEN"}
-  if(fault==="resistive"&&pair==="fuseOut-switchIn"){ohms="1.5 Ω";continuity="BEEP"}
-  if(fuseOpen&&pair==="fuseIn-fuseOut"){ohms="OL";continuity="OPEN"}
+  const closedSections=["battery-fuseIn","fuseIn-fuseOut","fuseOut-switchIn","switchIn-switch","load-loadOut"];
+  if(closedSections.includes(pair)){ohms="0.2 Ω";continuity="BEEP";}
+  if(pair==="ground-negative"){ohms=fault==="ground"?"4.8 Ω":"0.1 Ω";continuity=fault==="ground"?"HIGH RESISTANCE":"BEEP";}
+  if(fault==="open"&&pair==="fuseOut-switchIn"){ohms="OL";continuity="OPEN";}
+  if(fault==="resistive"&&pair==="fuseOut-switchIn"){ohms="1.5 Ω";continuity="BEEP";}
+  if(fuseOpen&&pair==="fuseIn-fuseOut"){ohms="OL";continuity="OPEN";}
+  // The simulated short is downstream of the fuse: when isolated and
+  // de-energized, its affected load-feed point is shorted to ground.
+  if(fault==="short"&&(pair==="ground-load"||pair==="ground-loadOut"||pair==="load-ground"||pair==="loadOut-ground")){
+   ohms="0.1 Ω";continuity="BEEP";
+  }
   reading.textContent=mode==="resistance"?ohms:continuity;
-  explain.textContent="Illustrative isolated-circuit example between "+nodeNames[probeRed]+" and "+nodeNames[probeBlack]+". Actual continuity/resistance depends on isolation, parallel paths, meter and circuit design.";
+  explain.textContent="Illustrative isolated-circuit example between "+nodeNames[probeRed]+" and "+nodeNames[probeBlack]+". Short-to-ground is modeled from the downstream load feed to ground; actual readings depend on isolation and parallel paths.";
  }
  status.className="bench-status";
- const faultText={good:"Healthy circuit selected. Try measuring across the load, then introduce a fault and compare.",open:"Open feed selected. The break is between fuse output (C) and switch input (D); compare the two sides of that section.",resistive:"Added resistance selected between fuse output (C) and switch input (D). Under load, compare both sides of that connection; a continuity beep alone may not reveal its effect.",ground:"Poor ground selected. The return side is elevated in this teaching model; compare the load ground with battery negative under load.",fuse:"Open fuse selected. The downstream circuit is de-energized in this model; verify protection and downstream condition before replacing a real fuse.",short:"Short-to-ground scenario selected. The simulated protective fuse opens and the lamp goes out; real short-circuit behavior depends on protection and circuit design."};
- status.textContent=faultText[fault]+(on?"":" Switch is OFF, so loaded voltage-drop conclusions do not apply.");
+ const faultText={
+  good:"Healthy circuit selected. A, B, C and D stay at battery voltage whether the switch is ON or OFF. E and F receive voltage only when the switch closes.",
+  open:"Open feed selected between fuse output (C) and switch input (D). A-C remain at source voltage; D and downstream points are de-energized in this simplified fault model.",
+  resistive:"Added resistance between fuse output (C) and switch input (D). With the switch ON, loaded voltage at D and downstream is reduced; with it OFF, there is no current and no modeled voltage drop across that resistance.",
+  ground:"Poor ground selected. With the circuit operating, the return side rises above battery negative; compare load ground to battery negative under load.",
+  fuse:"Open fuse selected. Battery voltage remains on the fuse input side (A/B); fuse output and downstream are de-energized.",
+  short:"Short-to-ground selected downstream of the fuse. The protective fuse opens; upstream A/B remain at battery voltage while the downstream side is de-energized. With the circuit isolated, test the affected load feed to ground."
+ };
+ status.textContent=faultText[fault];
 }
 document.querySelectorAll(".probe-point").forEach(point=>point.addEventListener("click",()=>{if(activeProbe==="red")probeRed=point.dataset.point;else probeBlack=point.dataset.point;benchModel()}));
 document.getElementById("selectRed").addEventListener("click",()=>{activeProbe="red";document.getElementById("selectRed").classList.add("active");document.getElementById("selectBlack").classList.remove("active")});
