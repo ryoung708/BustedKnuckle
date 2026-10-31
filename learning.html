@@ -183,7 +183,7 @@ function benchModel(){
   document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
   status.className="bench-status warn";
   status.textContent="Safety interlock: disconnect battery negative before resistance or continuity testing. The switch may remain closed after the circuit is isolated.";
-  explain.textContent="Resistance and continuity tests require a de-energized, isolated circuit. Select “Disconnected — circuit isolated” for battery negative. You can then test with the switch ON or OFF.";
+  explain.textContent="Resistance and continuity tests require a de-energized, isolated circuit. Select “Disconnected — circuit isolated” for battery negative. Test between any two points that remain connected through the circuit: the meter should show the total resistance of that path. OL means a break lies between the probes. Point I is the detached battery post; point H is the chassis/ground side of the disconnected cable.";
   return;
  }
  if(mode==="voltage"){
@@ -207,8 +207,8 @@ function benchModel(){
   ];
   if(fault==="short")edges.push(["load","ground",0.1]);
   function measurePath(from,to){
-   if(from===to)return 0;
-   const names=Object.keys(nodeNames),dist=Object.fromEntries(names.map(n=>[n,Infinity])),visited=new Set();
+   if(from===to)return {ohms:0,path:[from]};
+   const names=Object.keys(nodeNames),dist=Object.fromEntries(names.map(n=>[n,Infinity])),previous={},visited=new Set();
    dist[from]=0;
    while(true){
     let current=null;
@@ -218,15 +218,27 @@ function benchModel(){
     for(const [left,right,ohms] of edges){
      if(ohms===null)continue;
      const next=left===current?right:(right===current?left:null);
-     if(next!==null&&dist[current]+ohms<dist[next])dist[next]=dist[current]+ohms;
+     if(next!==null&&dist[current]+ohms<dist[next]){
+      dist[next]=dist[current]+ohms;
+      previous[next]=current;
+     }
     }
    }
-   return dist[to];
+   if(!Number.isFinite(dist[to]))return {ohms:Infinity,path:[]};
+   const path=[to];
+   while(path[0]!==from){
+    const prior=previous[path[0]];
+    if(!prior)return {ohms:Infinity,path:[]};
+    path.unshift(prior);
+   }
+   return {ohms:dist[to],path};
   }
-  const ohms=measurePath(probeRed,probeBlack),hasPath=Number.isFinite(ohms);
+  const measurement=measurePath(probeRed,probeBlack),ohms=measurement.ohms,hasPath=Number.isFinite(ohms);
   const continuity=hasPath?(ohms<=5?"BEEP":"HIGH RESISTANCE"):"OPEN";
   reading.textContent=mode==="resistance"?(hasPath?ohms.toFixed(1)+" Ω":"OL"):continuity;
-  explain.textContent="Isolated-circuit measurement from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+". "+(hasPath?ohms.toFixed(1)+" Ω measured along the connected path.":"OL — no continuous path between these points.")+" Same-point probe placement reads 0.0 Ω. The switch is the normal open point when OFF; selected faults add their own interruption or resistance. Continuity threshold is illustrative, not universal."
+  const pathText=hasPath?measurement.path.map(n=>nodeNames[n]).join(" → "):"No connected path exists between these probe points.";
+  explain.style.whiteSpace="pre-line";
+  explain.textContent="Isolated-circuit measurement from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+". "+(hasPath?ohms.toFixed(1)+" Ω total resistance along this path.":"OL — an open connection separates these points.")+"\n\nMeasured path: "+pathText+"\n\nSame-point probe placement reads 0.0 Ω. An OFF switch, open wire, open fuse, or intentionally disconnected battery post can create an open path. The continuity beep threshold is meter-dependent and illustrative here.";
  }
  status.className="bench-status";
  const faultText={
