@@ -37,6 +37,13 @@
 .bench-status.warn{border-color:var(--amber);background:#ff9f1c12}
 @media(max-width:720px){.bench-controls{grid-template-columns:1fr}.meter-console{grid-template-columns:1fr}.circuit-board svg{min-width:620px}.circuit-board{overflow-x:auto}}
 
+
+.probe-lead{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;filter:drop-shadow(0 0 3px #000)}
+#redLead{stroke:#ff6868}#blackLead{stroke:#69b7e8}
+.probe-tip{stroke:#f1f4f7;stroke-width:2;pointer-events:none}
+#redTip{fill:#ff6868}#blackTip{fill:#69b7e8}
+.probe-tag{font-size:10px;font-weight:950;letter-spacing:.06em;paint-order:stroke;stroke:#080d11;stroke-width:4px;stroke-linejoin:round}
+
 </style></head><body><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./index.html">← Back to workspace</a></header>
 <section class="hero"><div class="eyebrow">Technician learning • visual first</div><h1>See the circuit.<br>Understand the test.</h1><p>Short, practical lessons for the bay. Pick a topic, study the diagram, then check your understanding. No textbook required.</p></section>
@@ -47,7 +54,7 @@
 <section class="bench" aria-labelledby="benchTitle">
  <div class="eyebrow">Interactive training bench • simulated only</div>
  <h2 id="benchTitle">Build a fault. Test the circuit.</h2>
- <p>Choose a fault, switch the circuit on, then select meter mode and place the virtual probes on the diagram. Watch the circuit and meter respond. All values are illustrative training examples—not vehicle specifications.</p>
+ <p>Choose a fault and switch condition. Select RED or BLACK, then click any labeled test point. The colored leads follow your probe placements and the virtual meter updates. All values are illustrative training examples—not vehicle specifications.</p>
  <div class="bench-controls">
   <label for="benchFault">Insert a fault
    <select id="benchFault"><option value="good">Healthy circuit</option><option value="open">Open feed wire</option><option value="resistive">High resistance at connection</option><option value="ground">Poor ground connection</option><option value="fuse">Open fuse</option><option value="short">Short to ground (fuse opens)</option></select>
@@ -64,25 +71,36 @@
    <defs><filter id="lampGlow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
    <path id="feedA" class="wire" d="M115 145 H190"/><path id="feedB" class="wire" d="M260 145 H330"/><path id="feedC" class="wire" d="M405 145 H525"/>
    <path id="returnA" class="wire" d="M585 205 V275 H115 V205"/>
-   <rect class="part" x="35" y="115" width="80" height="90" rx="9"/><text class="part-label" x="75" y="151">12V</text><text class="sub-label" x="75" y="173">BATTERY</text><text class="sub-label" x="75" y="190">SOURCE</text>
+   <rect class="part" x="35" y="115" width="80" height="90" rx="9"/><text x="75" y="144" fill="#70c69a" font-size="22" font-weight="950" text-anchor="middle">+</text><text class="part-label" x="75" y="166">12V</text><text class="sub-label" x="75" y="190">BATTERY</text><text x="75" y="253" fill="#69b7e8" font-size="22" font-weight="950" text-anchor="middle">−</text><text class="sub-label" x="75" y="324">BATTERY NEGATIVE</text>
    <rect class="part" x="190" y="120" width="70" height="50" rx="7"/><path d="M201 145 H249" stroke="#ff9f1c" stroke-width="5"/><text class="sub-label" x="225" y="190">FUSE</text>
    <circle cx="330" cy="145" r="6" fill="#ff9f1c"/><circle cx="405" cy="145" r="6" fill="#ff9f1c"/><path id="switchBlade" d="M330 145 L397 111" stroke="#ff9f1c" stroke-width="6" stroke-linecap="round"/><text class="sub-label" x="367" y="190">SWITCH</text>
    <rect class="part" x="525" y="115" width="120" height="90" rx="9"/><circle id="lampBulb" cx="585" cy="155" r="24" fill="#29343e" stroke="#ff9f1c" stroke-width="3"/><path d="M569 139 L601 171 M601 139 L569 171" stroke="#ffca7a" stroke-width="3"/><text class="sub-label" x="585" y="226">LAMP / LOAD</text>
    <path d="M550 275 H620 M560 286 H610 M572 297 H598" stroke="#a2afbc" stroke-width="4" stroke-linecap="round"/><text class="sub-label" x="585" y="324">GROUND RETURN</text>
    <text x="380" y="42" fill="#a2afbc" font-size="13" text-anchor="middle">Select a test point to place the active probe</text>
+   <g id="probeLeads" aria-hidden="true">
+    <path id="redLead" class="probe-lead" d="M245 345 Q210 270 115 145"/>
+    <path id="blackLead" class="probe-lead" d="M315 345 Q400 300 115 275"/>
+    <circle id="redTip" class="probe-tip" cx="115" cy="145" r="6"/>
+    <circle id="blackTip" class="probe-tip" cx="115" cy="275" r="6"/>
+    <text id="redTag" class="probe-tag" x="130" y="140" fill="#ff6868">RED</text>
+    <text id="blackTag" class="probe-tag" x="130" y="270" fill="#69b7e8">BLACK</text>
+   </g>
    <g id="testPoints">
-    <circle class="probe-point" data-point="battery" cx="115" cy="145" r="10"/><text class="sub-label" x="115" y="105">A • B+</text>
-    <circle class="probe-point" data-point="fuse" cx="260" cy="145" r="10"/><text class="sub-label" x="260" y="105">B • FUSE OUT</text>
-    <circle class="probe-point" data-point="switch" cx="405" cy="145" r="10"/><text class="sub-label" x="405" y="85">C • SWITCH OUT</text>
-    <circle class="probe-point" data-point="load" cx="525" cy="145" r="10"/><text class="sub-label" x="525" y="105">D • LOAD FEED</text>
-    <circle class="probe-point" data-point="ground" cx="585" cy="275" r="10"/><text class="sub-label" x="665" y="279">E • GROUND</text>
-    <circle class="probe-point" data-point="negative" cx="115" cy="275" r="10"/><text class="sub-label" x="115" y="305">F • B−</text>
+    <circle class="probe-point" data-point="battery" cx="115" cy="145" r="10"/><text class="sub-label" x="115" y="105">A • BATTERY +</text>
+    <circle class="probe-point" data-point="fuseIn" cx="190" cy="145" r="10"/><text class="sub-label" x="190" y="105">B • FUSE IN</text>
+    <circle class="probe-point" data-point="fuseOut" cx="260" cy="145" r="10"/><text class="sub-label" x="260" y="105">C • FUSE OUT</text>
+    <circle class="probe-point" data-point="switchIn" cx="330" cy="145" r="10"/><text class="sub-label" x="330" y="85">D • SWITCH IN</text>
+    <circle class="probe-point" data-point="switch" cx="405" cy="145" r="10"/><text class="sub-label" x="405" y="85">E • SWITCH OUT</text>
+    <circle class="probe-point" data-point="load" cx="525" cy="145" r="10"/><text class="sub-label" x="525" y="105">F • LOAD IN</text>
+    <circle class="probe-point" data-point="loadOut" cx="585" cy="205" r="10"/><text class="sub-label" x="655" y="211">G • LOAD OUT</text>
+    <circle class="probe-point" data-point="ground" cx="585" cy="275" r="10"/><text class="sub-label" x="665" y="279">H • GROUND</text>
+    <circle class="probe-point" data-point="negative" cx="115" cy="275" r="10"/><text class="sub-label" x="115" y="305">I • BATTERY −</text>
    </g>
    <text id="lampState" x="585" y="355" fill="#a2afbc" font-size="12" text-anchor="middle">LAMP OFF</text>
   </svg>
   <div class="bench-legend"><span><i class="dot"></i> Normal path</span><span><i class="dot amber"></i> Fault area</span><span><i class="dot red"></i> Red probe</span><span><i class="dot blue"></i> Black probe</span></div>
  </div>
- <div class="bench-actions"><button type="button" id="selectRed" class="active">Place RED probe</button><button type="button" id="selectBlack">Place BLACK probe</button><button type="button" id="resetProbes">Reset probe positions</button></div>
+ <div class="bench-actions"><button type="button" id="selectRed" class="active">Place RED probe</button><button type="button" id="selectBlack">Place BLACK probe</button><button type="button" id="resetProbes">Reset probe positions</button><span id="activeProbeHint" class="note" aria-live="polite">RED lead selected — click a test point.</span></div>
  <div class="meter-console" aria-live="polite">
   <div class="virtual-meter"><small>VIRTUAL METER</small><strong id="benchReading">12.6 V</strong><small id="benchMeterMode">DC VOLTS</small></div>
   <div class="explain" id="benchExplain">Healthy example: the lamp has a complete path. Select two test points to measure the potential difference between them.</div>
@@ -105,16 +123,28 @@ function render(){list.innerHTML="";lessons.filter(x=>filter==="all"||x.cat===fi
 
 const benchFault=document.getElementById("benchFault"),benchSwitch=document.getElementById("benchSwitch"),benchMode=document.getElementById("benchMode");
 let activeProbe="red",probeRed="battery",probeBlack="negative";
-const nodeNames={battery:"Battery positive",fuse:"Fuse output",switch:"Switch output",load:"Load feed",ground:"Ground return",negative:"Battery negative"};
+const nodeNames={battery:"Battery positive (+)",fuseIn:"Fuse input",fuseOut:"Fuse output",switchIn:"Switch input",switch:"Switch output",load:"Load input",loadOut:"Load output",ground:"Ground return",negative:"Battery negative (−)"};
+const probeCoords={battery:[115,145],fuseIn:[190,145],fuseOut:[260,145],switchIn:[330,145],switch:[405,145],load:[525,145],loadOut:[585,205],ground:[585,275],negative:[115,275]};
+function drawProbeLeads(){
+ const [rx,ry]=probeCoords[probeRed],[bx,by]=probeCoords[probeBlack];
+ const redStart=[245,345],blackStart=[315,345];
+ document.getElementById("redLead").setAttribute("d",`M${redStart[0]} ${redStart[1]} Q${(redStart[0]+rx)/2-18} ${Math.max(35,(redStart[1]+ry)/2-35)} ${rx} ${ry}`);
+ document.getElementById("blackLead").setAttribute("d",`M${blackStart[0]} ${blackStart[1]} Q${(blackStart[0]+bx)/2+18} ${Math.max(35,(blackStart[1]+by)/2-25)} ${bx} ${by}`);
+ document.getElementById("redTip").setAttribute("cx",rx);document.getElementById("redTip").setAttribute("cy",ry);
+ document.getElementById("blackTip").setAttribute("cx",bx);document.getElementById("blackTip").setAttribute("cy",by);
+ document.getElementById("redTag").setAttribute("x",Math.min(675,rx+13));document.getElementById("redTag").setAttribute("y",ry-12);
+ document.getElementById("blackTag").setAttribute("x",Math.min(675,bx+13));document.getElementById("blackTag").setAttribute("y",by+20);
+ document.getElementById("activeProbeHint").textContent=(activeProbe==="red"?"RED":"BLACK")+" lead selected — click a test point.";
+}
 function benchModel(){
  const fault=benchFault.value,on=benchSwitch.value==="on",mode=benchMode.value;
  const fuseOpen=fault==="fuse"||fault==="short",energized=on&&!fuseOpen;
- const volts={battery:12.6, fuse:12.6, switch:12.6, load:12.6, ground:0, negative:0};
- if(fault==="open"){volts.switch=0;volts.load=0}
- if(fault==="resistive"){volts.switch=10.1;volts.load=10.1}
- if(fault==="ground"){volts.ground=2.5}
- if(fuseOpen){volts.fuse=0;volts.switch=0;volts.load=0}
- if(!energized){Object.keys(volts).forEach(k=>{if(k!=="battery")volts[k]=0})}
+ const volts={battery:12.6,fuseIn:12.6,fuseOut:12.6,switchIn:12.6,switch:12.6,load:12.6,loadOut:0,ground:0,negative:0};
+ if(fault==="open"){volts.switchIn=0;volts.switch=0;volts.load=0}
+ if(fault==="resistive"){volts.switchIn=10.1;volts.switch=10.1;volts.load=10.1}
+ if(fault==="ground"){volts.loadOut=2.5;volts.ground=2.5}
+ if(fuseOpen){volts.fuseOut=0;volts.switchIn=0;volts.switch=0;volts.load=0}
+ if(!energized){Object.keys(volts).forEach(k=>{if(k!=="battery"&&k!=="fuseIn")volts[k]=0})}
  const lampOn=energized&&fault==="good";
  document.getElementById("lampBulb").setAttribute("fill",lampOn?"#ffca7a":"#29343e");
  document.getElementById("lampBulb").setAttribute("filter",lampOn?"url(#lampGlow)":"");
@@ -122,7 +152,7 @@ function benchModel(){
  ["feedA","feedB","feedC","returnA"].forEach(id=>{const el=document.getElementById(id);el.classList.toggle("live",energized&&fault==="good");el.classList.toggle("fault",(fault==="open"&&id==="feedB")||(fault==="resistive"&&id==="feedB")||(fault==="ground"&&id==="returnA")||(fuseOpen&&id==="feedA"))});
  document.getElementById("switchBlade").setAttribute("d",on?"M330 145 L397 145":"M330 145 L397 111");
  const activePoints=document.querySelectorAll(".probe-point");
- activePoints.forEach(p=>{p.classList.toggle("red",p.dataset.point===probeRed);p.classList.toggle("black",p.dataset.point===probeBlack)});
+ activePoints.forEach(p=>{p.classList.toggle("red",p.dataset.point===probeRed);p.classList.toggle("black",p.dataset.point===probeBlack)});\n drawProbeLeads();
  const status=document.getElementById("benchStatus"),reading=document.getElementById("benchReading"),explain=document.getElementById("benchExplain");
  if(mode!=="voltage"&&on){reading.textContent="—";document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";status.className="bench-status warn";status.textContent="Safety interlock: switch the simulated circuit OFF before using resistance or continuity mode.";explain.textContent="Resistance and continuity measurements are only meaningful on a de-energized, appropriately isolated circuit. Turn the simulated switch off to continue.";return}
  if(mode==="voltage"){
@@ -133,21 +163,21 @@ function benchModel(){
   document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
   const pair=[probeRed,probeBlack].sort().join("-");
   let ohms="OL",continuity="OPEN";
-  if(pair==="battery-fuse"||pair==="fuse-switch"||pair==="load-switch"){ohms="0.2 Ω";continuity="BEEP"}
+  if(pair==="battery-fuseIn"||pair==="fuseIn-fuseOut"||pair==="fuseOut-switchIn"||pair==="switchIn-switch"||pair==="load-loadOut"){ohms="0.2 Ω";continuity="BEEP"}
   if(pair==="ground-negative"){ohms=fault==="ground"?"4.8 Ω":"0.1 Ω";continuity=fault==="ground"?"HIGH RESISTANCE":"BEEP"}
-  if(fault==="open"&&(pair==="fuse-switch"||pair==="load-switch")){ohms="OL";continuity="OPEN"}
-  if(fault==="resistive"&&(pair==="fuse-switch"||pair==="load-switch")){ohms="1.5 Ω";continuity="BEEP"}
-  if(fuseOpen&&(pair==="battery-fuse"||pair==="fuse-switch")){ohms="OL";continuity="OPEN"}
+  if(fault==="open"&&pair==="fuseOut-switchIn"){ohms="OL";continuity="OPEN"}
+  if(fault==="resistive"&&pair==="fuseOut-switchIn"){ohms="1.5 Ω";continuity="BEEP"}
+  if(fuseOpen&&pair==="fuseIn-fuseOut"){ohms="OL";continuity="OPEN"}
   reading.textContent=mode==="resistance"?ohms:continuity;
   explain.textContent="Illustrative isolated-circuit example between "+nodeNames[probeRed]+" and "+nodeNames[probeBlack]+". Actual continuity/resistance depends on isolation, parallel paths, meter and circuit design.";
  }
  status.className="bench-status";
- const faultText={good:"Healthy circuit selected. Try measuring across the load, then introduce a fault and compare.",open:"Open feed selected. The break is between the fuse output and switch output; use test points to localize the interrupted path.",resistive:"Added resistance selected at the feed connection. Under load, voltage is lost across that section; a continuity beep alone may not reveal its effect.",ground:"Poor ground selected. The return side is elevated in this teaching model; compare the load ground with battery negative under load.",fuse:"Open fuse selected. The downstream circuit is de-energized in this model; verify protection and downstream condition before replacing a real fuse.",short:"Short-to-ground scenario selected. The simulated protective fuse opens and the lamp goes out; real short-circuit behavior depends on protection and circuit design."};
+ const faultText={good:"Healthy circuit selected. Try measuring across the load, then introduce a fault and compare.",open:"Open feed selected. The break is between fuse output (C) and switch input (D); compare the two sides of that section.",resistive:"Added resistance selected between fuse output (C) and switch input (D). Under load, compare both sides of that connection; a continuity beep alone may not reveal its effect.",ground:"Poor ground selected. The return side is elevated in this teaching model; compare the load ground with battery negative under load.",fuse:"Open fuse selected. The downstream circuit is de-energized in this model; verify protection and downstream condition before replacing a real fuse.",short:"Short-to-ground scenario selected. The simulated protective fuse opens and the lamp goes out; real short-circuit behavior depends on protection and circuit design."};
  status.textContent=faultText[fault]+(on?"":" Switch is OFF, so loaded voltage-drop conclusions do not apply.");
 }
 document.querySelectorAll(".probe-point").forEach(point=>point.addEventListener("click",()=>{if(activeProbe==="red")probeRed=point.dataset.point;else probeBlack=point.dataset.point;benchModel()}));
 document.getElementById("selectRed").addEventListener("click",()=>{activeProbe="red";document.getElementById("selectRed").classList.add("active");document.getElementById("selectBlack").classList.remove("active")});
-document.getElementById("selectBlack").addEventListener("click",()=>{activeProbe="black";document.getElementById("selectBlack").classList.add("active");document.getElementById("selectRed").classList.remove("active")});
+document.getElementById("selectBlack").addEventListener("click",()=>{activeProbe="black";document.getElementById("selectBlack").classList.add("active");document.getElementById("selectRed").classList.remove("active");drawProbeLeads()});
 document.getElementById("resetProbes").addEventListener("click",()=>{probeRed="battery";probeBlack="negative";benchModel()});
 [benchFault,benchSwitch,benchMode].forEach(el=>el.addEventListener("change",benchModel));
 benchModel();
