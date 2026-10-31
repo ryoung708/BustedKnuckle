@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "validate:faults": "node scripts/validate-fault-library.mjs",
-    "test:diagnostics": "node scripts/test-diagnostic-engine.mjs"
+    "test:diagnostics": "node scripts/test-diagnostic-engine.mjs",
+    "test:electrical": "node scripts/test-electrical-network.mjs",
+    "test": "npm run test:diagnostics && npm run test:electrical"
   }
 }
