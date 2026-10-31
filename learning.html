@@ -142,112 +142,112 @@ function drawProbeLeads(){
 function benchModel(){
  const fault=benchFault.value,on=benchSwitch.value==="on",mode=benchMode.value,batteryIsolated=batteryIsolation.value==="isolated";
  const fuseOpen=fault==="fuse"||fault==="short";
- const volts={battery:12.6,fuseIn:12.6,fuseOut:12.6,switchIn:12.6,switch:0,load:0,loadOut:0,ground:0,negative:0};
+ const nodes=Object.keys(nodeNames);
+ const resistors=[];
+ const add=(from,to,ohms,id)=>{if(Number.isFinite(ohms)&&ohms>0)resistors.push({from,to,ohms,id});};
+ add("battery","fuseIn",0.1,"battery-feed");
+ add("fuseIn","fuseOut",fuseOpen?null:0.1,"fuse");
+ add("fuseOut","switchIn",fault==="open"?null:(fault==="resistive"?1.5:0.1),"feed-wire");
+ add("switchIn","switch",on?0.1:null,"switch");
+ add("switch","load",0.1,"load-feed");
+ add("load","loadOut",3.0,"lamp");
+ // Put the ground fault in the return conductor itself. The chassis-side
+ // node remains connected when the battery negative post is isolated.
+ add("loadOut","ground",fault==="ground"?4.8:0.1,"ground-connection");
+ add("ground","negative",batteryIsolated?null:0.1,"battery-negative-cable");
+ if(fault==="short")add("load","ground",0.1,"short-to-ground");
 
- // A-D are on the battery side of the open switch. They retain source
- // voltage with the switch OFF because no open switch is between them and B+.
- // E/F are downstream of the switch and only receive power when it is closed.
- if(fault==="fuse"||fault==="short"){
-  volts.fuseOut=0;volts.switchIn=0;
+ function solveNetwork(branches, fixedVoltages, injections={}){
+  const active=new Set(Object.keys(fixedVoltages)),queue=[...active];
+  while(queue.length){
+   const here=queue.shift();
+   for(const edge of branches){
+    const next=edge.from===here?edge.to:(edge.to===here?edge.from:null);
+    if(next!==null&&!active.has(next)){active.add(next);queue.push(next);}
+   }
+  }
+  for(const id of Object.keys(injections))if(!active.has(id))throw new Error("Probe point is separated by an open circuit");
+  const unknown=nodes.filter(n=>active.has(n)&&!(n in fixedVoltages));
+  const idx=new Map(unknown.map((n,i)=>[n,i]));
+  const matrix=unknown.map(()=>unknown.map(()=>0)),rhs=unknown.map(n=>injections[n]||0);
+  for(const e of branches){
+   const g=1/e.ohms,i=idx.get(e.from),j=idx.get(e.to);
+   if(i!==undefined){matrix[i][i]+=g;if(j!==undefined)matrix[i][j]-=g;else rhs[i]+=g*fixedVoltages[e.to];}
+   if(j!==undefined){matrix[j][j]+=g;if(i!==undefined)matrix[j][i]-=g;else rhs[j]+=g*fixedVoltages[e.from];}
+  }
+  const n=rhs.length,a=matrix.map((row,i)=>[...row,rhs[i]]);
+  for(let c=0;c<n;c++){
+   let p=c;for(let r=c+1;r<n;r++)if(Math.abs(a[r][c])>Math.abs(a[p][c]))p=r;
+   if(Math.abs(a[p][c])<1e-12)throw new Error("Floating node");
+   [a[c],a[p]]=[a[p],a[c]];
+   const d=a[c][c];for(let j=c;j<=n;j++)a[c][j]/=d;
+   for(let r=0;r<n;r++){if(r===c)continue;const k=a[r][c];for(let j=c;j<=n;j++)a[r][j]-=k*a[c][j];}
+  }
+  const result={...fixedVoltages};unknown.forEach((id,i)=>result[id]=a[i][n]);return result;
  }
- if(fault==="open"){
-  volts.switchIn=0;
+ function equivalentResistance(from,to){
+  if(from===to)return 0;
+  const injected=solveNetwork(resistors,{[to]:0},{[from]:1,[to]:-1});
+  return injected[from];
  }
- if(fault==="resistive"&&on){
-  volts.switchIn=10.1;
- }
+ let volts={battery:12.6,negative:0};
+ let totalCurrent=0, lampVoltage=0,groundDrop=0;
  if(on&&!fuseOpen&&fault!=="open"){
-  volts.switch=volts.switchIn;
-  volts.load=volts.switchIn;
-  volts.loadOut=fault==="ground"?2.5:0;
-  volts.ground=fault==="ground"?2.5:0;
+  try{
+   volts=solveNetwork(resistors,{battery:12.6,negative:0});
+   totalCurrent=(volts.load-volts.loadOut)/3.0;
+   lampVoltage=volts.load-volts.loadOut;
+   groundDrop=volts.loadOut-volts.ground;
+  }catch(_){ }
+ }else{
+  // Unpowered downstream nodes are not assigned an artificial live voltage.
+  volts={battery:12.6,fuseIn:12.59,fuseOut:fuseOpen?0:12.49,switchIn:fault==="open"?0:(fuseOpen?0:12.39),switch:0,load:0,loadOut:0,ground:0,negative:0};
  }
- const lampOn=on&&!batteryIsolated&&!fuseOpen&&fault==="good";
- document.getElementById("lampBulb").setAttribute("fill",lampOn?"#ffca7a":"#29343e");
- document.getElementById("lampBulb").setAttribute("filter",lampOn?"url(#lampGlow)":"");
- document.getElementById("lampState").textContent=lampOn?"LAMP ON — HEALTHY EXAMPLE":(fault==="short"?"FUSE OPENED — LAMP OFF":"LAMP OFF");
+ const lampOn=on&&!batteryIsolated&&totalCurrent>0;
+ const brightness=Math.max(0,Math.min(1,totalCurrent/(12.6/(0.1+0.1+0.1+0.1+3.0+0.1+0.1))));
+ const bulb=document.getElementById("lampBulb");
+ bulb.setAttribute("fill",lampOn?"#ffca7a":"#29343e");
+ bulb.setAttribute("filter",lampOn&&brightness>0.08?"url(#lampGlow)":"");
+ bulb.setAttribute("opacity",lampOn?String(0.25+0.75*brightness):"1");
+ document.getElementById("lampState").textContent=lampOn?"LAMP ON — "+Math.round(brightness*100)+"% BRIGHTNESS":(fault==="short"?"FUSE OPENED — LAMP OFF":"LAMP OFF");
  ["feedA","feedB","feedC","returnA"].forEach(id=>{
   const el=document.getElementById(id);
-  el.classList.toggle("live",on&&fault==="good");
+  el.classList.toggle("live",on&&totalCurrent>0);
   el.classList.toggle("fault",(fault==="open"&&id==="feedB")||(fault==="resistive"&&id==="feedB")||(fault==="ground"&&id==="returnA")||(fuseOpen&&id==="feedA"));
  });
  document.getElementById("switchBlade").setAttribute("d",on?"M330 145 L397 145":"M330 145 L397 111");
- document.querySelectorAll(".probe-point").forEach(p=>{
-  p.classList.toggle("red",p.dataset.point===probeRed);
-  p.classList.toggle("black",p.dataset.point===probeBlack);
- });
+ document.querySelectorAll(".probe-point").forEach(p=>{p.classList.toggle("red",p.dataset.point===probeRed);p.classList.toggle("black",p.dataset.point===probeBlack);});
  drawProbeLeads();
  const status=document.getElementById("benchStatus"),reading=document.getElementById("benchReading"),explain=document.getElementById("benchExplain");
  if(mode!=="voltage"&&!batteryIsolated){
-  reading.textContent="—";
-  document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
-  status.className="bench-status warn";
-  status.textContent="Safety interlock: disconnect battery negative before resistance or continuity testing. The switch may remain closed after the circuit is isolated.";
-  explain.textContent="Resistance and continuity tests require a de-energized, isolated circuit. Select “Disconnected — circuit isolated” for battery negative. Test between any two points that remain connected through the circuit: the meter should show the total resistance of that path. OL means a break lies between the probes. Point I is the detached battery post; point H is the chassis/ground side of the disconnected cable.";
+  reading.textContent="—";document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
+  status.className="bench-status warn";status.textContent="Safety interlock: disconnect battery negative before resistance or continuity testing.";
+  explain.textContent="Resistance and continuity require a de-energized, isolated circuit. Select Disconnected — circuit isolated. The ground fault is modeled in the return conductor between load output (G) and chassis ground (H); it remains measurable with the battery negative post isolated.";
   return;
  }
  if(mode==="voltage"){
   document.getElementById("benchMeterMode").textContent="DC VOLTS";
-  const delta=volts[probeRed]-volts[probeBlack];
-  reading.textContent=(Math.abs(delta)<0.05?"0.0":delta.toFixed(1))+" V";
-  explain.textContent="Red probe: "+nodeNames[probeRed]+" ("+volts[probeRed].toFixed(1)+" V to battery negative). Black probe: "+nodeNames[probeBlack]+" ("+volts[probeBlack].toFixed(1)+" V to battery negative). Meter shows red minus black; reversing the leads reverses the sign.";
+  let red=volts[probeRed]??0,black=volts[probeBlack]??0;
+  const delta=red-black;
+  reading.textContent=(Math.abs(delta)<0.05?"0.0":delta.toFixed(2))+" V";
+  explain.textContent="Red: "+nodeNames[probeRed]+" ("+red.toFixed(2)+" V). Black: "+nodeNames[probeBlack]+" ("+black.toFixed(2)+" V). Meter displays red minus black. Simulated load current: "+totalCurrent.toFixed(2)+" A. Lamp voltage: "+lampVoltage.toFixed(2)+" V. Ground-side drop (G to H): "+groundDrop.toFixed(2)+" V.";
  }else{
   document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";
-  // Trace connected circuit sections. The switch is the normal open point;
-  // selected faults add their own interruption or resistance.
-  const edges=[
-   ["battery","fuseIn",0.1],
-   ["fuseIn","fuseOut",fuseOpen?null:0.1],
-   ["fuseOut","switchIn",fault==="open"?null:(fault==="resistive"?1.5:0.1)],
-   ["switchIn","switch",on?0.1:null],
-   ["switch","load",0.1],
-   ["load","loadOut",3.0],
-   ["loadOut","ground",0.1],
-   ["ground","negative",batteryIsolated?null:(fault==="ground"?4.8:0.1)]
-  ];
-  if(fault==="short")edges.push(["load","ground",0.1]);
-  function measurePath(from,to){
-   if(from===to)return {ohms:0,path:[from]};
-   const names=Object.keys(nodeNames),dist=Object.fromEntries(names.map(n=>[n,Infinity])),previous={},visited=new Set();
-   dist[from]=0;
-   while(true){
-    let current=null;
-    for(const n of names)if(!visited.has(n)&&(current===null||dist[n]<dist[current]))current=n;
-    if(current===null||!Number.isFinite(dist[current])||current===to)break;
-    visited.add(current);
-    for(const [left,right,ohms] of edges){
-     if(ohms===null)continue;
-     const next=left===current?right:(right===current?left:null);
-     if(next!==null&&dist[current]+ohms<dist[next]){
-      dist[next]=dist[current]+ohms;
-      previous[next]=current;
-     }
-    }
-   }
-   if(!Number.isFinite(dist[to]))return {ohms:Infinity,path:[]};
-   const path=[to];
-   while(path[0]!==from){
-    const prior=previous[path[0]];
-    if(!prior)return {ohms:Infinity,path:[]};
-    path.unshift(prior);
-   }
-   return {ohms:dist[to],path};
-  }
-  const measurement=measurePath(probeRed,probeBlack),ohms=measurement.ohms,hasPath=Number.isFinite(ohms);
-  const continuity=hasPath?(ohms<=5?"BEEP":"HIGH RESISTANCE"):"OPEN";
-  reading.textContent=mode==="resistance"?(hasPath?ohms.toFixed(1)+" Ω":"OL"):continuity;
-  const pathText=hasPath?measurement.path.map(n=>nodeNames[n]).join(" → "):"No connected path exists between these probe points.";
+  let ohms=Infinity;
+  try{ohms=equivalentResistance(probeRed,probeBlack);}catch(_){ohms=Infinity;}
+  const hasPath=Number.isFinite(ohms);
+  reading.textContent=mode==="resistance"?(hasPath?ohms.toFixed(2)+" Ω":"OL"):(hasPath?(ohms<=5?"BEEP":"HIGH RESISTANCE"):"OPEN");
   explain.style.whiteSpace="pre-line";
-  explain.textContent="Isolated-circuit measurement from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+". "+(hasPath?ohms.toFixed(1)+" Ω total resistance along this path.":"OL — an open connection separates these points.")+"\n\nMeasured path: "+pathText+"\n\nSame-point probe placement reads 0.0 Ω. An OFF switch, open wire, open fuse, or intentionally disconnected battery post can create an open path. The continuity beep threshold is meter-dependent and illustrative here.";
+  explain.textContent="Isolated-circuit equivalent resistance from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+": "+(hasPath?ohms.toFixed(2)+" Ω":"OL — no connected path.")+"\n\nThis is the network's equivalent resistance, including parallel paths—not just the lowest-resistance route. The poor-ground fault adds 4.8 Ω between load output (G) and chassis ground (H), so probes across G-H show that resistance. The detached battery negative post (I) remains isolated from chassis ground.";
  }
  status.className="bench-status";
  const faultText={
-  good:"Healthy circuit selected. A, B, C and D stay at battery voltage whether the switch is ON or OFF. E and F receive voltage only when the switch closes.",
-  open:"Open feed selected between fuse output (C) and switch input (D). A-C remain at source voltage; D and downstream points are de-energized in this simplified fault model.",
-  resistive:"Added resistance between fuse output (C) and switch input (D). With the switch ON, loaded voltage at D and downstream is reduced; with it OFF, there is no current and no modeled voltage drop across that resistance.",
-  ground:"Poor ground selected. With the circuit operating, the return side rises above battery negative; compare load ground to battery negative under load.",
-  fuse:"Open fuse selected. Battery voltage remains on the fuse input side (A/B); fuse output and downstream are de-energized.",
-  short:"Short-to-ground selected downstream of the fuse. The protective fuse opens; upstream A/B remain at battery voltage while the downstream side is de-energized. With the circuit isolated, test the affected load feed to ground."
+  good:"Healthy circuit. Operating current and voltage are calculated from the same resistor network.",
+  open:"Open feed selected between fuse output (C) and switch input (D). The load receives no operating current.",
+  resistive:"Added 1.5 Ω feed connection resistance. Under load it reduces current and creates a measurable voltage drop.",
+  ground:"Poor ground selected: 4.8 Ω added between load output (G) and chassis ground (H). Under load, current falls, the ground side rises above battery negative, and the lamp dims. With power isolated, G-to-H resistance measures 4.8 Ω.",
+  fuse:"Open fuse selected. The downstream load is disconnected from battery positive.",
+  short:"Short-to-ground selected downstream of the fuse. The protective fuse opens in this simplified training scenario."
  };
  status.textContent=faultText[fault];
 }
