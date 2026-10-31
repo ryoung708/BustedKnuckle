@@ -219,7 +219,9 @@ function benchModel(){
   el.classList.toggle("live",on&&totalCurrent>0);
   el.classList.toggle("fault",(fault==="open"&&id==="feedB")||(fault==="resistive"&&id==="feedB")||(fault==="ground"&&id==="returnA"));
  });
- document.getElementById("switchBlade").setAttribute("d",on?"M330 145 L397 145":"M330 145 L397 111");\n document.getElementById("fuseBody").classList.toggle("fault",fuseOpen);\n document.getElementById("fuseElement").classList.toggle("fault",fuseOpen);
+ document.getElementById("switchBlade").setAttribute("d",on?"M330 145 L397 145":"M330 145 L397 111");
+ document.getElementById("fuseBody").classList.toggle("fault",fuseOpen);
+ document.getElementById("fuseElement").classList.toggle("fault",fuseOpen);
  document.querySelectorAll(".probe-point").forEach(p=>{p.classList.toggle("red",p.dataset.point===probeRed);p.classList.toggle("black",p.dataset.point===probeBlack);});
  drawProbeLeads();
  const status=document.getElementById("benchStatus"),reading=document.getElementById("benchReading"),explain=document.getElementById("benchExplain");
