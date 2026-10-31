@@ -237,6 +237,7 @@ function benchModel(){
   const continuity=hasPath?(ohms<=5?"BEEP":"HIGH RESISTANCE"):"OPEN";
   reading.textContent=mode==="resistance"?(hasPath?ohms.toFixed(1)+" Ω":"OL"):continuity;
   const pathText=hasPath?measurement.path.map(n=>nodeNames[n]).join(" → "):"No connected path exists between these probe points.";
+  explain.style.whiteSpace="pre-line";
   explain.textContent="Isolated-circuit measurement from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+". "+(hasPath?ohms.toFixed(1)+" Ω total resistance along this path.":"OL — an open connection separates these points.")+"\n\nMeasured path: "+pathText+"\n\nSame-point probe placement reads 0.0 Ω. An OFF switch, open wire, open fuse, or intentionally disconnected battery post can create an open path. The continuity beep threshold is meter-dependent and illustrative here.";
  }
  status.className="bench-status";
