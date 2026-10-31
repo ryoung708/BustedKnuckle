@@ -158,7 +158,16 @@ function benchModel(){
  if(fault==="short")add("load","ground",0.1,"short-to-ground");
 
  function solveNetwork(branches, fixedVoltages, injections={}){
-  const unknown=nodes.filter(n=>!(n in fixedVoltages));
+  const active=new Set(Object.keys(fixedVoltages)),queue=[...active];
+  while(queue.length){
+   const here=queue.shift();
+   for(const edge of branches){
+    const next=edge.from===here?edge.to:(edge.to===here?edge.from:null);
+    if(next!==null&&!active.has(next)){active.add(next);queue.push(next);}
+   }
+  }
+  for(const id of Object.keys(injections))if(!active.has(id))throw new Error("Probe point is separated by an open circuit");
+  const unknown=nodes.filter(n=>active.has(n)&&!(n in fixedVoltages));
   const idx=new Map(unknown.map((n,i)=>[n,i]));
   const matrix=unknown.map(()=>unknown.map(()=>0)),rhs=unknown.map(n=>injections[n]||0);
   for(const e of branches){
