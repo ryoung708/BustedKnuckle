@@ -154,7 +154,7 @@ function benchModel(){
  // Put the ground fault in the return conductor itself. The chassis-side
  // node remains connected when the battery negative post is isolated.
  add("loadOut","ground",fault==="ground"?4.8:0.1,"ground-connection");
- add("ground","negative",batteryIsolated?null:0.1,"battery-negative-cable");
+ add("ground","negative",0.1,"battery-negative-cable");
  if(fault==="short")add("load","ground",0.1,"short-to-ground");
 
  function solveNetwork(branches, fixedVoltages, injections={}){
@@ -238,7 +238,7 @@ function benchModel(){
   const hasPath=Number.isFinite(ohms);
   reading.textContent=mode==="resistance"?(hasPath?ohms.toFixed(2)+" Ω":"OL"):(hasPath?(ohms<=5?"BEEP":"HIGH RESISTANCE"):"OPEN");
   explain.style.whiteSpace="pre-line";
-  explain.textContent="Isolated-circuit equivalent resistance from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+": "+(hasPath?ohms.toFixed(2)+" Ω":"OL — no connected path.")+"\n\nThis is the network's equivalent resistance, including parallel paths—not just the lowest-resistance route. The poor-ground fault adds 4.8 Ω between load output (G) and chassis ground (H), so probes across G-H show that resistance. The detached battery negative post (I) remains isolated from chassis ground.";
+  explain.textContent="Isolated-circuit equivalent resistance from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+": "+(hasPath?ohms.toFixed(2)+" Ω":"OL — no connected path.")+"\n\nThis is the network's equivalent resistance, including parallel paths—not just the lowest-resistance route. The poor-ground fault adds 4.8 Ω between load output (G) and chassis ground (H), so probes across G-H show that resistance. Point I represents the detached battery-negative cable lug, not the battery post; the cable between chassis ground (H) and lug (I) remains measurable. The battery itself is isolated at the post-to-lug connection.";
  }
  status.className="bench-status";
  const faultText={
