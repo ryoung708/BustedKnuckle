@@ -152,7 +152,8 @@ function benchModel(){
  ["feedA","feedB","feedC","returnA"].forEach(id=>{const el=document.getElementById(id);el.classList.toggle("live",energized&&fault==="good");el.classList.toggle("fault",(fault==="open"&&id==="feedB")||(fault==="resistive"&&id==="feedB")||(fault==="ground"&&id==="returnA")||(fuseOpen&&id==="feedA"))});
  document.getElementById("switchBlade").setAttribute("d",on?"M330 145 L397 145":"M330 145 L397 111");
  const activePoints=document.querySelectorAll(".probe-point");
- activePoints.forEach(p=>{p.classList.toggle("red",p.dataset.point===probeRed);p.classList.toggle("black",p.dataset.point===probeBlack)});\n drawProbeLeads();
+ activePoints.forEach(p=>{p.classList.toggle("red",p.dataset.point===probeRed);p.classList.toggle("black",p.dataset.point===probeBlack)});
+ drawProbeLeads();
  const status=document.getElementById("benchStatus"),reading=document.getElementById("benchReading"),explain=document.getElementById("benchExplain");
  if(mode!=="voltage"&&on){reading.textContent="—";document.getElementById("benchMeterMode").textContent=mode==="resistance"?"OHMS":"CONTINUITY";status.className="bench-status warn";status.textContent="Safety interlock: switch the simulated circuit OFF before using resistance or continuity mode.";explain.textContent="Resistance and continuity measurements are only meaningful on a de-energized, appropriately isolated circuit. Turn the simulated switch off to continue.";return}
  if(mode==="voltage"){
