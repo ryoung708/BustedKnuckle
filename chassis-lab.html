@@ -69,7 +69,9 @@
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
-const state={tail:false,brake:false,fault:"none",selected:"battery",view:"physical",activeLead:"red",redPoint:"battery",blackPoint:"negative"};\nconst pointNames={battery:"Battery positive",fuseOut:"Fuse output",switchOut:"Switch output",leftLamp:"Left lamp feed",rightLamp:"Right lamp feed",ground:"Lamp ground",negative:"Battery negative"};\nconst pointCoords={battery:[215,230],fuseOut:[490,218],switchOut:[660,218],leftLamp:[197,379],rightLamp:[717,469],ground:[755,455],negative:[215,285]};
+const state={tail:false,brake:false,fault:"none",selected:"battery",view:"physical",activeLead:"red",redPoint:"battery",blackPoint:"negative"};
+const pointNames={battery:"Battery positive",fuseOut:"Fuse output",switchOut:"Switch output",leftLamp:"Left lamp feed",rightLamp:"Right lamp feed",ground:"Lamp ground",negative:"Battery negative"};
+const pointCoords={battery:[215,230],fuseOut:[490,218],switchOut:[660,218],leftLamp:[197,379],rightLamp:[717,469],ground:[755,455],negative:[215,285]};
 const details={battery:"Battery box: nominal 12.6V supply with a negative return. The simulator uses an idealized source for this first training build.",fuse:"Lighting fuse: protects the branch against excessive current. The open-feed fault is placed downstream of the fuse in this introductory model.",switch:"Cab light switch: controls the tail/marker branch. Brake control is represented separately for this first-stage lesson.",leftLamp:"Left rear lamp assembly: parallel tail and brake loads share a ground return.",rightLamp:"Right rear lamp assembly: parallel tail and brake loads share a ground return."};
 function nodeVoltage(point){
  const feedOpen=state.fault==="openFeed",groundOpen=state.fault==="openGround";
@@ -92,7 +94,9 @@ function update(){
  const red=state.redPoint,black=state.blackPoint;
  const volts=Math.abs(nodeVoltage(red)-nodeVoltage(black));
  $("reading").textContent=volts.toFixed(2)+" V";
- $("meterCaption").textContent="RED: "+pointNames[red].toUpperCase()+" · BLACK: "+pointNames[black].toUpperCase();\n $("probeSummary").innerHTML="<b style=\"color:#ff8b7b\">Red:</b> "+pointNames[red]+"<br><b style=\"color:#83c5f2\">Black:</b> "+pointNames[black];\n drawProbeLeads();
+ $("meterCaption").textContent="RED: "+pointNames[red].toUpperCase()+" · BLACK: "+pointNames[black].toUpperCase();
+ $("probeSummary").innerHTML="<b style="color:#ff8b7b">Red:</b> "+pointNames[red]+"<br><b style="color:#83c5f2">Black:</b> "+pointNames[black];
+ drawProbeLeads();
  $("explain").textContent=state.selected&&details[state.selected]?details[state.selected]:state.fault==="poorGround"?"High-resistance ground inserted: the simplified model shows a raised ground-side potential when the lighting load is commanded on.":state.fault==="openGround"?"Open ground inserted: the return path is interrupted. A real diagnostic sequence would verify the ground path under load.":state.fault==="openFeed"?"Open feed inserted downstream of branch protection. Compare voltage before and after the interruption.":"Select a component to inspect it. Turn on the tail or brake circuit to see the energized path.";
  if(state.fault!=="none")$("status").textContent="Training fault active: "+$("faultSelect").selectedOptions[0].text+". Readings are illustrative, not OEM specifications.";
  else $("status").textContent="System: 12.6V nominal · negative-ground · simplified resistive training model.";
