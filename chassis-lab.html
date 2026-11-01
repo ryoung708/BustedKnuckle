@@ -155,7 +155,8 @@ function update(){
  const tailOn=state.tail&&!feedOpen&&!groundBad,brakeOn=state.brake&&!feedOpen&&!groundBad;
  ["leftTail","rightTail","schLeftTail","schRightTail"].forEach(id=>document.querySelectorAll("#"+id).forEach(el=>el.classList.toggle("on",tailOn)));
  ["leftBrake","rightBrake","schLeftBrake","schRightBrake"].forEach(id=>document.querySelectorAll("#"+id).forEach(el=>el.classList.toggle("on",brakeOn)));
- ["physPower","schFeed"].forEach(id=>document.querySelectorAll("#"+id).forEach(el=>el.classList.toggle("hot",(state.tail||state.brake)&&!feedOpen)));\n ["harness","schAfterFuse","schTail"].forEach(id=>document.querySelectorAll("#"+id).forEach(el=>el.classList.toggle("hot",state.tail&&!feedOpen)));
+ ["physPower","schFeed"].forEach(id=>document.querySelectorAll("#"+id).forEach(el=>el.classList.toggle("hot",(state.tail||state.brake)&&!feedOpen)));
+ ["harness","schAfterFuse","schTail"].forEach(id=>document.querySelectorAll("#"+id).forEach(el=>el.classList.toggle("hot",state.tail&&!feedOpen)));
  ["physBrakeFeed","schBrakeFeed","schBrakeAfterFuse","schBrake"].forEach(id=>document.querySelectorAll("#"+id).forEach(el=>el.classList.toggle("hot",state.brake&&!feedOpen)));
  ["physGround","schGround"].forEach(id=>document.querySelectorAll("#"+id).forEach(el=>el.classList.toggle("hot",(state.tail||state.brake)&&!groundBad)));
  const red=state.redPoint,black=state.blackPoint;
