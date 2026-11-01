@@ -8,11 +8,11 @@
 /* Interactive circuit bench */
 .bench{margin:18px 0;padding:18px;background:linear-gradient(135deg,#17212a,#0b1116);border:1px solid #a85e16;border-radius:12px}
 .bench h2{font-size:21px;margin:4px 0 6px}.bench p{font-size:12px;line-height:1.55;color:var(--muted)}
-.bench-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.bench-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .bench-controls label{display:block;color:var(--muted);font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.07em}
 .bench select{display:block;width:100%;margin-top:6px;padding:10px;background:var(--raised);border:1px solid var(--line);border-radius:7px;color:var(--text)}
 .circuit-board{margin-top:12px;padding:10px;background:#080d11;border:1px solid var(--line);border-radius:9px}
-.circuit-board svg{width:100%;height:auto;display:block;max-height:390px}
+.board-layout{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:12px;align-items:start}.circuit-board svg{width:100%;height:auto;display:block;max-height:390px}
 .wire{fill:none;stroke:#668276;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
 .wire.live{stroke:#70c69a;filter:drop-shadow(0 0 4px #70c69a88)}
 .wire.fault{stroke:#ff9f1c;stroke-dasharray:9 7}
@@ -37,7 +37,7 @@
 .meter-console .explain{padding:12px;background:#0a1015;border:1px solid var(--line);border-radius:8px;color:var(--muted);font-size:12px;line-height:1.55}
 .bench-status{margin-top:10px;padding:11px;border-left:3px solid var(--green);background:#70c69a12;color:var(--muted);font-size:12px;line-height:1.5}
 .bench-status.warn{border-color:var(--amber);background:#ff9f1c12}
-@media(max-width:720px){.bench-controls{grid-template-columns:1fr}.meter-console{grid-template-columns:1fr}.circuit-board svg{min-width:620px}.circuit-board{overflow-x:auto}}
+@media(max-width:900px){.board-layout{grid-template-columns:1fr}.board-layout .meter-console{grid-template-columns:150px minmax(0,1fr)}}@media(max-width:720px){.bench-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.board-layout .meter-console{grid-template-columns:1fr}.circuit-board svg{min-width:620px}.circuit-board{overflow-x:auto}}
 
 
 .probe-lead{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;filter:drop-shadow(0 0 3px #000)}
@@ -149,16 +149,16 @@ function benchModel(){
  const nodes=Object.keys(nodeNames);
  const resistors=[];
  const add=(from,to,ohms,id)=>{if(Number.isFinite(ohms)&&ohms>0)resistors.push({from,to,ohms,id});};
- add("battery","fuseIn",0.1,"battery-feed");
- add("fuseIn","fuseOut",fuseOpen?null:0.1,"fuse");
- add("fuseOut","switchIn",fault==="open"?null:(fault==="resistive"?1.5:0.1),"feed-wire");
- add("switchIn","switch",on?0.1:null,"switch");
- add("switch","load",0.1,"load-feed");
+ add("battery","fuseIn",0.005,"battery-feed");
+ add("fuseIn","fuseOut",fuseOpen?null:0.005,"fuse");
+ add("fuseOut","switchIn",fault==="open"?null:(fault==="resistive"?1.5:0.005),"feed-wire");
+ add("switchIn","switch",on?0.005:null,"switch");
+ add("switch","load",0.005,"load-feed");
  add("load","loadOut",3.0,"lamp");
  // Put the ground fault in the return conductor itself. The chassis-side
  // node remains connected when the battery negative post is isolated.
- add("loadOut","ground",fault==="ground"?4.8:0.1,"ground-connection");
- add("ground","negative",0.1,"battery-negative-cable");
+ add("loadOut","ground",fault==="ground"?4.8:0.005,"ground-connection");
+ add("ground","negative",0.005,"battery-negative-cable");
  if(fault==="short")add("load","ground",0.1,"short-to-ground");
 
  function solveNetwork(branches, fixedVoltages, injections={}){
@@ -210,7 +210,7 @@ function benchModel(){
   volts={battery:12.6,fuseIn:12.59,fuseOut:fuseOpen?0:12.49,switchIn:fault==="open"?0:(fuseOpen?0:12.39),switch:0,load:0,loadOut:0,ground:0,negative:0};
  }
  const lampOn=on&&!batteryIsolated&&totalCurrent>0;
- const brightness=Math.max(0,Math.min(1,totalCurrent/(12.6/(0.1+0.1+0.1+0.1+3.0+0.1+0.1))));
+ const brightness=Math.max(0,Math.min(1,totalCurrent/(12.6/(0.005*7+3.0))));
  const bulb=document.getElementById("lampBulb");
  bulb.setAttribute("fill",lampOn?"#ffca7a":"#29343e");
  bulb.setAttribute("filter",lampOn&&brightness>0.08?"url(#lampGlow)":"");
