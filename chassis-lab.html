@@ -79,7 +79,7 @@
 <circle cx="820" cy="250" r="7" fill="#ff9f1c"/><text x="820" y="230" text-anchor="middle" class="callout">TAIL SPLICE</text>
 <path class="wire" d="M820 250 H875 V235 H930 M875 250 V445 H930"/>
 <!-- switched brake branch -->
-<path class="wire" id="schBrakeFeed" d="M155 355 H235 V289 H290"/>
+<path class="wire" id="schBrakeFeed" d="M260 209 V289 H290"/>
 <path class="wire" id="schBrakeAfterFuse" d="M405 289 H480"/>
 <g class="node" data-node="brakeSwitch" tabindex="0" role="button" aria-label="Brake pedal switch"><rect class="hit" x="480" y="260" width="155" height="58" rx="7"/><text x="557" y="284" text-anchor="middle">BRAKE PEDAL</text><text x="557" y="302" text-anchor="middle" class="callout">NORMALLY OPEN SWITCH</text></g>
 <path class="wire" id="schBrake" d="M635 289 H760 V425 H820"/>
@@ -106,19 +106,19 @@
 <g class="testpoint" data-point="splice" tabindex="0" role="button"><circle cx="820" cy="250" r="6" fill="#ff9f1c"/><text x="830" y="242" class="callout">TAIL SPLICE</text></g>
 <g class="testpoint" data-point="leftBranch" tabindex="0" role="button"><circle cx="930" cy="235" r="6" fill="#ff9f1c"/><text x="920" y="225" text-anchor="end" class="callout">LEFT TAIL</text></g>
 <g class="testpoint" data-point="rightBranch" tabindex="0" role="button"><circle cx="930" cy="445" r="6" fill="#ff9f1c"/><text x="920" y="435" text-anchor="end" class="callout">RIGHT TAIL</text></g>
-<g class="testpoint" data-point="leftInput" tabindex="0" role="button"><circle cx="930" cy="285" r="6" fill="#ff9f1c"/><text x="920" y="275" text-anchor="end" class="callout">LEFT BRAKE</text></g>
+<g class="testpoint" data-point="leftInput" tabindex="0" role="button"><circle cx="970" cy="235" r="6" fill="#ff9f1c"/><text x="980" y="225" class="callout">LEFT TAIL IN</text></g>
 <g class="testpoint" data-point="leftGround" tabindex="0" role="button"><circle cx="970" cy="335" r="6" fill="#61a9df"/><text x="980" y="327" class="callout">LEFT GND</text></g>
-<g class="testpoint" data-point="rightInput" tabindex="0" role="button"><circle cx="930" cy="495" r="6" fill="#ff9f1c"/><text x="920" y="485" text-anchor="end" class="callout">RIGHT BRAKE</text></g>
+<g class="testpoint" data-point="rightInput" tabindex="0" role="button"><circle cx="970" cy="445" r="6" fill="#ff9f1c"/><text x="980" y="435" class="callout">RIGHT TAIL IN</text></g>
 <g class="testpoint" data-point="rightGround" tabindex="0" role="button"><circle cx="970" cy="545" r="6" fill="#61a9df"/><text x="980" y="537" class="callout">RIGHT GND</text></g>
 <g class="testpoint" data-point="brakeFuseIn" tabindex="0" role="button"><circle cx="290" cy="289" r="6" fill="#ff9f1c"/><text x="280" y="278" text-anchor="end" class="callout">BRAKE FUSE IN</text></g>
 <g class="testpoint" data-point="brakeFuseOut" tabindex="0" role="button"><circle cx="405" cy="289" r="6" fill="#ff9f1c"/><text x="405" y="278" class="callout">BRAKE FUSE OUT</text></g>
 <g class="testpoint" data-point="brakeSwitchIn" tabindex="0" role="button"><circle cx="480" cy="289" r="6" fill="#ff9f1c"/><text x="480" y="247" class="callout">PEDAL SW IN</text></g>
 <g class="testpoint" data-point="brakeSwitchOut" tabindex="0" role="button"><circle cx="635" cy="289" r="6" fill="#ff9f1c"/><text x="640" y="278" class="callout">PEDAL SW OUT</text></g>
 <g class="testpoint" data-point="brakeSplice" tabindex="0" role="button"><circle cx="820" cy="425" r="6" fill="#ff9f1c"/><text x="830" y="417" class="callout">BRAKE SPLICE</text></g>
-<g class="testpoint" data-point="brakeLeft" tabindex="0" role="button"><circle cx="930" cy="285" r="6" fill="#ff9f1c"/><text x="920" y="300" text-anchor="end" class="callout">LEFT BRAKE BRANCH</text></g>
-<g class="testpoint" data-point="brakeRight" tabindex="0" role="button"><circle cx="930" cy="495" r="6" fill="#ff9f1c"/><text x="920" y="510" text-anchor="end" class="callout">RIGHT BRAKE BRANCH</text></g>
+<g class="testpoint" data-point="brakeLeft" tabindex="0" role="button"><circle cx="970" cy="285" r="6" fill="#ff9f1c"/><text x="980" y="300" class="callout">LEFT BRAKE IN</text></g>
+<g class="testpoint" data-point="brakeRight" tabindex="0" role="button"><circle cx="970" cy="495" r="6" fill="#ff9f1c"/><text x="980" y="510" class="callout">RIGHT BRAKE IN</text></g>
 <circle id="schematic_redProbeTip" cx="155" cy="325" r="10" fill="none" stroke="#f07865" stroke-width="3" pointer-events="none"/><circle id="schematic_blackProbeTip" cx="155" cy="440" r="10" fill="none" stroke="#61a9df" stroke-width="3" pointer-events="none"/><text id="schematic_redProbeTag" class="probe-tag red" x="170" y="310">RED</text><text id="schematic_blackProbeTag" class="probe-tag black" x="170" y="465">BLACK</text></g>
-</svg></div>
+</svg></div></div>
 <div class="legend"><span><i class="key"></i> Energized path</span><span><i class="key blue"></i> Ground return</span><span><i class="key gray"></i> Inactive / unselected</span></div>
 <div class="below"><h2>Physical components & test locations</h2><div class="points"><div class="point"><b>Battery box</b>Supply and negative return</div><div class="point"><b>Lighting fuse</b>Branch protection</div><div class="point"><b>Cab switch</b>Tail-light control</div><div class="point"><b>Rear lamps</b>Parallel loads and grounds</div></div><p class="note">Select a component on either view to inspect its role. Both views represent the same simplified training circuit.</p></div></main>
 <aside class="panel"><h2>Bench controls</h2><div class="controls">
@@ -170,7 +170,7 @@ function update(){
 function drawProbeLeads(){
  const views=[
   {svg:$("physicalSvg"),coords:pointCoords},
-  {svg:$("schematicSvg"),coords:{battery:[155,325],negative:[155,440],fuseIn:[290,209],fuseOut:[405,209],switchIn:[480,209],switchOut:[635,209],splice:[820,250],leftBranch:[930,235],rightBranch:[930,445],leftInput:[930,285],leftGround:[970,335],rightInput:[930,495],rightGround:[970,545],ground:[970,620],brakeFuseIn:[290,289],brakeFuseOut:[405,289],brakeSwitchIn:[480,289],brakeSwitchOut:[635,289],brakeSplice:[820,425],brakeLeft:[930,285],brakeRight:[930,495]}}
+  {svg:$("schematicSvg"),coords:{battery:[155,325],negative:[155,440],fuseIn:[290,209],fuseOut:[405,209],switchIn:[480,209],switchOut:[635,209],splice:[820,250],leftBranch:[930,235],rightBranch:[930,445],leftInput:[970,235],leftGround:[970,335],rightInput:[970,445],rightGround:[970,545],ground:[970,620],brakeFuseIn:[290,289],brakeFuseOut:[405,289],brakeSwitchIn:[480,289],brakeSwitchOut:[635,289],brakeSplice:[820,425],brakeLeft:[970,285],brakeRight:[970,495]}}
  ];
  views.forEach(({svg,coords})=>{
   if(!svg)return;
