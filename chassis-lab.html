@@ -167,7 +167,7 @@ function update(){
 function drawProbeLeads(){
  const views=[
   {svg:$("physicalSvg"),coords:pointCoords},
-  {svg:$("schematicSvg"),coords:{battery:[160,85],negative:[102,135],fuseIn:[270,85],fuseOut:[385,85],switchIn:[475,85],switchOut:[600,85],splice:[700,85],leftBranch:[700,170],rightBranch:[660,310],leftInput:[820,160],leftGround:[887,210],rightInput:[820,300],rightGround:[887,350],ground:[887,405],brakeFuseIn:[270,390],brakeFuseOut:[385,390],brakeSwitchIn:[475,390],brakeSwitchOut:[600,390],brakeSplice:[700,390],brakeLeft:[820,390],brakeRight:[820,440]}}
+  {svg:$("schematicSvg"),coords:{battery:[160,260],negative:[160,355],fuseIn:[235,115],fuseOut:[347,115],switchIn:[420,115],switchOut:[552,115],splice:[720,178],leftBranch:[875,178],rightBranch:[875,225],leftInput:[875,215],leftGround:[915,250],rightInput:[875,410],rightGround:[915,445],ground:[915,505],brakeFuseIn:[235,310],brakeFuseOut:[347,310],brakeSwitchIn:[420,310],brakeSwitchOut:[552,310],brakeSplice:[720,373],brakeLeft:[875,215],brakeRight:[875,410]}}
  ];
  views.forEach(({svg,coords})=>{
   if(!svg)return;
