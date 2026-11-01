@@ -136,17 +136,24 @@ function update(){
  else $("status").textContent="System: 12.6V nominal · negative-ground · simplified resistive training model.";
 }
 function drawProbeLeads(){
- const svg=$(state.view==="physical"?"physicalSvg":"schematicSvg");
- const coords=state.view==="physical"?pointCoords:{battery:[160,85],negative:[102,135],fuseIn:[270,85],fuseOut:[385,85],switchIn:[475,85],switchOut:[600,85],splice:[700,85],leftBranch:[700,170],rightBranch:[660,310],leftInput:[820,160],leftGround:[887,210],rightInput:[820,300],rightGround:[887,350],ground:[887,405],brakeFuseIn:[270,390],brakeFuseOut:[385,390],brakeSwitchIn:[475,390],brakeSwitchOut:[600,390],brakeSplice:[700,390],brakeLeft:[820,390],brakeRight:[820,440]};
- const r=coords[state.redPoint]||coords.battery,b=coords[state.blackPoint]||coords.negative;
- const el=id=>svg.querySelector("#"+id);
- el("redLeadPath").setAttribute("d","M470 525 Q"+((470+r[0])/2-25)+" "+Math.max(25,(525+r[1])/2-35)+" "+r[0]+" "+r[1]);
- el("blackLeadPath").setAttribute("d","M530 525 Q"+((530+b[0])/2+25)+" "+Math.max(25,(525+b[1])/2-20)+" "+b[0]+" "+b[1]);
- el("redProbeTip").setAttribute("cx",r[0]);el("redProbeTip").setAttribute("cy",r[1]);
- el("blackProbeTip").setAttribute("cx",b[0]);el("blackProbeTip").setAttribute("cy",b[1]);
- el("redProbeTag").setAttribute("x",Math.min(930,r[0]+12));el("redProbeTag").setAttribute("y",r[1]-12);
- el("blackProbeTag").setAttribute("x",Math.min(930,b[0]+12));el("blackProbeTag").setAttribute("y",b[1]+20);
- $("probeHint").textContent=(state.activeLead==="red"?"Red":"Black")+" lead selected · click a labeled test point.";
+ const views=[
+  {svg:$("physicalSvg"),coords:pointCoords},
+  {svg:$("schematicSvg"),coords:{battery:[160,85],negative:[102,135],fuseIn:[270,85],fuseOut:[385,85],switchIn:[475,85],switchOut:[600,85],splice:[700,85],leftBranch:[700,170],rightBranch:[660,310],leftInput:[820,160],leftGround:[887,210],rightInput:[820,300],rightGround:[887,350],ground:[887,405],brakeFuseIn:[270,390],brakeFuseOut:[385,390],brakeSwitchIn:[475,390],brakeSwitchOut:[600,390],brakeSplice:[700,390],brakeLeft:[820,390],brakeRight:[820,440]}}
+ ];
+ views.forEach(({svg,coords})=>{
+  if(!svg)return;
+  const r=coords[state.redPoint]||coords.battery,b=coords[state.blackPoint]||coords.negative;
+  const el=id=>svg.querySelector("#"+id);
+  const redPath=el("redLeadPath"),blackPath=el("blackLeadPath"),redTip=el("redProbeTip"),blackTip=el("blackProbeTip"),redTag=el("redProbeTag"),blackTag=el("blackProbeTag");
+  if(!redPath||!blackPath||!redTip||!blackTip||!redTag||!blackTag)return;
+  redPath.setAttribute("d","M470 525 Q"+((470+r[0])/2-25)+" "+Math.max(25,(525+r[1])/2-35)+" "+r[0]+" "+r[1]);
+  blackPath.setAttribute("d","M530 525 Q"+((530+b[0])/2+25)+" "+Math.max(25,(525+b[1])/2-20)+" "+b[0]+" "+b[1]);
+  redTip.setAttribute("cx",r[0]);redTip.setAttribute("cy",r[1]);
+  blackTip.setAttribute("cx",b[0]);blackTip.setAttribute("cy",b[1]);
+  redTag.setAttribute("x",Math.min(930,r[0]+12));redTag.setAttribute("y",r[1]-12);
+  blackTag.setAttribute("x",Math.min(930,b[0]+12));blackTag.setAttribute("y",b[1]+20);
+ });
+ $("probeHint").textContent=(state.activeLead==="red"?"Red":"Black")+" lead selected · click a labeled test point. Both views stay synchronized.";
 }
 function chooseProbe(point){if(state.activeLead==="red")state.redPoint=point;else state.blackPoint=point;update();}
 function chooseNode(el){state.selected=el.dataset.node;document.querySelectorAll(".node").forEach(n=>n.classList.toggle("selected",n.dataset.node===state.selected));$("explain").textContent=details[state.selected]||"Selected test location."; }
