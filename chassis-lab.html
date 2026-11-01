@@ -106,7 +106,7 @@ function update(){
  const volts=Math.abs(nodeVoltage(red)-nodeVoltage(black));
  $("reading").textContent=volts.toFixed(2)+" V";
  $("meterCaption").textContent="RED: "+pointNames[red].toUpperCase()+" · BLACK: "+pointNames[black].toUpperCase();
- $"probeSummary").innerHTML='<b style="color:#ff8b7b">Red:</b> '+pointNames[red]+'<br><b style="color:#83c5f2">Black:</b> '+pointNames[black];
+ $("probeSummary").innerHTML='<b style="color:#ff8b7b">Red:</b> '+pointNames[red]+'<br><b style="color:#83c5f2">Black:</b> '+pointNames[black];
  drawProbeLeads();
  $("explain").textContent=state.selected&&details[state.selected]?details[state.selected]:state.fault==="poorGround"?"High-resistance ground inserted: the simplified model shows a raised ground-side potential when the lighting load is commanded on.":state.fault==="openGround"?"Open ground inserted: the return path is interrupted. A real diagnostic sequence would verify the ground path under load.":state.fault==="openFeed"?"Open feed inserted downstream of branch protection. Compare voltage before and after the interruption.":"Select a component to inspect it. Turn on the tail or brake circuit to see the energized path.";
  if(state.fault!=="none")$("status").textContent="Training fault active: "+$("faultSelect").selectedOptions[0].text+". Readings are illustrative, not OEM specifications.";
