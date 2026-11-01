@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b0e">
+<title>IronKnuckle | Chassis Electrical Lab</title>
+<style>
+:root{color-scheme:dark;--bg:#090b0e;--panel:#111820;--raised:#1a232d;--line:#344252;--text:#edf2f6;--muted:#9aa8b6;--amber:#ff9f1c;--green:#70c69a;--blue:#61a9df;--red:#f07865}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#ff9f1c14,transparent 42%),var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,Segoe UI,sans-serif}
+.wrap{width:min(1440px,100%);margin:auto;padding:22px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}.eyebrow{color:var(--amber);font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}h1{font-size:clamp(23px,3vw,34px);line-height:1.1;margin:5px 0}.sub{color:var(--muted);margin:0}.back{color:var(--amber);text-decoration:none;font-weight:800}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.tab,button,select{font:inherit}.tab,button,select{background:var(--raised);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:10px 13px}.tab{cursor:pointer;font-weight:800}.tab.active{border-color:var(--amber);color:var(--amber);background:#ff9f1c18}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:start}.panel{background:linear-gradient(180deg,#ffffff05,transparent),var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px;min-width:0}.panel h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 12px}.stage{background:#080d12;border:1px solid #293744;border-radius:8px;padding:8px;overflow:auto}.stage svg{display:block;width:100%;height:auto;min-width:650px;max-height:650px}.node{cursor:pointer;outline:none}.node:focus .hit,.node.selected .hit{stroke:var(--amber);stroke-width:3}.node text{font: bold 12px system-ui;fill:#e8edf2;pointer-events:none}.wire{fill:none;stroke:#6b7885;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.wire.hot{stroke:var(--green);stroke-width:7;filter:drop-shadow(0 0 4px #70c69a88)}.wire.ground{stroke:var(--blue)}.hit{fill:#17232d;stroke:#718292;stroke-width:2}.lamp{fill:#26323d;stroke:#9aa8b6;stroke-width:3}.lamp.on{fill:#ffbf45;stroke:#ffe0a1;filter:drop-shadow(0 0 10px #ffb52d)}.battery{fill:#172b24;stroke:var(--green);stroke-width:2}.callout{fill:#aeb9c4;font:11px system-ui}.schem-label{fill:#e8edf2;font:12px system-ui;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:13px;color:var(--muted);font-size:11px;margin:10px 2px}.key{display:inline-block;width:18px;height:4px;vertical-align:middle;margin-right:5px;background:var(--green)}.key.blue{background:var(--blue)}.key.gray{background:#6b7885}
+.controls{display:grid;gap:10px}.field label{display:block;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}.field select{width:100%}.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;background:var(--raised);border:1px solid var(--line);border-radius:8px}.toggle span{font-weight:750}.toggle input{width:19px;height:19px;accent-color:var(--amber)}.meter{padding:13px;border:1px solid #526477;border-radius:9px;background:#070b0f;text-align:center}.meter small{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.15em}.reading{font:800 30px ui-monospace,monospace;color:var(--green);margin:4px 0}.meter select{width:100%;margin-top:9px}.explain{margin-top:12px;padding:12px;border-left:3px solid var(--amber);background:#ff9f1c10;color:#cbd4dc;font-size:12px;line-height:1.55}.status{color:var(--muted);font-size:11px;margin-top:10px}.below{margin-top:14px}.points{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.point{padding:9px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--muted);font-size:11px}.point b{display:block;color:var(--text);margin-bottom:3px}.note{color:var(--muted);font-size:11px;margin-top:10px}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.meter{grid-column:1/-1}.explain{grid-column:1/-1}}
+@media(max-width:620px){.wrap{padding:13px}.top{align-items:flex-start}.controls{grid-template-columns:1fr}.points{grid-template-columns:repeat(2,minmax(0,1fr))}.stage svg{min-width:700px}}
+</style>
+</head>
+<body><div class="wrap">
+<header class="top"><div><div class="eyebrow">IronKnuckle · Interactive training</div><h1>Chassis Electrical Lab</h1><p class="sub">Basic day-cab tractor · 12V negative-ground lighting</p></div><a class="back" href="./index.html">← Workspace</a></header>
+<div class="toolbar" role="tablist" aria-label="Chassis views"><button class="tab active" id="physicalTab" type="button">Physical chassis</button><button class="tab" id="schematicTab" type="button">Electrical schematic</button><button class="tab" id="resetBtn" type="button">Reset lab</button></div>
+<div class="layout"><main class="panel"><h2 id="viewTitle">Physical layout · top view</h2><div class="stage" id="stage">
+<svg id="physicalSvg" viewBox="0 0 1000 570" role="img" aria-label="Top-down day cab truck chassis with battery box, frame rails, harness and rear lamps">
+<defs><linearGradient id="cab" x2="0" y2="1"><stop stop-color="#344452"/><stop offset="1" stop-color="#1a2732"/></linearGradient></defs>
+<!-- chassis rails and crossmembers --><path d="M245 95 V485 M755 95 V485" stroke="#697784" stroke-width="18" stroke-linecap="round"/><path d="M245 95 V485 M755 95 V485" stroke="#202d38" stroke-width="9"/>
+<g stroke="#53616e" stroke-width="9"><path d="M245 145 H755 M245 235 H755 M245 345 H755 M245 435 H755"/></g>
+<!-- cab --> <path d="M365 30 Q365 12 390 12 H610 Q635 12 635 30 L660 142 Q660 168 632 168 H368 Q340 168 340 142Z" fill="url(#cab)" stroke="#8796a4" stroke-width="3"/><path d="M385 36 H615 L630 112 H370Z" fill="#101c26" stroke="#6e8190" stroke-width="2"/><text x="500" y="83" text-anchor="middle" class="schem-label">DAY CAB</text><text x="500" y="101" text-anchor="middle" class="callout">DASH SWITCHES</text>
+<!-- battery box --> <g class="node" data-node="battery" tabindex="0" role="button" aria-label="Battery box"><rect class="hit battery" x="90" y="205" width="125" height="105" rx="9"/><text x="152" y="245" text-anchor="middle">12V</text><text x="152" y="264" text-anchor="middle">BATTERY</text><text x="152" y="283" text-anchor="middle" class="callout">BOX</text></g>
+<!-- fuse/distribution --> <g class="node" data-node="fuse" tabindex="0" role="button" aria-label="Lighting fuse"><rect class="hit" x="365" y="190" width="125" height="55" rx="7"/><text x="427" y="213" text-anchor="middle">LIGHTING</text><text x="427" y="230" text-anchor="middle">FUSE</text></g>
+<!-- harness feed --> <path id="physPower" class="wire" d="M215 230 H365 M490 218 H755 V470 H830"/><path id="physGround" class="wire ground" d="M830 505 H755 V455 H215 V285"/>
+<!-- cab switch --> <g class="node" data-node="switch" tabindex="0" role="button" aria-label="Cab lighting switch"><rect class="hit" x="535" y="190" width="125" height="55" rx="7"/><text x="597" y="213" text-anchor="middle">CAB LIGHT</text><text x="597" y="230" text-anchor="middle">SWITCH</text></g>
+<!-- harness route --> <path id="harness" class="wire" d="M660 218 H755 V390 H850"/><text x="775" y="300" class="callout" transform="rotate(90 775 300)">FRAME HARNESS</text>
+<!-- rear lamps --> <g class="node" data-node="leftLamp" tabindex="0" role="button" aria-label="Left rear lamp"><rect class="hit" x="820" y="350" width="130" height="58" rx="8"/><circle id="leftTail" class="lamp" cx="842" cy="379" r="9"/><circle id="leftBrake" class="lamp" cx="870" cy="379" r="9"/><text x="910" y="375" text-anchor="middle">LEFT</text><text x="910" y="391" text-anchor="middle" class="callout">REAR LAMP</text></g>
+<g class="node" data-node="rightLamp" tabindex="0" role="button" aria-label="Right rear lamp"><rect class="hit" x="820" y="440" width="130" height="58" rx="8"/><circle id="rightTail" class="lamp" cx="842" cy="469" r="9"/><circle id="rightBrake" class="lamp" cx="870" cy="469" r="9"/><text x="910" y="465" text-anchor="middle">RIGHT</text><text x="910" y="481" text-anchor="middle" class="callout">REAR LAMP</text></g>
+<text x="500" y="540" text-anchor="middle" class="callout">FRONT / CAB ↑ · REAR AXLE & LIGHTING ↓</text><text x="35" y="35" class="callout">DRIVER SIDE</text>
+</svg>
+<svg id="schematicSvg" viewBox="0 0 1000 570" role="img" aria-label="Simplified 12 volt rear lighting schematic" hidden>
+<text x="40" y="45" class="schem-label">12V BATTERY</text><rect class="hit battery" x="45" y="65" width="115" height="70" rx="8"/><text x="102" y="94" text-anchor="middle" class="schem-label">B+</text><text x="102" y="116" text-anchor="middle" class="callout">B− RETURN</text>
+<path id="schFeed" class="wire" d="M160 85 H270"/><g class="node" data-node="fuse" tabindex="0"><rect class="hit" x="270" y="58" width="115" height="55" rx="7"/><text x="327" y="91" text-anchor="middle">FUSE</text></g><path id="schAfterFuse" class="wire" d="M385 85 H475"/>
+<g class="node" data-node="switch" tabindex="0"><rect class="hit" x="475" y="58" width="125" height="55" rx="7"/><text x="537" y="91" text-anchor="middle">TAIL SWITCH</text></g><path id="schTail" class="wire" d="M600 85 H700 V170 H820"/>
+<path id="schBrake" class="wire" d="M600 85 H660 V310 H820"/><text x="635" y="285" class="callout">BRAKE FEED (simplified)</text>
+<g class="node" data-node="leftLamp" tabindex="0"><rect class="hit" x="820" y="135" width="135" height="75" rx="8"/><circle id="schLeftTail" class="lamp" cx="850" cy="160" r="9"/><circle id="schLeftBrake" class="lamp" cx="880" cy="160" r="9"/><text x="888" y="192" text-anchor="middle" class="callout">LEFT REAR</text></g>
+<g class="node" data-node="rightLamp" tabindex="0"><rect class="hit" x="820" y="275" width="135" height="75" rx="8"/><circle id="schRightTail" class="lamp" cx="850" cy="300" r="9"/><circle id="schRightBrake" class="lamp" cx="880" cy="300" r="9"/><text x="888" y="332" text-anchor="middle" class="callout">RIGHT REAR</text></g>
+<path id="schGround" class="wire ground" d="M887 210 V405 H102 V135"/><path class="wire ground" d="M887 350 V405"/><text x="430" y="445" class="callout">COMMON GROUND RETURN TO BATTERY NEGATIVE</text><text x="40" y="510" class="callout">ILLUSTRATIVE TRAINING CIRCUIT · NOT AN OEM WIRING DIAGRAM</text>
+</svg></div>
+<div class="legend"><span><i class="key"></i> Energized path</span><span><i class="key blue"></i> Ground return</span><span><i class="key gray"></i> Inactive / unselected</span></div>
+<div class="below"><h2>Physical components & test locations</h2><div class="points"><div class="point"><b>Battery box</b>Supply and negative return</div><div class="point"><b>Lighting fuse</b>Branch protection</div><div class="point"><b>Cab switch</b>Tail-light control</div><div class="point"><b>Rear lamps</b>Parallel loads and grounds</div></div><p class="note">Select a component on either view to inspect its role. Both views represent the same simplified training circuit.</p></div></main>
+<aside class="panel"><h2>Bench controls</h2><div class="controls">
+<label class="toggle"><span>Tail / marker lights</span><input id="tailToggle" type="checkbox"></label>
+<label class="toggle"><span>Brake lights</span><input id="brakeToggle" type="checkbox"></label>
+<div class="field"><label for="faultSelect">Insert training fault</label><select id="faultSelect"><option value="none">Healthy circuit</option><option value="openFeed">Open feed</option><option value="poorGround">High-resistance ground</option><option value="openGround">Open ground</option></select></div>
+<div class="field"><label for="redPoint">Red meter lead</label><select id="redPoint"><option value="battery">Battery positive</option><option value="fuseOut">Fuse output</option><option value="switchOut">Switch output</option><option value="leftLamp">Left lamp feed</option><option value="ground">Lamp ground</option></select></div>
+<div class="field"><label for="blackPoint">Black meter lead</label><select id="blackPoint"><option value="negative">Battery negative</option><option value="ground">Lamp ground</option><option value="battery">Battery positive</option><option value="leftLamp">Left lamp feed</option></select></div>
+<div class="meter"><small>VIRTUAL METER · DC VOLTS</small><div class="reading" id="reading">12.6 V</div><small id="meterCaption">RED: BATTERY POSITIVE · BLACK: BATTERY NEGATIVE</small></div>
+</div><div class="explain" id="explain">Select a component to inspect it. Turn on the tail or brake circuit to see the energized path.</div><div class="status" id="status">System: 12.6V nominal · negative-ground · simplified resistive training model.</div></aside></div>
+</div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const state={tail:false,brake:false,fault:"none",selected:"battery",view:"physical"};
+const details={battery:"Battery box: nominal 12.6V supply with a negative return. The simulator uses an idealized source for this first training build.",fuse:"Lighting fuse: protects the branch against excessive current. The open-feed fault is placed downstream of the fuse in this introductory model.",switch:"Cab light switch: controls the tail/marker branch. Brake control is represented separately for this first-stage lesson.",leftLamp:"Left rear lamp assembly: parallel tail and brake loads share a ground return.",rightLamp:"Right rear lamp assembly: parallel tail and brake loads share a ground return."};
+function nodeVoltage(point){
+ const feedOpen=state.fault==="openFeed",groundOpen=state.fault==="openGround";
+ if(point==="negative")return 0;
+ if(point==="battery")return 12.6;
+ if(point==="ground")return groundOpen?12.6:(state.fault==="poorGround"&& (state.tail||state.brake)?0.9:0.02);
+ const active=state.tail||state.brake;
+ if(point==="fuseOut")return feedOpen?0:12.58;
+ if(point==="switchOut")return feedOpen?0:(state.tail?12.45:0);
+ if(point==="leftLamp")return feedOpen?0:(active?12.3:0);
+ return 0;
+}
+function update(){
+ const feedOpen=state.fault==="openFeed",groundBad=state.fault==="poorGround"||state.fault==="openGround";
+ const tailOn=state.tail&&!feedOpen&&!groundBad,brakeOn=state.brake&&!feedOpen&&!groundBad;
+ ["leftTail","rightTail","schLeftTail","schRightTail"].forEach(id=>$(id).classList.toggle("on",tailOn));
+ ["leftBrake","rightBrake","schLeftBrake","schRightBrake"].forEach(id=>$(id).classList.toggle("on",brakeOn));
+ ["physPower","harness","schFeed","schAfterFuse","schTail","schBrake"].forEach(id=>$(id).classList.toggle("hot",(state.tail||state.brake)&&!feedOpen));
+ ["physGround","schGround"].forEach(id=>$(id).classList.toggle("hot",(state.tail||state.brake)&&!groundBad));
+ const red=$("redPoint").value,black=$("blackPoint").value;
+ const volts=Math.abs(nodeVoltage(red)-nodeVoltage(black));
+ $("reading").textContent=volts.toFixed(2)+" V";
+ $("meterCaption").textContent="RED: "+red.toUpperCase()+" · BLACK: "+black.toUpperCase();
+ $("explain").textContent=state.selected&&details[state.selected]?details[state.selected]:state.fault==="poorGround"?"High-resistance ground inserted: the simplified model shows a raised ground-side potential when the lighting load is commanded on.":state.fault==="openGround"?"Open ground inserted: the return path is interrupted. A real diagnostic sequence would verify the ground path under load.":state.fault==="openFeed"?"Open feed inserted downstream of branch protection. Compare voltage before and after the interruption.":"Select a component to inspect it. Turn on the tail or brake circuit to see the energized path.";
+ if(state.fault!=="none")$("status").textContent="Training fault active: "+$("faultSelect").selectedOptions[0].text+". Readings are illustrative, not OEM specifications.";
+ else $("status").textContent="System: 12.6V nominal · negative-ground · simplified resistive training model.";
+}
+function chooseNode(el){state.selected=el.dataset.node;document.querySelectorAll(".node").forEach(n=>n.classList.toggle("selected",n.dataset.node===state.selected));$("explain").textContent=details[state.selected]||"Selected test location."; }
+document.querySelectorAll(".node").forEach(el=>{el.addEventListener("click",()=>chooseNode(el));el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();chooseNode(el)}})});
+$("tailToggle").addEventListener("change",e=>{state.tail=e.target.checked;state.selected=null;update()});
+$("brakeToggle").addEventListener("change",e=>{state.brake=e.target.checked;state.selected=null;update()});
+$("faultSelect").addEventListener("change",e=>{state.fault=e.target.value;state.selected=null;update()});
+["redPoint","blackPoint"].forEach(id=>$(id).addEventListener("change",update));
+function setView(view){state.view=view;const physical=view==="physical";$("physicalSvg").hidden=!physical;$("schematicSvg").hidden=physical;$("physicalTab").classList.toggle("active",physical);$("schematicTab").classList.toggle("active",!physical);$("viewTitle").textContent=physical?"Physical layout · top view":"Electrical schematic · simplified 12V lighting"; }
+$("physicalTab").addEventListener("click",()=>setView("physical"));$("schematicTab").addEventListener("click",()=>setView("schematic"));
+$("resetBtn").addEventListener("click",()=>{state.tail=false;state.brake=false;state.fault="none";state.selected="battery";$("tailToggle").checked=false;$("brakeToggle").checked=false;$("faultSelect").value="none";$("redPoint").value="battery";$("blackPoint").value="negative";document.querySelectorAll(".node").forEach(n=>n.classList.remove("selected"));setView("physical");update()});
+update();
+})();
+</script>
+</body></html>
