@@ -72,6 +72,7 @@
   </label>
  </div>
  <div class="circuit-board">
+  <div class="board-layout">
   <svg viewBox="0 0 760 370" role="img" aria-label="Interactive simplified 12 volt battery, fuse, switch, lamp and ground circuit. Select circular test points to place meter probes.">
    <defs><filter id="lampGlow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
    <path id="feedA" class="wire" d="M115 145 H190"/><path id="feedB" class="wire" d="M260 145 H330"/><path id="feedC" class="wire" d="M405 145 H525"/>
@@ -103,13 +104,14 @@
    </g>
    <text id="lampState" x="585" y="355" fill="#a2afbc" font-size="12" text-anchor="middle">LAMP OFF</text>
   </svg>
+  <div class="meter-console" aria-live="polite">
+  <div class="virtual-meter"><small>VIRTUAL METER</small><strong id="benchReading">12.6 V</strong><small id="benchMeterMode">DC VOLTS</small></div>
+  <div class="explain" id="benchExplain">Healthy example: select two test points to measure the potential difference between them.</div>
+ </div>
+  </div>
   <div class="bench-legend"><span><i class="dot"></i> Normal path</span><span><i class="dot amber"></i> Fault area</span><span><i class="dot red"></i> Red probe</span><span><i class="dot blue"></i> Black probe</span></div>
  </div>
  <div class="bench-actions"><button type="button" id="selectRed" class="active">Place RED probe</button><button type="button" id="selectBlack">Place BLACK probe</button><button type="button" id="resetProbes">Reset probe positions</button><span id="activeProbeHint" class="note" aria-live="polite">RED lead selected — click a test point.</span></div>
- <div class="meter-console" aria-live="polite">
-  <div class="virtual-meter"><small>VIRTUAL METER</small><strong id="benchReading">12.6 V</strong><small id="benchMeterMode">DC VOLTS</small></div>
-  <div class="explain" id="benchExplain">Healthy example: the lamp has a complete path. Select two test points to measure the potential difference between them.</div>
- </div>
  <div class="bench-status" id="benchStatus">Training task: introduce a fault, then use the meter to find which section is affected.</div>
  <p class="note">Safety and scope: this is a simplified low-voltage teaching model. The short-to-ground option represents a protective fuse opening in the simulation; it does not model real fault energy. Never use simulated values as pass/fail limits or apply this diagram to a vehicle without its wiring diagram and OEM procedure. Resistance/continuity modes require battery negative to be disconnected in this simulation; the switch may remain closed once the circuit is isolated.</p>
 </section>
