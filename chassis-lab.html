@@ -42,7 +42,23 @@
 <g class="testpoint" data-point="switchOut" tabindex="0" role="button"><circle cx="660" cy="218" r="7" fill="#ff9f1c"/><text x="650" y="205" class="callout">SW OUT</text></g>
 <g class="testpoint" data-point="leftLamp" tabindex="0" role="button"><circle cx="201" cy="469" r="7" fill="#ff9f1c"/><text x="189" y="455" class="callout">LEFT FEED</text></g>
 <g class="testpoint" data-point="rightLamp" tabindex="0" role="button"><circle cx="711" cy="469" r="7" fill="#ff9f1c"/><text x="694" y="455" class="callout">RIGHT FEED</text></g>
-<g class="testpoint" data-point="ground" tabindex="0" role="button"><circle cx="755" cy="455" r="7" fill="#61a9df"/><text x="765" y="450" class="callout">GROUND</text></g>
+<g class="testpoint" data-point="fuseIn" tabindex="0" role="button"><circle cx="365" cy="218" r="7" fill="#ff9f1c"/><text x="350" y="205" class="callout">FUSE IN</text></g>
+<g class="testpoint" data-point="switchIn" tabindex="0" role="button"><circle cx="535" cy="218" r="7" fill="#ff9f1c"/><text x="520" y="205" class="callout">SW IN</text></g>
+<g class="testpoint" data-point="splice" tabindex="0" role="button"><circle cx="245" cy="379" r="7" fill="#ff9f1c"/><text x="255" y="370" class="callout">SPLICE</text></g>
+<g class="testpoint" data-point="leftBranch" tabindex="0" role="button"><circle cx="245" cy="469" r="7" fill="#ff9f1c"/><text x="255" y="458" class="callout">LEFT BRANCH</text></g>
+<g class="testpoint" data-point="rightBranch" tabindex="0" role="button"><circle cx="711" cy="445" r="7" fill="#ff9f1c"/><text x="700" y="432" class="callout">RIGHT BRANCH</text></g>
+<g class="testpoint" data-point="leftInput" tabindex="0" role="button"><circle cx="201" cy="469" r="7" fill="#ff9f1c"/><text x="180" y="490" class="callout">LAMP IN</text></g>
+<g class="testpoint" data-point="leftGround" tabindex="0" role="button"><circle cx="245" cy="495" r="7" fill="#61a9df"/><text x="255" y="508" class="callout">LEFT GND</text></g>
+<g class="testpoint" data-point="rightInput" tabindex="0" role="button"><circle cx="711" cy="469" r="7" fill="#ff9f1c"/><text x="700" y="490" class="callout">LAMP IN</text></g>
+<g class="testpoint" data-point="rightGround" tabindex="0" role="button"><circle cx="755" cy="495" r="7" fill="#61a9df"/><text x="765" y="508" class="callout">RIGHT GND</text></g><g class="testpoint" data-point="fuseIn" tabindex="0" role="button"><circle cx="270" cy="85" r="7" fill="#ff9f1c"/><text x="255" y="72" class="callout">FUSE IN</text></g>
+<g class="testpoint" data-point="switchIn" tabindex="0" role="button"><circle cx="475" cy="85" r="7" fill="#ff9f1c"/><text x="460" y="72" class="callout">SW IN</text></g>
+<g class="testpoint" data-point="splice" tabindex="0" role="button"><circle cx="700" cy="85" r="7" fill="#ff9f1c"/><text x="690" y="70" class="callout">SPLICE</text></g>
+<g class="testpoint" data-point="leftBranch" tabindex="0" role="button"><circle cx="700" cy="170" r="7" fill="#ff9f1c"/><text x="660" y="155" class="callout">LEFT BRANCH</text></g>
+<g class="testpoint" data-point="rightBranch" tabindex="0" role="button"><circle cx="660" cy="310" r="7" fill="#ff9f1c"/><text x="620" y="295" class="callout">RIGHT BRANCH</text></g>
+<g class="testpoint" data-point="leftInput" tabindex="0" role="button"><circle cx="820" cy="160" r="7" fill="#ff9f1c"/><text x="810" y="145" class="callout">LEFT IN</text></g>
+<g class="testpoint" data-point="leftGround" tabindex="0" role="button"><circle cx="887" cy="210" r="7" fill="#61a9df"/><text x="900" y="220" class="callout">LEFT GND</text></g>
+<g class="testpoint" data-point="rightInput" tabindex="0" role="button"><circle cx="820" cy="300" r="7" fill="#ff9f1c"/><text x="810" y="285" class="callout">RIGHT IN</text></g>
+<g class="testpoint" data-point="rightGround" tabindex="0" role="button"><circle cx="887" cy="350" r="7" fill="#61a9df"/><text x="900" y="360" class="callout">RIGHT GND</text></g><g class="testpoint" data-point="ground" tabindex="0" role="button"><circle cx="755" cy="455" r="7" fill="#61a9df"/><text x="765" y="450" class="callout">GROUND</text></g>
 <circle id="redProbeTip" class="probe-point" cx="215" cy="230" r="10" fill="none" stroke="#f07865" stroke-width="3" pointer-events="none"/>
 <circle id="blackProbeTip" class="probe-point" cx="215" cy="285" r="10" fill="none" stroke="#61a9df" stroke-width="3" pointer-events="none"/>
 <text id="redProbeTag" class="probe-tag red" x="230" y="215">RED</text><text id="blackProbeTag" class="probe-tag black" x="230" y="310">BLACK</text>
@@ -81,8 +97,8 @@
 (()=>{
 const $=id=>document.getElementById(id);
 const state={tail:false,brake:false,fault:"none",selected:"battery",view:"physical",activeLead:"red",redPoint:"battery",blackPoint:"negative"};
-const pointNames={battery:"Battery positive",fuseOut:"Fuse output",switchOut:"Switch output",leftLamp:"Left lamp feed",rightLamp:"Right lamp feed",ground:"Lamp ground",negative:"Battery negative"};
-const pointCoords={battery:[215,230],fuseOut:[490,218],switchOut:[660,218],leftLamp:[201,469],rightLamp:[711,469],ground:[755,455],negative:[215,285]};
+const pointNames={battery:"Battery positive",fuseIn:"Fuse input",fuseOut:"Fuse output",switchIn:"Switch input",switchOut:"Switch output",splice:"Harness splice",leftBranch:"Left splice output",rightBranch:"Right splice output",leftLamp:"Left lamp feed",leftInput:"Left lamp input",leftGround:"Left lamp ground output",rightLamp:"Right lamp feed",rightInput:"Right lamp input",rightGround:"Right lamp ground output",ground:"Common ground",negative:"Battery negative"};
+const pointCoords={battery:[215,230],fuseIn:[365,218],fuseOut:[490,218],switchIn:[535,218],switchOut:[660,218],splice:[245,379],leftBranch:[245,469],rightBranch:[711,445],leftLamp:[201,469],leftInput:[201,469],leftGround:[245,495],rightLamp:[711,469],rightInput:[711,469],rightGround:[755,495],ground:[755,455],negative:[215,285]};
 const details={battery:"Battery box: nominal 12.6V supply with a negative return. The simulator uses an idealized source for this first training build.",fuse:"Lighting fuse: protects the branch against excessive current. The open-feed fault is placed downstream of the fuse in this introductory model.",switch:"Cab light switch: controls the tail/marker branch. Brake control is represented separately for this first-stage lesson.",leftLamp:"Left rear lamp assembly: parallel tail and brake loads share a ground return.",rightLamp:"Right rear lamp assembly: parallel tail and brake loads share a ground return."};
 function nodeVoltage(point){
  const feedOpen=state.fault==="openFeed",groundOpen=state.fault==="openGround";
@@ -114,7 +130,7 @@ function update(){
 }
 function drawProbeLeads(){
  const svg=$(state.view==="physical"?"physicalSvg":"schematicSvg");
- const coords=state.view==="physical"?pointCoords:{battery:[160,85],fuseOut:[385,85],switchOut:[600,85],leftLamp:[850,160],rightLamp:[850,300],ground:[887,405],negative:[102,135]};
+ const coords=state.view==="physical"?pointCoords:{battery:[160,85],fuseIn:[270,85],fuseOut:[385,85],switchIn:[475,85],switchOut:[600,85],splice:[700,85],leftBranch:[700,170],rightBranch:[660,310],leftLamp:[850,160],leftInput:[820,160],leftGround:[887,210],rightLamp:[850,300],rightInput:[820,300],rightGround:[887,350],ground:[887,405],negative:[102,135]};
  const r=coords[state.redPoint]||coords.battery,b=coords[state.blackPoint]||coords.negative;
  const el=id=>svg.querySelector("#"+id);
  el("redLeadPath").setAttribute("d","M470 525 Q"+((470+r[0])/2-25)+" "+Math.max(25,(525+r[1])/2-35)+" "+r[0]+" "+r[1]);
