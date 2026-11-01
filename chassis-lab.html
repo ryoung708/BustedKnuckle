@@ -55,7 +55,18 @@
 <g class="node" data-node="leftLamp" tabindex="0"><rect class="hit" x="820" y="135" width="135" height="75" rx="8"/><circle id="schLeftTail" class="lamp" cx="850" cy="160" r="9"/><circle id="schLeftBrake" class="lamp" cx="880" cy="160" r="9"/><text x="888" y="192" text-anchor="middle" class="callout">LEFT REAR</text></g>
 <g class="node" data-node="rightLamp" tabindex="0"><rect class="hit" x="820" y="275" width="135" height="75" rx="8"/><circle id="schRightTail" class="lamp" cx="850" cy="300" r="9"/><circle id="schRightBrake" class="lamp" cx="880" cy="300" r="9"/><text x="888" y="332" text-anchor="middle" class="callout">RIGHT REAR</text></g>
 <path id="schGround" class="wire ground" d="M887 210 V405 H102 V135"/><path class="wire ground" d="M887 350 V405"/><text x="430" y="445" class="callout">COMMON GROUND RETURN TO BATTERY NEGATIVE</text><text x="40" y="510" class="callout">ILLUSTRATIVE TRAINING CIRCUIT · NOT AN OEM WIRING DIAGRAM</text>
-</svg></div>
+<g id="schematicProbeOverlay">
+<path id="redLeadPath" class="probe-lead red" d="M470 525 Q300 400 160 85"/><path id="blackLeadPath" class="probe-lead black" d="M530 525 Q350 420 102 135"/>
+<g class="testpoint" data-point="battery" tabindex="0" role="button"><circle cx="160" cy="85" r="7" fill="#ff9f1c"/><text x="170" y="75" class="callout">B+</text></g>
+<g class="testpoint" data-point="negative" tabindex="0" role="button"><circle cx="102" cy="135" r="7" fill="#61a9df"/><text x="112" y="150" class="callout">B−</text></g>
+<g class="testpoint" data-point="fuseOut" tabindex="0" role="button"><circle cx="385" cy="85" r="7" fill="#ff9f1c"/><text x="375" y="72" class="callout">FUSE OUT</text></g>
+<g class="testpoint" data-point="switchOut" tabindex="0" role="button"><circle cx="600" cy="85" r="7" fill="#ff9f1c"/><text x="590" y="72" class="callout">SW OUT</text></g>
+<g class="testpoint" data-point="leftLamp" tabindex="0" role="button"><circle cx="850" cy="160" r="7" fill="#ff9f1c"/><text x="840" y="145" class="callout">LEFT FEED</text></g>
+<g class="testpoint" data-point="rightLamp" tabindex="0" role="button"><circle cx="850" cy="300" r="7" fill="#ff9f1c"/><text x="840" y="285" class="callout">RIGHT FEED</text></g>
+<g class="testpoint" data-point="ground" tabindex="0" role="button"><circle cx="887" cy="405" r="7" fill="#61a9df"/><text x="897" y="410" class="callout">GROUND</text></g>
+<circle id="redProbeTip" cx="160" cy="85" r="10" fill="none" stroke="#f07865" stroke-width="3" pointer-events="none"/><circle id="blackProbeTip" cx="102" cy="135" r="10" fill="none" stroke="#61a9df" stroke-width="3" pointer-events="none"/>
+<text id="redProbeTag" class="probe-tag red" x="175" y="70">RED</text><text id="blackProbeTag" class="probe-tag black" x="115" y="155">BLACK</text>
+</g></svg></div>
 <div class="legend"><span><i class="key"></i> Energized path</span><span><i class="key blue"></i> Ground return</span><span><i class="key gray"></i> Inactive / unselected</span></div>
 <div class="below"><h2>Physical components & test locations</h2><div class="points"><div class="point"><b>Battery box</b>Supply and negative return</div><div class="point"><b>Lighting fuse</b>Branch protection</div><div class="point"><b>Cab switch</b>Tail-light control</div><div class="point"><b>Rear lamps</b>Parallel loads and grounds</div></div><p class="note">Select a component on either view to inspect its role. Both views represent the same simplified training circuit.</p></div></main>
 <aside class="panel"><h2>Bench controls</h2><div class="controls">
