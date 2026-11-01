@@ -20,100 +20,45 @@
 <header class="top"><div><div class="eyebrow">IronKnuckle · Interactive training</div><h1>Chassis Electrical Lab</h1><p class="sub">Basic day-cab tractor · 12V negative-ground lighting</p></div><a class="back" href="./index.html">← Workspace</a></header>
 <div class="toolbar"><button class="tab" id="resetBtn" type="button">↺ Reset lab</button></div>
 <div class="layout"><main class="panel"><h2>01 · Physical chassis layout</h2><p class="note">Top-down day-cab view. Select a test point here or in the schematic below; the meter leads stay synchronized.</p><div class="stage testing" id="stage">
-<svg id="physicalSvg" viewBox="0 0 1000 570" role="img" aria-label="Top-down day cab truck chassis with cab-mounted fuse panel and switches, frame-rail harness and rear lamps">
-<defs>
- <linearGradient id="cab" x2="0" y2="1"><stop stop-color="#465968"/><stop offset="1" stop-color="#1a2732"/></linearGradient>
- <linearGradient id="glass" x2="0" y2="1"><stop stop-color="#263c4b"/><stop offset="1" stop-color="#0c1720"/></linearGradient>
-</defs>
-<!-- Frame rails and crossmembers -->
-<path d="M245 95 V485 M755 95 V485" stroke="#697784" stroke-width="18" stroke-linecap="round"/>
-<path d="M245 95 V485 M755 95 V485" stroke="#202d38" stroke-width="9"/>
-<g stroke="#53616e" stroke-width="9"><path d="M245 145 H755 M245 235 H755 M245 345 H755 M245 435 H755"/></g>
-<!-- Day cab footprint, front at top -->
+<svg id="physicalSvg" viewBox="0 0 1000 590" role="img" aria-label="Day cab chassis with external battery main fuse, cab branch fuses and switches, rear lamp input and ground terminals">
+<defs><linearGradient id="cab" x2="0" y2="1"><stop stop-color="#465968"/><stop offset="1" stop-color="#1a2732"/></linearGradient></defs>
+<!-- Frame rails -->
+<path d="M245 95 V500 M755 95 V500" stroke="#697784" stroke-width="18"/><path d="M245 95 V500 M755 95 V500" stroke="#202d38" stroke-width="9"/>
+<g stroke="#53616e" stroke-width="9"><path d="M245 145 H755 M245 235 H755 M245 345 H755"/></g>
+<!-- Cab -->
 <path d="M365 30 Q365 12 390 12 H610 Q635 12 635 30 L660 142 Q660 176 632 176 H368 Q340 176 340 142Z" fill="url(#cab)" stroke="#9aa8b6" stroke-width="3"/>
-<path d="M385 34 H615 L628 96 H372Z" fill="url(#glass)" stroke="#718596" stroke-width="2"/>
-<path d="M372 104 H628 L638 151 Q638 163 622 163 H378 Q362 163 362 151Z" fill="#111b24" stroke="#647687" stroke-width="2"/>
-<text x="500" y="66" text-anchor="middle" class="schem-label">DAY CAB</text>
-<text x="500" y="83" text-anchor="middle" class="callout">WINDSHIELD / DASH</text>
-<!-- Cab-mounted distribution panel: main protection and individual branch fuses -->
-<g class="node" data-node="fuse" tabindex="0" role="button" aria-label="In-cab lighting fuse panel">
- <rect class="hit" x="378" y="112" width="112" height="48" rx="6"/>
- <text x="434" y="125" text-anchor="middle" class="callout">CAB FUSE PANEL</text>
- <rect x="388" y="132" width="28" height="18" rx="3" fill="#273b49" stroke="#91a3b1"/>
- <rect x="421" y="132" width="28" height="18" rx="3" fill="#273b49" stroke="#91a3b1"/>
- <rect x="454" y="132" width="26" height="18" rx="3" fill="#273b49" stroke="#91a3b1"/>
- <text x="402" y="145" text-anchor="middle" font-size="8" fill="#edf2f6">MAIN</text>
- <text x="435" y="145" text-anchor="middle" font-size="8" fill="#edf2f6">TAIL</text>
- <text x="467" y="145" text-anchor="middle" font-size="8" fill="#edf2f6">BRK</text>
-</g>
-<!-- Separate in-cab operator switches -->
-<g class="node" data-node="switch" tabindex="0" role="button" aria-label="In-cab tail lighting switch">
- <rect class="hit" x="500" y="112" width="66" height="48" rx="6"/>
- <text x="533" y="125" text-anchor="middle" class="callout">LIGHT</text>
- <circle cx="533" cy="143" r="9" fill="#273b49" stroke="#ffbf45" stroke-width="2"/>
- <path d="M533 143 l5 -6" stroke="#ffbf45" stroke-width="2"/>
- <text x="533" y="157" text-anchor="middle" font-size="8" fill="#edf2f6">TAIL SW</text>
-</g>
-<g class="node" data-node="brakeSwitch" tabindex="0" role="button" aria-label="In-cab brake pedal switch">
- <rect class="hit" x="576" y="112" width="66" height="48" rx="6"/>
- <text x="609" y="125" text-anchor="middle" class="callout">BRAKE</text>
- <path d="M600 137 l10 0 l8 10" fill="none" stroke="#ffbf45" stroke-width="3" stroke-linecap="round"/>
- <circle cx="600" cy="137" r="4" fill="#ffbf45"/>
- <text x="609" y="157" text-anchor="middle" font-size="8" fill="#edf2f6">PEDAL SW</text>
-</g>
-<!-- Battery box -->
-<g class="node" data-node="battery" tabindex="0" role="button" aria-label="Battery box">
- <rect class="hit battery" x="90" y="205" width="125" height="105" rx="9"/>
- <text x="152" y="245" text-anchor="middle">12V</text><text x="152" y="264" text-anchor="middle">BATTERY</text><text x="152" y="283" text-anchor="middle" class="callout">BOX</text>
-</g>
-<!-- Protected main feed into cab; separate switched branches leave cab and travel down right rail -->
-<path id="physPower" class="wire" d="M215 230 H285 V141 H388 M416 141 H421 M416 141 V174 H454 V141"/>
-<path id="physBrakeFeed" class="wire" d="M480 141 V168 H576 V141 M642 141 H675 V300 H755 V405 H500 V420 H245 M500 420 H755"/>
-<path id="physGround" class="wire ground" d="M201 498 V520 H755 V498 M739 498 V520 M215 285 H175 V520 H201"/>
-<path id="harness" class="wire" d="M449 141 H500 M566 141 H690 V345 H500 H245 V469 H201 M500 345 H755 V469 H711"/>
-<!-- Cab exit / branch routing callouts -->
-<path d="M690 175 V345" stroke="#ffbf45" stroke-width="2" stroke-dasharray="4 5" opacity=".55"/>
-<text x="705" y="330" class="callout" transform="rotate(90 705 330)">TAIL / MARKER HARNESS · RIGHT RAIL</text>
-<text x="770" y="415" class="callout" transform="rotate(90 770 415)">BRAKE HARNESS · RIGHT RAIL</text>
-<text x="500" y="535" text-anchor="middle" class="callout">SHARED REAR GROUND RETURN</text>
-<!-- Rear lamp assemblies -->
-<g class="node" data-node="leftLamp" tabindex="0" role="button" aria-label="Left rear lamp">
- <rect class="hit" x="179" y="440" width="132" height="58" rx="8"/>
- <circle id="leftTail" class="lamp" cx="201" cy="469" r="9"/><circle id="leftBrake" class="lamp" cx="229" cy="469" r="9"/>
- <text x="269" y="465" text-anchor="middle">LEFT</text><text x="269" y="481" text-anchor="middle" class="callout">REAR LAMP</text>
-</g>
-<g class="node" data-node="rightLamp" tabindex="0" role="button" aria-label="Right rear lamp">
- <rect class="hit" x="689" y="440" width="132" height="58" rx="8"/>
- <circle id="rightTail" class="lamp" cx="711" cy="469" r="9"/><circle id="rightBrake" class="lamp" cx="739" cy="469" r="9"/>
- <text x="779" y="465" text-anchor="middle">RIGHT</text><text x="779" y="481" text-anchor="middle" class="callout">REAR LAMP</text>
-</g>
-<text x="500" y="558" text-anchor="middle" class="callout">FRONT / CAB ↑ · REAR AXLE & LIGHTING ↓</text><text x="35" y="35" class="callout">DRIVER SIDE</text>
+<path d="M385 34 H615 L628 96 H372Z" fill="#182b38" stroke="#718596" stroke-width="2"/><text x="500" y="66" text-anchor="middle" class="schem-label">DAY CAB</text><text x="500" y="83" text-anchor="middle" class="callout">DASH / DRIVER CONTROLS</text>
+<!-- Branch fuse panel -->
+<g class="node" data-node="fuse" tabindex="0" role="button" aria-label="Cab branch fuse panel"><rect class="hit" x="378" y="105" width="112" height="55" rx="6"/><text x="434" y="120" text-anchor="middle" class="callout">CAB FUSE PANEL</text><rect x="405" y="130" width="34" height="18" rx="3" fill="#273b49" stroke="#91a3b1"/><rect x="445" y="130" width="34" height="18" rx="3" fill="#273b49" stroke="#91a3b1"/><text x="422" y="143" text-anchor="middle" font-size="8" fill="#edf2f6">TAIL</text><text x="462" y="143" text-anchor="middle" font-size="8" fill="#edf2f6">BRK</text></g>
+<g class="node" data-node="switch" tabindex="0" role="button" aria-label="Cab tail lighting switch"><rect class="hit" x="500" y="105" width="66" height="55" rx="6"/><text x="533" y="120" text-anchor="middle" class="callout">LIGHT</text><circle cx="533" cy="140" r="9" fill="#273b49" stroke="#ffbf45" stroke-width="2"/><path d="M533 140 l5 -6" stroke="#ffbf45" stroke-width="2"/><text x="533" y="155" text-anchor="middle" font-size="8" fill="#edf2f6">TAIL SW</text></g>
+<g class="node" data-node="brakeSwitch" tabindex="0" role="button" aria-label="Cab brake pedal switch"><rect class="hit" x="576" y="105" width="66" height="55" rx="6"/><text x="609" y="120" text-anchor="middle" class="callout">BRAKE</text><path d="M600 137 h10 l8 10" fill="none" stroke="#ffbf45" stroke-width="3"/><text x="609" y="155" text-anchor="middle" font-size="8" fill="#edf2f6">PEDAL SW</text></g>
+<!-- Battery and external main fuse -->
+<g class="node" data-node="battery" tabindex="0" role="button" aria-label="Battery box"><rect class="hit battery" x="55" y="190" width="145" height="112" rx="9"/><text x="127" y="232" text-anchor="middle">12V BATTERY</text><text x="127" y="253" text-anchor="middle">BOX</text><text x="127" y="280" text-anchor="middle" class="callout">POSITIVE / NEGATIVE</text></g>
+<g class="node" data-node="mainFuse" tabindex="0" role="button" aria-label="Main feed fuse near battery"><rect class="hit" x="225" y="205" width="92" height="62" rx="7"/><text x="271" y="222" text-anchor="middle" class="callout">MAIN FUSE</text><rect x="245" y="231" width="52" height="21" rx="4" fill="#273b49" stroke="#ffbf45" stroke-width="2"/><path d="M255 241 H287" stroke="#ffbf45" stroke-width="2"/></g>
+<!-- Main feed and distinct switched branch harness routes -->
+<path id="physPower" class="wire" d="M200 220 H225 M317 236 H330 V140 H405 M439 140 H445"/>
+<path id="harness" class="wire" d="M439 140 H500 M566 140 H690 V345 H500 H245 V390 H215 V420 M500 345 H755 V390 H735 V420"/>
+<path id="physBrakeFeed" class="wire" d="M479 140 H576 M642 140 H675 V405 H500 V420 H265 M500 420 H785"/>
+<!-- Lamp input feeds -->
+<path class="wire" d="M690 345 H185 V390 H215 V420 M690 345 H815 V390 H735 V420"/>
+<!-- Lamp housings: two input pins on top, lamp elements inside, ground output underneath -->
+<g class="node" data-node="leftLamp" tabindex="0" role="button" aria-label="Left rear lamp assembly"><rect class="hit" x="145" y="420" width="180" height="105" rx="10"/><text x="235" y="442" text-anchor="middle" class="callout">LEFT REAR LAMP</text><circle cx="215" cy="420" r="6" fill="#ff9f1c"/><circle cx="265" cy="420" r="6" fill="#ff9f1c"/><text x="215" y="412" text-anchor="middle" class="callout">TAIL IN</text><text x="265" y="412" text-anchor="middle" class="callout">BRAKE IN</text><rect x="195" y="451" width="80" height="46" rx="8" fill="#111b24" stroke="#9aa8b6" stroke-width="2"/><circle id="leftTail" class="lamp" cx="220" cy="474" r="11"/><circle id="leftBrake" class="lamp" cx="250" cy="474" r="11"/><path d="M215 497 V525" class="wire ground"/><circle cx="215" cy="525" r="6" fill="#61a9df"/><text x="235" y="517" text-anchor="middle" class="callout">GROUND OUT</text></g>
+<g class="node" data-node="rightLamp" tabindex="0" role="button" aria-label="Right rear lamp assembly"><rect class="hit" x="675" y="420" width="180" height="105" rx="10"/><text x="765" y="442" text-anchor="middle" class="callout">RIGHT REAR LAMP</text><circle cx="735" cy="420" r="6" fill="#ff9f1c"/><circle cx="785" cy="420" r="6" fill="#ff9f1c"/><text x="735" y="412" text-anchor="middle" class="callout">TAIL IN</text><text x="785" y="412" text-anchor="middle" class="callout">BRAKE IN</text><rect x="725" y="451" width="80" height="46" rx="8" fill="#111b24" stroke="#9aa8b6" stroke-width="2"/><circle id="rightTail" class="lamp" cx="750" cy="474" r="11"/><circle id="rightBrake" class="lamp" cx="780" cy="474" r="11"/><path d="M785 497 V525" class="wire ground"/><circle cx="785" cy="525" r="6" fill="#61a9df"/><text x="765" y="517" text-anchor="middle" class="callout">GROUND OUT</text></g>
+<!-- Ground outputs join below lamps and return to battery negative -->
+<path id="physGround" class="wire ground" d="M215 525 V548 H785 V525 M215 548 H127 V302"/><circle cx="500" cy="548" r="8" fill="#61a9df"/><text x="500" y="568" text-anchor="middle" class="callout">COMMON GROUND SPLICE → BATTERY NEGATIVE</text>
 <g id="probeOverlay">
- <path id="redLeadPath" class="probe-lead red" d="M470 525 Q300 400 215 230"/><path id="blackLeadPath" class="probe-lead black" d="M530 525 Q350 420 215 285"/>
- <g class="testpoint" data-point="battery" tabindex="0" role="button"><circle cx="215" cy="230" r="6" fill="#ff9f1c"/><text x="224" y="222" class="callout">B+</text></g>
- <g class="testpoint" data-point="negative" tabindex="0" role="button"><circle cx="215" cy="285" r="6" fill="#61a9df"/><text x="224" y="277" class="callout">B−</text></g>
- <g class="testpoint" data-point="fuseIn" tabindex="0" role="button"><circle cx="388" cy="141" r="6" fill="#ff9f1c"/><text x="378" y="132" text-anchor="end" class="callout">TAIL FUSE IN</text></g>
- <g class="testpoint" data-point="fuseOut" tabindex="0" role="button"><circle cx="449" cy="141" r="6" fill="#ff9f1c"/><text x="449" y="105" text-anchor="middle" class="callout">TAIL FUSE OUT</text></g>
- <g class="testpoint" data-point="switchIn" tabindex="0" role="button"><circle cx="500" cy="141" r="6" fill="#ff9f1c"/><text x="500" y="101" text-anchor="middle" class="callout">TAIL SW IN</text></g>
- <g class="testpoint" data-point="switchOut" tabindex="0" role="button"><circle cx="566" cy="141" r="6" fill="#ff9f1c"/><text x="566" y="101" text-anchor="middle" class="callout">TAIL SW OUT</text></g>
- <g class="testpoint" data-point="splice" tabindex="0" role="button"><circle cx="500" cy="345" r="6" fill="#ff9f1c"/><text x="510" y="337" class="callout">TAIL SPLICE</text></g>
- <g class="testpoint" data-point="leftBranch" tabindex="0" role="button"><circle cx="245" cy="469" r="6" fill="#ff9f1c"/><text x="254" y="461" class="callout">L BR</text></g>
- <g class="testpoint" data-point="rightBranch" tabindex="0" role="button"><circle cx="755" cy="469" r="6" fill="#ff9f1c"/><text x="764" y="461" class="callout">R BR</text></g>
- <g class="testpoint" data-point="leftInput" tabindex="0" role="button"><circle cx="201" cy="469" r="6" fill="#ff9f1c"/><text x="210" y="461" class="callout">LAMP IN</text></g>
- <g class="testpoint" data-point="leftGround" tabindex="0" role="button"><circle cx="201" cy="498" r="6" fill="#61a9df"/><text x="210" y="510" class="callout">L GND</text></g>
- <g class="testpoint" data-point="rightInput" tabindex="0" role="button"><circle cx="711" cy="469" r="6" fill="#ff9f1c"/><text x="720" y="461" class="callout">LAMP IN</text></g>
- <g class="testpoint" data-point="rightGround" tabindex="0" role="button"><circle cx="711" cy="498" r="6" fill="#61a9df"/><text x="720" y="510" class="callout">R GND</text></g>
- <g class="testpoint" data-point="brakeFuseIn" tabindex="0" role="button"><circle cx="388" cy="141" r="6" fill="#ff9f1c"/><text x="378" y="172" text-anchor="end" class="callout">BRK FUSE IN</text></g>
- <g class="testpoint" data-point="brakeFuseOut" tabindex="0" role="button"><circle cx="480" cy="141" r="6" fill="#ff9f1c"/><text x="480" y="172" text-anchor="middle" class="callout">BRK FUSE OUT</text></g>
- <g class="testpoint" data-point="brakeSwitchIn" tabindex="0" role="button"><circle cx="576" cy="141" r="6" fill="#ff9f1c"/><text x="576" y="172" text-anchor="middle" class="callout">PEDAL SW IN</text></g>
- <g class="testpoint" data-point="brakeSwitchOut" tabindex="0" role="button"><circle cx="642" cy="141" r="6" fill="#ff9f1c"/><text x="650" y="172" class="callout">PEDAL SW OUT</text></g>
- <g class="testpoint" data-point="brakeSplice" tabindex="0" role="button"><circle cx="500" cy="420" r="6" fill="#ff9f1c"/><text x="510" y="412" class="callout">BRK SPLICE</text></g>
- <g class="testpoint" data-point="brakeLeft" tabindex="0" role="button"><circle cx="245" cy="420" r="6" fill="#ff9f1c"/><text x="254" y="412" class="callout">L BRK</text></g>
- <g class="testpoint" data-point="brakeRight" tabindex="0" role="button"><circle cx="755" cy="420" r="6" fill="#ff9f1c"/><text x="764" y="412" class="callout">R BRK</text></g>
- <circle id="redProbeTip" cx="215" cy="230" r="10" fill="none" stroke="#f07865" stroke-width="3" pointer-events="none"/><circle id="blackProbeTip" cx="215" cy="285" r="10" fill="none" stroke="#61a9df" stroke-width="3" pointer-events="none"/>
- <text id="redProbeTag" class="probe-tag red" x="230" y="215">RED</text><text id="blackProbeTag" class="probe-tag black" x="230" y="310">BLACK</text>
-</g>
-</svg></div><div class="below"><h2>02 · Electrical schematic</h2><p class="note">Same circuit, drawn electrically. Follow each feed from the cab fuse box, through its switch, down the frame rail and into each rear lamp.</p><div class="stage testing">
+<path id="redLeadPath" class="probe-lead red" d="M470 525 Q300 400 200 220"/><path id="blackLeadPath" class="probe-lead black" d="M530 525 Q350 420 127 302"/>
+<g class="testpoint" data-point="battery" tabindex="0" role="button"><circle cx="200" cy="220" r="6" fill="#ff9f1c"/><text x="190" y="211" class="callout">B+</text></g><g class="testpoint" data-point="negative" tabindex="0" role="button"><circle cx="127" cy="302" r="6" fill="#61a9df"/><text x="116" y="316" class="callout">B−</text></g>
+<g class="testpoint" data-point="fuseIn" tabindex="0" role="button"><circle cx="405" cy="140" r="6" fill="#ff9f1c"/><text x="397" y="132" text-anchor="end" class="callout">TAIL FUSE IN</text></g><g class="testpoint" data-point="fuseOut" tabindex="0" role="button"><circle cx="439" cy="140" r="6" fill="#ff9f1c"/><text x="439" y="105" text-anchor="middle" class="callout">TAIL FUSE OUT</text></g>
+<g class="testpoint" data-point="switchIn" tabindex="0" role="button"><circle cx="500" cy="140" r="6" fill="#ff9f1c"/><text x="500" y="101" text-anchor="middle" class="callout">TAIL SW IN</text></g><g class="testpoint" data-point="switchOut" tabindex="0" role="button"><circle cx="566" cy="140" r="6" fill="#ff9f1c"/><text x="566" y="101" text-anchor="middle" class="callout">TAIL SW OUT</text></g>
+<g class="testpoint" data-point="splice" tabindex="0" role="button"><circle cx="500" cy="345" r="6" fill="#ff9f1c"/><text x="510" y="337" class="callout">TAIL SPLICE</text></g>
+<g class="testpoint" data-point="leftBranch" tabindex="0" role="button"><circle cx="215" cy="420" r="6" fill="#ff9f1c"/></g><g class="testpoint" data-point="rightBranch" tabindex="0" role="button"><circle cx="735" cy="420" r="6" fill="#ff9f1c"/></g>
+<g class="testpoint" data-point="leftInput" tabindex="0" role="button"><circle cx="215" cy="420" r="6" fill="#ff9f1c"/><text x="215" y="395" text-anchor="middle" class="callout">TAIL IN</text></g><g class="testpoint" data-point="rightInput" tabindex="0" role="button"><circle cx="735" cy="420" r="6" fill="#ff9f1c"/><text x="735" y="395" text-anchor="middle" class="callout">TAIL IN</text></g>
+<g class="testpoint" data-point="leftGround" tabindex="0" role="button"><circle cx="215" cy="525" r="6" fill="#61a9df"/><text x="202" y="540" text-anchor="end" class="callout">LEFT GND OUT</text></g><g class="testpoint" data-point="rightGround" tabindex="0" role="button"><circle cx="785" cy="525" r="6" fill="#61a9df"/><text x="798" y="540" class="callout">RIGHT GND OUT</text></g>
+<g class="testpoint" data-point="brakeFuseIn" tabindex="0" role="button"><circle cx="445" cy="140" r="6" fill="#ff9f1c"/><text x="445" y="172" text-anchor="middle" class="callout">BRK FUSE IN</text></g><g class="testpoint" data-point="brakeFuseOut" tabindex="0" role="button"><circle cx="479" cy="140" r="6" fill="#ff9f1c"/><text x="479" y="172" text-anchor="middle" class="callout">BRK FUSE OUT</text></g>
+<g class="testpoint" data-point="brakeSwitchIn" tabindex="0" role="button"><circle cx="576" cy="140" r="6" fill="#ff9f1c"/><text x="576" y="188" text-anchor="middle" class="callout">PEDAL SW IN</text></g><g class="testpoint" data-point="brakeSwitchOut" tabindex="0" role="button"><circle cx="642" cy="140" r="6" fill="#ff9f1c"/><text x="650" y="172" class="callout">PEDAL SW OUT</text></g>
+<g class="testpoint" data-point="brakeSplice" tabindex="0" role="button"><circle cx="500" cy="405" r="6" fill="#ff9f1c"/><text x="510" y="397" class="callout">BRAKE SPLICE</text></g><g class="testpoint" data-point="brakeLeft" tabindex="0" role="button"><circle cx="265" cy="420" r="6" fill="#ff9f1c"/></g><g class="testpoint" data-point="brakeRight" tabindex="0" role="button"><circle cx="785" cy="420" r="6" fill="#ff9f1c"/></g>
+<circle id="redProbeTip" cx="200" cy="220" r="10" fill="none" stroke="#f07865" stroke-width="3"/><circle id="blackProbeTip" cx="127" cy="302" r="10" fill="none" stroke="#61a9df" stroke-width="3"/><text id="redProbeTag" class="probe-tag red" x="215" y="205">RED</text><text id="blackProbeTag" class="probe-tag black" x="142" y="327">BLACK</text></g></svg></div><div class="below"><h2>02 · Electrical schematic</h2><p class="note">Same circuit, drawn electrically. Follow each feed from the cab fuse box, through its switch, down the frame rail and into each rear lamp.</p><div class="stage testing">
 <svg id="schematicSvg" viewBox="0 0 1200 760" role="img" aria-label="Stacked 12 volt day cab rear lighting schematic showing cab fuse box, separate tail and brake switches, frame rail harness, rear lamps and common ground">
 <defs><linearGradient id="schCab" x2="0" y2="1"><stop stop-color="#344452"/><stop offset="1" stop-color="#1a2732"/></linearGradient></defs>
 <text x="34" y="38" class="schem-label">12V REAR LIGHTING · CAB DISTRIBUTION · NEGATIVE GROUND</text>
@@ -190,7 +135,7 @@
 const $=id=>document.getElementById(id);
 const state={tail:false,brake:false,fault:"none",selected:"battery",view:"both",activeLead:"red",redPoint:"battery",blackPoint:"negative"};
 const pointNames={battery:"Battery positive",negative:"Battery negative",fuseIn:"Tail fuse input",fuseOut:"Tail fuse output",switchIn:"Tail switch input",switchOut:"Tail switch output",splice:"Tail-light splice",leftBranch:"Left tail branch",rightBranch:"Right tail branch",leftInput:"Left lamp tail input",leftGround:"Left lamp ground",rightInput:"Right lamp tail input",rightGround:"Right lamp ground",ground:"Common ground",brakeFuseIn:"Brake fuse input",brakeFuseOut:"Brake fuse output",brakeSwitchIn:"Brake pedal switch input",brakeSwitchOut:"Brake pedal switch output",brakeSplice:"Brake-light splice",brakeLeft:"Left brake branch",brakeRight:"Right brake branch"};
-const pointCoords={battery:[215,230],negative:[215,285],fuseIn:[421,141],fuseOut:[449,141],switchIn:[500,141],switchOut:[566,141],splice:[500,345],leftBranch:[245,469],rightBranch:[755,469],leftInput:[201,469],leftGround:[201,498],rightInput:[711,469],rightGround:[711,498],ground:[755,455],brakeFuseIn:[454,141],brakeFuseOut:[480,141],brakeSwitchIn:[576,141],brakeSwitchOut:[642,141],brakeSplice:[500,420],brakeLeft:[245,420],brakeRight:[755,420]};
+const pointCoords={battery:[200,220],negative:[127,302],fuseIn:[405,140],fuseOut:[439,140],switchIn:[500,140],switchOut:[566,140],splice:[500,345],leftBranch:[215,420],rightBranch:[735,420],leftInput:[215,420],leftGround:[215,525],rightInput:[735,420],rightGround:[785,525],ground:[500,548],brakeFuseIn:[445,140],brakeFuseOut:[479,140],brakeSwitchIn:[576,140],brakeSwitchOut:[642,140],brakeSplice:[500,405],brakeLeft:[265,420],brakeRight:[785,420]};
 const details={brakeFuse:"Separate protected 12V supply for the brake-light circuit.",brakeSwitch:"Brake pedal switch: closes when the pedal is applied and supplies the brake-light branch independently of the tail-light switch.",battery:"Battery box: nominal 12.6V supply with a negative return. The simulator uses an idealized source for this first training build.",fuse:"Lighting fuse: protects the branch against excessive current. The open-feed fault is placed downstream of the fuse in this introductory model.",switch:"Cab light switch: controls the tail/marker branch. Brake control is represented separately for this first-stage lesson.",leftLamp:"Left rear lamp assembly: parallel tail and brake loads share a ground return.",rightLamp:"Right rear lamp assembly: parallel tail and brake loads share a ground return."};
 function nodeVoltage(point){
  const feedOpen=state.fault==="openFeed",groundOpen=state.fault==="openGround";
