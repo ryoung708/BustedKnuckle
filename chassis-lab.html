@@ -112,7 +112,19 @@ function update(){
  if(state.fault!=="none")$("status").textContent="Training fault active: "+$("faultSelect").selectedOptions[0].text+". Readings are illustrative, not OEM specifications.";
  else $("status").textContent="System: 12.6V nominal · negative-ground · simplified resistive training model.";
 }
-function drawProbeLeads(){const coords=state.view==="physical"?pointCoords:{battery:[160,85],fuseOut:[385,85],switchOut:[600,85],leftLamp:[850,160],rightLamp:[850,300],ground:[887,405],negative:[102,135]};const r=coords[state.redPoint]||coords.battery,b=coords[state.blackPoint]||coords.negative;$("redLeadPath").setAttribute("d","M470 525 Q"+((470+r[0])/2-25)+" "+Math.max(25,(525+r[1])/2-35)+" "+r[0]+" "+r[1]);$("blackLeadPath").setAttribute("d","M530 525 Q"+((530+b[0])/2+25)+" "+Math.max(25,(525+b[1])/2-20)+" "+b[0]+" "+b[1]);$("redProbeTip").setAttribute("cx",r[0]);$("redProbeTip").setAttribute("cy",r[1]);$("redProbeTip").dataset.point=state.redPoint;$("blackProbeTip").setAttribute("cx",b[0]);$("blackProbeTip").setAttribute("cy",b[1]);$("blackProbeTip").dataset.point=state.blackPoint;$("redProbeTag").setAttribute("x",Math.min(930,r[0]+12));$("redProbeTag").setAttribute("y",r[1]-12);$("blackProbeTag").setAttribute("x",Math.min(930,b[0]+12));$("blackProbeTag").setAttribute("y",b[1]+20);$("probeHint").textContent=(state.activeLead==="red"?"Red":"Black")+" lead selected · click a test point.";}
+function drawProbeLeads(){
+ const svg=$(state.view==="physical"?"physicalSvg":"schematicSvg");
+ const coords=state.view==="physical"?pointCoords:{battery:[160,85],fuseOut:[385,85],switchOut:[600,85],leftLamp:[850,160],rightLamp:[850,300],ground:[887,405],negative:[102,135]};
+ const r=coords[state.redPoint]||coords.battery,b=coords[state.blackPoint]||coords.negative;
+ const el=id=>svg.querySelector("#"+id);
+ el("redLeadPath").setAttribute("d","M470 525 Q"+((470+r[0])/2-25)+" "+Math.max(25,(525+r[1])/2-35)+" "+r[0]+" "+r[1]);
+ el("blackLeadPath").setAttribute("d","M530 525 Q"+((530+b[0])/2+25)+" "+Math.max(25,(525+b[1])/2-20)+" "+b[0]+" "+b[1]);
+ el("redProbeTip").setAttribute("cx",r[0]);el("redProbeTip").setAttribute("cy",r[1]);
+ el("blackProbeTip").setAttribute("cx",b[0]);el("blackProbeTip").setAttribute("cy",b[1]);
+ el("redProbeTag").setAttribute("x",Math.min(930,r[0]+12));el("redProbeTag").setAttribute("y",r[1]-12);
+ el("blackProbeTag").setAttribute("x",Math.min(930,b[0]+12));el("blackProbeTag").setAttribute("y",b[1]+20);
+ $("probeHint").textContent=(state.activeLead==="red"?"Red":"Black")+" lead selected · click a labeled test point.";
+}
 function chooseProbe(point){if(state.activeLead==="red")state.redPoint=point;else state.blackPoint=point;update();}
 function chooseNode(el){state.selected=el.dataset.node;document.querySelectorAll(".node").forEach(n=>n.classList.toggle("selected",n.dataset.node===state.selected));$("explain").textContent=details[state.selected]||"Selected test location."; }
 document.querySelectorAll(".node").forEach(el=>{el.addEventListener("click",()=>chooseNode(el));el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();chooseNode(el)}})});
