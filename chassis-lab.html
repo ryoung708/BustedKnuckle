@@ -143,7 +143,8 @@ function drawProbeLeads(){
  views.forEach(({svg,coords})=>{
   if(!svg)return;
   const r=coords[state.redPoint]||coords.battery,b=coords[state.blackPoint]||coords.negative;
-  const prefix=svg.id==="schematicSvg"?"schematic_":"";\n  const el=id=>svg.querySelector("#"+prefix+id);
+  const prefix=svg.id==="schematicSvg"?"schematic_":"";
+  const el=id=>svg.querySelector("#"+prefix+id);
   const redPath=el("redLeadPath"),blackPath=el("blackLeadPath"),redTip=el("redProbeTip"),blackTip=el("blackProbeTip"),redTag=el("redProbeTag"),blackTag=el("blackProbeTag");
   if(!redPath||!blackPath||!redTip||!blackTip||!redTag||!blackTag)return;
   redPath.setAttribute("d","M470 525 Q"+((470+r[0])/2-25)+" "+Math.max(25,(525+r[1])/2-35)+" "+r[0]+" "+r[1]);
