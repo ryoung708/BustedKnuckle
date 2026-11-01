@@ -9,7 +9,7 @@
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#ff9f1c14,transparent 42%),var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,Segoe UI,sans-serif}
 .wrap{width:min(1440px,100%);margin:auto;padding:22px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}.eyebrow{color:var(--amber);font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}h1{font-size:clamp(23px,3vw,34px);line-height:1.1;margin:5px 0}.sub{color:var(--muted);margin:0}.back{color:var(--amber);text-decoration:none;font-weight:800}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.tab,button,select{font:inherit}.tab,button,select{background:var(--raised);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:10px 13px}.tab{cursor:pointer;font-weight:800}.tab.active{border-color:var(--amber);color:var(--amber);background:#ff9f1c18}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:start}.panel{background:linear-gradient(180deg,#ffffff05,transparent),var(--panel);border:1px solid var(--line);border-radius:11px;padding:16px;min-width:0}.panel h2{line-height:1.35}.panel h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 12px}.stage{background:#080d12;border:1px solid #293744;border-radius:8px;padding:12px;overflow:auto}.stage svg{display:block;width:100%;height:auto;min-width:650px;max-height:650px}.stage svg[hidden]{display:none}.stage svg[hidden]{display:none}.node{cursor:pointer;outline:none}.node:focus .hit,.node.selected .hit{stroke:var(--amber);stroke-width:3}.node text{font:700 11px system-ui;fill:#e8edf2;pointer-events:none}.node .callout{font:10px system-ui;fill:#aeb9c4}.wire{fill:none;stroke:#6b7885;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.wire.hot{stroke:var(--green);stroke-width:7;filter:drop-shadow(0 0 4px #70c69a88)}.wire.ground{stroke:var(--blue)}.hit{fill:#17232d;stroke:#718292;stroke-width:2}.lamp{fill:#26323d;stroke:#9aa8b6;stroke-width:3}.lamp.on{fill:#ffbf45;stroke:#ffe0a1;filter:drop-shadow(0 0 10px #ffb52d)}.battery{fill:#172b24;stroke:var(--green);stroke-width:2}.callout{fill:#aeb9c4;font:10px system-ui}.schem-label{fill:#e8edf2;font:12px system-ui;font-weight:700}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:start}.panel{background:linear-gradient(180deg,#ffffff05,transparent),var(--panel);border:1px solid var(--line);border-radius:11px;padding:16px;min-width:0}.panel h2{line-height:1.35}.panel h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 12px}.stage{background:#080d12;border:1px solid #293744;border-radius:8px;padding:12px;overflow:auto}.stage svg{display:block;width:100%;height:auto;min-width:650px;max-height:650px}.stage svg[hidden]{display:none}.schematic-panel{margin-top:18px}.node{cursor:pointer;outline:none}.node:focus .hit,.node.selected .hit{stroke:var(--amber);stroke-width:3}.node text{font:700 11px system-ui;fill:#e8edf2;pointer-events:none}.node .callout{font:10px system-ui;fill:#aeb9c4}.wire{fill:none;stroke:#6b7885;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.wire.hot{stroke:var(--green);stroke-width:7;filter:drop-shadow(0 0 4px #70c69a88)}.wire.ground{stroke:var(--blue)}.hit{fill:#17232d;stroke:#718292;stroke-width:2}.lamp{fill:#26323d;stroke:#9aa8b6;stroke-width:3}.lamp.on{fill:#ffbf45;stroke:#ffe0a1;filter:drop-shadow(0 0 10px #ffb52d)}.battery{fill:#172b24;stroke:var(--green);stroke-width:2}.callout{fill:#aeb9c4;font:10px system-ui}.schem-label{fill:#e8edf2;font:12px system-ui;font-weight:700}
 .lead-select{cursor:pointer;font-weight:850}.lead-select.active-lead{border-color:var(--amber);color:var(--amber);background:#ff9f1c18}.testpoint{cursor:pointer;pointer-events:all}.testpoint circle{stroke:#080d12;stroke-width:2}.testpoint text{opacity:.0;transition:opacity .15s}.stage.testing .testpoint text,.testpoint:hover text,.testpoint:focus text{opacity:1}.testpoint:hover circle,.testpoint:focus circle{stroke:#fff;stroke-width:4;filter:drop-shadow(0 0 5px #fff9)}.probe-point{cursor:pointer;stroke:#080d12;stroke-width:3}.probe-point:hover,.probe-point.active-probe{stroke:#fff;stroke-width:4;filter:drop-shadow(0 0 5px #fff9)}.probe-lead{fill:none;stroke-width:4;stroke-linecap:round;pointer-events:none}.probe-lead.red{stroke:#f07865}.probe-lead.black{stroke:#61a9df}.probe-tag{font:900 11px system-ui;paint-order:stroke;stroke:#080d12;stroke-width:4px}.probe-tag.red{fill:#ff8b7b}.probe-tag.black{fill:#83c5f2}.legend{display:flex;flex-wrap:wrap;gap:13px;color:var(--muted);font-size:11px;margin:10px 2px}.key{display:inline-block;width:18px;height:4px;vertical-align:middle;margin-right:5px;background:var(--green)}.key.blue{background:var(--blue)}.key.gray{background:#6b7885}
 .controls{display:grid;gap:12px}.field{min-width:0}.field select,.field button{min-height:42px}.point{line-height:1.5;overflow-wrap:anywhere}.field label{display:block;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}.field select{width:100%}.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;background:var(--raised);border:1px solid var(--line);border-radius:8px}.toggle span{font-weight:750}.toggle input{width:19px;height:19px;accent-color:var(--amber)}.meter{padding:13px;border:1px solid #526477;border-radius:9px;background:#070b0f;text-align:center}.meter small{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.15em}.reading{font:800 30px ui-monospace,monospace;color:var(--green);margin:4px 0}.meter select{width:100%;margin-top:9px}.explain{margin-top:12px;padding:12px;border-left:3px solid var(--amber);background:#ff9f1c10;color:#cbd4dc;font-size:12px;line-height:1.55}.status{color:var(--muted);font-size:11px;margin-top:10px}.below{margin-top:14px}.points{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.point{padding:9px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--muted);font-size:11px}.point b{display:block;color:var(--text);margin-bottom:3px}.note{color:var(--muted);font-size:11px;margin-top:10px}
 @media(max-width:980px){.layout{grid-template-columns:1fr}.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.meter{grid-column:1/-1}.explain{grid-column:1/-1}}
@@ -18,8 +18,8 @@
 </head>
 <body><div class="wrap">
 <header class="top"><div><div class="eyebrow">IronKnuckle · Interactive training</div><h1>Chassis Electrical Lab</h1><p class="sub">Basic day-cab tractor · 12V negative-ground lighting</p></div><a class="back" href="./index.html">← Workspace</a></header>
-<div class="toolbar" role="tablist" aria-label="Chassis views"><button class="tab active" id="physicalTab" type="button">Physical chassis</button><button class="tab" id="schematicTab" type="button">Electrical schematic</button><button class="tab" id="resetBtn" type="button">Reset lab</button></div>
-<div class="layout"><main class="panel"><h2 id="viewTitle">Physical layout · top view</h2><div class="stage testing" id="stage">
+<div class="toolbar"><button class="tab" id="resetBtn" type="button">↺ Reset lab</button></div>
+<div class="layout"><main class="panel"><h2>01 · Physical chassis layout</h2><p class="note">Top-down day-cab view. Select a test point here or in the schematic below; the meter leads stay synchronized.</p><div class="stage testing" id="stage">
 <svg id="physicalSvg" viewBox="0 0 1000 570" role="img" aria-label="Top-down day cab truck chassis with battery box, frame rails, harness and rear lamps">
 <defs><linearGradient id="cab" x2="0" y2="1"><stop stop-color="#344452"/><stop offset="1" stop-color="#1a2732"/></linearGradient></defs>
 <!-- chassis rails and crossmembers --><path d="M245 95 V485 M755 95 V485" stroke="#697784" stroke-width="18" stroke-linecap="round"/><path d="M245 95 V485 M755 95 V485" stroke="#202d38" stroke-width="9"/>
@@ -57,64 +57,67 @@
 <g class="testpoint" data-point="brakeLeft" tabindex="0" role="button"><circle cx="245" cy="420" r="6" fill="#ff9f1c"/><text x="254" y="412" class="callout">L BRK</text></g>
 <g class="testpoint" data-point="brakeRight" tabindex="0" role="button"><circle cx="755" cy="420" r="6" fill="#ff9f1c"/><text x="764" y="412" class="callout">R BRK</text></g>
 <circle id="redProbeTip" cx="215" cy="230" r="10" fill="none" stroke="#f07865" stroke-width="3" pointer-events="none"/><circle id="blackProbeTip" cx="215" cy="285" r="10" fill="none" stroke="#61a9df" stroke-width="3" pointer-events="none"/><text id="redProbeTag" class="probe-tag red" x="230" y="215">RED</text><text id="blackProbeTag" class="probe-tag black" x="230" y="310">BLACK</text></g>
-</svg>
-<svg id="schematicSvg" viewBox="0 0 1100 650" role="img" aria-label="12 volt tail and brake light schematic with separate fused feeds, right frame rail routing, branch splices, and common ground" hidden>
-<text x="35" y="34" class="schem-label">12V REAR LIGHTING · SIMPLIFIED DAY-CAB CIRCUIT</text>
-<!-- Battery source -->
-<g class="node" data-node="battery" tabindex="0" role="button" aria-label="Battery"><rect class="hit battery" x="35" y="235" width="125" height="150" rx="9"/><text x="97" y="275" text-anchor="middle" class="schem-label">BATTERY</text><text x="97" y="305" text-anchor="middle" class="schem-label">12V</text><text x="97" y="345" text-anchor="middle" class="callout">B+ / B−</text></g>
-<!-- Tail branch top lane -->
-<text x="185" y="83" class="schem-label">TAIL / MARKER LIGHT CIRCUIT</text>
-<path class="wire" id="schFeed" d="M160 260 H185 V115 H235"/>
-<g class="node" data-node="fuse" tabindex="0" role="button"><rect class="hit" x="235" y="92" width="112" height="46" rx="6"/><text x="291" y="120" text-anchor="middle">TAIL FUSE</text></g>
-<path class="wire" id="schAfterFuse" d="M347 115 H420"/>
-<g class="node" data-node="switch" tabindex="0" role="button"><rect class="hit" x="420" y="92" width="132" height="46" rx="6"/><text x="486" y="120" text-anchor="middle">CAB LIGHT SW</text></g>
-<path class="wire" id="schTail" d="M552 115 H720 V178 H875"/>
-<circle cx="720" cy="178" r="6" fill="#ff9f1c"/>
-<path class="wire" d="M720 178 V225 H875"/>
-<text x="742" y="164" class="callout">TAIL SPLICE</text>
-<!-- Brake branch middle lane -->
-<text x="185" y="275" class="schem-label">BRAKE LIGHT CIRCUIT · SEPARATE FEED</text>
-<path class="wire" id="schBrakeFeed" d="M160 300 H185 V310 H235"/>
-<g class="node" data-node="brakeFuse" tabindex="0" role="button"><rect class="hit" x="235" y="287" width="112" height="46" rx="6"/><text x="291" y="315" text-anchor="middle">BRAKE FUSE</text></g>
-<path class="wire" id="schBrakeAfterFuse" d="M347 310 H420"/>
-<g class="node" data-node="brakeSwitch" tabindex="0" role="button"><rect class="hit" x="420" y="287" width="132" height="46" rx="6"/><text x="486" y="315" text-anchor="middle">BRAKE PEDAL SW</text></g>
-<path class="wire" id="schBrake" d="M552 310 H720 V373 H875"/>
-<circle cx="720" cy="373" r="6" fill="#ff9f1c"/>
-<path class="wire" d="M720 373 V420 H875"/>
-<text x="742" y="359" class="callout">BRAKE SPLICE</text>
-<!-- Right frame rail shown as shared physical routing corridor -->
-<path d="M760 85 V455" stroke="#596a78" stroke-width="2" stroke-dasharray="7 7" fill="none"/>
-<text x="777" y="72" class="callout">RIGHT FRAME-RAIL HARNESS ROUTE</text>
-<!-- Lamp assemblies with separate tail/brake inputs -->
-<g class="node" data-node="leftLamp" tabindex="0" role="button" aria-label="Left rear lamp assembly"><rect class="hit" x="875" y="145" width="185" height="105" rx="8"/><circle id="schLeftTail" class="lamp" cx="915" cy="178" r="10"/><circle id="schLeftBrake" class="lamp" cx="915" cy="215" r="10"/><text x="985" y="181" text-anchor="middle">LEFT REAR</text><text x="985" y="200" text-anchor="middle" class="callout">TAIL + BRAKE</text><text x="985" y="224" text-anchor="middle" class="callout">LAMP</text></g>
-<g class="node" data-node="rightLamp" tabindex="0" role="button" aria-label="Right rear lamp assembly"><rect class="hit" x="875" y="340" width="185" height="105" rx="8"/><circle id="schRightTail" class="lamp" cx="915" cy="373" r="10"/><circle id="schRightBrake" class="lamp" cx="915" cy="410" r="10"/><text x="985" y="376" text-anchor="middle">RIGHT REAR</text><text x="985" y="395" text-anchor="middle" class="callout">TAIL + BRAKE</text><text x="985" y="419" text-anchor="middle" class="callout">LAMP</text></g>
-<!-- Common ground leaves bottom of each lamp and returns to battery negative -->
-<path class="wire ground" id="schGround" d="M915 250 V505 H185 V355 H160 M915 445 V505"/>
-<text x="520" y="535" text-anchor="middle" class="callout">COMMON GROUND BUS · BOTH LAMP GROUNDS JOIN HERE → BATTERY NEGATIVE</text>
-<text x="35" y="610" class="callout">ILLUSTRATIVE TRAINING CIRCUIT · VERIFY VEHICLE-SPECIFIC WIRING BEFORE SERVICE</text>
+</svg></div><div class="below"><h2>02 · Electrical schematic</h2><p class="note">Same circuit, drawn electrically. Follow each feed from the cab fuse box, through its switch, down the frame rail and into each rear lamp.</p><div class="stage testing">
+<svg id="schematicSvg" viewBox="0 0 1200 760" role="img" aria-label="Stacked 12 volt day cab rear lighting schematic showing cab fuse box, separate tail and brake switches, frame rail harness, rear lamps and common ground">
+<defs><linearGradient id="schCab" x2="0" y2="1"><stop stop-color="#344452"/><stop offset="1" stop-color="#1a2732"/></linearGradient></defs>
+<text x="34" y="38" class="schem-label">12V REAR LIGHTING · CAB DISTRIBUTION · NEGATIVE GROUND</text>
+<!-- battery and main feed -->
+<g class="node" data-node="battery" tabindex="0" role="button" aria-label="Battery"><rect class="hit battery" x="30" y="285" width="125" height="155" rx="10"/><text x="92" y="330" text-anchor="middle" class="schem-label">BATTERY</text><text x="92" y="355" text-anchor="middle" class="schem-label">12V</text><text x="92" y="390" text-anchor="middle" class="callout">B+ / B−</text></g>
+<path class="wire" id="schFeed" d="M155 325 H205 V160 H275"/>
+<text x="180" y="305" class="callout">MAIN B+ FEED</text>
+<!-- cab enclosure -->
+<path d="M205 85 Q205 65 230 65 H660 Q685 65 685 90 V535 Q685 560 660 560 H230 Q205 560 205 535Z" fill="url(#schCab)" fill-opacity=".18" stroke="#687b8c" stroke-width="2.5" stroke-dasharray="9 6"/>
+<text x="230" y="105" class="schem-label">DAY CAB · FUSE / SWITCH PANEL</text>
+<!-- fuse box -->
+<g class="node" data-node="fuse" tabindex="0" role="button" aria-label="Cab fuse box"><rect class="hit" x="270" y="130" width="155" height="220" rx="9"/><text x="347" y="155" text-anchor="middle" class="schem-label">FUSE BOX</text>
+<rect x="290" y="185" width="115" height="48" rx="5" fill="#182632" stroke="#ff9f1c" stroke-width="2"/><text x="347" y="204" text-anchor="middle" class="callout">TAIL / MARKER</text><text x="347" y="220" text-anchor="middle" class="schem-label">FUSE</text>
+<rect x="290" y="265" width="115" height="48" rx="5" fill="#182632" stroke="#ff9f1c" stroke-width="2"/><text x="347" y="284" text-anchor="middle" class="callout">BRAKE</text><text x="347" y="300" text-anchor="middle" class="schem-label">FUSE</text></g>
+<!-- switched tail branch -->
+<path class="wire" id="schAfterFuse" d="M405 209 H480"/>
+<g class="node" data-node="switch" tabindex="0" role="button" aria-label="Cab tail light switch"><rect class="hit" x="480" y="180" width="155" height="58" rx="7"/><text x="557" y="204" text-anchor="middle">TAIL / MARKER</text><text x="557" y="222" text-anchor="middle" class="callout">CAB LIGHT SWITCH</text></g>
+<path class="wire" id="schTail" d="M635 209 H735 V250 H820"/>
+<circle cx="820" cy="250" r="7" fill="#ff9f1c"/><text x="820" y="230" text-anchor="middle" class="callout">TAIL SPLICE</text>
+<path class="wire" d="M820 250 H875 V235 H930 M875 250 V445 H930"/>
+<!-- switched brake branch -->
+<path class="wire" id="schBrakeFeed" d="M155 355 H235 V289 H290"/>
+<path class="wire" id="schBrakeAfterFuse" d="M405 289 H480"/>
+<g class="node" data-node="brakeSwitch" tabindex="0" role="button" aria-label="Brake pedal switch"><rect class="hit" x="480" y="260" width="155" height="58" rx="7"/><text x="557" y="284" text-anchor="middle">BRAKE PEDAL</text><text x="557" y="302" text-anchor="middle" class="callout">NORMALLY OPEN SWITCH</text></g>
+<path class="wire" id="schBrake" d="M635 289 H760 V425 H820"/>
+<circle cx="820" cy="425" r="7" fill="#ff9f1c"/><text x="820" y="405" text-anchor="middle" class="callout">BRAKE SPLICE</text>
+<path class="wire" d="M820 425 H875 V285 H930 M875 425 V495 H930"/>
+<!-- right frame rail corridor -->
+<path d="M735 130 V540" stroke="#8293a2" stroke-width="16" stroke-opacity=".18" fill="none"/><path d="M735 130 V540" stroke="#8293a2" stroke-width="2" stroke-dasharray="7 7" fill="none"/>
+<text x="755" y="155" class="callout">RIGHT FRAME RAIL</text><text x="755" y="174" class="callout">HARNESS ROUTE</text>
+<!-- lamp assemblies: distinct tail, brake, ground terminals -->
+<g class="node" data-node="leftLamp" tabindex="0" role="button" aria-label="Left rear lamp assembly"><rect class="hit" x="930" y="175" width="220" height="175" rx="9"/><text x="1040" y="200" text-anchor="middle" class="schem-label">LEFT REAR LAMP BOX</text><circle id="schLeftTail" class="lamp" cx="970" cy="235" r="12"/><circle id="schLeftBrake" class="lamp" cx="970" cy="285" r="12"/><text x="1000" y="239" class="callout">TAIL INPUT</text><text x="1000" y="289" class="callout">BRAKE INPUT</text><path d="M970 315 V335" class="wire ground"/><text x="1000" y="338" class="callout">GROUND OUT</text></g>
+<g class="node" data-node="rightLamp" tabindex="0" role="button" aria-label="Right rear lamp assembly"><rect class="hit" x="930" y="390" width="220" height="175" rx="9"/><text x="1040" y="415" text-anchor="middle" class="schem-label">RIGHT REAR LAMP BOX</text><circle id="schRightTail" class="lamp" cx="970" cy="445" r="12"/><circle id="schRightBrake" class="lamp" cx="970" cy="495" r="12"/><text x="1000" y="449" class="callout">TAIL INPUT</text><text x="1000" y="499" class="callout">BRAKE INPUT</text><path d="M970 525 V545" class="wire ground"/><text x="1000" y="548" class="callout">GROUND OUT</text></g>
+<!-- common return -->
+<path class="wire ground" id="schGround" d="M970 335 V620 H155 V440 M970 545 V620"/>
+<text x="590" y="650" text-anchor="middle" class="callout">COMMON REAR GROUND RETURN → BATTERY NEGATIVE</text>
+<text x="30" y="720" class="callout">ILLUSTRATIVE TRAINING CIRCUIT · MAIN FEED PROTECTION AND WIRE SIZING MUST MATCH THE VEHICLE / DESIGN</text>
 <g id="schematicProbeOverlay">
-<path id="schematic_redLeadPath" class="probe-lead red" d="M470 590 Q300 400 160 260"/><path id="schematic_blackLeadPath" class="probe-lead black" d="M530 590 Q350 420 160 355"/>
-<g class="testpoint" data-point="battery" tabindex="0" role="button"><circle cx="160" cy="260" r="6" fill="#ff9f1c"/><text x="170" y="252" class="callout">B+</text></g>
-<g class="testpoint" data-point="negative" tabindex="0" role="button"><circle cx="160" cy="355" r="6" fill="#61a9df"/><text x="170" y="347" class="callout">B−</text></g>
-<g class="testpoint" data-point="fuseIn" tabindex="0" role="button"><circle cx="235" cy="115" r="6" fill="#ff9f1c"/><text x="245" y="107" class="callout">TAIL FUSE IN</text></g>
-<g class="testpoint" data-point="fuseOut" tabindex="0" role="button"><circle cx="347" cy="115" r="6" fill="#ff9f1c"/><text x="357" y="107" class="callout">TAIL FUSE OUT</text></g>
-<g class="testpoint" data-point="switchIn" tabindex="0" role="button"><circle cx="420" cy="115" r="6" fill="#ff9f1c"/><text x="430" y="107" class="callout">SWITCH IN</text></g>
-<g class="testpoint" data-point="switchOut" tabindex="0" role="button"><circle cx="552" cy="115" r="6" fill="#ff9f1c"/><text x="562" y="107" class="callout">SWITCH OUT</text></g>
-<g class="testpoint" data-point="splice" tabindex="0" role="button"><circle cx="720" cy="178" r="6" fill="#ff9f1c"/><text x="730" y="190" class="callout">TAIL SPLICE</text></g>
-<g class="testpoint" data-point="leftBranch" tabindex="0" role="button"><circle cx="875" cy="178" r="6" fill="#ff9f1c"/><text x="865" y="166" text-anchor="end" class="callout">LEFT TAIL</text></g>
-<g class="testpoint" data-point="rightBranch" tabindex="0" role="button"><circle cx="875" cy="225" r="6" fill="#ff9f1c"/><text x="865" y="240" text-anchor="end" class="callout">RIGHT TAIL</text></g>
-<g class="testpoint" data-point="leftInput" tabindex="0" role="button"><circle cx="875" cy="215" r="6" fill="#ff9f1c"/><text x="865" y="230" text-anchor="end" class="callout">LEFT BRAKE IN</text></g>
-<g class="testpoint" data-point="leftGround" tabindex="0" role="button"><circle cx="915" cy="250" r="6" fill="#61a9df"/><text x="925" y="262" class="callout">LEFT GND</text></g>
-<g class="testpoint" data-point="rightInput" tabindex="0" role="button"><circle cx="875" cy="410" r="6" fill="#ff9f1c"/><text x="865" y="425" text-anchor="end" class="callout">RIGHT BRAKE IN</text></g>
-<g class="testpoint" data-point="rightGround" tabindex="0" role="button"><circle cx="915" cy="445" r="6" fill="#61a9df"/><text x="925" y="457" class="callout">RIGHT GND</text></g>
-<g class="testpoint" data-point="brakeFuseIn" tabindex="0" role="button"><circle cx="235" cy="310" r="6" fill="#ff9f1c"/><text x="245" y="302" class="callout">BRAKE FUSE IN</text></g>
-<g class="testpoint" data-point="brakeFuseOut" tabindex="0" role="button"><circle cx="347" cy="310" r="6" fill="#ff9f1c"/><text x="357" y="302" class="callout">BRAKE FUSE OUT</text></g>
-<g class="testpoint" data-point="brakeSwitchIn" tabindex="0" role="button"><circle cx="420" cy="310" r="6" fill="#ff9f1c"/><text x="430" y="302" class="callout">PEDAL SW IN</text></g>
-<g class="testpoint" data-point="brakeSwitchOut" tabindex="0" role="button"><circle cx="552" cy="310" r="6" fill="#ff9f1c"/><text x="562" y="302" class="callout">PEDAL SW OUT</text></g>
-<g class="testpoint" data-point="brakeSplice" tabindex="0" role="button"><circle cx="720" cy="373" r="6" fill="#ff9f1c"/><text x="730" y="365" class="callout">BRAKE SPLICE</text></g>
-<g class="testpoint" data-point="brakeLeft" tabindex="0" role="button"><circle cx="875" cy="215" r="6" fill="#ff9f1c"/><text x="865" y="203" text-anchor="end" class="callout">LEFT BRAKE</text></g>
-<g class="testpoint" data-point="brakeRight" tabindex="0" role="button"><circle cx="875" cy="410" r="6" fill="#ff9f1c"/><text x="865" y="398" text-anchor="end" class="callout">RIGHT BRAKE</text></g>
-<circle id="schematic_redProbeTip" cx="160" cy="260" r="10" fill="none" stroke="#f07865" stroke-width="3" pointer-events="none"/><circle id="schematic_blackProbeTip" cx="160" cy="355" r="10" fill="none" stroke="#61a9df" stroke-width="3" pointer-events="none"/><text id="schematic_redProbeTag" class="probe-tag red" x="175" y="245">RED</text><text id="schematic_blackProbeTag" class="probe-tag black" x="175" y="380">BLACK</text></g>
+<path id="schematic_redLeadPath" class="probe-lead red" d="M470 700 Q300 400 155 325"/><path id="schematic_blackLeadPath" class="probe-lead black" d="M530 700 Q350 420 155 440"/>
+<g class="testpoint" data-point="battery" tabindex="0" role="button"><circle cx="155" cy="325" r="6" fill="#ff9f1c"/><text x="165" y="317" class="callout">B+</text></g>
+<g class="testpoint" data-point="negative" tabindex="0" role="button"><circle cx="155" cy="440" r="6" fill="#61a9df"/><text x="165" y="432" class="callout">B−</text></g>
+<g class="testpoint" data-point="fuseIn" tabindex="0" role="button"><circle cx="290" cy="209" r="6" fill="#ff9f1c"/><text x="280" y="195" text-anchor="end" class="callout">TAIL FUSE IN</text></g>
+<g class="testpoint" data-point="fuseOut" tabindex="0" role="button"><circle cx="405" cy="209" r="6" fill="#ff9f1c"/><text x="405" y="195" class="callout">TAIL FUSE OUT</text></g>
+<g class="testpoint" data-point="switchIn" tabindex="0" role="button"><circle cx="480" cy="209" r="6" fill="#ff9f1c"/><text x="480" y="166" class="callout">TAIL SW IN</text></g>
+<g class="testpoint" data-point="switchOut" tabindex="0" role="button"><circle cx="635" cy="209" r="6" fill="#ff9f1c"/><text x="640" y="198" class="callout">TAIL SW OUT</text></g>
+<g class="testpoint" data-point="splice" tabindex="0" role="button"><circle cx="820" cy="250" r="6" fill="#ff9f1c"/><text x="830" y="242" class="callout">TAIL SPLICE</text></g>
+<g class="testpoint" data-point="leftBranch" tabindex="0" role="button"><circle cx="930" cy="235" r="6" fill="#ff9f1c"/><text x="920" y="225" text-anchor="end" class="callout">LEFT TAIL</text></g>
+<g class="testpoint" data-point="rightBranch" tabindex="0" role="button"><circle cx="930" cy="445" r="6" fill="#ff9f1c"/><text x="920" y="435" text-anchor="end" class="callout">RIGHT TAIL</text></g>
+<g class="testpoint" data-point="leftInput" tabindex="0" role="button"><circle cx="930" cy="285" r="6" fill="#ff9f1c"/><text x="920" y="275" text-anchor="end" class="callout">LEFT BRAKE</text></g>
+<g class="testpoint" data-point="leftGround" tabindex="0" role="button"><circle cx="970" cy="335" r="6" fill="#61a9df"/><text x="980" y="327" class="callout">LEFT GND</text></g>
+<g class="testpoint" data-point="rightInput" tabindex="0" role="button"><circle cx="930" cy="495" r="6" fill="#ff9f1c"/><text x="920" y="485" text-anchor="end" class="callout">RIGHT BRAKE</text></g>
+<g class="testpoint" data-point="rightGround" tabindex="0" role="button"><circle cx="970" cy="545" r="6" fill="#61a9df"/><text x="980" y="537" class="callout">RIGHT GND</text></g>
+<g class="testpoint" data-point="brakeFuseIn" tabindex="0" role="button"><circle cx="290" cy="289" r="6" fill="#ff9f1c"/><text x="280" y="278" text-anchor="end" class="callout">BRAKE FUSE IN</text></g>
+<g class="testpoint" data-point="brakeFuseOut" tabindex="0" role="button"><circle cx="405" cy="289" r="6" fill="#ff9f1c"/><text x="405" y="278" class="callout">BRAKE FUSE OUT</text></g>
+<g class="testpoint" data-point="brakeSwitchIn" tabindex="0" role="button"><circle cx="480" cy="289" r="6" fill="#ff9f1c"/><text x="480" y="247" class="callout">PEDAL SW IN</text></g>
+<g class="testpoint" data-point="brakeSwitchOut" tabindex="0" role="button"><circle cx="635" cy="289" r="6" fill="#ff9f1c"/><text x="640" y="278" class="callout">PEDAL SW OUT</text></g>
+<g class="testpoint" data-point="brakeSplice" tabindex="0" role="button"><circle cx="820" cy="425" r="6" fill="#ff9f1c"/><text x="830" y="417" class="callout">BRAKE SPLICE</text></g>
+<g class="testpoint" data-point="brakeLeft" tabindex="0" role="button"><circle cx="930" cy="285" r="6" fill="#ff9f1c"/><text x="920" y="300" text-anchor="end" class="callout">LEFT BRAKE BRANCH</text></g>
+<g class="testpoint" data-point="brakeRight" tabindex="0" role="button"><circle cx="930" cy="495" r="6" fill="#ff9f1c"/><text x="920" y="510" text-anchor="end" class="callout">RIGHT BRAKE BRANCH</text></g>
+<circle id="schematic_redProbeTip" cx="155" cy="325" r="10" fill="none" stroke="#f07865" stroke-width="3" pointer-events="none"/><circle id="schematic_blackProbeTip" cx="155" cy="440" r="10" fill="none" stroke="#61a9df" stroke-width="3" pointer-events="none"/><text id="schematic_redProbeTag" class="probe-tag red" x="170" y="310">RED</text><text id="schematic_blackProbeTag" class="probe-tag black" x="170" y="465">BLACK</text></g>
 </svg></div>
 <div class="legend"><span><i class="key"></i> Energized path</span><span><i class="key blue"></i> Ground return</span><span><i class="key gray"></i> Inactive / unselected</span></div>
 <div class="below"><h2>Physical components & test locations</h2><div class="points"><div class="point"><b>Battery box</b>Supply and negative return</div><div class="point"><b>Lighting fuse</b>Branch protection</div><div class="point"><b>Cab switch</b>Tail-light control</div><div class="point"><b>Rear lamps</b>Parallel loads and grounds</div></div><p class="note">Select a component on either view to inspect its role. Both views represent the same simplified training circuit.</p></div></main>
@@ -129,7 +132,7 @@
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
-const state={tail:false,brake:false,fault:"none",selected:"battery",view:"physical",activeLead:"red",redPoint:"battery",blackPoint:"negative"};
+const state={tail:false,brake:false,fault:"none",selected:"battery",view:"both",activeLead:"red",redPoint:"battery",blackPoint:"negative"};
 const pointNames={battery:"Battery positive",negative:"Battery negative",fuseIn:"Tail fuse input",fuseOut:"Tail fuse output",switchIn:"Tail switch input",switchOut:"Tail switch output",splice:"Tail-light splice",leftBranch:"Left tail branch",rightBranch:"Right tail branch",leftInput:"Left lamp tail input",leftGround:"Left lamp ground",rightInput:"Right lamp tail input",rightGround:"Right lamp ground",ground:"Common ground",brakeFuseIn:"Brake fuse input",brakeFuseOut:"Brake fuse output",brakeSwitchIn:"Brake pedal switch input",brakeSwitchOut:"Brake pedal switch output",brakeSplice:"Brake-light splice",brakeLeft:"Left brake branch",brakeRight:"Right brake branch"};
 const pointCoords={battery:[215,230],negative:[215,285],fuseIn:[365,218],fuseOut:[490,218],switchIn:[535,218],switchOut:[660,218],splice:[245,345],leftBranch:[245,469],rightBranch:[755,469],leftInput:[201,469],leftGround:[245,495],rightInput:[711,469],rightGround:[755,495],ground:[755,455],brakeFuseIn:[365,270],brakeFuseOut:[490,270],brakeSwitchIn:[535,300],brakeSwitchOut:[660,300],brakeSplice:[500,380],brakeLeft:[245,420],brakeRight:[755,420]};
 const details={brakeFuse:"Separate protected 12V supply for the brake-light circuit.",brakeSwitch:"Brake pedal switch: closes when the pedal is applied and supplies the brake-light branch independently of the tail-light switch.",battery:"Battery box: nominal 12.6V supply with a negative return. The simulator uses an idealized source for this first training build.",fuse:"Lighting fuse: protects the branch against excessive current. The open-feed fault is placed downstream of the fuse in this introductory model.",switch:"Cab light switch: controls the tail/marker branch. Brake control is represented separately for this first-stage lesson.",leftLamp:"Left rear lamp assembly: parallel tail and brake loads share a ground return.",rightLamp:"Right rear lamp assembly: parallel tail and brake loads share a ground return."};
@@ -167,7 +170,7 @@ function update(){
 function drawProbeLeads(){
  const views=[
   {svg:$("physicalSvg"),coords:pointCoords},
-  {svg:$("schematicSvg"),coords:{battery:[160,260],negative:[160,355],fuseIn:[235,115],fuseOut:[347,115],switchIn:[420,115],switchOut:[552,115],splice:[720,178],leftBranch:[875,178],rightBranch:[875,225],leftInput:[875,215],leftGround:[915,250],rightInput:[875,410],rightGround:[915,445],ground:[915,505],brakeFuseIn:[235,310],brakeFuseOut:[347,310],brakeSwitchIn:[420,310],brakeSwitchOut:[552,310],brakeSplice:[720,373],brakeLeft:[875,215],brakeRight:[875,410]}}
+  {svg:$("schematicSvg"),coords:{battery:[155,325],negative:[155,440],fuseIn:[290,209],fuseOut:[405,209],switchIn:[480,209],switchOut:[635,209],splice:[820,250],leftBranch:[930,235],rightBranch:[930,445],leftInput:[930,285],leftGround:[970,335],rightInput:[930,495],rightGround:[970,545],ground:[970,620],brakeFuseIn:[290,289],brakeFuseOut:[405,289],brakeSwitchIn:[480,289],brakeSwitchOut:[635,289],brakeSplice:[820,425],brakeLeft:[930,285],brakeRight:[930,495]}}
  ];
  views.forEach(({svg,coords})=>{
   if(!svg)return;
@@ -192,8 +195,7 @@ $("tailToggle").addEventListener("change",e=>{state.tail=e.target.checked;state.
 $("brakeToggle").addEventListener("change",e=>{state.brake=e.target.checked;state.selected=null;update()});
 $("faultSelect").addEventListener("change",e=>{state.fault=e.target.value;state.selected=null;update()});
 document.querySelectorAll(".testpoint").forEach(p=>{p.addEventListener("click",()=>chooseProbe(p.dataset.point));p.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();chooseProbe(p.dataset.point);}})});$("selectRed").addEventListener("click",()=>{state.activeLead="red";$("selectRed").classList.add("active-lead");$("selectBlack").classList.remove("active-lead");drawProbeLeads()});$("selectBlack").addEventListener("click",()=>{state.activeLead="black";$("selectBlack").classList.add("active-lead");$("selectRed").classList.remove("active-lead");drawProbeLeads()});$("resetProbes").addEventListener("click",()=>{state.redPoint="battery";state.blackPoint="negative";update()});
-function setView(view){state.view=view;const physical=view==="physical";$("physicalSvg").hidden=!physical;$("schematicSvg").hidden=physical;$("physicalTab").classList.toggle("active",physical);$("schematicTab").classList.toggle("active",!physical);$("viewTitle").textContent=physical?"Physical layout · top view":"Electrical schematic · simplified 12V lighting";drawProbeLeads(); }
-$("physicalTab").addEventListener("click",()=>setView("physical"));$("schematicTab").addEventListener("click",()=>setView("schematic"));
+function setView(){drawProbeLeads();}
 $("resetBtn").addEventListener("click",()=>{state.tail=false;state.brake=false;state.fault="none";state.selected="battery";$("tailToggle").checked=false;$("brakeToggle").checked=false;$("faultSelect").value="none";state.redPoint="battery";state.blackPoint="negative";document.querySelectorAll(".node").forEach(n=>n.classList.remove("selected"));setView("physical");update()});
 update();drawProbeLeads();
 })();
