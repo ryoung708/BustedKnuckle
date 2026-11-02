@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090b0e"><title>IronKnuckle | Chassis Electrical Lab</title>
 <style>
 :root{color-scheme:dark;--bg:#090b0e;--panel:#111820;--raised:#1a232d;--line:#344252;--text:#edf2f6;--muted:#9aa8b6;--amber:#ff9f1c;--green:#70c69a;--blue:#61a9df;--red:#f07865}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#ff9f1c14,transparent 42%),var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,Segoe UI,sans-serif}.wrap{width:min(1500px,100%);margin:auto;padding:20px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center}.eyebrow{color:var(--amber);font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}h1{font-size:clamp(23px,3vw,34px);margin:5px 0}.sub,.note{color:var(--muted)}.back{color:var(--amber);text-decoration:none;font-weight:800}.layout{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:14px;margin-top:16px}.panel{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px}.panel h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 8px}.stage{overflow:auto;background:#080d12;border:1px solid #293744;border-radius:8px;padding:8px;margin:12px 0}.stage svg{display:block;width:100%;height:auto;min-width:760px}.rail{stroke:#53616e;stroke-width:24}.railcore{stroke:#202d38;stroke-width:13}.cross{stroke:#53616e;stroke-width:12}.cab{fill:#1a2732;stroke:#9aa8b6;stroke-width:3}.component{fill:#17232d;stroke:#718292;stroke-width:2}.wire{fill:none;stroke:#657482;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.wire.hot{stroke:var(--green);stroke-width:6;filter:drop-shadow(0 0 4px #70c69a88)}.groundwire{fill:none;stroke:var(--blue);stroke-width:4}.lamp{fill:#26323d;stroke:#9aa8b6;stroke-width:3}.lamp.on{fill:#ffbf45;stroke:#ffe0a1;filter:drop-shadow(0 0 10px #ffb52d)}.label{fill:#e8edf2;font:700 12px system-ui}.small{fill:#aeb9c4;font:10px system-ui}.testpoint{cursor:pointer}.testpoint circle{stroke:#080d12;stroke-width:2}.testpoint text{fill:#dce5ed;font:10px system-ui;font-weight:700;paint-order:stroke;stroke:#080d12;stroke-width:3px}.testpoint:hover circle,.testpoint:focus circle{stroke:#fff;stroke-width:4}.lead{fill:none;stroke-width:4;stroke-linecap:round;pointer-events:none}.lead.red{stroke:var(--red)}.lead.black{stroke:var(--blue)}.tip{fill:none;stroke-width:3;pointer-events:none}.tip.red{stroke:var(--red)}.tip.black{stroke:var(--blue)}button,select{font:inherit;color:var(--text);background:var(--raised);border:1px solid var(--line);border-radius:7px;padding:10px}.toolbar,.leadbuttons{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.toolbar button.active,.leadbuttons button.active{border-color:var(--amber);color:var(--amber)}.controls{display:grid;gap:12px}.toggle{display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--raised);border:1px solid var(--line);border-radius:8px}.toggle input{width:19px;height:19px;accent-color:var(--amber)}.field label{display:block;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}.field select{width:100%}.meter{padding:13px;border:1px solid #526477;border-radius:9px;background:#070b0f;text-align:center}.reading{font:800 30px ui-monospace,monospace;color:var(--green);margin:4px 0}.meter small{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.1em}.explain{padding:12px;border-left:3px solid var(--amber);background:#ff9f1c10;color:#cbd4dc;font-size:12px}.status,.legend{color:var(--muted);font-size:11px;margin-top:10px}.legend{display:flex;gap:14px;flex-wrap:wrap}.key{display:inline-block;width:18px;height:4px;background:var(--green);vertical-align:middle}.key.blue{background:var(--blue)}@media(max-width:1000px){.layout{grid-template-columns:1fr}}@media(max-width:620px){.wrap{padding:12px}.top{align-items:flex-start}.stage svg{min-width:900px}}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#ff9f1c14,transparent 42%),var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,Segoe UI,sans-serif}.wrap{width:min(1500px,100%);margin:auto;padding:20px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center}.eyebrow{color:var(--amber);font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}h1{font-size:clamp(23px,3vw,34px);margin:5px 0}.sub,.note{color:var(--muted)}.back{color:var(--amber);text-decoration:none;font-weight:800}.layout{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:14px;margin-top:16px}.panel{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px}.panel h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 8px}.stage{overflow:auto;background:#080d12;border:1px solid #293744;border-radius:8px;padding:8px;margin:12px 0}.stage svg{display:block;width:100%;height:auto;min-width:760px}.rail{stroke:#53616e;stroke-width:24}.railcore{stroke:#202d38;stroke-width:13}.cross{stroke:#53616e;stroke-width:12}.cab{fill:#1a2732;stroke:#9aa8b6;stroke-width:3}.component{fill:#17232d;stroke:#718292;stroke-width:2}.wire{fill:none;stroke:#657482;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.wire.hot{stroke:var(--green);stroke-width:6;filter:drop-shadow(0 0 4px #70c69a88)}.groundwire{fill:none;stroke:var(--blue);stroke-width:4}.lamp{fill:#26323d;stroke:#9aa8b6;stroke-width:3}.lamp.on{fill:#ffbf45;stroke:#ffe0a1;filter:drop-shadow(0 0 10px #ffb52d)}.label{fill:#e8edf2;font:700 12px system-ui}.small{fill:#aeb9c4;font:10px system-ui}.testpoint{cursor:pointer}.testpoint circle{stroke:#080d12;stroke-width:3}.testpoint text{fill:#ffffff;font:700 11px system-ui;paint-order:stroke;stroke:#080d12;stroke-width:4px}.testpoint:hover circle,.testpoint:focus circle{stroke:#fff;stroke-width:4}.lead{fill:none;stroke-width:4;stroke-linecap:round;pointer-events:none}.lead.red{stroke:var(--red)}.lead.black{stroke:var(--blue)}.tip{fill:none;stroke-width:3;pointer-events:none}.tip.red{stroke:var(--red)}.tip.black{stroke:var(--blue)}button,select{font:inherit;color:var(--text);background:var(--raised);border:1px solid var(--line);border-radius:7px;padding:10px}.toolbar,.leadbuttons{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.toolbar button.active,.leadbuttons button.active{border-color:var(--amber);color:var(--amber)}.controls{display:grid;gap:12px}.toggle{display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--raised);border:1px solid var(--line);border-radius:8px}.toggle input{width:19px;height:19px;accent-color:var(--amber)}.field label{display:block;color:var(--muted);font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}.field select{width:100%}.meter{padding:13px;border:1px solid #526477;border-radius:9px;background:#070b0f;text-align:center}.reading{font:800 30px ui-monospace,monospace;color:var(--green);margin:4px 0}.meter small{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.1em}.explain{padding:12px;border-left:3px solid var(--amber);background:#ff9f1c10;color:#cbd4dc;font-size:12px}.status,.legend{color:var(--muted);font-size:11px;margin-top:10px}.legend{display:flex;gap:14px;flex-wrap:wrap}.key{display:inline-block;width:18px;height:4px;background:var(--green);vertical-align:middle}.key.blue{background:var(--blue)}@media(max-width:1000px){.layout{grid-template-columns:1fr}}@media(max-width:620px){.wrap{padding:12px}.top{align-items:flex-start}.stage svg{min-width:900px}}
 </style></head><body><div class="wrap">
 <header class="top"><div><div class="eyebrow">IronKnuckle · Interactive training</div><h1>Chassis Electrical Lab</h1><p class="sub">Basic day-cab tractor · 12V negative-ground rear lighting</p></div><a class="back" href="./index.html">← Workspace</a></header>
 <div class="toolbar"><button id="resetBtn" type="button">↺ Reset lab</button><button id="physicalTab" class="active" type="button">Physical chassis</button><button id="schematicTab" type="button">Schematic</button></div>
@@ -47,7 +47,137 @@
 <div class="field"><label>Selected test points</label><div id="probeSummary" class="explain">Red: Battery positive<br>Black: Battery negative</div><button id="resetProbes" style="width:100%;margin-top:7px" type="button">Reset lead positions</button></div>
 <div class="field"><label for="meterMode">Meter function</label><select id="meterMode"><option value="voltage">DC volts (V)</option><option value="resistance">Resistance (Ω)</option></select></div><div class="meter"><small id="meterFunction">VIRTUAL METER · DC VOLTS</small><div class="reading" id="reading">12.60 V</div><small id="meterCaption">RED: BATTERY POSITIVE · BLACK: BATTERY NEGATIVE</small></div>
 </div><div class="explain" id="explain" style="margin-top:12px">Turn on either circuit, then select test points to compare voltage along the circuit.</div><div id="status" class="status">12.6V nominal · negative-ground · simplified training model.</div></aside></div></div>
-<script src="./js/chassis-circuit-engine.js"></script>
+<script>
+/* IronKnuckle Chassis Circuit Engine
+ * Electrical calculations only. No DOM, SVG, layout, or browser UI dependencies.
+ * The visual interface supplies circuit state and asks for readings by test-point ID.
+ * Training model: simplified 12V negative-ground rear lighting circuit.
+ */
+(function (root) {
+  "use strict";
+
+  const TEST_POINTS = Object.freeze({
+    battery: "Battery positive", negative: "Battery negative",
+    mainFuseIn: "Main fuse input", mainFuseOut: "Main fuse output",
+    tailFuseIn: "Tail fuse input", tailFuseOut: "Tail fuse output",
+    tailSwitchIn: "Tail switch input", tailSwitchOut: "Tail switch output",
+    tailSplice: "Tail splice feed", leftTailIn: "Left lamp tail input",
+    rightTailIn: "Right lamp tail input", leftBrakeIn: "Left lamp brake input",
+    rightBrakeIn: "Right lamp brake input", leftGround: "Left lamp ground output",
+    rightGround: "Right lamp ground output", brakeFuseIn: "Brake fuse input",
+    brakeFuseOut: "Brake fuse output", brakeSwitchIn: "Brake pedal switch input",
+    brakeSwitchOut: "Brake pedal switch output", brakeSplice: "Brake splice feed",
+    ground: "Common ground splice"
+  });
+
+  const DEFAULT_STATE = Object.freeze({
+    tail: false, brake: false, fault: "none",
+    mainFuseGood: true, tailFuseGood: true, brakeFuseGood: true,
+    nominalVoltage: 12.6
+  });
+
+  function createCircuit(initialState) {
+    let state = { ...DEFAULT_STATE, ...(initialState || {}) };
+
+    function setState(nextState) {
+      state = { ...state, ...(nextState || {}) };
+      return getState();
+    }
+    function getState() { return { ...state }; }
+
+    function voltageAt(point) {
+      if (!(point in TEST_POINTS)) return NaN;
+      if (["battery", "mainFuseIn", "mainFuseOut", "tailFuseIn", "tailFuseOut",
+           "tailSwitchIn", "brakeFuseIn", "brakeFuseOut", "brakeSwitchIn"].includes(point)) {
+        return state.nominalVoltage;
+      }
+      if (point === "negative") return 0;
+      if (point === "ground" || point === "leftGround" || point === "rightGround") {
+        if (state.fault === "openGround") return state.nominalVoltage;
+        if (state.fault === "poorGround" && (state.tail || state.brake)) return 0.8;
+        return 0.02;
+      }
+      const isBrake = point.toLowerCase().includes("brake");
+      const active = isBrake ? state.brake : state.tail;
+      const open = state.fault === (isBrake ? "openBrake" : "openTail");
+      const switchedOutput = isBrake ? "brakeSwitchOut" : "tailSwitchOut";
+      const splice = isBrake ? "brakeSplice" : "tailSplice";
+      if (point === switchedOutput) return active ? 12.3 : 0;
+      if (point === splice || point.endsWith("TailIn") || point.endsWith("BrakeIn")) {
+        if (!active || open) return 0;
+        return state.fault === "poorGround" ? 11.8 : 12.3;
+      }
+      return 0;
+    }
+
+    // Returns equivalent resistance in the simplified training network.
+    // This initial version models a single conducting path; parallel-network
+    // nodal analysis is deliberately isolated here as the next accuracy upgrade.
+    function resistanceBetween(a, b) {
+      if (!(a in TEST_POINTS) || !(b in TEST_POINTS)) return Infinity;
+      if (a === b) return 0;
+      const edges = [];
+      const add = (x, y, ohms, closed = true) => {
+        if (closed) { edges.push([x, y, ohms]); edges.push([y, x, ohms]); }
+      };
+      add("battery", "mainFuseIn", 0.05);
+      add("mainFuseIn", "mainFuseOut", 0.02, state.mainFuseGood);
+      add("mainFuseOut", "tailFuseIn", 0.05);
+      add("mainFuseOut", "brakeFuseIn", 0.05);
+      add("tailFuseIn", "tailFuseOut", 0.02, state.tailFuseGood);
+      add("tailFuseOut", "tailSwitchIn", 0.02);
+      add("tailSwitchIn", "tailSwitchOut", 0.05, state.tail);
+      add("tailSwitchOut", "tailSplice", 0.05, state.fault !== "openTail");
+      add("tailSplice", "leftTailIn", 0.05);
+      add("tailSplice", "rightTailIn", 0.05);
+      add("brakeFuseIn", "brakeFuseOut", 0.02, state.brakeFuseGood);
+      add("brakeFuseOut", "brakeSwitchIn", 0.02);
+      add("brakeSwitchIn", "brakeSwitchOut", 0.05, state.brake);
+      add("brakeSwitchOut", "brakeSplice", 0.05, state.fault !== "openBrake");
+      add("brakeSplice", "leftBrakeIn", 0.05);
+      add("brakeSplice", "rightBrakeIn", 0.05);
+      add("leftTailIn", "leftGround", 2.5);
+      add("rightTailIn", "rightGround", 2.5);
+      add("leftBrakeIn", "leftGround", 2.5);
+      add("rightBrakeIn", "rightGround", 2.5);
+      const groundR = state.fault === "poorGround" ? 5 : 0.05;
+      add("leftGround", "ground", groundR, state.fault !== "openGround");
+      add("rightGround", "ground", groundR, state.fault !== "openGround");
+      add("ground", "negative", 0.05, state.fault !== "openGround");
+
+      const distances = Object.fromEntries(Object.keys(TEST_POINTS).map(k => [k, Infinity]));
+      const visited = new Set();
+      distances[a] = 0;
+      while (true) {
+        let current = null;
+        for (const key of Object.keys(distances)) {
+          if (!visited.has(key) && (current === null || distances[key] < distances[current])) current = key;
+        }
+        if (current === null || !Number.isFinite(distances[current]) || current === b) break;
+        visited.add(current);
+        for (const [from, to, ohms] of edges) {
+          if (from === current && distances[to] > distances[current] + ohms) {
+            distances[to] = distances[current] + ohms;
+          }
+        }
+      }
+      return distances[b];
+    }
+
+    function lampIsOn(kind) {
+      if (kind !== "tail" && kind !== "brake") return false;
+      return Boolean(state[kind]) &&
+        state.fault !== (kind === "tail" ? "openTail" : "openBrake") &&
+        state.fault !== "poorGround" && state.fault !== "openGround";
+    }
+
+    return Object.freeze({ setState, getState, voltageAt, resistanceBetween, lampIsOn });
+  }
+
+  root.IronKnuckleCircuitEngine = Object.freeze({ createCircuit, testPoints: TEST_POINTS });
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
 <script>
 (()=>{const $=id=>document.getElementById(id);
 const names=window.IronKnuckleCircuitEngine.testPoints;
@@ -57,7 +187,7 @@ const schematic={battery:[155,285],negative:[155,375],mainFuseIn:[205,177],mainF
 const state={tail:false,brake:false,fault:"none",activeLead:"red",red:"battery",black:"negative",view:"physical",mode:"voltage"};
 const circuit=window.IronKnuckleCircuitEngine.createCircuit(state);
 const descriptions={mainFuseIn:"Protected battery feed entering the main fuse.",mainFuseOut:"Main fuse output supplying the cab distribution branches.",tailFuseIn:"Tail-light branch voltage before the fuse.",tailFuseOut:"Tail-light branch voltage after the fuse.",tailSwitchIn:"Power arriving at the tail-light switch.",tailSwitchOut:"Switched tail-light output when the switch is on.",tailSplice:"Tail-light feed splice dividing power to both rear lamps.",leftTailIn:"Tail input terminal at the left lamp.",rightTailIn:"Tail input terminal at the right lamp.",leftBrakeIn:"Brake input terminal at the left lamp.",rightBrakeIn:"Brake input terminal at the right lamp.",leftGround:"Ground output terminal at the left lamp.",rightGround:"Ground output terminal at the right lamp.",brakeSwitchIn:"Brake pedal switch power input.",brakeSwitchOut:"Brake pedal switch output when the pedal is applied.",brakeSplice:"Brake feed splice dividing power to both rear lamps."};
-function makePoints(id,map){const group=$(id);group.innerHTML="";Object.entries(map).forEach(([key,[x,y]])=>{const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("class","testpoint");g.setAttribute("data-point",key);g.setAttribute("tabindex","0");g.setAttribute("role","button");g.setAttribute("aria-label",names[key]);const c=document.createElementNS(g.namespaceURI,"circle");c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",6);c.setAttribute("fill",key.toLowerCase().includes("ground")||key==="negative"?"#61a9df":"#ff9f1c");const t=document.createElementNS(g.namespaceURI,"text");t.setAttribute("x",x+8);t.setAttribute("y",y-9);t.textContent=names[key];g.append(c,t);g.addEventListener("click",()=>choose(key));g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(key)}});group.append(g)})}
+function makePoints(id,map){const group=$(id);group.innerHTML="";Object.entries(map).forEach(([key,[x,y]])=>{const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("class","testpoint");g.setAttribute("data-point",key);g.setAttribute("tabindex","0");g.setAttribute("role","button");g.setAttribute("aria-label",names[key]);const c=document.createElementNS(g.namespaceURI,"circle");c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",10);c.setAttribute("fill",key.toLowerCase().includes("ground")||key==="negative"?"#61a9df":"#ff9f1c");const t=document.createElementNS(g.namespaceURI,"text");t.setAttribute("x",x+8);t.setAttribute("y",y-13);t.textContent=names[key];g.append(c,t);g.addEventListener("click",()=>choose(key));g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(key)}});group.append(g)})}
 function renderLeads(id,map){const group=$(id);group.innerHTML="";[["red",state.red],["black",state.black]].forEach(([color,p])=>{const [x,y]=map[p]||map.battery;const path=document.createElementNS(group.namespaceURI,"path");path.setAttribute("class","lead "+color);path.setAttribute("d","M550 590 Q"+((550+x)/2)+" "+((590+y)/2-45)+" "+x+" "+y);const tip=document.createElementNS(group.namespaceURI,"circle");tip.setAttribute("class","tip "+color);tip.setAttribute("cx",x);tip.setAttribute("cy",y);tip.setAttribute("r",10);group.append(path,tip)})}
 function update(){circuit.setState(state);const tail=circuit.lampIsOn("tail");const brake=circuit.lampIsOn("brake");["leftTail","rightTail","schLeftTail","schRightTail"].forEach(id=>$(id).classList.toggle("on",tail));["leftBrake","rightBrake","schLeftBrake","schRightBrake"].forEach(id=>$(id).classList.toggle("on",brake));["physTailFeed","schTail"].forEach(id=>$(id).classList.toggle("hot",state.tail&&state.fault!=="openTail"));["physBrakeFeed","schBrake"].forEach(id=>$(id).classList.toggle("hot",state.brake&&state.fault!=="openBrake"));["physGround"].forEach(id=>$(id).classList.toggle("hot",(state.tail||state.brake)&&state.fault==="none"));renderLeads("physicalLeads",physical);renderLeads("schematicLeads",schematic);const v=Math.abs(circuit.voltageAt(state.red)-circuit.voltageAt(state.black));const ohms=circuit.resistanceBetween(state.red,state.black);$("meterFunction").textContent=state.mode==="voltage"?"VIRTUAL METER · DC VOLTS":"VIRTUAL METER · RESISTANCE · POWER OFF";$("reading").textContent=state.mode==="voltage"?v.toFixed(2)+" V":(Number.isFinite(ohms)?ohms.toFixed(2)+" Ω":"OL");$("reading").style.color=state.mode==="voltage"?"var(--green)":(Number.isFinite(ohms)?"var(--green)":"var(--red)");$("meterCaption").textContent="RED: "+names[state.red].toUpperCase()+" · BLACK: "+names[state.black].toUpperCase();$("probeSummary").innerHTML='<b style="color:#ff8b7b">Red:</b> '+names[state.red]+'<br><b style="color:#83c5f2">Black:</b> '+names[state.black];$("probeHint").textContent=(state.activeLead==="red"?"Red":"Black")+" lead selected · choose a test point in either view; both views move together.";$("explain").textContent=state.mode==="resistance"?"Resistance mode: disconnect battery power before testing. Switch toggles act as closed/open contacts; OL means no modeled path between the probes. This is a simplified training model, not a substitute for the OEM procedure.":(descriptions[state.red]||descriptions[state.black]||"Select a circuit test point to inspect its expected voltage."); $("status").textContent=state.fault==="none"?"12.6V nominal · negative-ground · simplified training model.":"Training fault active: "+$("faultSelect").selectedOptions[0].text+". Readings are illustrative."}
 function choose(p){if(state.activeLead==="red")state.red=p;else state.black=p;update()}
