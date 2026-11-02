@@ -21,7 +21,7 @@
 <path id="physTailFeed" class="wire" d="M525 155 H575 M685 155 H760 V420 H270 V535 M760 420 H830 V535"/>
 <path id="physBrakeFeed" class="wire" d="M525 217 H575 M685 217 H790 V455 H270 V535 M790 455 H830 V535"/>
 <path id="physGround" class="groundwire" d="M270 535 V575 H830 V535 M550 575 H127 V315"/>
-<g id="leftLampAssembly"><rect class="component" x="195" y="475" width="150" height="70" rx="8"/><text x="270" y="492" text-anchor="middle" class="small">LEFT REAR LAMP</text><circle id="leftTail" class="lamp" cx="250" cy="520" r="11"/><circle id="leftBrake" class="lamp" cx="290" cy="520" r="11"/></g>
+<g id="leftLampAssembly"><rect class="component" x="195" y="475" width="150" height="70" rx="8"/><text x="270" y="492" text-anchor="middle" class="small">LEFT REAR LAMP</text><circle id="leftTail" class="lamp" cx="290" cy="520" r="11"/><circle id="leftBrake" class="lamp" cx="250" cy="520" r="11"/></g>
 <g id="rightLampAssembly"><rect class="component" x="755" y="475" width="150" height="70" rx="8"/><text x="830" y="492" text-anchor="middle" class="small">RIGHT REAR LAMP</text><circle id="rightTail" class="lamp" cx="810" cy="520" r="11"/><circle id="rightBrake" class="lamp" cx="850" cy="520" r="11"/></g>
 <g id="physicalPoints"></g><g id="physicalLeads"></g>
 <text x="550" y="615" text-anchor="middle" class="small">REAR OF CHASSIS · LAMPS MOUNTED AT ENDS OF FRAME RAILS</text></svg></div>
@@ -33,9 +33,9 @@
 <rect class="component" x="280" y="300" width="100" height="65" rx="6"/><text x="330" y="325" text-anchor="middle" class="small">BRAKE FUSE</text>
 <rect class="component" x="405" y="300" width="100" height="65" rx="6"/><text x="455" y="325" text-anchor="middle" class="small">PEDAL SWITCH</text>
 <path id="schMain" class="wire" d="M155 285 H205 V177 H280 M205 177 V332 H280"/>
-<path id="schTail" class="wire" d="M380 177 H405 M505 177 H650 V220 H760 M650 220 H760 V270 H920 M760 220 V220 H920"/>
-<path id="schBrake" class="wire" d="M380 332 H405 M505 332 H650 V390 H760 M650 390 H760 V440 H920 M760 390 V390 H920"/>
-<path class="groundwire" d="M960 285 V535 H95 V375 M960 455 V535"/>
+<path id="schTail" class="wire" d="M380 177 H405 M505 177 H700 V220 H760 M760 220 H875 V245 H949 M760 220 V430 H949"/>
+<path id="schBrake" class="wire" d="M380 332 H405 M505 332 H700 V390 H760 M760 390 H875 V245 H989 M760 390 V430 H989"/>
+<path class="groundwire" d="M960 256 V535 H95 V375 M960 441 V535 M1000 256 V535 M1000 441 V535"/>
 <g class="component"><rect x="920" y="185" width="145" height="120" rx="8"/><rect x="920" y="370" width="145" height="120" rx="8"/></g>
 <text x="992" y="205" text-anchor="middle" class="small">LEFT REAR LAMP</text><circle id="schLeftTail" class="lamp" cx="960" cy="245" r="11"/><circle id="schLeftBrake" class="lamp" cx="1000" cy="245" r="11"/>
 <text x="992" y="390" text-anchor="middle" class="small">RIGHT REAR LAMP</text><circle id="schRightTail" class="lamp" cx="960" cy="430" r="11"/><circle id="schRightBrake" class="lamp" cx="1000" cy="430" r="11"/>
@@ -182,7 +182,7 @@
 <script>
 (()=>{const $=id=>document.getElementById(id);
 const names=window.IronKnuckleCircuitEngine.testPoints;
-const physical={battery:[200,235],negative:[127,315],mainFuseIn:[220,250],mainFuseOut:[315,250],tailFuseIn:[410,155],tailFuseOut:[525,155],tailSwitchIn:[575,155],tailSwitchOut:[685,155],tailSplice:[760,420],leftTailIn:[250,475],rightTailIn:[810,475],leftGround:[270,545],rightGround:[830,545],brakeFuseIn:[410,217],brakeFuseOut:[525,217],brakeSwitchIn:[575,217],brakeSwitchOut:[685,217],brakeSplice:[790,455],leftBrakeIn:[290,475],rightBrakeIn:[850,475],ground:[550,575]};
+const physical={battery:[200,235],negative:[127,315],mainFuseIn:[220,250],mainFuseOut:[315,250],tailFuseIn:[410,155],tailFuseOut:[525,155],tailSwitchIn:[575,155],tailSwitchOut:[685,155],tailSplice:[760,420],leftTailIn:[290,475],rightTailIn:[810,475],leftGround:[270,545],rightGround:[830,545],brakeFuseIn:[410,217],brakeFuseOut:[525,217],brakeSwitchIn:[575,217],brakeSwitchOut:[685,217],brakeSplice:[790,455],leftBrakeIn:[250,475],rightBrakeIn:[850,475],ground:[550,575]};
 const schematic={battery:[155,285],negative:[155,375],mainFuseIn:[205,177],mainFuseOut:[280,177],tailFuseIn:[280,177],tailFuseOut:[380,177],tailSwitchIn:[405,177],tailSwitchOut:[505,177],tailSplice:[760,220],leftTailIn:[960,245],rightTailIn:[960,430],leftGround:[960,305],rightGround:[960,490],brakeFuseIn:[280,332],brakeFuseOut:[380,332],brakeSwitchIn:[405,332],brakeSwitchOut:[505,332],brakeSplice:[760,390],leftBrakeIn:[1000,245],rightBrakeIn:[1000,430],ground:[550,535]};
 const state={tail:false,brake:false,fault:"none",activeLead:"red",red:"battery",black:"negative",view:"physical",mode:"voltage"};
 const circuit=window.IronKnuckleCircuitEngine.createCircuit(state);
