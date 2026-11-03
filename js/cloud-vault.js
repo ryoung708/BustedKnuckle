@@ -53,7 +53,7 @@ async function loadCloudCases() {
   if (error) { status(error.message, "ERROR"); return; }
   cloudRows = data || [];
   renderCloudCases();
-  status(cloudRows.length + " private case(s) in your vault.", "CONNECTED");
+  status(cloudRows.length + " private case(s) in your vault. New saves sync automatically.", "CONNECTED");
 }
 function renderCloudCases() {
   const box = $("cloudCases");
@@ -80,7 +80,7 @@ async function syncLocalCases() {
   if (!local.length) { status("No local cases found in this browser to sync.", "CONNECTED"); return; }
   const map = caseMap();
   let saved = 0, failed = 0;
-  status("Syncing " + local.length + " local case(s)…", "SYNCING");
+  status("Uploading " + local.length + " older local case(s)…", "SYNCING");
   for (const raw of local) {
     try {
       let cloudId = map[raw.id];
@@ -107,8 +107,56 @@ async function syncLocalCases() {
   }
   saveCaseMap(map);
   await loadCloudCases();
-  status(saved + " case(s) synced" + (failed ? "; " + failed + " failed. Check console/details." : ".") + " Local copies were kept.", failed ? "PARTIAL" : "CONNECTED");
+  status(saved + " older case(s) uploaded" + (failed ? "; " + failed + " failed." : ".") + " Local copies were kept.", failed ? "PARTIAL" : "CONNECTED");
 }
+
+function cloudStatus(raw) {
+  const s = String(raw?.status || "in-progress");
+  if (s === "confirmed") return "reviewed";
+  if (s === "needs-more-evidence") return "in_review";
+  if (s === "ready-for-review") return "submitted";
+  if (s === "archived") return "archived";
+  return "draft";
+}
+const saveQueues = new Map();
+async function saveCase(raw) {
+  if (!user || !raw?.id) return;
+  const previous = saveQueues.get(raw.id) || Promise.resolve();
+  const next = previous.catch(() => {}).then(async () => {
+    const map = caseMap();
+    const payload = {
+      owner_id: user.id,
+      title: titleFor(raw),
+      status: cloudStatus(raw),
+      raw_case: raw,
+      updated_at: new Date().toISOString()
+    };
+    let cloudId = map[raw.id];
+    let result;
+    if (cloudId) {
+      result = await client.from("diagnostic_cases").update(payload).eq("id", cloudId).select("id").maybeSingle();
+      if (result.error) throw result.error;
+      if (!result.data) { delete map[raw.id]; cloudId = null; }
+    }
+    if (!cloudId) {
+      result = await client.from("diagnostic_cases").insert(payload).select("id").single();
+      if (result.error) throw result.error;
+      map[raw.id] = result.data.id;
+      saveCaseMap(map);
+    }
+    status("Case saved to your private cloud. Your browser copy is kept.", "CONNECTED");
+    await loadCloudCases();
+  }).catch(error => {
+    console.error("IronKnuckle automatic cloud save failed:", error);
+    status("Saved on this browser. Cloud save needs attention: " + (error.message || "connection issue"), "LOCAL SAVE");
+  }).finally(() => {
+    if (saveQueues.get(raw.id) === next) saveQueues.delete(raw.id);
+  });
+  saveQueues.set(raw.id, next);
+  return next;
+}
+window.IronKnuckleCloud = { saveCase };
+
 async function loadAttachments() {
   if (!selectedCloudCase || !user) return;
   const { data, error } = await client.from("case_attachments")
