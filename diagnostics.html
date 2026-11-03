@@ -65,4 +65,5 @@ $("importFile").onchange=async e=>{const file=e.target.files?.[0];if(!file)retur
 $("librarySearch").oninput=renderHistory;$("libraryFilter").onchange=renderHistory;
 $("clearAll").onclick=()=>{if(confirm("Permanently delete all saved investigations from this browser profile? Export first if needed.")){sessions=[];active=null;localStorage.removeItem(STORE);renderHistory();$("work").innerHTML='<div class="empty">Local records cleared.</div>'}};
 renderHistory();
-</script></body></html>
+</script><script type="module" src="./js/cloud-vault.js"></script>
+</body></html>
