@@ -57,11 +57,13 @@ async function loadCloudCases() {
 }
 function renderCloudCases() {
   const box = $("cloudCases");
-  if (!cloudRows.length) {
+  const query = ($("cloudCaseSearch")?.value || "").toLowerCase().trim();
+  const visibleRows = cloudRows.filter(row => { const raw = row.raw_case || {}; const faultText = Object.values(raw.entries || {}).flatMap(entry => entry.faultCodes || []).map(f => [f.code, f.controller, f.status].join(" ")).join(" "); return !query || [row.title, raw.complaint, raw.workflowId, faultText, JSON.stringify(raw.vehicle || {})].join(" ").toLowerCase().includes(query); });
+  if (!visibleRows.length) {
     box.innerHTML = '<p class="small">Your cloud vault is empty. Sync a local case to start.</p>';
     return;
   }
-  box.innerHTML = cloudRows.map(row => {
+  box.innerHTML = visibleRows.map(row => {
     const raw = row.raw_case || {};
     const vehicle = titleFor(raw);
     return '<article class="case-card"><div class="case-card-head"><b>' + esc(row.title || vehicle) + '</b><span class="case-status">' + esc(row.status) + '</span></div><p>' + esc(raw.complaint || "No complaint recorded") + '</p><div class="case-actions"><button class="btn" data-attach="' + esc(row.id) + '">Manage evidence</button></div></article>';
@@ -235,5 +237,6 @@ $("cloudSignOut").addEventListener("click", async () => {
 });
 $("cloudSync").addEventListener("click", syncLocalCases);
 $("cloudRefresh").addEventListener("click", loadCloudCases);
+$("cloudCaseSearch").addEventListener("input", renderCloudCases);
 $("uploadEvidence").addEventListener("click", uploadEvidence);
 init().catch(error => status(error.message || String(error), "ERROR"));
