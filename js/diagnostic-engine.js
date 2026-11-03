@@ -128,10 +128,13 @@ export function createSession(input={}) {
 export function recordStep(session, stepIndex, payload={}) {
   const flow=workflows[session.workflowId];
   if(!flow || !flow.steps[stepIndex]) throw new Error("Unknown diagnostic step.");
-  session.entries[flow.steps[stepIndex].id] = {
+  const stepId=flow.steps[stepIndex].id;
+  const previous=session.entries[stepId]||{};
+  session.entries[stepId] = {
     choice: payload.choice || "",
     measurements: payload.measurements || {},
     notes: payload.notes || "",
+    faultCodes: Array.isArray(payload.faultCodes) ? payload.faultCodes : (previous.faultCodes || []),
     recordedAt: new Date().toISOString()
   };
   session.currentStep=Math.min(stepIndex+1,flow.steps.length-1);
