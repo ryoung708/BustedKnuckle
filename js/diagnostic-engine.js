@@ -95,6 +95,18 @@ export const workflows = {
       {id:"verify",title:"Verify performance restoration",instruction:"Record the confirmed cause and repair. Repeat the original operating conditions and verify normal power and no returning faults.",choices:["Repair verified under load","Verification pending","Cause unconfirmed"],terminal:true}
     ]
   }
+  ,
+  check_engine_light: {
+    title:"Check Engine Light", category:"Engine diagnostics",
+    caution:"A warning lamp or fault code identifies a diagnostic direction, not a failed component. Capture exact OEM fault information and follow the correct engine and aftertreatment service procedure.",
+    steps:[
+      {id:"complaint",title:"Capture the driver complaint",instruction:"Record what the driver noticed, when the lamp appeared, whether it is steady or flashing, related messages, drivability changes, derate, operating conditions and whether the symptom is present now.",choices:["Lamp on with no noticeable drivability change","Lamp with reduced power / derate","Lamp with rough running or performance change","Intermittent warning","Complaint cannot be reproduced"]},
+      {id:"codes",title:"Retrieve and document fault codes",instruction:"Scan relevant controllers. Record exact SPN/FMI or OEM code, source controller, active/inactive status, occurrence count and available freeze-frame or event data. Preserve the original report.",choices:["Relevant active fault(s) found","Only inactive / historic faults found","Multiple related faults found","No faults retrieved / scan incomplete"]},
+      {id:"prioritize",title:"Prioritize the fault evidence",instruction:"Group related faults by system and timing. Compare symptoms, freeze-frame and commanded-versus-actual data. Identify the primary fault candidate without assuming the first code is the root cause.",choices:["One fault clearly leads the investigation","Several faults appear related","Fault data points to shared power / ground / network issue","Evidence does not yet identify a direction"]},
+      {id:"test",title:"Perform the fault-specific test",instruction:"Use the exact engine, calibration and OEM troubleshooting tree. Record test conditions, connector / pin / test points, actual readings and applicable specifications. Do not substitute generic thresholds.",choices:["Test confirms a physical / circuit fault","Test points to a different system","Test results are within specification","Required test or service information unavailable"]},
+      {id:"verify",title:"Repair and verify the complaint",instruction:"Document the physical cause, repair and before / after evidence. Recreate original operating conditions, verify warning and symptom are resolved, then rescan relevant controllers.",choices:["Repair verified under original conditions","Repair complete; verification pending","Cause remains unconfirmed","No repair required; warning / fault not reproduced"],terminal:true}
+    ]
+  }
 };
 
 export function createSession(input={}) {

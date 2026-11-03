@@ -69,7 +69,7 @@ function renderCloudCases() {
   box.querySelectorAll("[data-attach]").forEach(button => button.addEventListener("click", () => {
     selectedCloudCase = cloudRows.find(row => row.id === button.dataset.attach) || null;
     $("attachTarget").textContent = selectedCloudCase ? selectedCloudCase.title : "Choose a cloud case.";
-    $("attachmentList").innerHTML = "";
+    $("attachmentList").innerHTML = '<p class="small">Loading evidence files…</p>';
     loadAttachments();
     $("cloudAttach").scrollIntoView({ behavior: "smooth", block: "nearest" });
   }));
@@ -165,7 +165,13 @@ async function loadAttachments() {
   if (error) { $("attachmentList").textContent = error.message; return; }
   const box = $("attachmentList");
   if (!data?.length) { box.innerHTML = '<p class="small">No evidence files attached yet.</p>'; return; }
-  box.innerHTML = data.map(file => '<article class="case-card"><b>' + esc(file.original_name) + '</b><p>' + esc(file.category) + ' · ' + Math.ceil((file.size_bytes || 0) / 1024) + ' KB</p><div class="case-actions"><button class="btn" data-download="' + esc(file.id) + '">Download</button></div></article>').join("");
+  box.innerHTML = data.map(file => '<article class="case-card"><b>' + esc(file.original_name) + '</b><p>' + esc(file.category) + ' · ' + Math.ceil((file.size_bytes || 0) / 1024) + ' KB</p><div class="case-actions"><button class="btn" data-view="' + esc(file.id) + '">View file</button><button class="btn" data-download="' + esc(file.id) + '">Download</button></div></article>').join("");
+  box.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", async () => {
+    const file = data.find(item => item.id === button.dataset.view);
+    const { data: signed, error: viewError } = await client.storage.from(BUCKET).createSignedUrl(file.storage_path, 60);
+    if (viewError) { status("File preview failed: " + viewError.message, "ERROR"); return; }
+    window.open(signed.signedUrl, "_blank", "noopener");
+  }));
   box.querySelectorAll("[data-download]").forEach(button => button.addEventListener("click", async () => {
     const file = data.find(item => item.id === button.dataset.download);
     const { data: blob, error: downloadError } = await client.storage.from(BUCKET).download(file.storage_path);
