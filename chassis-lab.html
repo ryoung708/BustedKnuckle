@@ -200,7 +200,7 @@ function makePoints(id,map){
  const short={battery:"BAT +",negative:"BAT −",mainFuseIn:"MAIN IN",mainFuseOut:"MAIN OUT",tailFuseIn:"TAIL F IN",tailFuseOut:"TAIL F OUT",tailSwitchIn:"TAIL SW IN",tailSwitchOut:"TAIL SW OUT",tailSplice:"TAIL SPLICE",leftTailIn:"L TAIL IN",rightTailIn:"R TAIL IN",leftBrakeIn:"L BRAKE IN",rightBrakeIn:"R BRAKE IN",leftGround:"L GND",rightGround:"R GND",brakeFuseIn:"BRK F IN",brakeFuseOut:"BRK F OUT",brakeSwitchIn:"BRK SW IN",brakeSwitchOut:"BRK SW OUT",brakeSplice:"BRK SPLICE",ground:"GND"};
  const offsets={
  physical:{battery:[0,-22],negative:[0,24],mainFuseIn:[-4,-24],mainFuseOut:[0,25],tailFuseIn:[0,-25],tailFuseOut:[0,25],tailSwitchIn:[0,-25],tailSwitchOut:[0,25],tailSplice:[0,-25],leftTailIn:[0,-23],rightTailIn:[0,-23],leftBrakeIn:[0,24],rightBrakeIn:[0,24],leftGround:[0,24],rightGround:[0,24],brakeFuseIn:[0,-25],brakeFuseOut:[0,25],brakeSwitchIn:[0,-25],brakeSwitchOut:[0,25],brakeSplice:[0,-25],ground:[0,24]},
- schematic:{battery:[0,-23],negative:[0,23],mainFuseIn:[0,-22],mainFuseOut:[0,-22],tailFuseIn:[0,-22],tailFuseOut:[0,-22],tailSwitchIn:[0,-22],tailSwitchOut:[0,-22],tailSplice:[0,-20],leftTailIn:[0,-20],rightTailIn:[0,-20],leftBrakeIn:[0,23],rightBrakeIn:[0,23],leftGround:[0,20],rightGround:[0,20],brakeFuseIn:[0,22],brakeFuseOut:[0,22],brakeSwitchIn:[0,22],brakeSwitchOut:[0,22],brakeSplice:[0,20],ground:[0,22]}
+ schematic:{battery:[0,-23],negative:[0,23],mainFuseIn:[0,-22],mainFuseOut:[0,22],tailFuseIn:[0,-22],tailFuseOut:[0,22],tailSwitchIn:[0,-22],tailSwitchOut:[0,22],tailSplice:[0,-20],leftTailIn:[0,-20],rightTailIn:[0,-20],leftBrakeIn:[0,23],rightBrakeIn:[0,23],leftGround:[0,20],rightGround:[0,20],brakeFuseIn:[0,-22],brakeFuseOut:[0,22],brakeSwitchIn:[0,-22],brakeSwitchOut:[0,22],brakeSplice:[0,20],ground:[0,22]}
  };
  Object.entries(map).forEach(([key,[x,y]])=>{
   const ns="http://www.w3.org/2000/svg",g=document.createElementNS(ns,"g");
@@ -210,7 +210,7 @@ function makePoints(id,map){
   const label=document.createElementNS(ns,"text");label.setAttribute("x",x+dx);label.setAttribute("y",y+dy);label.setAttribute("text-anchor","middle");label.setAttribute("class","pin-label");label.textContent=short[key]||names[key];
   const title=document.createElementNS(ns,"title");title.textContent=names[key]+" — "+(descriptions[key]||"Test point")+". Click to place the active meter lead.";
   const bg=document.createElementNS(ns,"rect");bg.setAttribute("class","pin-label-bg");
-  g.append(c,bg,label,title);group.append(g);const box=label.getBBox();bg.setAttribute("x",box.x-4);bg.setAttribute("y",box.y-2);bg.setAttribute("width",box.width+8);bg.setAttribute("height",box.height+4);bg.setAttribute("rx","4");
+  g.append(c,bg,label,title);group.append(g);const labelWidth=Math.max(30,label.textContent.length*6.1);bg.setAttribute("x",x+dx-labelWidth/2-4);bg.setAttribute("y",y+dy-11);bg.setAttribute("width",labelWidth+8);bg.setAttribute("height","15");bg.setAttribute("rx","4");
   g.addEventListener("click",()=>choose(key));g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(key)}});
  });
 }
