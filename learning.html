@@ -87,7 +87,7 @@
 .cutaway-shell .piston-motion.d1{animation-delay:-.6s}.cutaway-shell .piston-motion.d2{animation-delay:-1.2s}.cutaway-shell .piston-motion.d3{animation-delay:-1.8s}
 .cutaway-shell .turbo-spin{transform-box:fill-box;transform-origin:center;animation:turboTurn .55s linear infinite}
 .cutaway-shell .pulse{animation:pulseGlow 1.4s ease-in-out infinite}.cutaway-shell .spray{animation:sprayDrop 1.2s ease-in infinite}.cutaway-shell .sensor-light{animation:sensorBlink 1.8s ease-in-out infinite}
-.cutaway-shell .engine-piston{transform-box:fill-box;transform-origin:center;animation:dieselPiston 4.8s ease-in-out infinite}.cutaway-shell .engine-piston.p2{animation-delay:-3.6s}.cutaway-shell .engine-piston.p3{animation-delay:-1.2s}.cutaway-shell .engine-piston.p4{animation-delay:-2.4s}
+.cutaway-shell .engine-piston{transform-box:fill-box;transform-origin:center;animation:none!important}
 .cutaway-shell .fuel-event{opacity:0;animation:fuelBurst 4.8s linear infinite}.cutaway-shell .fuel-event.f2{animation-delay:-3.6s}.cutaway-shell .fuel-event.f3{animation-delay:-1.2s}.cutaway-shell .fuel-event.f4{animation-delay:-2.4s}.cutaway-shell .combustion-flash{opacity:0;transform-box:fill-box;transform-origin:center;animation:combustionFlash 4.8s ease-out infinite}.cutaway-shell .combustion-flash.f2{animation-delay:-3.6s}.cutaway-shell .combustion-flash.f3{animation-delay:-1.2s}.cutaway-shell .combustion-flash.f4{animation-delay:-2.4s}.cutaway-shell .def-spray{animation:defDose 2.6s ease-in-out infinite;opacity:.8}
 .cutaway-shell .cam-lobe{transform-box:fill-box;transform-origin:center;animation:camLobeTurn 2.4s linear infinite}.cutaway-shell .cam-lobe.l2{animation-delay:-1.2s}.cutaway-shell .rocker-motion{transform-box:fill-box;transform-origin:82% 50%;animation:rockerAct 1.2s ease-in-out infinite}.cutaway-shell .rocker-motion.r2{animation-delay:-.6s}.cutaway-shell .valve-motion{animation:valveAct 1.2s ease-in-out infinite}.cutaway-shell .valve-motion.v2{animation-delay:-.6s}@keyframes camLobeTurn{to{transform:rotate(360deg)}}@keyframes rockerAct{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes valveAct{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 .cutaway-shell .click-part{cursor:pointer;transition:filter .16s,opacity .16s}.cutaway-shell .click-part:hover,.cutaway-shell .click-part.selected{filter:drop-shadow(0 0 7px #ffad52)}
@@ -513,30 +513,40 @@ engine:{eyebrow:"ENGINE BASICS / INTERACTIVE CUTAWAY",title:"Follow the four-str
  <text x="265" y="610" class="micro-label">DOC → DPF → SCR</text>
  <text x="430" y="635" class="micro-label">TURBINE OUTLET</text>
 </g>
-<!-- Simplified rotating assembly: rods link piston pins to offset crank throws -->
+<!-- Kinematic slider-crank assembly: each piston, rod and crank throw move as one mechanism -->
 <g class="click-part" data-part="crank">
  <path d="M815 635H1100" stroke="#c2cdd4" stroke-width="18" stroke-linecap="round"/>
  <g fill="#52636e" stroke="#d2dce2" stroke-width="4">
   <circle cx="850" cy="635" r="19"/><circle cx="916" cy="635" r="19"/><circle cx="982" cy="635" r="19"/><circle cx="1048" cy="635" r="19"/>
  </g>
- <g class="crank-web t1"><path d="M850 635L866 615" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="866" cy="615" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
- <g class="crank-web t2"><path d="M916 635L900 615" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="900" cy="615" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
- <g class="crank-web t3"><path d="M982 635L998 615" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="998" cy="615" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
- <g class="crank-web t4"><path d="M1048 635L1032 615" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="1032" cy="615" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
- <g stroke="#b9c5ce" stroke-width="12" stroke-linecap="round">
-  <path d="M850 460L866 615"/><path d="M916 460L900 615"/><path d="M982 460L998 615"/><path d="M1048 460L1032 615"/>
+ <g class="crank-web" data-crank-index="0"><path d="M850 635L850 607" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="850" cy="607" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
+ <g class="crank-web" data-crank-index="1"><path d="M916 635L916 607" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="916" cy="607" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
+ <g class="crank-web" data-crank-index="2"><path d="M982 635L982 607" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="982" cy="607" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
+ <g class="crank-web" data-crank-index="3"><path d="M1048 635L1048 607" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="1048" cy="607" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
+ <g fill="none" stroke="#b9c5ce" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
+  <path id="connecting-rod-0" d="M850 460L850 607"/><path id="connecting-rod-1" d="M916 460L916 607"/>
+  <path id="connecting-rod-2" d="M982 460L982 607"/><path id="connecting-rod-3" d="M1048 460L1048 607"/>
+ </g>
+ <g fill="none" stroke="#eef3f6" stroke-width="3" stroke-linecap="round">
+  <path id="rod-highlight-0" d="M850 460L850 607"/><path id="rod-highlight-1" d="M916 460L916 607"/>
+  <path id="rod-highlight-2" d="M982 460L982 607"/><path id="rod-highlight-3" d="M1048 460L1048 607"/>
  </g>
  <g fill="#8b9ba5" stroke="#e1e8ec" stroke-width="3">
-  <circle cx="850" cy="460" r="8"/><circle cx="916" cy="460" r="8"/><circle cx="982" cy="460" r="8"/><circle cx="1048" cy="460" r="8"/>
+  <circle id="rod-small-end-0" cx="850" cy="460" r="8"/><circle id="rod-small-end-1" cx="916" cy="460" r="8"/>
+  <circle id="rod-small-end-2" cx="982" cy="460" r="8"/><circle id="rod-small-end-3" cx="1048" cy="460" r="8"/>
  </g>
- <!-- End-on flywheel view makes crankshaft rotation visible to the learner -->
+ <g fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3">
+  <circle id="rod-big-end-0" cx="850" cy="607" r="10"/><circle id="rod-big-end-1" cx="916" cy="607" r="10"/>
+  <circle id="rod-big-end-2" cx="982" cy="607" r="10"/><circle id="rod-big-end-3" cx="1048" cy="607" r="10"/>
+ </g>
+ <!-- End-on flywheel remains synchronized with the crankshaft cycle -->
  <path d="M1066 635H1112" stroke="#c2cdd4" stroke-width="18" stroke-linecap="round"/>
  <g class="crank-flywheel">
   <circle cx="1150" cy="635" r="34" fill="#263640" stroke="#d4dee4" stroke-width="5"/>
   <circle cx="1150" cy="635" r="9" fill="#9eacb5" stroke="#edf2f5" stroke-width="3"/>
   <path d="M1150 606V626M1150 644V664M1121 635H1141M1159 635H1179M1129 614L1143 628M1157 642L1171 656M1171 614L1157 628M1143 642L1129 656" stroke="#b9c7cf" stroke-width="7" stroke-linecap="round"/>
  </g>
- <text x="950" y="682" class="part-label">CONNECTING RODS → CRANKSHAFT</text>
+ <text x="950" y="682" class="part-label">PISTONS ↔ CONNECTING RODS ↔ CRANKSHAFT</text>
  <text x="1150" y="690" class="micro-label">ROTATING FLYWHEEL</text>
 </g>
 <!-- Coolant jacket and oil gallery are shown as separate system overlays -->
@@ -589,7 +599,35 @@ aftertreatment:{eyebrow:"AFTERTREATMENT / EXHAUST FLOW MAP",title:"Follow exhaus
 };
 const tabs=[...document.querySelectorAll("[data-system]")],electricalBits=[document.querySelector(".tabs"),document.querySelector(".layout"),document.querySelector(".bench")],launch=document.getElementById("electricalLaunch"),explorer=document.getElementById("moduleExplorer"),summary=document.getElementById("summaryView");
 function selectSystem(key){tabs.forEach(t=>t.classList.toggle("active",t.dataset.system===key));const electrical=key==="electrical";const heroTitle=document.getElementById("learningHeroTitle"),heroIntro=document.getElementById("learningHeroIntro");const heroCopy={electrical:["See the circuit.<br>Understand the test.","Build confidence with power, ground, circuit protection and meter testing."],engine:["See how the engine works.","Follow air, fuel, compression and combustion through the major engine components."],aftertreatment:["Follow the exhaust.<br>Understand emissions.","Trace exhaust through the DOC, DPF and SCR, and learn what each sensor reports."],summary:["Understand the system.<br>Then verify it.","Quick reference points for electrical, engine and aftertreatment systems."]};heroTitle.innerHTML=heroCopy[key][0];heroIntro.textContent=heroCopy[key][1];electricalBits.forEach(el=>{if(el)el.style.display=electrical?"":"none";});launch.style.display=electrical?"flex":"none";explorer.style.display=electrical||key==="summary"?"none":"block";summary.style.display=key==="summary"?"block":"none";if(key==="engine"||key==="aftertreatment")renderModule(key);}
-function renderModule(key){const m=modules[key];document.getElementById("moduleEyebrow").textContent=m.eyebrow;document.getElementById("moduleTitle").textContent=m.title;document.getElementById("moduleIntro").textContent=m.intro;document.getElementById("diagramCaption").textContent=m.caption;document.getElementById("systemDiagram").innerHTML=m.svg;const list=document.getElementById("componentList");list.innerHTML="";m.parts.forEach(p=>{const b=document.createElement("button");b.type="button";b.className="component-chip";b.dataset.part=p.id;b.textContent=p.name;b.addEventListener("click",()=>selectPart(key,p.id));list.appendChild(b);});document.querySelectorAll("#systemDiagram [data-part]").forEach(n=>n.addEventListener("click",()=>selectPart(key,n.dataset.part)));selectPart(key,m.parts[0].id);}
+let engineCrankFrame=0;
+function animateEngineCrank(){
+ if(engineCrankFrame)cancelAnimationFrame(engineCrankFrame);
+ const svg=document.querySelector("#systemDiagram .cutaway-shell svg");
+ if(!svg)return;
+ const centers=[850,916,982,1048],phases=[0,Math.PI,Math.PI,0],radius=28,rodLength=150,cycleMs=2400;
+ const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const draw=(elapsed)=>{
+  centers.forEach((cx,i)=>{
+   const theta=(elapsed/cycleMs)*Math.PI*2+phases[i],crankX=cx+radius*Math.sin(theta),crankY=635-radius*Math.cos(theta);
+   const topY=crankY-Math.sqrt(rodLength*rodLength-Math.pow(crankX-cx,2)),pistonShift=topY-460;
+   const rod=document.getElementById("connecting-rod-"+i),highlight=document.getElementById("rod-highlight-"+i),small=document.getElementById("rod-small-end-"+i),big=document.getElementById("rod-big-end-"+i),web=svg.querySelector('[data-crank-index="'+i+'"]'),piston=svg.querySelectorAll(".engine-piston")[i];
+   const line="M"+cx.toFixed(2)+" "+topY.toFixed(2)+"L"+crankX.toFixed(2)+" "+crankY.toFixed(2);
+   if(rod)rod.setAttribute("d",line);if(highlight)highlight.setAttribute("d",line);
+   if(small){small.setAttribute("cx",cx);small.setAttribute("cy",topY.toFixed(2));}
+   if(big){big.setAttribute("cx",crankX.toFixed(2));big.setAttribute("cy",crankY.toFixed(2));}
+   if(web)web.setAttribute("transform","rotate("+(theta*180/Math.PI).toFixed(2)+" "+cx+" 635)");
+   if(piston)piston.style.transform="translateY("+pistonShift.toFixed(2)+"px)";
+  });
+ };
+ if(reduced){draw(0);return;}
+ const start=performance.now();
+ const tick=now=>{
+  if(!svg.isConnected||document.getElementById("moduleExplorer").style.display==="none")return;
+  draw(now-start);engineCrankFrame=requestAnimationFrame(tick);
+ };
+ engineCrankFrame=requestAnimationFrame(tick);
+}
+function renderModule(key){const m=modules[key];document.getElementById("moduleEyebrow").textContent=m.eyebrow;document.getElementById("moduleTitle").textContent=m.title;document.getElementById("moduleIntro").textContent=m.intro;document.getElementById("diagramCaption").textContent=m.caption;document.getElementById("systemDiagram").innerHTML=m.svg;const list=document.getElementById("componentList");list.innerHTML="";m.parts.forEach(p=>{const b=document.createElement("button");b.type="button";b.className="component-chip";b.dataset.part=p.id;b.textContent=p.name;b.addEventListener("click",()=>selectPart(key,p.id));list.appendChild(b);});document.querySelectorAll("#systemDiagram [data-part]").forEach(n=>n.addEventListener("click",()=>selectPart(key,n.dataset.part)));selectPart(key,m.parts[0].id);if(key==="engine")animateEngineCrank();}
 function selectPart(key,id){const m=modules[key],p=m.parts.find(x=>x.id===id);if(!p)return;document.querySelectorAll("#systemDiagram [data-part]").forEach(n=>n.classList.toggle("selected",n.dataset.part===id));document.querySelectorAll("#componentList [data-part]").forEach(n=>n.classList.toggle("active",n.dataset.part===id));const panel=document.getElementById("componentPanel");panel.innerHTML='<div class="component-kicker">Component overview</div><h3></h3><p class="component-role"></p><div class="component-facts"><div class="component-fact"><b>How it works</b><span></span></div><div class="component-fact"><b>What to look for</b><span></span></div><div class="component-fact"><b>Testing direction</b><span></span></div></div><div class="module-check"><h4 id="checkQuestion"></h4><button type="button" data-answer="0"></button><button type="button" data-answer="1"></button><div class="module-feedback" id="moduleFeedback">Quick check: choose the best answer.</div></div>';panel.querySelector("h3").textContent=p.name;panel.querySelector(".component-role").textContent=p.role;const spans=panel.querySelectorAll(".component-fact span");spans[0].textContent=p.works;spans[1].textContent=p.look;spans[2].textContent=p.test;const q=key==="engine"?"Which approach is the best starting point?":"What should happen before condemning this component?";const answers=key==="engine"?["Use system evidence and the OEM test for the complaint","Replace it whenever a related fault code appears"]:["Verify operating conditions, sensor plausibility and related system evidence","Replace the component based on one fault code alone"];panel.querySelector("#checkQuestion").textContent=q;panel.querySelectorAll("[data-answer]").forEach((b,i)=>{b.textContent=answers[i];b.addEventListener("click",()=>{const f=panel.querySelector("#moduleFeedback");f.textContent=i===0?"Good approach. Confirm the fault with the correct test conditions and specifications.":"Not quite. A fault code or symptom identifies a system to investigate; it does not prove a component has failed.";f.style.color=i===0?"#70c69a":"#ffb34d";});});}
 tabs.forEach(t=>t.addEventListener("click",()=>selectSystem(t.dataset.system)));selectSystem("electrical");
 })();
