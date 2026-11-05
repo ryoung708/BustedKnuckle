@@ -355,51 +355,141 @@ engine:{eyebrow:"ENGINE BASICS / INTERACTIVE CUTAWAY",title:"Follow the four-str
 {id:"camshaft",name:"Camshaft & lobes",role:"Times the opening and closing of the intake and exhaust valves.",works:"The camshaft rotates in synchronization with the crankshaft. Its lobes convert rotation into controlled movement of the valve train. Many heavy-duty engines use an overhead or in-block camshaft with pushrods; layouts vary.",look:"Check for abnormal valve-train noise, lubrication concerns, damaged lobes, excessive wear and timing-related symptoms.",test:"Use the engine-specific procedure to inspect valve lift, timing, lash and camshaft condition. Do not assume every engine uses the same layout."},{id:"rocker",name:"Rocker arms & valve bridge",role:"Transfer cam or pushrod motion to the valves.",works:"Rocker arms pivot to press the valve stem or bridge. Some engines use a valve bridge to operate paired valves from one rocker.",look:"Inspect rocker contact surfaces, pivots, shafts, bridges, fasteners and oil supply for wear or damage.",test:"Measure valve lash and inspect rocker movement using the OEM sequence and specifications."},{id:"intake-valve",name:"Intake valve",role:"Opens the intake port so fresh air can enter the cylinder.",works:"The intake valve opens during the intake event and seals the chamber during compression and combustion.",look:"Look for abnormal lash, sticking, seat leakage, damaged springs and signs of poor sealing.",test:"Follow the specified lash, valve-motion and sealing checks; use compression or leak-down testing when indicated."},{id:"exhaust-valve",name:"Exhaust valve",role:"Opens to release combustion gases into the exhaust port.",works:"The exhaust valve opens near the end of the power stroke and remains open through the exhaust event before closing for the next cycle.",look:"Check for heat damage, recession, sticking, spring concerns, abnormal lash and exhaust leakage.",test:"Use the OEM valve-lash and cylinder sealing procedures; investigate overheating or poor combustion before condemning a valve."},{id:"cooling",name:"Cooling system",role:"Controls engine operating temperature.",works:"Coolant carries heat from the engine to the radiator and returns cooled fluid to the engine.",look:"Check coolant level, leaks, fan operation, belts, hoses and signs of combustion gas in coolant.",test:"Pressure-test and evaluate temperature control using the OEM procedure."},
 {id:"oil",name:"Lubrication",role:"Maintains an oil film between moving parts.",works:"The oil pump circulates filtered oil through galleries to bearings, valvetrain and other lubricated components.",look:"Check oil level, condition, leaks, filter condition and pressure warnings.",test:"Verify oil pressure with the specified method and compare hot/cold readings to OEM limits."},
 {id:"exhaust",name:"Exhaust manifold",role:"Collects cylinder exhaust and directs it to the turbo and aftertreatment.",works:"Exhaust energy drives the turbo turbine before gas continues downstream.",look:"Inspect for soot trails, cracks, loose joints and abnormal exhaust noise.",test:"Check exhaust leaks and pressure/temperature data using approved test conditions."}
-],svg:`<div class="cutaway-shell"><svg viewBox="0 0 1000 560" role="img" aria-label="Animated heavy-duty diesel engine cutaway with turbo, intake, injectors, pistons, crankshaft, cooling and lubrication">
-<defs><linearGradient id="metalGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c1cbd2"/><stop offset=".35" stop-color="#53636f"/><stop offset=".7" stop-color="#27343e"/><stop offset="1" stop-color="#9ba8b1"/></linearGradient><marker id="flowArrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="#ff9f1c"/></marker></defs>
-<g class="valvetrain-inset">
-<rect x="720" y="18" width="260" height="180" rx="10" fill="#101a22" stroke="#9aaab6" stroke-width="2"/>
-<text x="850" y="38" class="part-label">VALVETRAIN DETAIL</text>
+],svg:`<div class="cutaway-shell"><svg viewBox="0 0 1000 650" role="img" aria-label="Connected heavy-duty diesel engine cutaway showing filtered air through the turbo compressor, charge-air cooler and intake manifold, exhaust through the turbine and aftertreatment, plus integrated valve train and crankshaft">
+<defs>
+ <linearGradient id="metalGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c1cbd2"/><stop offset=".35" stop-color="#53636f"/><stop offset=".7" stop-color="#27343e"/><stop offset="1" stop-color="#9ba8b1"/></linearGradient>
+ <marker id="airArrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#69b7e8"/></marker>
+ <marker id="exhaustArrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#ff9f1c"/></marker>
+</defs>
+<!-- Air path: filter -> compressor -> charge-air cooler -> intake manifold -->
+<g class="click-part" data-part="air">
+ <rect x="22" y="205" width="105" height="74" rx="9" class="dark-metal"/>
+ <path d="M38 218L108 266M38 235L91 273M58 211L116 251" stroke="#c4d0d8" stroke-width="4"/>
+ <text x="74" y="300" class="part-label">AIR FILTER</text>
+ <path d="M127 242H195V342H345" class="air-path flow-dash" marker-end="url(#airArrow)"/>
+ <text x="198" y="326" class="micro-label">CLEAN AIR IN</text>
+</g>
+<!-- Turbocharger: compressor and turbine are mechanically joined by one shaft -->
+<g class="click-part" data-part="turbo">
+ <path d="M345 305Q345 265 390 265H465Q490 265 490 305V385Q490 425 450 425H385Q345 425 345 385Z" fill="#344652" stroke="#c5d0d7" stroke-width="4"/>
+ <circle cx="405" cy="345" r="58" fill="#182630" stroke="#d4dce1" stroke-width="4"/>
+ <circle cx="405" cy="345" r="43" fill="#253a48" stroke="#8ab5d1" stroke-width="2"/>
+ <g class="turbo-spin">
+  <path d="M405 307Q432 312 416 340Q444 344 426 367Q406 389 400 356Q381 384 365 362Q353 337 389 335Q372 313 405 307Z" fill="#9db4c2" stroke="#e5edf2" stroke-width="2"/>
+ </g>
+ <circle cx="405" cy="345" r="8" fill="#e8eef2"/>
+ <path d="M465 345H590" stroke="#d1dbe1" stroke-width="15" stroke-linecap="round"/>
+ <path d="M465 345H590" stroke="#6b7b86" stroke-width="5" stroke-linecap="round"/>
+ <circle cx="590" cy="345" r="58" fill="#182630" stroke="#d4dce1" stroke-width="4"/>
+ <circle cx="590" cy="345" r="43" fill="#3c3027" stroke="#c58b50" stroke-width="2"/>
+ <g class="turbo-spin">
+  <path d="M590 307Q617 312 601 340Q629 344 611 367Q591 389 585 356Q566 384 550 362Q538 337 574 335Q557 313 590 307Z" fill="#d49a5d" stroke="#ffe0b5" stroke-width="2"/>
+ </g>
+ <circle cx="590" cy="345" r="8" fill="#e8eef2"/>
+ <text x="405" y="270" class="part-label">COMPRESSOR</text>
+ <text x="590" y="270" class="part-label">TURBINE</text>
+ <text x="500" y="455" class="part-label">COMMON SHAFT</text>
+ <path d="M500 435V365" class="leader"/>
+ <text x="500" y="478" class="micro-label">EXHAUST SPINS TURBINE → SHAFT DRIVES COMPRESSOR</text>
+</g>
+<!-- Compressed air outlet to charge-air cooler -->
+<g class="click-part" data-part="turbo">
+ <path d="M405 287V170H270V112H300" stroke="#24465d" stroke-width="26" fill="none" stroke-linejoin="round"/>
+ <path d="M405 287V170H270V112H300" class="air-path flow-dash" marker-end="url(#airArrow)"/>
+ <text x="160" y="154" class="micro-label">COMPRESSED AIR</text>
+</g>
+<g class="click-part" data-part="charge-air-cooler">
+ <rect x="300" y="66" width="245" height="92" rx="12" fill="url(#metalGrad)" stroke="#d2dce2" stroke-width="3"/>
+ <rect x="322" y="82" width="200" height="60" rx="5" fill="#193344" stroke="#8ab5d1" stroke-width="2"/>
+ <g stroke="#9cc9df" stroke-width="3"><path d="M337 84V140M352 84V140M367 84V140M382 84V140M397 84V140M412 84V140M427 84V140M442 84V140M457 84V140M472 84V140M487 84V140M502 84V140"/></g>
+ <path d="M545 112H635V185" stroke="#24465d" stroke-width="25" fill="none" stroke-linejoin="round"/>
+ <path d="M545 112H635V185" class="air-path flow-dash" marker-end="url(#airArrow)"/>
+ <text x="422" y="48" class="part-label">CHARGE-AIR COOLER</text>
+ <text x="422" y="174" class="micro-label">COOLS COMPRESSED AIR</text>
+</g>
+<!-- Intake manifold feeds cylinder head -->
+<g class="click-part" data-part="intake">
+ <path d="M600 185H845V225H600Z" fill="#25465a" stroke="#8ab5d1" stroke-width="3"/>
+ <path d="M615 205H830" class="air-path flow-dash" marker-end="url(#airArrow)"/>
+ <path d="M630 225V260M690 225V260M750 225V260M810 225V260" stroke="#7db4d3" stroke-width="15" fill="none"/>
+ <text x="720" y="177" class="part-label">INTAKE MANIFOLD</text>
+ <text x="720" y="244" class="micro-label">AIR DISTRIBUTED TO CYLINDERS</text>
+</g>
+<!-- Engine block and four cylinders -->
+<path d="M555 260H850V500H555L530 470V290Z" fill="url(#metalGrad)" stroke="#c0cbd2" stroke-width="4"/>
+<path d="M575 280H830V470H575Z" fill="#0d171f" stroke="#aab8c2" stroke-width="3"/>
+<path d="M555 260H850V290H555Z" fill="#71818c" stroke="#c5d0d7" stroke-width="3"/>
+<g class="click-part" data-part="piston">
+ <g fill="#17242d" stroke="#b9c5ce" stroke-width="3"><rect x="590" y="292" width="48" height="150" rx="7"/><rect x="650" y="292" width="48" height="150" rx="7"/><rect x="710" y="292" width="48" height="150" rx="7"/><rect x="770" y="292" width="48" height="150" rx="7"/></g>
+ <g fill="#bdc8cf" stroke="#f0f3f5" stroke-width="2">
+  <g class="engine-piston p1"><rect x="594" y="335" width="40" height="20" rx="4"/></g><g class="engine-piston p2"><rect x="654" y="335" width="40" height="20" rx="4"/></g><g class="engine-piston p3"><rect x="714" y="335" width="40" height="20" rx="4"/></g><g class="engine-piston p4"><rect x="774" y="335" width="40" height="20" rx="4"/></g>
+ </g>
+ <text x="700" y="486" class="part-label">CYLINDERS / PISTONS</text>
+</g>
+<!-- Integrated camshaft, rockers and valves above the cylinders -->
 <g class="click-part" data-part="camshaft">
-<path d="M750 72H950" stroke="#aebbc4" stroke-width="13" stroke-linecap="round"/>
-<g class="cam-lobe"><ellipse cx="805" cy="72" rx="12" ry="25" fill="#d0d9df" stroke="#fff" stroke-width="2"/><circle cx="805" cy="72" r="5" fill="#34434e"/></g>
-<g class="cam-lobe l2"><ellipse cx="895" cy="72" rx="12" ry="25" fill="#d0d9df" stroke="#fff" stroke-width="2"/><circle cx="895" cy="72" r="5" fill="#34434e"/></g>
-<text x="850" y="55" class="micro-label">ROTATING CAMSHAFT / LOBES</text>
+ <path d="M590 262H825" stroke="#d2dce2" stroke-width="10" stroke-linecap="round"/>
+ <g class="cam-lobe"><ellipse cx="615" cy="262" rx="8" ry="17" fill="#d0d9df" stroke="#fff" stroke-width="2"/></g>
+ <g class="cam-lobe l2"><ellipse cx="675" cy="262" rx="8" ry="17" fill="#d0d9df" stroke="#fff" stroke-width="2"/></g>
+ <g class="cam-lobe"><ellipse cx="735" cy="262" rx="8" ry="17" fill="#d0d9df" stroke="#fff" stroke-width="2"/></g>
+ <g class="cam-lobe l2"><ellipse cx="795" cy="262" rx="8" ry="17" fill="#d0d9df" stroke="#fff" stroke-width="2"/></g>
+ <text x="705" y="251" class="micro-label">CAMSHAFT / LOBES</text>
 </g>
 <g class="click-part" data-part="rocker">
-<circle cx="850" cy="105" r="8" fill="#d7ae43" stroke="#fff0ba" stroke-width="2"/>
-<path d="M850 105L805 122L785 116" stroke="#d0d9df" stroke-width="10" stroke-linecap="round" fill="none" class="rocker-motion"/>
-<path d="M850 105L895 122L915 116" stroke="#d0d9df" stroke-width="10" stroke-linecap="round" fill="none" class="rocker-motion r2"/>
-<text x="850" y="137" class="micro-label">ROCKER ARMS / PIVOTS</text>
+ <g class="rocker-motion"><path d="M615 282L600 300L630 300" stroke="#d0d9df" stroke-width="8" stroke-linecap="round" fill="none"/><circle cx="615" cy="282" r="6" fill="#d7ae43"/></g>
+ <g class="rocker-motion r2"><path d="M675 282L660 300L690 300" stroke="#d0d9df" stroke-width="8" stroke-linecap="round" fill="none"/><circle cx="675" cy="282" r="6" fill="#d7ae43"/></g>
+ <g class="rocker-motion"><path d="M735 282L720 300L750 300" stroke="#d0d9df" stroke-width="8" stroke-linecap="round" fill="none"/><circle cx="735" cy="282" r="6" fill="#d7ae43"/></g>
+ <g class="rocker-motion r2"><path d="M795 282L780 300L810 300" stroke="#d0d9df" stroke-width="8" stroke-linecap="round" fill="none"/><circle cx="795" cy="282" r="6" fill="#d7ae43"/></g>
+ <text x="710" y="318" class="micro-label">ROCKER ARMS</text>
 </g>
 <g class="click-part" data-part="intake-valve">
-<path d="M785 120V157" stroke="#c5d0d7" stroke-width="6" class="valve-motion"/>
-<path d="M775 130L795 130M775 136L795 136M775 142L795 142" stroke="#d7ae43" stroke-width="2"/>
-<path d="M774 158H796" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/>
-<text x="785" y="176" class="micro-label">INTAKE</text>
+ <g class="valve-motion"><path d="M603 300V329M627 300V329" stroke="#c5d0d7" stroke-width="5"/><path d="M596 330H610M620 330H634" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <text x="615" y="388" class="micro-label">INTAKE VALVES</text>
 </g>
 <g class="click-part" data-part="exhaust-valve">
-<path d="M915 120V157" stroke="#c5d0d7" stroke-width="6" class="valve-motion v2"/>
-<path d="M905 130L925 130M905 136L925 136M905 142L925 142" stroke="#d7ae43" stroke-width="2"/>
-<path d="M904 158H926" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/>
-<text x="915" y="176" class="micro-label">EXHAUST</text>
+ <g class="valve-motion v2"><path d="M663 300V329M687 300V329" stroke="#c5d0d7" stroke-width="5"/><path d="M656 330H670M680 330H694" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <text x="675" y="405" class="micro-label">EXHAUST VALVES</text>
 </g>
-<text x="850" y="190" class="micro-label">SIMPLIFIED MECHANISM • ENGINE DESIGNS VARY</text>
+<!-- Fuel rail and injectors -->
+<g class="click-part" data-part="injector">
+ <path d="M590 225H825" stroke="#d7ae43" stroke-width="7"/>
+ <g fill="#e0bd68" stroke="#fff0ba" stroke-width="2"><path d="M615 225V278L609 288H621L615 278Z"/><path d="M675 225V278L669 288H681L675 278Z"/><path d="M735 225V278L729 288H741L735 278Z"/><path d="M795 225V278L789 288H801L795 278Z"/></g>
+ <text x="710" y="215" class="micro-label">COMMON RAIL / INJECTORS</text>
 </g>
-<g opacity=".13" stroke="#8da0af"><path d="M20 90H980M20 180H980M20 270H980M20 360H980M20 450H980"/><path d="M100 20V520M200 20V520M300 20V520M400 20V520M500 20V520M600 20V520M700 20V520M800 20V520M900 20V520"/></g>
-<g class="click-part" data-part="air"><path d="M20 175H145V135H230" stroke="#263e50" stroke-width="28" fill="none"/><path class="air-path flow-dash" d="M20 175H145V135H230"/><rect x="18" y="153" width="48" height="45" rx="7" class="dark-metal"/><path d="M27 160L57 190M39 156L64 181" stroke="#c0cbd2" stroke-width="3"/><text x="42" y="220" class="part-label">AIR FILTER</text></g>
-<g class="click-part" data-part="turbo"><circle cx="270" cy="135" r="49" class="metal"/><circle cx="270" cy="135" r="34" fill="#182630" stroke="#d4dce1" stroke-width="3"/><g class="turbo-spin"><path d="M270 108Q294 115 280 134Q306 137 290 155Q274 170 267 145Q252 168 238 149Q228 130 257 128Q244 111 270 108Z" fill="#9baab4" stroke="#e1e7eb" stroke-width="2"/></g><circle cx="270" cy="135" r="7" fill="#e1e7eb"/><text x="270" y="72" class="part-label">TURBOCHARGER</text></g>
-<g class="click-part" data-part="intake"><path d="M319 135H690V188H319Z" fill="#25465a" stroke="#8ab5d1" stroke-width="3"/><path class="air-path flow-dash" d="M330 160H675"/><path d="M370 185V222M455 185V222M540 185V222M625 185V222" stroke="#7db4d3" stroke-width="16"/><text x="505" y="120" class="part-label">INTAKE MANIFOLD</text></g>
-<path d="M310 220L735 220L775 260V440L735 480H310L280 440V260Z" fill="url(#metalGrad)" stroke="#c0cbd2" stroke-width="4"/><path d="M330 236H715V425H330Z" fill="#0d171f" stroke="#aab8c2" stroke-width="3"/><path d="M310 220H735V250H310Z" fill="#71818c" stroke="#c5d0d7" stroke-width="3"/>
-<g class="click-part" data-part="piston"><g fill="#17242d" stroke="#b9c5ce" stroke-width="3"><rect x="350" y="245" width="65" height="170" rx="8"/><rect x="440" y="245" width="65" height="170" rx="8"/><rect x="530" y="245" width="65" height="170" rx="8"/><rect x="620" y="245" width="65" height="170" rx="8"/></g><g fill="#bdc8cf" stroke="#f0f3f5" stroke-width="2"><g class="engine-piston p1"><rect x="355" y="290" width="55" height="24" rx="4"/><path d="M359 296H406M359 301H406" stroke="#657680" stroke-width="2"/></g><g class="engine-piston p2"><rect x="445" y="290" width="55" height="24" rx="4"/><path d="M449 296H496M449 301H496" stroke="#657680" stroke-width="2"/></g><g class="engine-piston p3"><rect x="535" y="290" width="55" height="24" rx="4"/><path d="M539 296H586M539 301H586" stroke="#657680" stroke-width="2"/></g><g class="engine-piston p4"><rect x="625" y="290" width="55" height="24" rx="4"/><path d="M629 296H676M629 301H676" stroke="#657680" stroke-width="2"/></g></g><text x="520" y="211" class="part-label">CYLINDER HEAD / COMBUSTION CHAMBERS</text></g>
-<g class="click-part" data-part="injector"><path d="M365 205H675" stroke="#d7ae43" stroke-width="8"/><g fill="#e0bd68" stroke="#fff0ba" stroke-width="2"><path d="M382 205V252L375 265H389L382 252Z"/><path d="M472 205V252L465 265H479L472 252Z"/><path d="M562 205V252L555 265H569L562 252Z"/><path d="M652 205V252L645 265H659L652 252Z"/></g><g fill="#fff0ba"><circle cx="382" cy="265" r="2.5"/><circle cx="472" cy="265" r="2.5"/><circle cx="562" cy="265" r="2.5"/><circle cx="652" cy="265" r="2.5"/></g><text x="520" y="195" class="micro-label">COMMON RAIL + HIGH-PRESSURE INJECTORS</text></g>
-<g class="combustion-events" pointer-events="none"><g class="fuel-event f1"><path d="M382 267L371 286L393 286Z" fill="#ffd36a" opacity=".42"/><path d="M382 267L382 286M378 270L374 282M386 270L390 282" stroke="#fff0a8" stroke-width="1.8" stroke-linecap="round"/><circle cx="376" cy="280" r="1.8" fill="#fff4c2"/><circle cx="387" cy="283" r="1.5" fill="#fff4c2"/></g><g class="fuel-event f2"><path d="M472 267L461 286L483 286Z" fill="#ffd36a" opacity=".42"/><path d="M472 267L472 286M468 270L464 282M476 270L480 282" stroke="#fff0a8" stroke-width="1.8" stroke-linecap="round"/><circle cx="466" cy="280" r="1.8" fill="#fff4c2"/><circle cx="477" cy="283" r="1.5" fill="#fff4c2"/></g><g class="fuel-event f3"><path d="M562 267L551 286L573 286Z" fill="#ffd36a" opacity=".42"/><path d="M562 267L562 286M558 270L554 282M566 270L570 282" stroke="#fff0a8" stroke-width="1.8" stroke-linecap="round"/><circle cx="556" cy="280" r="1.8" fill="#fff4c2"/><circle cx="567" cy="283" r="1.5" fill="#fff4c2"/></g><g class="fuel-event f4"><path d="M652 267L641 286L663 286Z" fill="#ffd36a" opacity=".42"/><path d="M652 267L652 286M648 270L644 282M656 270L660 282" stroke="#fff0a8" stroke-width="1.8" stroke-linecap="round"/><circle cx="646" cy="280" r="1.8" fill="#fff4c2"/><circle cx="657" cy="283" r="1.5" fill="#fff4c2"/></g>
-<g class="combustion-flash f1"><ellipse cx="382" cy="277" rx="19" ry="10" fill="#ff8a24" opacity=".88"/><path d="M368 282Q372 268 379 271Q380 257 385 270Q394 267 396 282Q387 289 368 282Z" fill="#ffe36e"/><ellipse cx="382" cy="279" rx="8" ry="5" fill="#fff7c7"/></g><g class="combustion-flash f2"><ellipse cx="472" cy="277" rx="19" ry="10" fill="#ff8a24" opacity=".88"/><path d="M458 282Q462 268 469 271Q470 257 475 270Q484 267 486 282Q477 289 458 282Z" fill="#ffe36e"/><ellipse cx="472" cy="279" rx="8" ry="5" fill="#fff7c7"/></g><g class="combustion-flash f3"><ellipse cx="562" cy="277" rx="19" ry="10" fill="#ff8a24" opacity=".88"/><path d="M548 282Q552 268 559 271Q560 257 565 270Q574 267 576 282Q567 289 548 282Z" fill="#ffe36e"/><ellipse cx="562" cy="279" rx="8" ry="5" fill="#fff7c7"/></g><g class="combustion-flash f4"><ellipse cx="652" cy="277" rx="19" ry="10" fill="#ff8a24" opacity=".88"/><path d="M638 282Q642 268 649 271Q650 257 655 270Q664 267 666 282Q657 289 638 282Z" fill="#ffe36e"/><ellipse cx="652" cy="279" rx="8" ry="5" fill="#fff7c7"/></g></g>
-<g class="click-part" data-part="crank"><path d="M382 315L405 395M472 315L495 395M562 315L585 395M652 315L675 395" stroke="#b9c5ce" stroke-width="11" stroke-linecap="round"/><path d="M330 430H710" stroke="#aebbc4" stroke-width="17" stroke-linecap="round"/><g fill="#586975" stroke="#d2dce2" stroke-width="4"><circle cx="405" cy="430" r="22"/><circle cx="495" cy="430" r="22"/><circle cx="585" cy="430" r="22"/><circle cx="675" cy="430" r="22"/></g><g class="crank-throw"><animateTransform attributeName="transform" type="rotate" from="0 405 430" to="360 405 430" dur="2.4s" repeatCount="indefinite"/><path d="M405 430L405 395" stroke="#d2dce2" stroke-width="13" stroke-linecap="round"/><circle cx="405" cy="395" r="11" fill="#9eabb4" stroke="#e1e7eb" stroke-width="3"/></g><g class="crank-throw"><animateTransform attributeName="transform" type="rotate" from="0 495 430" to="360 495 430" dur="2.4s" repeatCount="indefinite"/><path d="M495 430L495 395" stroke="#d2dce2" stroke-width="13" stroke-linecap="round"/><circle cx="495" cy="395" r="11" fill="#9eabb4" stroke="#e1e7eb" stroke-width="3"/></g><g class="crank-throw"><animateTransform attributeName="transform" type="rotate" from="0 585 430" to="360 585 430" dur="2.4s" repeatCount="indefinite"/><path d="M585 430L585 395" stroke="#d2dce2" stroke-width="13" stroke-linecap="round"/><circle cx="585" cy="395" r="11" fill="#9eabb4" stroke="#e1e7eb" stroke-width="3"/></g><g class="crank-throw"><animateTransform attributeName="transform" type="rotate" from="0 675 430" to="360 675 430" dur="2.4s" repeatCount="indefinite"/><path d="M675 430L675 395" stroke="#d2dce2" stroke-width="13" stroke-linecap="round"/><circle cx="675" cy="395" r="11" fill="#9eabb4" stroke="#e1e7eb" stroke-width="3"/></g><g fill="#17242d" stroke="#e1e7eb" stroke-width="3"><circle cx="405" cy="430" r="8"/><circle cx="495" cy="430" r="8"/><circle cx="585" cy="430" r="8"/><circle cx="675" cy="430" r="8"/></g><text x="520" y="474" class="part-label">CONNECTING RODS + CRANKSHAFT</text></g>
-<g class="click-part" data-part="cooling"><path d="M295 255V445H315M750 255V445H770" stroke="#4aa5d8" stroke-width="9" fill="none"/><path d="M295 255V445H315M750 255V445H770" stroke="#a1ddfb" stroke-width="2" stroke-dasharray="6 10" fill="none" class="flow-dash"/><text x="135" y="370" class="part-label">COOLANT JACKET</text><path d="M210 374H290" class="leader"/></g>
-<g class="click-part" data-part="oil"><path d="M330 452H710M350 452V425M690 452V425" class="oil-path"/><circle cx="330" cy="452" r="10" fill="#d7ae43"/><text x="160" y="455" class="part-label">OIL GALLERY</text><path d="M215 450H320" class="leader"/></g>
-<g class="click-part" data-part="exhaust"><path d="M735 250H790V280H840V320H790V355H840V390H790V420H865" stroke="#713e23" stroke-width="20" fill="none" stroke-linejoin="round"/><path d="M735 250H790V280H840V320H790V355H840V390H790V420H865" class="hot-path exhaust-flow"/><text x="875" y="365" class="part-label">EXHAUST MANIFOLD</text><text x="875" y="382" class="micro-label">TO AFTERTREATMENT</text></g>
-<g transform="translate(22 505)"><rect width="956" height="36" rx="7" fill="#101820" stroke="#536575"/><text x="18" y="23" class="micro-label" text-anchor="start">BLUE = INTAKE AIR</text><text x="210" y="23" class="micro-label" text-anchor="start">AMBER = FUEL / EXHAUST</text><text x="450" y="23" class="micro-label" text-anchor="start">GOLD = OIL</text><text x="935" y="23" class="micro-label" text-anchor="end">ANIMATED CONCEPT CUTAWAY • NOT TO SCALE</text></g>
+<!-- Exhaust ports and manifold route spent gas to turbine -->
+<g class="click-part" data-part="exhaust">
+ <path d="M840 315H895V350H930V385H895V420H930V455H895V475H760" stroke="#713e23" stroke-width="24" fill="none" stroke-linejoin="round"/>
+ <path d="M840 315H895V350H930V385H895V420H930V455H895V475H760" class="hot-path exhaust-flow" marker-end="url(#exhaustArrow)"/>
+ <text x="910" y="300" class="part-label">EXHAUST</text>
+ <text x="910" y="316" class="micro-label">FROM CYLINDERS</text>
+ <path d="M760 475H620V405H590" stroke="#713e23" stroke-width="24" fill="none" stroke-linejoin="round"/>
+ <path d="M760 475H620V405H590" class="hot-path exhaust-flow" marker-end="url(#exhaustArrow)"/>
+ <text x="780" y="530" class="part-label">EXHAUST MANIFOLD → TURBINE</text>
+</g>
+<!-- Turbine outlet to aftertreatment -->
+<g class="click-part" data-part="exhaust">
+ <path d="M590 403V535H500V575H390" stroke="#713e23" stroke-width="24" fill="none" stroke-linejoin="round"/>
+ <path d="M590 403V535H500V575H390" class="hot-path exhaust-flow" marker-end="url(#exhaustArrow)"/>
+ <rect x="165" y="548" width="225" height="54" rx="9" fill="#25313b" stroke="#c0cbd2" stroke-width="3"/>
+ <text x="277" y="570" class="part-label">AFTERTREATMENT</text><text x="277" y="587" class="micro-label">DOC → DPF → SCR</text>
+ <text x="475" y="615" class="micro-label">TURBINE OUTLET / HOT EXHAUST</text>
+</g>
+<!-- Connecting rods and crankshaft -->
+<g class="click-part" data-part="crank">
+ <path d="M615 355L625 505M675 355L685 505M735 355L745 505M795 355L805 505" stroke="#b9c5ce" stroke-width="9" stroke-linecap="round"/>
+ <path d="M575 515H850" stroke="#aebbc4" stroke-width="15" stroke-linecap="round"/>
+ <g fill="#586975" stroke="#d2dce2" stroke-width="4"><circle cx="625" cy="515" r="18"/><circle cx="685" cy="515" r="18"/><circle cx="745" cy="515" r="18"/><circle cx="805" cy="515" r="18"/></g>
+ <g class="crank-throw"><animateTransform attributeName="transform" type="rotate" from="0 625 515" to="360 625 515" dur="2.4s" repeatCount="indefinite"/><path d="M625 515L625 495" stroke="#d2dce2" stroke-width="10"/><circle cx="625" cy="495" r="8" fill="#9eabb4"/></g>
+ <g class="crank-throw"><animateTransform attributeName="transform" type="rotate" from="0 685 515" to="360 685 515" dur="2.4s" repeatCount="indefinite"/><path d="M685 515L685 495" stroke="#d2dce2" stroke-width="10"/><circle cx="685" cy="495" r="8" fill="#9eabb4"/></g>
+ <g class="crank-throw"><animateTransform attributeName="transform" type="rotate" from="0 745 515" to="360 745 515" dur="2.4s" repeatCount="indefinite"/><path d="M745 515L745 495" stroke="#d2dce2" stroke-width="10"/><circle cx="745" cy="495" r="8" fill="#9eabb4"/></g>
+ <g class="crank-throw"><animateTransform attributeName="transform" type="rotate" from="0 805 515" to="360 805 515" dur="2.4s" repeatCount="indefinite"/><path d="M805 515L805 495" stroke="#d2dce2" stroke-width="10"/><circle cx="805" cy="495" r="8" fill="#9eabb4"/></g>
+ <text x="710" y="550" class="part-label">CONNECTING RODS / CRANKSHAFT</text>
+</g>
+<!-- Coolant and lubrication retained as system overlays -->
+<g class="click-part" data-part="cooling"><path d="M540 285V495H555M860 285V495H875" stroke="#4aa5d8" stroke-width="8" fill="none"/><path d="M540 285V495H555M860 285V495H875" stroke="#a1ddfb" stroke-width="2" stroke-dasharray="6 10" fill="none" class="flow-dash"/><text x="455" y="380" class="part-label">COOLANT</text></g>
+<g class="click-part" data-part="oil"><path d="M565 570H865M585 570V525M845 570V525" class="oil-path"/><text x="720" y="590" class="micro-label">OIL GALLERY / LUBRICATION</text></g>
+<!-- Legend -->
+<g transform="translate(20 620)"><text x="0" y="0" class="micro-label" text-anchor="start">BLUE = INTAKE AIR</text><text x="190" y="0" class="micro-label" text-anchor="start">AMBER = EXHAUST</text><text x="380" y="0" class="micro-label" text-anchor="start">GOLD = FUEL / OIL</text><text x="960" y="0" class="micro-label" text-anchor="end">CONNECTED TEACHING CUTAWAY • NOT TO SCALE</text></g>
 </svg></div>`},
 aftertreatment:{eyebrow:"AFTERTREATMENT / EXHAUST FLOW MAP",title:"Follow exhaust through aftertreatment",intro:"Select each stage to understand what it does, what it needs to operate and which evidence helps distinguish a sensor issue from a dosing, restriction or catalyst concern.",caption:"Simplified flow: engine exhaust → DOC → DPF → DEF dosing/mixing → SCR → outlet. Sensor positions and component packaging vary by vehicle and emissions generation.",parts:[
 {id:"engineout",name:"Engine-out exhaust",role:"Provides the exhaust stream entering aftertreatment.",works:"Engine combustion produces exhaust containing heat, oxygen, water vapor, CO, hydrocarbons and particulate matter.",look:"Look for upstream exhaust leaks, abnormal smoke, engine faults and conditions that affect exhaust temperature.",test:"Confirm engine operation and upstream faults before assuming an aftertreatment component failed."},
