@@ -87,7 +87,7 @@ export function recommendNextStep(caseRecord,steps){
         if(has(answer,"command is present","changes correctly","reports output fault"))return go("load","The control command or output state has been observed.","Test supply and ground at the load connector under the commanded operating condition.");
         return hold("The control strategy or command state is not established.","Identify whether the circuit is direct-switched, relayed or module-controlled.");
       case "control_inputs":
-        if(has(answer,"corrected","restored","input present"))return go("control","The missing input/enable condition has changed.","Repeat the control-command test and verify expected output.");
+        if(has(answer,"corrected","restored","input present","inputs and enables appear correct"))return go("control","The input/enable checks are complete or the missing condition has changed.","Repeat the control-command test and verify expected output.");
         return hold("The command input or enable condition remains unresolved.","Check documented switch inputs, interlocks, module power/ground and related faults.");
       case "load":
         if(has(answer,"supply missing"))return go("protection","Power is missing at the load.","Return upstream and trace the protected feed and control output.");
