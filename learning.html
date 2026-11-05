@@ -654,11 +654,9 @@ function animateEngineCrank(){
    const iv=intakeValves.find(v=>Number(v.dataset.cylinder)===i),ev=exhaustValves.find(v=>Number(v.dataset.cylinder)===i);
    if(iv)iv.setAttribute("transform","translate(0 "+(intakeOpen?lift:0)+")");
    if(ev)ev.setAttribute("transform","translate(0 "+(exhaustOpen?lift:0)+")");
-   if(rockers[i])rockers[i].setAttribute("transform","rotate("+(intakeOpen?5:0)+" "+centers[i]+" 302)");
-   if(rockers[i+4])rockers[i+4].setAttribute("transform","rotate("+(exhaustOpen?5:0)+" "+centers[i]+" 302)");
+   if(rockers[i])rockers[i].setAttribute("transform","rotate("+(intakeOpen||exhaustOpen?5:0)+" "+centers[i]+" 302)");
    const camAngle=(elapsed/fourStrokeMs)*360;
-   if(camLobes[i])camLobes[i].setAttribute("transform","rotate("+(camAngle+(intakeOpen?18:0))+" "+centers[i]+" 286)");
-   if(camLobes[i+4])camLobes[i+4].setAttribute("transform","rotate("+(camAngle+(exhaustOpen?18:0))+" "+centers[i]+" 286)");
+   if(camLobes[i])camLobes[i].setAttribute("transform","rotate("+(camAngle+(intakeOpen||exhaustOpen?18:0))+" "+centers[i]+" 286)");
    if(part.flash){
     const progress=sinceFire/260;
     part.flash.style.opacity=sinceFire<260?String(Math.max(0,1-progress)):"0";
