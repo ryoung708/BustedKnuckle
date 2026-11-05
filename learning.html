@@ -88,8 +88,8 @@
 .cutaway-shell .turbo-spin{transform-box:fill-box;transform-origin:center;animation:turboTurn .55s linear infinite}
 .cutaway-shell .pulse{animation:pulseGlow 1.4s ease-in-out infinite}.cutaway-shell .spray{animation:sprayDrop 1.2s ease-in infinite}.cutaway-shell .sensor-light{animation:sensorBlink 1.8s ease-in-out infinite}
 .cutaway-shell .engine-piston{transform-box:fill-box;transform-origin:center;animation:none!important}
-.cutaway-shell .fuel-event{opacity:0;animation:fuelBurst 4.8s linear infinite}.cutaway-shell .fuel-event.f2{animation-delay:-3.6s}.cutaway-shell .fuel-event.f3{animation-delay:-1.2s}.cutaway-shell .fuel-event.f4{animation-delay:-2.4s}.cutaway-shell .combustion-flash{opacity:0;transform-box:fill-box;transform-origin:center;animation:combustionFlash 4.8s ease-out infinite}.cutaway-shell .combustion-flash.f2{animation-delay:-3.6s}.cutaway-shell .combustion-flash.f3{animation-delay:-1.2s}.cutaway-shell .combustion-flash.f4{animation-delay:-2.4s}.cutaway-shell .def-spray{animation:defDose 2.6s ease-in-out infinite;opacity:.8}
-.cutaway-shell .cam-lobe{transform-box:fill-box;transform-origin:center;animation:camLobeTurn 2.4s linear infinite}.cutaway-shell .cam-lobe.l2{animation-delay:-1.2s}.cutaway-shell .rocker-motion{transform-box:fill-box;transform-origin:82% 50%;animation:rockerAct 1.2s ease-in-out infinite}.cutaway-shell .rocker-motion.r2{animation-delay:-.6s}.cutaway-shell .valve-motion{animation:valveAct 1.2s ease-in-out infinite}.cutaway-shell .valve-motion.v2{animation-delay:-.6s}@keyframes camLobeTurn{to{transform:rotate(360deg)}}@keyframes rockerAct{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes valveAct{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+.cutaway-shell .fuel-event,.cutaway-shell .combustion-flash{opacity:0;animation:none!important}.cutaway-shell .combustion-flash{transform-box:fill-box;transform-origin:center}.cutaway-shell .def-spray{animation:defDose 2.6s ease-in-out infinite;opacity:.8}
+.cutaway-shell .cam-lobe{transform-box:fill-box;transform-origin:center;animation:camLobeTurn 4.8s linear infinite}.cutaway-shell .cam-lobe.l2{animation-delay:-2.4s}.cutaway-shell .rocker-motion{transform-box:fill-box;transform-origin:82% 50%;animation:rockerAct 4.8s ease-in-out infinite}.cutaway-shell .rocker-motion.r2{animation-delay:-2.4s}.cutaway-shell .valve-motion{animation:valveAct 4.8s ease-in-out infinite}.cutaway-shell .valve-motion.v2{animation-delay:-2.4s}@keyframes camLobeTurn{to{transform:rotate(360deg)}}@keyframes rockerAct{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes valveAct{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 .cutaway-shell .click-part{cursor:pointer;transition:filter .16s,opacity .16s}.cutaway-shell .click-part:hover,.cutaway-shell .click-part.selected{filter:drop-shadow(0 0 7px #ffad52)}
 .cutaway-shell .click-part.selected .metal,.cutaway-shell .click-part.selected .dark-metal,.cutaway-shell .click-part.selected .cut-metal{stroke:#ffbd63;stroke-width:4}
 @keyframes flowTravel{to{stroke-dashoffset:-50}}@keyframes pistonCycle{0%,100%{transform:translateY(-9px)}50%{transform:translateY(9px)}}@keyframes dieselPiston{0%,100%{transform:translateY(0)}25%,75%{transform:translateY(12px)}50%{transform:translateY(0)}}@keyframes fuelBurst{0%,72%,100%{opacity:0}78%{opacity:.15}82%{opacity:1}89%{opacity:.75}94%{opacity:0}}@keyframes combustionFlash{0%{opacity:1;transform:scale(1.08)}5%{opacity:.95;transform:scale(1)}13%{opacity:0;transform:scale(.72)}100%{opacity:0;transform:scale(.72)}}@keyframes defDose{0%,100%{opacity:.2}45%,65%{opacity:1}}
@@ -153,7 +153,7 @@
  <p>Choose a fault and switch condition. Select RED or BLACK, then click any labeled test point. The colored leads follow your probe placements and the virtual meter updates. All values are illustrative training examples—not vehicle specifications.</p>
  <div class="bench-controls">
   <label for="benchFault">Insert a fault
-   <select id="benchFault"><option value="good">Healthy circuit</option><option value="open">Open feed wire</option><option value="resistive">High resistance at connection</option><option value="ground">Poor ground connection</option><option value="fuse">Open fuse</option><option value="short">Short to ground (fuse opens)</option></select>
+   <select id="benchFault"><option value="good">Healthy circuit</option><option value="open">Open feed wire</option><option value="resistive">High resistance at connection</option><option value="ground">Poor ground connection</option><option value="fuse">Open fuse</option><option value="lamp">Burnt-out lamp</option><option value="short">Short to ground (fuse opens)</option></select>
   </label>
   <label for="benchSwitch">Circuit switch
    <select id="benchSwitch"><option value="on">ON — operating</option><option value="off">OFF</option></select>
@@ -248,7 +248,7 @@ function benchModel(){
  add("fuseOut","switchIn",fault==="open"?null:(fault==="resistive"?1.5:0.005),"feed-wire");
  add("switchIn","switch",on?0.005:null,"switch");
  add("switch","load",0.005,"load-feed");
- add("load","loadOut",3.0,"lamp");
+ add("load","loadOut",fault==="lamp"?null:3.0,"lamp");
  // Put the ground fault in the return conductor itself. The chassis-side
  // node remains connected when the battery negative post is isolated.
  add("loadOut","ground",fault==="ground"?4.8:0.005,"ground-connection");
@@ -303,13 +303,13 @@ function benchModel(){
   // Unpowered downstream nodes are not assigned an artificial live voltage.
   volts={battery:12.6,fuseIn:12.59,fuseOut:fuseOpen?0:12.49,switchIn:fault==="open"?0:(fuseOpen?0:12.39),switch:0,load:0,loadOut:0,ground:0,negative:0};
  }
- const lampOn=on&&!batteryIsolated&&totalCurrent>0;
+ const lampOn=on&&!batteryIsolated&&fault!=="lamp"&&totalCurrent>0;
  const brightness=Math.max(0,Math.min(1,totalCurrent/(12.6/(0.005*7+3.0))));
  const bulb=document.getElementById("lampBulb");
  bulb.setAttribute("fill",lampOn?"#ffca7a":"#29343e");
  bulb.setAttribute("filter",lampOn&&brightness>0.08?"url(#lampGlow)":"");
  bulb.setAttribute("opacity",lampOn?String(0.25+0.75*brightness):"1");
- document.getElementById("lampState").textContent=lampOn?"LAMP ON — "+Math.round(brightness*100)+"% BRIGHTNESS":(fault==="short"?"FUSE OPENED — LAMP OFF":"LAMP OFF");
+ document.getElementById("lampState").textContent=lampOn?"LAMP ON — "+Math.round(brightness*100)+"% BRIGHTNESS":(fault==="short"?"FUSE OPENED — LAMP OFF":fault==="lamp"?"LAMP OPEN — BURNT OUT":"LAMP OFF");
  ["feedA","feedB","feedC","returnA"].forEach(id=>{
   const el=document.getElementById(id);
   el.classList.toggle("live",on&&totalCurrent>0);
@@ -348,7 +348,8 @@ function benchModel(){
   open:"Open feed selected between fuse output (C) and switch input (D). The load receives no operating current.",
   resistive:"Added 1.5 Ω feed connection resistance. Under load it reduces current and creates a measurable voltage drop.",
   ground:"Poor ground selected: 4.8 Ω added between load output (G) and chassis ground (H). Under load, current falls, the ground side rises above battery negative, and the lamp dims. With power isolated, G-to-H resistance measures 4.8 Ω.",
-  fuse:"Open fuse selected. The downstream load is disconnected from battery positive.",
+  fuse:"Open fuse selected. Across fuse input (B) and fuse output (C), the meter reads OL. The load itself can still show its own resistance when measured directly across its terminals.",
+  lamp:"Burnt-out lamp selected. Across load input (F) and load output (G), the meter reads OL. Other intact components retain their own resistance.",
   short:"Short-to-ground selected downstream of the fuse. The protective fuse is shown OPEN at the fuse itself; the upstream feed wire is not the fault. Downstream wiring remains available for isolated resistance testing."
  };
  status.textContent=faultText[fault];
@@ -604,19 +605,48 @@ function animateEngineCrank(){
  if(engineCrankFrame)cancelAnimationFrame(engineCrankFrame);
  const svg=document.querySelector("#systemDiagram .cutaway-shell svg");
  if(!svg)return;
- const centers=[850,916,982,1048],phases=[0,Math.PI,Math.PI,0],radius=28,rodLength=150,cycleMs=2400;
+ const centers=[850,916,982,1048],phases=[0,Math.PI,Math.PI,0],radius=28,rodLength=150,crankTurnMs=2400,fourStrokeMs=crankTurnMs*2;
+ // Illustrative inline-four firing sequence 1-3-4-2. Actual firing order
+ // and crank phasing vary by engine; this is a generic teaching animation.
+ const firingOffsets=[0,3.6,1.2,2.4].map(seconds=>seconds*1000);
+ const pistons=svg.querySelectorAll(".engine-piston");
+ const rods=centers.map((_,i)=>({
+  rod:document.getElementById("connecting-rod-"+i),
+  highlight:document.getElementById("rod-highlight-"+i),
+  small:document.getElementById("rod-small-end-"+i),
+  big:document.getElementById("rod-big-end-"+i),
+  web:svg.querySelector('[data-crank-index="'+i+'"]'),
+  piston:pistons[i],
+  fuel:svg.querySelector(".fuel-event"+(i?".f"+(i+1):"")),
+  flash:svg.querySelector(".combustion-flash"+(i?".f"+(i+1):""))
+ }));
  const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
  const draw=(elapsed)=>{
+  const crankAngle=(elapsed/crankTurnMs)*Math.PI*2;
+  const cyclePosition=((elapsed%fourStrokeMs)+fourStrokeMs)%fourStrokeMs;
   centers.forEach((cx,i)=>{
-   const theta=(elapsed/cycleMs)*Math.PI*2+phases[i],crankX=cx+radius*Math.sin(theta),crankY=635-radius*Math.cos(theta);
+   const theta=crankAngle+phases[i],crankX=cx+radius*Math.sin(theta),crankY=635-radius*Math.cos(theta);
    const topY=crankY-Math.sqrt(rodLength*rodLength-Math.pow(crankX-cx,2)),pistonShift=topY-460;
-   const rod=document.getElementById("connecting-rod-"+i),highlight=document.getElementById("rod-highlight-"+i),small=document.getElementById("rod-small-end-"+i),big=document.getElementById("rod-big-end-"+i),web=svg.querySelector('[data-crank-index="'+i+'"]'),piston=svg.querySelectorAll(".engine-piston")[i];
+   const part=rods[i];
    const line="M"+cx.toFixed(2)+" "+topY.toFixed(2)+"L"+crankX.toFixed(2)+" "+crankY.toFixed(2);
-   if(rod)rod.setAttribute("d",line);if(highlight)highlight.setAttribute("d",line);
-   if(small){small.setAttribute("cx",cx);small.setAttribute("cy",topY.toFixed(2));}
-   if(big){big.setAttribute("cx",crankX.toFixed(2));big.setAttribute("cy",crankY.toFixed(2));}
-   if(web)web.setAttribute("transform","rotate("+(theta*180/Math.PI).toFixed(2)+" "+cx+" 635)");
-   if(piston)piston.style.transform="translateY("+pistonShift.toFixed(2)+"px)";
+   if(part.rod)part.rod.setAttribute("d",line);if(part.highlight)part.highlight.setAttribute("d",line);
+   if(part.small){part.small.setAttribute("cx",cx);part.small.setAttribute("cy",topY.toFixed(2));}
+   if(part.big){part.big.setAttribute("cx",crankX.toFixed(2));part.big.setAttribute("cy",crankY.toFixed(2));}
+   if(part.web)part.web.setAttribute("transform","rotate("+(theta*180/Math.PI).toFixed(2)+" "+cx+" 635)");
+   if(part.piston)part.piston.style.transform="translateY("+pistonShift.toFixed(2)+"px)";
+   // Each cylinder fires once per 720 crank degrees. Combustion begins at
+   // TDC; the piston then descends on its power stroke.
+   const sinceFire=((cyclePosition-firingOffsets[i])%fourStrokeMs+fourStrokeMs)%fourStrokeMs;
+   const untilFire=(fourStrokeMs-sinceFire)%fourStrokeMs;
+   if(part.flash){
+    const progress=sinceFire/260;
+    part.flash.style.opacity=sinceFire<260?String(Math.max(0,1-progress)):"0";
+    part.flash.style.transform="scale("+(sinceFire<260?1.08-progress*.28:.8)+")";
+   }
+   if(part.fuel){
+    const injecting=untilFire<230&&untilFire>35;
+    part.fuel.style.opacity=injecting?String(Math.min(1,(230-untilFire)/55,untilFire/35)):"0";
+   }
   });
  };
  if(reduced){draw(0);return;}
@@ -625,7 +655,7 @@ function animateEngineCrank(){
   if(!svg.isConnected||document.getElementById("moduleExplorer").style.display==="none")return;
   draw(now-start);engineCrankFrame=requestAnimationFrame(tick);
  };
- engineCrankFrame=requestAnimationFrame(tick);
+ draw(0);engineCrankFrame=requestAnimationFrame(tick);
 }
 function renderModule(key){const m=modules[key];document.getElementById("moduleEyebrow").textContent=m.eyebrow;document.getElementById("moduleTitle").textContent=m.title;document.getElementById("moduleIntro").textContent=m.intro;document.getElementById("diagramCaption").textContent=m.caption;document.getElementById("systemDiagram").innerHTML=m.svg;const list=document.getElementById("componentList");list.innerHTML="";m.parts.forEach(p=>{const b=document.createElement("button");b.type="button";b.className="component-chip";b.dataset.part=p.id;b.textContent=p.name;b.addEventListener("click",()=>selectPart(key,p.id));list.appendChild(b);});document.querySelectorAll("#systemDiagram [data-part]").forEach(n=>n.addEventListener("click",()=>selectPart(key,n.dataset.part)));selectPart(key,m.parts[0].id);if(key==="engine")animateEngineCrank();}
 function selectPart(key,id){const m=modules[key],p=m.parts.find(x=>x.id===id);if(!p)return;document.querySelectorAll("#systemDiagram [data-part]").forEach(n=>n.classList.toggle("selected",n.dataset.part===id));document.querySelectorAll("#componentList [data-part]").forEach(n=>n.classList.toggle("active",n.dataset.part===id));const panel=document.getElementById("componentPanel");panel.innerHTML='<div class="component-kicker">Component overview</div><h3></h3><p class="component-role"></p><div class="component-facts"><div class="component-fact"><b>How it works</b><span></span></div><div class="component-fact"><b>What to look for</b><span></span></div><div class="component-fact"><b>Testing direction</b><span></span></div></div><div class="module-check"><h4 id="checkQuestion"></h4><button type="button" data-answer="0"></button><button type="button" data-answer="1"></button><div class="module-feedback" id="moduleFeedback">Quick check: choose the best answer.</div></div>';panel.querySelector("h3").textContent=p.name;panel.querySelector(".component-role").textContent=p.role;const spans=panel.querySelectorAll(".component-fact span");spans[0].textContent=p.works;spans[1].textContent=p.look;spans[2].textContent=p.test;const q=key==="engine"?"Which approach is the best starting point?":"What should happen before condemning this component?";const answers=key==="engine"?["Use system evidence and the OEM test for the complaint","Replace it whenever a related fault code appears"]:["Verify operating conditions, sensor plausibility and related system evidence","Replace the component based on one fault code alone"];panel.querySelector("#checkQuestion").textContent=q;panel.querySelectorAll("[data-answer]").forEach((b,i)=>{b.textContent=answers[i];b.addEventListener("click",()=>{const f=panel.querySelector("#moduleFeedback");f.textContent=i===0?"Good approach. Confirm the fault with the correct test conditions and specifications.":"Not quite. A fault code or symptom identifies a system to investigate; it does not prove a component has failed.";f.style.color=i===0?"#70c69a":"#ffb34d";});});}
