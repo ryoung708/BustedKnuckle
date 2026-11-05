@@ -89,7 +89,7 @@
 .cutaway-shell .pulse{animation:pulseGlow 1.4s ease-in-out infinite}.cutaway-shell .spray{animation:sprayDrop 1.2s ease-in infinite}.cutaway-shell .sensor-light{animation:sensorBlink 1.8s ease-in-out infinite}
 .cutaway-shell .engine-piston{transform-box:fill-box;transform-origin:center;animation:none!important}
 .cutaway-shell .fuel-event,.cutaway-shell .combustion-flash{opacity:0;animation:none!important}.cutaway-shell .combustion-flash{transform-box:fill-box;transform-origin:center}.cutaway-shell .def-spray{animation:defDose 2.6s ease-in-out infinite;opacity:.8}
-.cutaway-shell .cam-lobe{transform-box:fill-box;transform-origin:center;animation:camLobeTurn 4.8s linear infinite}.cutaway-shell .cam-lobe.l2{animation-delay:-2.4s}.cutaway-shell .rocker-motion{transform-box:fill-box;transform-origin:82% 50%;animation:rockerAct 4.8s ease-in-out infinite}.cutaway-shell .rocker-motion.r2{animation-delay:-2.4s}.cutaway-shell .valve-motion{animation:valveAct 4.8s ease-in-out infinite}.cutaway-shell .valve-motion.v2{animation-delay:-2.4s}@keyframes camLobeTurn{to{transform:rotate(360deg)}}@keyframes rockerAct{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes valveAct{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+.cutaway-shell .cam-lobe,.cutaway-shell .rocker-motion,.cutaway-shell .valve-motion{transform-box:fill-box;transform-origin:center;animation:none!important}@keyframes camLobeTurn{to{transform:rotate(360deg)}}@keyframes rockerAct{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes valveAct{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 .cutaway-shell .click-part{cursor:pointer;transition:filter .16s,opacity .16s}.cutaway-shell .click-part:hover,.cutaway-shell .click-part.selected{filter:drop-shadow(0 0 7px #ffad52)}
 .cutaway-shell .click-part.selected .metal,.cutaway-shell .click-part.selected .dark-metal,.cutaway-shell .click-part.selected .cut-metal{stroke:#ffbd63;stroke-width:4}
 @keyframes flowTravel{to{stroke-dashoffset:-50}}@keyframes pistonCycle{0%,100%{transform:translateY(-9px)}50%{transform:translateY(9px)}}@keyframes dieselPiston{0%,100%{transform:translateY(0)}25%,75%{transform:translateY(12px)}50%{transform:translateY(0)}}@keyframes fuelBurst{0%,72%,100%{opacity:0}78%{opacity:.15}82%{opacity:1}89%{opacity:.75}94%{opacity:0}}@keyframes combustionFlash{0%{opacity:1;transform:scale(1.08)}5%{opacity:.95;transform:scale(1)}13%{opacity:0;transform:scale(.72)}100%{opacity:0;transform:scale(.72)}}@keyframes defDose{0%,100%{opacity:.2}45%,65%{opacity:1}}
@@ -470,11 +470,17 @@ engine:{eyebrow:"ENGINE BASICS / INTERACTIVE CUTAWAY",title:"Follow the four-str
  <text x="950" y="366" class="micro-label">ROCKER ARMS</text>
 </g>
 <g class="click-part" data-part="intake-valve">
- <g class="valve-motion"><path d="M836 320V388M902 320V388M968 320V388M1034 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M829 389H843M895 389H909M961 389H975M1027 389H1041" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <g class="valve-motion intake-valve" data-cylinder="0"><path d="M836 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M829 389H843" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <g class="valve-motion intake-valve" data-cylinder="1"><path d="M902 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M895 389H909" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <g class="valve-motion intake-valve" data-cylinder="2"><path d="M968 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M961 389H975" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <g class="valve-motion intake-valve" data-cylinder="3"><path d="M1034 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M1027 389H1041" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
  <text x="940" y="410" class="micro-label">INTAKE VALVE — EACH CYLINDER</text>
 </g>
 <g class="click-part" data-part="exhaust-valve">
- <g class="valve-motion v2"><path d="M864 320V388M930 320V388M996 320V388M1062 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M857 389H871M923 389H937M989 389H1003M1055 389H1069" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <g class="valve-motion exhaust-valve" data-cylinder="0"><path d="M864 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M857 389H871" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <g class="valve-motion exhaust-valve" data-cylinder="1"><path d="M930 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M923 389H937" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <g class="valve-motion exhaust-valve" data-cylinder="2"><path d="M996 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M989 389H1003" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
+ <g class="valve-motion exhaust-valve" data-cylinder="3"><path d="M1062 320V388" stroke="#c5d0d7" stroke-width="5"/><path d="M1055 389H1069" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
  <text x="940" y="426" class="micro-label">EXHAUST VALVE — EACH CYLINDER</text>
 </g>
 <!-- Fuel rail and four injectors; spray and combustion stay inside each cylinder -->
@@ -610,6 +616,8 @@ function animateEngineCrank(){
  // and crank phasing vary by engine; this is a generic teaching animation.
  const firingOffsets=[0,3.6,1.2,2.4].map(seconds=>seconds*1000);
  const pistons=svg.querySelectorAll(".engine-piston");
+ const intakeValves=[...svg.querySelectorAll(".intake-valve")],exhaustValves=[...svg.querySelectorAll(".exhaust-valve")];
+ const rockers=[...svg.querySelectorAll(".rocker-motion")],camLobes=[...svg.querySelectorAll(".cam-lobe")];
  const rods=centers.map((_,i)=>({
   rod:document.getElementById("connecting-rod-"+i),
   highlight:document.getElementById("rod-highlight-"+i),
@@ -638,6 +646,19 @@ function animateEngineCrank(){
    // TDC; the piston then descends on its power stroke.
    const sinceFire=((cyclePosition-firingOffsets[i])%fourStrokeMs+fourStrokeMs)%fourStrokeMs;
    const untilFire=(fourStrokeMs-sinceFire)%fourStrokeMs;
+   // 720-degree cycle after firing TDC: power, exhaust, intake, compression.
+   const cycleDegrees=(sinceFire/fourStrokeMs)*720;
+   const exhaustOpen=cycleDegrees>=180&&cycleDegrees<360;
+   const intakeOpen=cycleDegrees>=360&&cycleDegrees<540;
+   const lift=7;
+   const iv=intakeValves.find(v=>Number(v.dataset.cylinder)===i),ev=exhaustValves.find(v=>Number(v.dataset.cylinder)===i);
+   if(iv)iv.setAttribute("transform","translate(0 "+(intakeOpen?lift:0)+")");
+   if(ev)ev.setAttribute("transform","translate(0 "+(exhaustOpen?lift:0)+")");
+   if(rockers[i])rockers[i].setAttribute("transform","rotate("+(intakeOpen?5:0)+" "+centers[i]+" 302)");
+   if(rockers[i+4])rockers[i+4].setAttribute("transform","rotate("+(exhaustOpen?5:0)+" "+centers[i]+" 302)");
+   const camAngle=(elapsed/fourStrokeMs)*360;
+   if(camLobes[i])camLobes[i].setAttribute("transform","rotate("+(camAngle+(intakeOpen?18:0))+" "+centers[i]+" 286)");
+   if(camLobes[i+4])camLobes[i+4].setAttribute("transform","rotate("+(camAngle+(exhaustOpen?18:0))+" "+centers[i]+" 286)");
    if(part.flash){
     const progress=sinceFire/260;
     part.flash.style.opacity=sinceFire<260?String(Math.max(0,1-progress)):"0";
