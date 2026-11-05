@@ -626,14 +626,14 @@ function animateEngineCrank(){
   const cyclePosition=((elapsed%fourStrokeMs)+fourStrokeMs)%fourStrokeMs;
   centers.forEach((cx,i)=>{
    const theta=crankAngle+phases[i],crankX=cx+radius*Math.sin(theta),crankY=635-radius*Math.cos(theta);
-   const topY=crankY-Math.sqrt(rodLength*rodLength-Math.pow(crankX-cx,2)),pistonShift=topY-460;
+   const topY=crankY-Math.sqrt(rodLength*rodLength-Math.pow(crankX-cx,2)),pistonPinBaseY=449,pistonShift=topY-pistonPinBaseY;
    const part=rods[i];
    const line="M"+cx.toFixed(2)+" "+topY.toFixed(2)+"L"+crankX.toFixed(2)+" "+crankY.toFixed(2);
    if(part.rod)part.rod.setAttribute("d",line);if(part.highlight)part.highlight.setAttribute("d",line);
    if(part.small){part.small.setAttribute("cx",cx);part.small.setAttribute("cy",topY.toFixed(2));}
    if(part.big){part.big.setAttribute("cx",crankX.toFixed(2));part.big.setAttribute("cy",crankY.toFixed(2));}
    if(part.web)part.web.setAttribute("transform","rotate("+(theta*180/Math.PI).toFixed(2)+" "+cx+" 635)");
-   if(part.piston)part.piston.style.transform="translateY("+pistonShift.toFixed(2)+"px)";
+   if(part.piston)part.piston.setAttribute("transform","translate(0 "+pistonShift.toFixed(2)+")");
    // Each cylinder fires once per 720 crank degrees. Combustion begins at
    // TDC; the piston then descends on its power stroke.
    const sinceFire=((cyclePosition-firingOffsets[i])%fourStrokeMs+fourStrokeMs)%fourStrokeMs;
