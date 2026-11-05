@@ -149,7 +149,7 @@
         "brakeSwitchIn|brakeSwitchOut": state.brake ? 0.05 : Infinity,
         "leftGround|leftTailIn": state.fault === "lampOpen" ? Infinity : 2.5,
         "rightGround|rightTailIn": 2.5,
-        "leftGround|leftBrakeIn": 2.5,
+        "leftBrakeIn|leftGround": 2.5,
         "rightGround|rightBrakeIn": 2.5
       };
       if (Object.prototype.hasOwnProperty.call(componentReadings, pair)) return componentReadings[pair];
