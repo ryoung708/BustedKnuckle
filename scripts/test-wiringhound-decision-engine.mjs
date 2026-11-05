@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import { recommendNextStep } from "../js/wiringhound-decision-engine.js";
+const j1939=[{id:"baseline"},{id:"resistance"},{id:"addon"},{id:"addon_review"},{id:"module_isolation"},{id:"module_branch_review"},{id:"all_isolated"},{id:"segment"},{id:"harness"},{id:"verify"}];
+const lighting=[{id:"complaint"},{id:"protection"},{id:"upstream_feed"},{id:"protection_review"},{id:"control"},{id:"control_inputs"},{id:"load"},{id:"drop"},{id:"load_review"},{id:"harness"},{id:"verify"}];
+const record=(workflowId,id,choice)=>({workflowId,entries:{[id]:{choice,updatedAt:"2026-11-05T12:00:00.000Z"}}});
+assert.equal(recommendNextStep(record("j1939_network","baseline","Multiple modules offline"),j1939).stepId,"resistance");
+assert.equal(recommendNextStep(record("j1939_network","resistance","Approximately 60Ω under this test setup"),j1939).stepId,"addon");
+assert.equal(recommendNextStep(record("j1939_network","module_isolation","Voltage returned when a particular module was disconnected"),j1939).stepId,"module_branch_review");
+assert.equal(recommendNextStep(record("j1939_network","harness","Reading changed at a repeatable location"),j1939).stepId,"verify");
+assert.equal(recommendNextStep(record("light_inop","protection","No power at protection input"),lighting).stepId,"upstream_feed");
+assert.equal(recommendNextStep(record("light_inop","control","Command is not present"),lighting).stepId,"control_inputs");
+assert.equal(recommendNextStep(record("light_inop","load","Ground path abnormal"),lighting).stepId,"drop");
+assert.equal(recommendNextStep(record("light_inop","load_review","Load passes approved test"),lighting).stepId,"harness");
+assert.equal(recommendNextStep({workflowId:"j1939_network",entries:{}},j1939).stepId,"baseline");
+console.log("WiringHound decision engine tests passed.");
