@@ -147,10 +147,10 @@
         "brakeFuseIn|brakeFuseOut": state.brakeFuseGood ? 0.02 : Infinity,
         "tailSwitchIn|tailSwitchOut": state.tail ? 0.05 : Infinity,
         "brakeSwitchIn|brakeSwitchOut": state.brake ? 0.05 : Infinity,
-        "leftTailIn|leftGround": state.fault === "lampOpen" ? Infinity : 2.5,
-        "rightTailIn|rightGround": 2.5,
-        "leftBrakeIn|leftGround": 2.5,
-        "rightBrakeIn|rightGround": 2.5
+        "leftGround|leftTailIn": state.fault === "lampOpen" ? Infinity : 2.5,
+        "rightGround|rightTailIn": 2.5,
+        "leftGround|leftBrakeIn": 2.5,
+        "rightGround|rightBrakeIn": 2.5
       };
       if (Object.prototype.hasOwnProperty.call(componentReadings, pair)) return componentReadings[pair];
 
