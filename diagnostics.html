@@ -88,6 +88,23 @@ $("importAll").onclick=()=>$("importFile").click();
 $("importFile").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const parsed=JSON.parse(await file.text()),incoming=Array.isArray(parsed)?parsed:parsed.sessions||(parsed.session?[parsed.session]:[]);if(!Array.isArray(incoming))throw new Error("No case list found");let added=0;for(const item of incoming){if(!item||!item.id||!item.workflowId||!workflows[item.workflowId])continue;if(!sessions.some(x=>x.id===item.id)){sessions.push(item);added++}}persist();alert("Imported "+added+" new case(s). Existing matching case IDs were left unchanged.");}catch(err){alert("Could not import this file: "+err.message)}e.target.value=""};
 $("librarySearch").oninput=renderHistory;$("libraryFilter").onchange=renderHistory;
 $("clearAll").onclick=()=>{if(confirm("Permanently delete all saved investigations from this browser profile? Export first if needed.")){sessions=[];active=null;localStorage.removeItem(STORE);renderHistory();$("work").innerHTML='<div class="empty">Local records cleared.</div>'}};
+
+window.addEventListener("ironknuckle:open-case", event => {
+  const raw = event.detail?.raw;
+  if (!raw?.id || !raw.workflowId || !workflows[raw.workflowId]) {
+    alert("This case uses a different diagnostic workflow. Opening it in its original workspace.");
+    return;
+  }
+  const existing = sessions.findIndex(item => item.id === raw.id);
+  const copy = { ...raw, cloudId: event.detail.cloudId || raw.cloudId || null };
+  if (existing >= 0) sessions[existing] = copy; else sessions.push(copy);
+  active = copy;
+  stepIndex = Math.max(0, Math.min(Number(copy.currentStep) || 0, workflows[copy.workflowId].steps.length - 1));
+  saveCurrent();
+  renderWork();
+  renderHistory();
+});
+
 renderHistory();
 </script><script type="module" src="./js/cloud-vault.js"></script>
 </body></html>
