@@ -67,8 +67,20 @@ function renderCloudCases() {
     const raw = row.raw_case || {};
     const vehicle = titleFor(raw);
     const faults = Object.values(raw.entries || {}).flatMap(entry => entry.faultCodes || []).map(f => f.code).filter(Boolean);
-    return '<article class="case-card"><div class="case-card-head"><b>' + esc(row.title || vehicle) + '</b><span class="case-status">' + esc(row.status) + '</span></div><p>' + esc(raw.complaint || "No complaint recorded") + '</p>' + (faults.length ? '<p><b>Faults:</b> ' + esc(faults.join(", ")) + '</p>' : '') + '<div class="case-actions"><button class="btn" data-attach="' + esc(row.id) + '">Manage evidence</button></div></article>';
+    return '<article class="case-card"><div class="case-card-head"><b>' + esc(row.title || vehicle) + '</b><span class="case-status">' + esc(row.status) + '</span></div><p>' + esc(raw.complaint || "No complaint recorded") + '</p>' + (faults.length ? '<p><b>Faults:</b> ' + esc(faults.join(", ")) + '</p>' : '') + '<div class="case-actions"><button class="btn primary" data-open-cloud="' + esc(row.id) + '">Open case</button><button class="btn" data-attach="' + esc(row.id) + '">Manage evidence</button></div></article>';
   }).join("");
+  box.querySelectorAll("[data-open-cloud]").forEach(button => button.addEventListener("click", () => {
+    const row = cloudRows.find(item => item.id === button.dataset.openCloud);
+    if (!row) return;
+    const raw = row.raw_case || {};
+    if (raw.product === "IronKnuckle WiringHound" || raw.workflowId === "j1939_network") {
+      sessionStorage.setItem("ironknuckle.open-cloud-case", JSON.stringify({ cloudId: row.id, raw }));
+      window.location.href = "./wiringhound.html?cloudCase=" + encodeURIComponent(row.id);
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("ironknuckle:open-case", { detail: { cloudId: row.id, raw } }));
+    document.getElementById("work")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
   box.querySelectorAll("[data-attach]").forEach(button => button.addEventListener("click", () => {
     selectedCloudCase = cloudRows.find(row => row.id === button.dataset.attach) || null;
     $("attachTarget").textContent = selectedCloudCase ? selectedCloudCase.title : "Choose a cloud case.";

@@ -16,7 +16,7 @@
 <div id="cloudLogin" class="row2" style="margin-top:12px"><div class="field"><label for="cloudEmail">Your authorized account email</label><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field" style="align-content:end"><button class="btn primary" id="cloudSignIn">Email me a secure sign-in link</button></div></div>
 <div id="cloudActions" class="actions" hidden><button class="btn primary" id="cloudSync">Upload older local cases</button><button class="btn" id="cloudRefresh">Refresh cloud cases</button></div>
 <div class="field" style="margin-top:12px"><label for="cloudCaseSearch">Search private cases, including fault codes</label><input id="cloudCaseSearch" type="search" placeholder="SPN, FMI, OEM code, vehicle, symptom..."></div><div id="cloudCases" class="library-list" style="margin-top:12px"></div>
-<div id="cloudAttach" hidden style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)"><h3 style="font-size:11px;letter-spacing:.12em">ATTACH EVIDENCE TO SELECTED CASE</h3><p class="small" id="attachTarget">Choose a cloud case below.</p><div class="row2"><div class="field"><label for="attachmentCategory">Evidence type</label><select id="attachmentCategory"><option value="fault_codes">Fault codes / scan report</option><option value="wiring_schematic">Wiring schematic</option><option value="harness_photo">Harness / component photo</option><option value="test_report">Test report / readings</option><option value="other">Other</option></select></div><div class="field"><label for="attachmentFile">File (max 25 MB)</label><input id="attachmentFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf,text/plain,application/json"></div></div><button class="btn primary" id="uploadEvidence">Upload privately</button><div id="attachmentList" class="library-list" style="margin-top:10px"></div></div>
+<div id="cloudAttach" hidden style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)"><h3 style="font-size:11px;letter-spacing:.12em">ATTACH EVIDENCE TO SELECTED CASE</h3><p class="small" id="attachTarget">Choose a cloud case below.</p><div class="row2"><div class="field"><label for="attachmentCategory">Evidence type</label><select id="attachmentCategory"><option value="fault_report">Fault report / scan report</option><option value="wiring_schematic">Wiring schematic</option><option value="service_bulletin">Service bulletin / campaign</option><option value="photo">Photos / visual evidence</option><option value="test_report">Test results / measurements</option><option value="other">Other supporting document</option></select></div><div class="field"><label for="attachmentFile">File (max 25 MB)</label><input id="attachmentFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf,text/plain,application/json"></div></div><button class="btn primary" id="uploadEvidence">Upload privately</button><div id="attachmentList" class="library-list" style="margin-top:10px"></div></div>
 <p class="small" style="margin-top:12px">Private single-user vault. New cases automatically save here when signed in. Older cases can be uploaded with the button above. Local copies are always kept. Remove customer identifiers, full VINs, employer-confidential records and restricted OEM material before uploading. Local browser backups remain available below.</p>
 </section>\n<div class="layout">
 <aside class="panel"><h2>New investigation</h2><p class="muted">Vehicle details are optional for a draft, but identify the exact configuration before relying on technical specifications.</p>
@@ -88,6 +88,23 @@ $("importAll").onclick=()=>$("importFile").click();
 $("importFile").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const parsed=JSON.parse(await file.text()),incoming=Array.isArray(parsed)?parsed:parsed.sessions||(parsed.session?[parsed.session]:[]);if(!Array.isArray(incoming))throw new Error("No case list found");let added=0;for(const item of incoming){if(!item||!item.id||!item.workflowId||!workflows[item.workflowId])continue;if(!sessions.some(x=>x.id===item.id)){sessions.push(item);added++}}persist();alert("Imported "+added+" new case(s). Existing matching case IDs were left unchanged.");}catch(err){alert("Could not import this file: "+err.message)}e.target.value=""};
 $("librarySearch").oninput=renderHistory;$("libraryFilter").onchange=renderHistory;
 $("clearAll").onclick=()=>{if(confirm("Permanently delete all saved investigations from this browser profile? Export first if needed.")){sessions=[];active=null;localStorage.removeItem(STORE);renderHistory();$("work").innerHTML='<div class="empty">Local records cleared.</div>'}};
+
+window.addEventListener("ironknuckle:open-case", event => {
+  const raw = event.detail?.raw;
+  if (!raw?.id || !raw.workflowId || !workflows[raw.workflowId]) {
+    alert("This case uses a different diagnostic workflow. Opening it in its original workspace.");
+    return;
+  }
+  const existing = sessions.findIndex(item => item.id === raw.id);
+  const copy = { ...raw, cloudId: event.detail.cloudId || raw.cloudId || null };
+  if (existing >= 0) sessions[existing] = copy; else sessions.push(copy);
+  active = copy;
+  stepIndex = Math.max(0, Math.min(Number(copy.currentStep) || 0, workflows[copy.workflowId].steps.length - 1));
+  saveCurrent();
+  renderWork();
+  renderHistory();
+});
+
 renderHistory();
 </script><script type="module" src="./js/cloud-vault.js"></script>
 </body></html>
