@@ -148,7 +148,7 @@
       add("tailFuseOut", "tailSwitchIn", 0.02);
       add("tailSwitchIn", "tailSwitchOut", 0.05, state.tail);
       add("tailSwitchOut", "tailSplice", 0.05, state.fault !== "openTail");
-      add("tailSplice", "leftTailIn", 0.05);
+      add("tailSplice", "leftTailIn", 0.05, state.fault !== "lampOpen");
       add("tailSplice", "rightTailIn", 0.05);
       add("brakeFuseIn", "brakeFuseOut", 0.02, state.brakeFuseGood);
       add("brakeFuseOut", "brakeSwitchIn", 0.02);
@@ -161,7 +161,7 @@
       add("leftBrakeIn", "leftGround", 2.5);
       add("rightBrakeIn", "rightGround", 2.5);
       const groundR = state.fault === "poorGround" ? 5 : 0.05;
-      add("leftGround", "ground", groundR, state.fault !== "openGround");
+      add("leftGround", "ground", groundR, state.fault !== "openGround" && state.fault !== "lampOpen");
       add("rightGround", "ground", groundR, state.fault !== "openGround");
       add("ground", "negative", 0.05, state.fault !== "openGround");
 
