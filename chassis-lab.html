@@ -136,6 +136,24 @@
     function resistanceBetween(a, b) {
       if (!(a in TEST_POINTS) || !(b in TEST_POINTS)) return Infinity;
       if (a === b) return 0;
+
+      // Direct component checks model a meter placed across the two terminals
+      // of that component. This prevents unrelated parallel lamp branches from
+      // masking an open switch, blown fuse, or burnt lamp in the training bench.
+      const pair = [a, b].sort().join("|");
+      const componentReadings = {
+        "mainFuseIn|mainFuseOut": state.mainFuseGood ? 0.02 : Infinity,
+        "tailFuseIn|tailFuseOut": state.tailFuseGood ? 0.02 : Infinity,
+        "brakeFuseIn|brakeFuseOut": state.brakeFuseGood ? 0.02 : Infinity,
+        "tailSwitchIn|tailSwitchOut": state.tail ? 0.05 : Infinity,
+        "brakeSwitchIn|brakeSwitchOut": state.brake ? 0.05 : Infinity,
+        "leftGround|leftTailIn": state.fault === "lampOpen" ? Infinity : 2.5,
+        "rightGround|rightTailIn": 2.5,
+        "leftBrakeIn|leftGround": 2.5,
+        "rightBrakeIn|rightGround": 2.5
+      };
+      if (Object.prototype.hasOwnProperty.call(componentReadings, pair)) return componentReadings[pair];
+
       const edges = [];
       const add = (x, y, ohms, closed = true) => {
         if (closed) edges.push([x, y, ohms]); // one undirected branch; nodal solver accounts for both terminals
@@ -195,7 +213,7 @@
 const names=window.IronKnuckleCircuitEngine.testPoints;
 const physical={battery:[200,235],negative:[127,315],mainFuseIn:[220,250],mainFuseOut:[315,250],tailFuseIn:[410,155],tailFuseOut:[525,155],tailSwitchIn:[575,155],tailSwitchOut:[685,155],tailSplice:[760,420],leftTailIn:[290,475],rightTailIn:[810,475],leftGround:[270,545],rightGround:[830,545],brakeFuseIn:[410,217],brakeFuseOut:[525,217],brakeSwitchIn:[575,217],brakeSwitchOut:[685,217],brakeSplice:[790,455],leftBrakeIn:[250,475],rightBrakeIn:[850,475],ground:[550,575]};
 const schematic={battery:[155,285],negative:[155,375],mainFuseIn:[205,177],mainFuseOut:[280,177],tailFuseIn:[280,177],tailFuseOut:[380,177],tailSwitchIn:[405,177],tailSwitchOut:[505,177],tailSplice:[610,230],leftTailIn:[735,230],rightTailIn:[945,230],leftGround:[770,350],rightGround:[980,350],brakeFuseIn:[280,332],brakeFuseOut:[380,332],brakeSwitchIn:[405,332],brakeSwitchOut:[505,332],brakeSplice:[660,300],leftBrakeIn:[800,300],rightBrakeIn:[1010,300],ground:[550,430]};
-const state={tail:false,brake:false,fault:"none",activeLead:"red",red:"battery",black:"negative",view:"physical",mode:"voltage"};
+const state={tail:false,brake:false,fault:"none",mainFuseGood:true,tailFuseGood:true,brakeFuseGood:true,activeLead:"red",red:"battery",black:"negative",view:"physical",mode:"voltage"};
 const circuit=window.IronKnuckleCircuitEngine.createCircuit(state);
 const descriptions={mainFuseIn:"Protected battery feed entering the main fuse.",mainFuseOut:"Main fuse output supplying the cab distribution branches.",tailFuseIn:"Tail-light branch voltage before the fuse.",tailFuseOut:"Tail-light branch voltage after the fuse.",tailSwitchIn:"Power arriving at the tail-light switch.",tailSwitchOut:"Switched tail-light output when the switch is on.",tailSplice:"Tail-light feed splice dividing power to both rear lamps.",leftTailIn:"Tail input terminal at the left lamp.",rightTailIn:"Tail input terminal at the right lamp.",leftBrakeIn:"Brake input terminal at the left lamp.",rightBrakeIn:"Brake input terminal at the right lamp.",leftGround:"Ground output terminal at the left lamp.",rightGround:"Ground output terminal at the right lamp.",brakeSwitchIn:"Brake pedal switch power input.",brakeSwitchOut:"Brake pedal switch output when the pedal is applied.",brakeSplice:"Brake feed splice dividing power to both rear lamps."};
 function makePoints(id,map){
