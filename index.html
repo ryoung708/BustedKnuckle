@@ -37,11 +37,11 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
 .command-center-arrow{flex:none;color:var(--amber);font-size:24px;padding:0 5px}
 @media(max-width:600px){.command-center-card{gap:13px;min-height:126px;padding:13px}.command-center-icon{flex-basis:82px;width:82px;height:82px}.command-center-icon svg{width:64px;height:64px}.command-center-description{font-size:11px}.command-center-arrow{font-size:19px}}
 
-/* Homepage layout refresh: larger brand mark and uniform tool cards */
+/* Homepage layout refresh: responsive cards that grow with their content */
 .home-tools-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  grid-auto-rows:250px;
+  grid-auto-rows:minmax(250px,auto);
   gap:16px;
   width:100%;
   margin:0 0 24px;
@@ -58,13 +58,15 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
 .home-tools-grid .wiringhound-launch-card,
 .home-tools-grid .learning-center-card,
 .home-tools-grid .chassis-lab-card{
+  display:flex;
   height:100%;
-  min-height:0;
+  min-height:250px;
   width:100%;
   margin:0;
   padding:17px;
   gap:14px;
   align-items:center;
+  overflow:hidden;
 }
 .home-tools-grid .command-center-icon,
 .home-tools-grid .wiringhound-mark,
@@ -76,21 +78,19 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
 }
 .home-tools-grid .command-center-icon svg,
 .home-tools-grid .wiringhound-mark svg,
-.home-tools-grid .learning-center-mark svg{
-  width:64px;
-  height:64px;
-}
+.home-tools-grid .learning-center-mark svg{width:64px;height:64px}
 .home-tools-grid .chassis-lab-icon{font-size:40px}
 .home-tools-grid .command-center-copy,
 .home-tools-grid .wiringhound-copy,
 .home-tools-grid .learning-center-copy,
-.home-tools-grid .chassis-lab-copy{min-width:0}
+.home-tools-grid .chassis-lab-copy{min-width:0;flex:1;overflow-wrap:anywhere}
 .home-tools-grid .command-center-title,
 .home-tools-grid .wiringhound-title,
 .home-tools-grid .learning-center-title,
 .home-tools-grid .chassis-lab-title{
   font-size:clamp(17px,1.65vw,23px);
   line-height:1.08;
+  overflow-wrap:anywhere;
 }
 .home-tools-grid .command-center-description,
 .home-tools-grid .wiringhound-description,
@@ -98,21 +98,38 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
 .home-tools-grid .chassis-lab-description{
   font-size:11px;
   line-height:1.4;
+  margin:7px 0 0;
+  overflow-wrap:anywhere;
 }
 .home-tools-grid .command-center-cta,
 .home-tools-grid .wiringhound-cta,
 .home-tools-grid .learning-center-cta,
 .home-tools-grid .chassis-lab-cta{
-  margin-top:8px;
+  display:inline-flex;
+  max-width:100%;
+  white-space:normal;
+  flex-wrap:wrap;
+  margin-top:9px;
   padding:8px 10px;
   font-size:9px;
+  line-height:1.35;
 }
 @media(max-width:760px){
-  .home-tools-grid{grid-template-columns:1fr;grid-auto-rows:190px;gap:12px}
+  .home-tools-grid{grid-template-columns:1fr;grid-auto-rows:auto;gap:12px}
+  .home-tools-grid .command-center-wrap,
+  .home-tools-grid .wiringhound-launch-wrap,
+  .home-tools-grid .learning-center-wrap,
+  .home-tools-grid .chassis-lab-wrap{height:auto}
   .home-tools-grid .command-center-card,
   .home-tools-grid .wiringhound-launch-card,
   .home-tools-grid .learning-center-card,
-  .home-tools-grid .chassis-lab-card{padding:14px;gap:13px}
+  .home-tools-grid .chassis-lab-card{
+    height:auto;
+    min-height:220px;
+    padding:15px;
+    gap:13px;
+    align-items:center;
+  }
   .home-tools-grid .command-center-title,
   .home-tools-grid .wiringhound-title,
   .home-tools-grid .learning-center-title,
@@ -120,11 +137,10 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
   .home-tools-grid .command-center-description,
   .home-tools-grid .wiringhound-description,
   .home-tools-grid .learning-center-description,
-  .home-tools-grid .chassis-lab-description{font-size:12px}
+  .home-tools-grid .chassis-lab-description{font-size:12px;line-height:1.45}
 }
 @media(max-width:600px){
   .brand-logo-img{height:220px;max-width:100%}
-  .home-tools-grid{grid-auto-rows:185px}
   .home-tools-grid .command-center-icon,
   .home-tools-grid .wiringhound-mark,
   .home-tools-grid .learning-center-mark,
@@ -134,7 +150,6 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
   .home-tools-grid .learning-center-mark svg{width:56px;height:56px}
   .home-tools-grid .chassis-lab-icon{font-size:35px}
 }
-
 </style>
 </head>
 <body>
