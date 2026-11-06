@@ -20,6 +20,47 @@
     ground: "Common ground splice"
   });
 
+  function solveEquivalentResistance(edges, from, to) {
+    if (from === to) return 0;
+    const branches = edges.map(edge => Array.isArray(edge) ? { from: edge[0], to: edge[1], ohms: edge[2] } : edge)
+      .filter(edge => edge && Number.isFinite(edge.ohms) && edge.ohms > 0);
+    const connected = new Set([to]), queue = [to];
+    while (queue.length) {
+      const here = queue.shift();
+      for (const edge of branches) {
+        const next = edge.from === here ? edge.to : (edge.to === here ? edge.from : null);
+        if (next !== null && !connected.has(next)) { connected.add(next); queue.push(next); }
+      }
+    }
+    if (!connected.has(from)) return Infinity;
+    const unknown = [...connected].filter(point => point !== to);
+    const index = new Map(unknown.map((point, i) => [point, i]));
+    const matrix = unknown.map(() => unknown.map(() => 0));
+    const rhs = unknown.map(point => point === from ? 1 : 0);
+    for (const edge of branches) {
+      const conductance = 1 / edge.ohms;
+      const i = index.get(edge.from), j = index.get(edge.to);
+      if (i !== undefined) { matrix[i][i] += conductance; if (j !== undefined) matrix[i][j] -= conductance; }
+      if (j !== undefined) { matrix[j][j] += conductance; if (i !== undefined) matrix[j][i] -= conductance; }
+    }
+    const n = rhs.length, augmented = matrix.map((row, i) => [...row, rhs[i]]);
+    for (let col = 0; col < n; col++) {
+      let pivot = col;
+      for (let row = col + 1; row < n; row++) if (Math.abs(augmented[row][col]) > Math.abs(augmented[pivot][col])) pivot = row;
+      if (Math.abs(augmented[pivot][col]) < 1e-12) return Infinity;
+      [augmented[col], augmented[pivot]] = [augmented[pivot], augmented[col]];
+      const divisor = augmented[col][col];
+      for (let j = col; j <= n; j++) augmented[col][j] /= divisor;
+      for (let row = 0; row < n; row++) {
+        if (row === col) continue;
+        const factor = augmented[row][col];
+        for (let j = col; j <= n; j++) augmented[row][j] -= factor * augmented[col][j];
+      }
+    }
+    const resistance = augmented[index.get(from)][n];
+    return Number.isFinite(resistance) && resistance >= 0 ? resistance : Infinity;
+  }
+
   const DEFAULT_STATE = Object.freeze({
     tail: false, brake: false, fault: "none",
     mainFuseGood: true, tailFuseGood: true, brakeFuseGood: true,
@@ -105,15 +146,7 @@
       add("rightGround", "ground", groundR, state.fault !== "openGround");
       add("ground", "negative", 0.05, state.fault !== "openGround");
 
-      const connected=new Set([b]),queue=[b];
-      while(queue.length){const here=queue.shift();for(const [from,to] of edges){const next=from===here?to:(to===here?from:null);if(next!==null&&!connected.has(next)){connected.add(next);queue.push(next);}}}
-      if(!connected.has(a))return Infinity;
-      const unknown=[...connected].filter(k=>k!==b),index=new Map(unknown.map((k,i)=>[k,i]));
-      const matrix=unknown.map(()=>unknown.map(()=>0)),rhs=unknown.map(k=>k===a?1:0);
-      for(const [from,to,ohms] of edges){const g=1/ohms,i=index.get(from),j=index.get(to);if(i!==undefined){matrix[i][i]+=g;if(j!==undefined)matrix[i][j]-=g;}if(j!==undefined){matrix[j][j]+=g;if(i!==undefined)matrix[j][i]-=g;}}
-      const n=rhs.length,aug=matrix.map((row,i)=>[...row,rhs[i]]);
-      for(let col=0;col<n;col++){let pivot=col;for(let row=col+1;row<n;row++)if(Math.abs(aug[row][col])>Math.abs(aug[pivot][col]))pivot=row;if(Math.abs(aug[pivot][col])<1e-12)return Infinity;[aug[col],aug[pivot]]=[aug[pivot],aug[col]];const d=aug[col][col];for(let j=col;j<=n;j++)aug[col][j]/=d;for(let row=0;row<n;row++){if(row===col)continue;const factor=aug[row][col];for(let j=col;j<=n;j++)aug[row][j]-=factor*aug[col][j];}}
-      const resistance=aug[index.get(a)][n];return Number.isFinite(resistance)&&resistance>=0?resistance:Infinity;
+      return solveEquivalentResistance(edges, a, b);
     }
 
     function lampIsOn(kind) {
@@ -126,5 +159,5 @@
     return Object.freeze({ setState, getState, voltageAt, resistanceBetween, lampIsOn });
   }
 
-  root.IronKnuckleCircuitEngine = Object.freeze({ createCircuit, testPoints: TEST_POINTS });
+  root.IronKnuckleCircuitEngine = Object.freeze({ createCircuit, testPoints: TEST_POINTS, solveEquivalentResistance });
 })(typeof window !== "undefined" ? window : globalThis);
