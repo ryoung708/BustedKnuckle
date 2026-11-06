@@ -210,6 +210,7 @@
  <p class="note">Safety and scope: this is a simplified low-voltage teaching model. The short-to-ground option represents a protective fuse opening in the simulation; it does not model real fault energy. Never use simulated values as pass/fail limits or apply this diagram to a vehicle without its wiring diagram and OEM procedure. Resistance/continuity modes require battery negative to be disconnected in this simulation; the switch may remain closed once the circuit is isolated.</p>
 </section>
 <div class="links"><a class="action" href="./diagnostics.html">Diagnostic Command Center →</a><a class="action" href="./wiringhound.html">WiringHound →</a></div></div>
+<script src="./circuit-engine.js"></script>
 <script>
 const lessons=[
 {id:"basic",cat:"circuits",title:"How a basic circuit works",desc:"A complete path lets current flow through a load.",intro:"A working circuit needs a source, a complete path and a load. Open the switch and the path is broken.",svg:'<svg viewBox="0 0 700 230"><rect x="18" y="80" width="105" height="70" rx="8" fill="#25313d" stroke="#69b7e8" stroke-width="2"/><text x="70" y="110" fill="#fff" font-size="15" text-anchor="middle">BATTERY</text><text x="70" y="130" fill="#69b7e8" font-size="12" text-anchor="middle">SOURCE</text><path d="M123 100 H235 M280 100 H500 M610 100 H665 V190 H70 V150" stroke="#70c69a" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M235 100 L275 72" stroke="#ff9f1c" stroke-width="6" stroke-linecap="round"/><circle cx="235" cy="100" r="5" fill="#ff9f1c"/><circle cx="280" cy="100" r="5" fill="#ff9f1c"/><rect x="500" y="72" width="110" height="56" rx="7" fill="#3b2b18" stroke="#ff9f1c" stroke-width="2"/><text x="555" y="105" fill="#fff" font-size="15" text-anchor="middle">LOAD</text><text x="255" y="42" fill="#ffb34d" font-size="13" text-anchor="middle">SWITCH</text><text x="350" y="220" fill="#a2afbc" font-size="13" text-anchor="middle">Complete path = current can flow</text></svg>',facts:[["Source","Provides electrical potential, such as a battery."],["Conductors","Carry current through the intended path."],["Load","Uses electrical energy: lamp, solenoid, motor."],["Return path","Completes the path back to the source."]],tip:"Voltage is a potential difference. Current is flow through a complete circuit. A voltage reading alone does not prove a circuit can carry its intended load.",q:"What happens when the switch opens?",a:["Current path is interrupted","The load gets more current"],correct:0,why:"Opening the switch breaks the path, so current stops in this simplified circuit."},
@@ -288,10 +289,7 @@ function benchModel(){
 
   // Always solve the complete resistor network. Parallel branches are part of
   // the measurement; disconnected probe points correctly report OL.
-  let injected;
-  try { injected=solveNetwork(resistors,{[to]:0},{[from]:1,[to]:-1}); }
-  catch(_){ return Infinity; }
-  return injected[from];
+  return window.IronKnuckleCircuitEngine.solveEquivalentResistance(resistors,from,to);
  }
  let volts={battery:12.6,negative:0};
  let totalCurrent=0, lampVoltage=0,groundDrop=0;
