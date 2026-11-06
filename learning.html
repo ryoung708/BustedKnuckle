@@ -89,7 +89,7 @@
 .cutaway-shell .pulse{animation:pulseGlow 1.4s ease-in-out infinite}.cutaway-shell .spray{animation:sprayDrop 1.2s ease-in infinite}.cutaway-shell .sensor-light{animation:sensorBlink 1.8s ease-in-out infinite}
 .cutaway-shell .engine-piston{transform-box:fill-box;transform-origin:center;animation:none!important}
 .cutaway-shell .fuel-event,.cutaway-shell .combustion-flash{opacity:0;animation:none!important}.cutaway-shell .combustion-flash{transform-box:fill-box;transform-origin:center}.cutaway-shell .def-spray{animation:defDose 2.6s ease-in-out infinite;opacity:.8}
-.cutaway-shell .cam-lobe{transform-box:fill-box;transform-origin:0 0;animation:none!important}.cutaway-shell .rocker-motion,.cutaway-shell .valve-motion,.cutaway-shell .valve-bridge{animation:none!important}.cutaway-shell .valve-bridge path{stroke:#d5e0e6;stroke-width:9;stroke-linecap:round;fill:none}.cutaway-shell .valve-bridge circle{fill:#d7ae43;stroke:#f4d995;stroke-width:2}@keyframes camLobeTurn{to{transform:rotate(360deg)}}@keyframes rockerAct{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes valveAct{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+.cutaway-shell .cam-lobe{transform:none!important;animation:none!important}.cutaway-shell .rocker-motion,.cutaway-shell .valve-motion,.cutaway-shell .valve-bridge{animation:none!important}.cutaway-shell .valve-bridge path{stroke:#d5e0e6;stroke-width:9;stroke-linecap:round;fill:none}.cutaway-shell .valve-bridge circle{fill:#d7ae43;stroke:#f4d995;stroke-width:2}@keyframes camLobeTurn{to{transform:rotate(360deg)}}@keyframes rockerAct{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes valveAct{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 .cutaway-shell .click-part{cursor:pointer;transition:filter .16s,opacity .16s}.cutaway-shell .click-part:hover,.cutaway-shell .click-part.selected{filter:drop-shadow(0 0 7px #ffad52)}
 .cutaway-shell .click-part.selected .metal,.cutaway-shell .click-part.selected .dark-metal,.cutaway-shell .click-part.selected .cut-metal{stroke:#ffbd63;stroke-width:4}
 @keyframes flowTravel{to{stroke-dashoffset:-50}}@keyframes pistonCycle{0%,100%{transform:translateY(-9px)}50%{transform:translateY(9px)}}@keyframes dieselPiston{0%,100%{transform:translateY(0)}25%,75%{transform:translateY(12px)}50%{transform:translateY(0)}}@keyframes fuelBurst{0%,72%,100%{opacity:0}78%{opacity:.15}82%{opacity:1}89%{opacity:.75}94%{opacity:0}}@keyframes combustionFlash{0%{opacity:1;transform:scale(1.08)}5%{opacity:.95;transform:scale(1)}13%{opacity:0;transform:scale(.72)}100%{opacity:0;transform:scale(.72)}}@keyframes defDose{0%,100%{opacity:.2}45%,65%{opacity:1}}
@@ -210,6 +210,7 @@
  <p class="note">Safety and scope: this is a simplified low-voltage teaching model. The short-to-ground option represents a protective fuse opening in the simulation; it does not model real fault energy. Never use simulated values as pass/fail limits or apply this diagram to a vehicle without its wiring diagram and OEM procedure. Resistance/continuity modes require battery negative to be disconnected in this simulation; the switch may remain closed once the circuit is isolated.</p>
 </section>
 <div class="links"><a class="action" href="./diagnostics.html">Diagnostic Command Center →</a><a class="action" href="./wiringhound.html">WiringHound →</a></div></div>
+<script src="./circuit-engine.js"></script>
 <script>
 const lessons=[
 {id:"basic",cat:"circuits",title:"How a basic circuit works",desc:"A complete path lets current flow through a load.",intro:"A working circuit needs a source, a complete path and a load. Open the switch and the path is broken.",svg:'<svg viewBox="0 0 700 230"><rect x="18" y="80" width="105" height="70" rx="8" fill="#25313d" stroke="#69b7e8" stroke-width="2"/><text x="70" y="110" fill="#fff" font-size="15" text-anchor="middle">BATTERY</text><text x="70" y="130" fill="#69b7e8" font-size="12" text-anchor="middle">SOURCE</text><path d="M123 100 H235 M280 100 H500 M610 100 H665 V190 H70 V150" stroke="#70c69a" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M235 100 L275 72" stroke="#ff9f1c" stroke-width="6" stroke-linecap="round"/><circle cx="235" cy="100" r="5" fill="#ff9f1c"/><circle cx="280" cy="100" r="5" fill="#ff9f1c"/><rect x="500" y="72" width="110" height="56" rx="7" fill="#3b2b18" stroke="#ff9f1c" stroke-width="2"/><text x="555" y="105" fill="#fff" font-size="15" text-anchor="middle">LOAD</text><text x="255" y="42" fill="#ffb34d" font-size="13" text-anchor="middle">SWITCH</text><text x="350" y="220" fill="#a2afbc" font-size="13" text-anchor="middle">Complete path = current can flow</text></svg>',facts:[["Source","Provides electrical potential, such as a battery."],["Conductors","Carry current through the intended path."],["Load","Uses electrical energy: lamp, solenoid, motor."],["Return path","Completes the path back to the source."]],tip:"Voltage is a potential difference. Current is flow through a complete circuit. A voltage reading alone does not prove a circuit can carry its intended load.",q:"What happens when the switch opens?",a:["Current path is interrupted","The load gets more current"],correct:0,why:"Opening the switch breaks the path, so current stops in this simplified circuit."},
@@ -286,25 +287,9 @@ function benchModel(){
  function equivalentResistance(from,to){
   if(from===to)return 0;
 
-  // Direct terminal checks should report the component itself, not a reading
-  // that can be masked by alternate network paths or floating-node behavior.
-  // These are illustrative simulator values, not OEM specifications.
-  const pair=[from,to].sort().join("|");
-  const terminalReadings={
-   "battery|fuseIn":0.005,
-   "fuseIn|fuseOut":fuseOpen?Infinity:0.005,
-   "fuseOut|switchIn":fault==="open"?Infinity:(fault==="resistive"?1.5:0.005),
-   "switch|switchIn":on?0.005:Infinity,
-   "load|loadOut":fault==="lamp"?Infinity:3.0,
-   "ground|loadOut":fault==="ground"?4.8:0.005,
-   "ground|negative":0.005
-  };
-  if(Object.prototype.hasOwnProperty.call(terminalReadings,pair))return terminalReadings[pair];
-
-  // For measurements spanning multiple components, solve the complete
-  // resistor network so legitimate parallel paths are included.
-  const injected=solveNetwork(resistors,{[to]:0},{[from]:1,[to]:-1});
-  return injected[from];
+  // Always solve the complete resistor network. Parallel branches are part of
+  // the measurement; disconnected probe points correctly report OL.
+  return window.IronKnuckleCircuitEngine.solveEquivalentResistance(resistors,from,to);
  }
  let volts={battery:12.6,negative:0};
  let totalCurrent=0, lampVoltage=0,groundDrop=0;
@@ -491,12 +476,16 @@ engine:{eyebrow:"ENGINE BASICS / INTERACTIVE CUTAWAY",title:"Follow the four-str
  <g class="rocker-motion" data-cylinder="3" data-pivot-x="1048"><path d="M1034 302L1038 319L1048 333L1058 319L1062 302" fill="none" stroke="#d0dbe1" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="1048" cy="333" r="5" fill="#d7ae43"/></g>
  <text x="950" y="348" class="micro-label">ROCKER ARMS</text>
 </g>
-<!-- Split valve bridges sit beneath the rocker fingers. The center opening leaves a clear path for each injector. -->
+<!-- Independent intake and exhaust valve bridges; each follows only its own valve. -->
 <g class="click-part" data-part="rocker">
- <g class="valve-bridge" data-cylinder="0"><path d="M830 357H846M854 357H870" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="836" cy="357" r="4" fill="#d7ae43"/><circle cx="864" cy="357" r="4" fill="#d7ae43"/></g>
- <g class="valve-bridge" data-cylinder="1"><path d="M896 357H912M920 357H936" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="902" cy="357" r="4" fill="#d7ae43"/><circle cx="930" cy="357" r="4" fill="#d7ae43"/></g>
- <g class="valve-bridge" data-cylinder="2"><path d="M962 357H978M986 357H1002" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="968" cy="357" r="4" fill="#d7ae43"/><circle cx="996" cy="357" r="4" fill="#d7ae43"/></g>
- <g class="valve-bridge" data-cylinder="3"><path d="M1028 357H1044M1052 357H1068" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="1034" cy="357" r="4" fill="#d7ae43"/><circle cx="1062" cy="357" r="4" fill="#d7ae43"/></g>
+ <g class="valve-bridge" data-cylinder="0" data-valve="intake"><path d="M830 357H846" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="836" cy="357" r="4" fill="#d7ae43"/></g>
+ <g class="valve-bridge" data-cylinder="0" data-valve="exhaust"><path d="M854 357H870" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="864" cy="357" r="4" fill="#d7ae43"/></g>
+ <g class="valve-bridge" data-cylinder="1" data-valve="intake"><path d="M896 357H912" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="902" cy="357" r="4" fill="#d7ae43"/></g>
+ <g class="valve-bridge" data-cylinder="1" data-valve="exhaust"><path d="M920 357H936" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="930" cy="357" r="4" fill="#d7ae43"/></g>
+ <g class="valve-bridge" data-cylinder="2" data-valve="intake"><path d="M962 357H978" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="968" cy="357" r="4" fill="#d7ae43"/></g>
+ <g class="valve-bridge" data-cylinder="2" data-valve="exhaust"><path d="M986 357H1002" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="996" cy="357" r="4" fill="#d7ae43"/></g>
+ <g class="valve-bridge" data-cylinder="3" data-valve="intake"><path d="M1028 357H1044" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="1034" cy="357" r="4" fill="#d7ae43"/></g>
+ <g class="valve-bridge" data-cylinder="3" data-valve="exhaust"><path d="M1052 357H1068" stroke="#d5e0e6" stroke-width="9" stroke-linecap="round"/><circle cx="1062" cy="357" r="4" fill="#d7ae43"/></g>
 </g>
 <g class="click-part" data-part="intake-valve">
  <g class="valve-motion intake-valve" data-cylinder="0"><path d="M836 361V414" stroke="#c5d0d7" stroke-width="5"/><path d="M829 415H843" stroke="#e5edf2" stroke-width="5" stroke-linecap="round"/></g>
@@ -688,8 +677,10 @@ function animateEngineCrank(){
    const valveActive=intakeOpen||exhaustOpen;
    const rocker=rockers.find(v=>Number(v.dataset.cylinder)===i),pivotX=rocker?Number(rocker.dataset.pivotX):centers[i];
    if(rocker&&Number.isFinite(pivotX))rocker.setAttribute("transform","rotate("+(valveActive?3*Math.sin(crankAngle*2):0)+" "+pivotX+" 333)");
-   const bridge=bridges.find(v=>Number(v.dataset.cylinder)===i);
-   if(bridge)bridge.setAttribute("transform","translate(0 "+(valveActive?lift:0)+")");
+   const intakeBridge=bridges.find(v=>Number(v.dataset.cylinder)===i&&v.dataset.valve==="intake");
+   const exhaustBridge=bridges.find(v=>Number(v.dataset.cylinder)===i&&v.dataset.valve==="exhaust");
+   if(intakeBridge)intakeBridge.setAttribute("transform","translate(0 "+(intakeOpen?lift:0)+")");
+   if(exhaustBridge)exhaustBridge.setAttribute("transform","translate(0 "+(exhaustOpen?lift:0)+")");
    if(part.flash){
     const progress=sinceFire/260;
     part.flash.style.opacity=sinceFire<260?String(Math.max(0,1-progress)):"0";
