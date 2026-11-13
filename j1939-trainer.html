@@ -59,7 +59,7 @@ function solveResistance(start,end){
  while(queue.length){const here=queue.shift();for(const [a,b] of edges){const next=a===here?b:b===here?a:null;if(next!==null&&!reachable.has(next)){reachable.add(next);queue.push(next)}}}
  if(!reachable.has(start))return Infinity;
  const unknown=[...reachable].filter(i=>i!==ground),idx=new Map(unknown.map((v,i)=>[v,i]));
- const A=Array.from({length:n-1},()=>Array(n).fill(0));
+ const m=unknown.length,A=Array.from({length:m},()=>Array(m+1).fill(0));
  for(const [a,b,r] of edges){
   const c=1/r;
   if(a!==ground){const ia=idx.get(a);A[ia][ia]+=c;if(b!==ground)A[ia][idx.get(b)]-=c;else A[ia][n-1]+=c}
@@ -67,14 +67,14 @@ function solveResistance(start,end){
  }
  // Inject 1 A at the red probe node; the black probe is the 0 V reference.
  if(start!==ground)A[idx.get(start)][n-1]+=1;
- for(let col=0;col<n-1;col++){
-  let pivot=col;for(let row=col+1;row<n-1;row++)if(Math.abs(A[row][col])>Math.abs(A[pivot][col]))pivot=row;
+ for(let col=0;col<m;col++){
+  let pivot=col;for(let row=col+1;row<m;row++)if(Math.abs(A[row][col])>Math.abs(A[pivot][col]))pivot=row;
   if(Math.abs(A[pivot][col])<1e-10)return Infinity;
   [A[col],A[pivot]]=[A[pivot],A[col]];
-  const div=A[col][col];for(let j=col;j<n;j++)A[col][j]/=div;
-  for(let row=0;row<n-1;row++){if(row===col)continue;const f=A[row][col];if(!f)continue;for(let j=col;j<n;j++)A[row][j]-=f*A[col][j]}
+  const div=A[col][col];for(let j=col;j<=m;j++)A[col][j]/=div;
+  for(let row=0;row<m;row++){if(row===col)continue;const f=A[row][col];if(!f)continue;for(let j=col;j<=m;j++)A[row][j]-=f*A[col][j]}
  }
- return Math.max(0,A[idx.get(start)][n-1]);
+ return Math.max(0,A[idx.get(start)][m]);
 }
 function measuredResistance(){
  const a=pointNode[s.red],b=pointNode[s.black];
