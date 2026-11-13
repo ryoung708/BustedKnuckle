@@ -55,15 +55,15 @@ function solveResistance(start,end){
  if(s.fault==="extraTerm")add(2,7,120);
  if(s.fault==="shortTogether")add(2,7,0.2);
  if(s.fault==="shortGround")add(2,10,0.4);
- const n=11,ground=end,reachable=new Set([ground]),queue=[ground];
+ const ground=end,reachable=new Set([ground]),queue=[ground];
  while(queue.length){const here=queue.shift();for(const [a,b] of edges){const next=a===here?b:b===here?a:null;if(next!==null&&!reachable.has(next)){reachable.add(next);queue.push(next)}}}
  if(!reachable.has(start))return Infinity;
  const unknown=[...reachable].filter(i=>i!==ground),idx=new Map(unknown.map((v,i)=>[v,i]));
  const m=unknown.length,A=Array.from({length:m},()=>Array(m+1).fill(0));
  for(const [a,b,r] of edges){
   const c=1/r;
-  if(a!==ground){const ia=idx.get(a);A[ia][ia]+=c;if(b!==ground)A[ia][idx.get(b)]-=c;else A[ia][n-1]+=c}
-  if(b!==ground){const ib=idx.get(b);A[ib][ib]+=c;if(a!==ground)A[ib][idx.get(a)]-=c;else A[ib][n-1]+=c}
+  if(a!==ground){const ia=idx.get(a);A[ia][ia]+=c;if(b!==ground)A[ia][idx.get(b)]-=c;else A[ia][m]+=c}
+  if(b!==ground){const ib=idx.get(b);A[ib][ib]+=c;if(a!==ground)A[ib][idx.get(a)]-=c;else A[ib][m]+=c}
  }
  // Inject 1 A at the red probe node; the black probe is the 0 V reference.
  if(start!==ground)A[idx.get(start)][n-1]+=1;
