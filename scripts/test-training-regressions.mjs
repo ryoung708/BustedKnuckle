@@ -109,5 +109,8 @@ assert.match(learning, /window\.IronKnuckleEngineCycle\.getValveState\(cycleDegr
  assert.ok(j1939.includes("if(!reachable.has(start))return Infinity"), "Open sections read OL when probes are disconnected");
  assert.ok(j1939.includes('if(s.key){n=NaN;unit=" Ω"}'), "Ohms mode is inhibited with key power on");
  assert.ok(j1939.includes("s.endTermConnected=!s.endTermConnected"), "End termination state toggles");
+ assert.ok(j1939.includes("moduleInputOhms=10000000"), "Connected modules contribute a 10 MΩ training input path");
+ assert.ok(j1939.includes("modules.forEach((_,i)=>{if(!s.off.includes(i))"), "Every connected module contributes to resistance");
+ assert.ok(j1939.includes("data-i"), "Module identity is available to isolation-state renderer");
 
 console.log("IronKnuckle circuit and training regression tests passed.");

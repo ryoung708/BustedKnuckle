@@ -5,13 +5,15 @@
 (()=>{
 const $=id=>document.getElementById(id),ns="http://www.w3.org/2000/svg";
 const modules=["VECU","Engine ECM","ABS","Cluster","Aftertreatment","Diagnostic port"],mx=[155,315,475,635,795,955];
+// Training approximation: each connected module contributes a 10 MΩ differential input path. Real transceiver impedance varies by OEM and module design.
+const moduleNodes=[0,1,2,3,4,4],moduleInputOhms=10000000;
 const pts={h1:[70,210],h2:[315,210],h3:[550,210],h4:[795,210],h5:[1030,210],l1:[70,300],l2:[315,300],l3:[550,300],l4:[795,300],l5:[1030,300],gnd:[550,405]};
 const names={h1:"CAN-H left",h2:"CAN-H engine ECM",h3:"CAN-H center",h4:"CAN-H aftertreatment",h5:"CAN-H right",l1:"CAN-L left",l2:"CAN-L engine ECM",l3:"CAN-L center",l4:"CAN-L aftertreatment",l5:"CAN-L right",gnd:"Chassis ground"};
 const pointNode={h1:0,h2:1,h3:2,h4:3,h5:4,l1:5,l2:6,l3:7,l4:8,l5:9,gnd:10};
 let s={red:"h3",black:"gnd",active:"red",mode:"voltage",key:true,fault:"healthy",off:[],endTermConnected:true};
 function svg(tag,attrs={},textValue){const e=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(textValue!==undefined)e.textContent=textValue;return e}
 modules.forEach((name,i)=>{
- const g=svg("g",{class:"module",role:"button",tabindex:"0","aria-label":"Toggle "+name+" connection"}),isEcm=i===1;
+ const g=svg("g",{class:"module",role:"button",tabindex:"0","data-i":i,"aria-label":"Toggle "+name+" connection"}),isEcm=i===1;
  const r=svg("rect",{x:mx[i]-62,y:isEcm?36:48,width:124,height:isEcm?132:75,rx:8});
  const p=svg("path",{d:isEcm?"M315 168 V210 M315 168 V300":"M"+mx[i]+" 123 V210 M"+mx[i]+" 123 V300",stroke:"#9aa8b6","stroke-width":3,fill:"none"});
  const t=svg("text",{x:mx[i],y:isEcm?61:78,"text-anchor":"middle"},name);
@@ -50,6 +52,7 @@ function solveResistance(start,end){
   add(i,i+1,s.fault==="openH"&&i===brokenAt?Infinity:0.05);
   add(i+5,i+6,s.fault==="openL"&&i===brokenAt?Infinity:0.05);
  }
+ modules.forEach((_,i)=>{if(!s.off.includes(i)){const node=moduleNodes[i];add(node,node+5,moduleInputOhms)}});
  if(!s.off.includes(1))add(1,6,120);
  if(s.endTermConnected&&s.fault!=="missingTerm")add(4,9,120);
  if(s.fault==="extraTerm")add(2,7,120);
@@ -99,7 +102,7 @@ function render(){
  $("key").textContent="Key power: "+(s.key?"ON":"OFF");
  let explanation;
  if(s.mode==="resistance"&&s.key)explanation="Turn key power OFF before resistance testing. The meter is intentionally inhibited while the network is powered.";
- else if(s.fault==="healthy")explanation="Healthy baseline: two 120Ω terminators in parallel (one inside the Engine ECM and one at the backbone end) = approximately 60Ω. Isolate either terminator and the network reads approximately 120Ω. Isolate both and it reads OL.";
+ else if(s.fault==="healthy")explanation="Healthy baseline: two 120Ω terminators in parallel (one inside the Engine ECM and one at the backbone end) = approximately 60Ω. Isolate either terminator and the network reads approximately 120Ω. With both terminators isolated but modules connected, expect a very high reading in the megaohm range (training model: 10 MΩ input path per connected module). Isolate all modules too and the network reads OL.";
  else explanation=({openH:"CAN-H is open between the center and right-side sections. Compare readings on each side; a cross-break H-to-L measurement may read OL.",openL:"CAN-L is open between the center and right-side sections. Compare readings on each side; a cross-break H-to-L measurement may read OL.",shortGround:"A 0.4Ω training short from CAN-H to chassis ground is present at the center section. Measure the affected line to ground and isolate sections.",shortTogether:"A 0.2Ω training short bridges CAN-H and CAN-L at the center section; differential voltage collapses.",missingTerm:"The far-end 120Ω terminator is faulted open. With the ECM terminator connected, a healthy segment reads approximately 120Ω.",extraTerm:"A third 120Ω termination is added at the center section; three equal terminators in parallel produce approximately 40Ω."})[s.fault];
  $("explain").textContent=explanation;
 }
