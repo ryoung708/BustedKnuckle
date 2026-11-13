@@ -99,9 +99,9 @@ assert.match(learning, /window\.IronKnuckleEngineCycle\.getValveState\(cycleDegr
  // J1939 trainer: both terminators must be independently isolatable and
  // resistance must be solved from the actual connected network, not presets.
  const j1939 = await readFile(new URL("../j1939-trainer.html", import.meta.url), "utf8");
- const j1939Script = j1939.match(/<script>([\\s\\S]*?)<\\/script>/);
+ const j1939Script = j1939.split("<script>")[1]?.split("</script>")[0];
  assert.ok(j1939Script, "J1939 trainer script is present");
- assert.doesNotThrow(() => new Script(j1939Script[1]), "J1939 trainer script parses");
+ assert.doesNotThrow(() => new Script(j1939Script), "J1939 trainer script parses");
  assert.match(j1939, /term\\.addEventListener\\("click",toggleTerm\\)/, "End terminator is clickable");
  assert.match(j1939, /add\\(1,6,120\\)/, "Engine ECM contains its 120Ω termination");
  assert.match(j1939, /add\\(4,9,120\\)/, "Far-end terminator participates in the circuit");
