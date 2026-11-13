@@ -102,12 +102,12 @@ assert.match(learning, /window\.IronKnuckleEngineCycle\.getValveState\(cycleDegr
  const j1939Script = j1939.split("<script>")[1]?.split("</script>")[0];
  assert.ok(j1939Script, "J1939 trainer script is present");
  assert.doesNotThrow(() => new Script(j1939Script), "J1939 trainer script parses");
- assert.match(j1939, /term\\.addEventListener\\("click",toggleTerm\\)/, "End terminator is clickable");
- assert.match(j1939, /add\\(1,6,120\\)/, "Engine ECM contains its 120Ω termination");
- assert.match(j1939, /add\\(4,9,120\\)/, "Far-end terminator participates in the circuit");
- assert.match(j1939, /function solveResistance\\(start,end\\)/, "Resistance uses a network solver");
- assert.match(j1939, /if\\(!reachable\\.has\\(start\\)\\)return Infinity/, "Open sections read OL when probes are disconnected");
- assert.match(j1939, /if\\(s\\.key\\)\\{n=NaN;unit=" Ω"\\}/, "Ohms mode is inhibited with key power on");
- assert.match(j1939, /s\\.endTermConnected=!s\\.endTermConnected/, "End termination state toggles");
+ assert.ok(j1939.includes('term.addEventListener("click",toggleTerm)'), "End terminator is clickable");
+ assert.ok(j1939.includes("add(1,6,120)"), "Engine ECM contains its 120Ω termination");
+ assert.ok(j1939.includes("add(4,9,120)"), "Far-end terminator participates in the circuit");
+ assert.ok(j1939.includes("function solveResistance(start,end)"), "Resistance uses a network solver");
+ assert.ok(j1939.includes("if(!reachable.has(start))return Infinity"), "Open sections read OL when probes are disconnected");
+ assert.ok(j1939.includes('if(s.key){n=NaN;unit=" Ω"}'), "Ohms mode is inhibited with key power on");
+ assert.ok(j1939.includes("s.endTermConnected=!s.endTermConnected"), "End termination state toggles");
 
 console.log("IronKnuckle circuit and training regression tests passed.");
