@@ -7,6 +7,7 @@ on:
       - "circuit-engine.js"
       - "learning.html"
       - "chassis-lab.html"
+      - "diagnostic-challenge.html"
       - "scripts/test-training-regressions.mjs"
       - "scripts/test-diagnostic-engine.mjs"
       - "diagnostics.html"
