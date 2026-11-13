@@ -10,7 +10,7 @@ const moduleNodes=[0,1,2,3,4,4],moduleInputOhms=10000000;
 const pts={h1:[70,210],h2:[315,210],h3:[550,210],h4:[795,210],h5:[1030,210],l1:[70,300],l2:[315,300],l3:[550,300],l4:[795,300],l5:[1030,300],gnd:[550,405]};
 const names={h1:"CAN-H left",h2:"CAN-H engine ECM",h3:"CAN-H center",h4:"CAN-H aftertreatment",h5:"CAN-H right",l1:"CAN-L left",l2:"CAN-L engine ECM",l3:"CAN-L center",l4:"CAN-L aftertreatment",l5:"CAN-L right",gnd:"Chassis ground"};
 const pointNode={h1:0,h2:1,h3:2,h4:3,h5:4,l1:5,l2:6,l3:7,l4:8,l5:9,gnd:10};
-let s={red:"h3",black:"gnd",active:"red",mode:"voltage",key:true,fault:"healthy",off:[],endTermConnected:true};
+let s={red:"h3",black:"gnd",active:"red",mode:"voltage",key:true,fault:"healthy",off:[],endTermConnected:true,ecmTermConnected:true};
 function svg(tag,attrs={},textValue){const e=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(textValue!==undefined)e.textContent=textValue;return e}
 modules.forEach((name,i)=>{
  const g=svg("g",{class:"module",role:"button",tabindex:"0","data-i":i,"aria-label":"Toggle "+name+" connection"}),isEcm=i===1;
@@ -20,11 +20,12 @@ modules.forEach((name,i)=>{
  const st=svg("text",{class:"state",x:mx[i],y:isEcm?79:104,"text-anchor":"middle"},"CONNECTED");
  g.append(p,r);
  if(isEcm){
-  g.append(svg("path",{d:"M274 96 H356",stroke:"#61a9df","stroke-width":3,fill:"none"}),svg("path",{d:"M274 132 H356",stroke:"#f0a45a","stroke-width":3,fill:"none"}),svg("path",{d:"M315 97 L306 102 L324 107 L306 112 L324 117 L306 122 L315 131",fill:"none",stroke:"#ff9f1c","stroke-width":3,"stroke-linejoin":"round"}),svg("text",{x:315,y:151,"text-anchor":"middle",fill:"#ffbf69","font-size":9,"font-weight":800},"120Ω INTERNAL"));
+  g.append(svg("path",{d:"M274 96 H356",stroke:"#61a9df","stroke-width":3,fill:"none"}),svg("path",{d:"M274 132 H356",stroke:"#f0a45a","stroke-width":3,fill:"none"}),svg("path",{d:"M315 97 L306 102 L324 107 L306 112 L324 117 L306 122 L315 131",fill:"none",stroke:"#ff9f1c","stroke-width":3,"stroke-linejoin":"round"}),svg("text",{id:"ecmTermState",x:315,y:151,"text-anchor":"middle",fill:"#70c69a","font-size":9,"font-weight":800,role:"button",tabindex:"0"},"120Ω TERM: CONNECTED"));
  }
  g.append(t,st);$("modules").append(g);
  const toggle=()=>{const k=i;s.off.includes(k)?s.off=s.off.filter(x=>x!==k):s.off.push(k);render()};
  g.addEventListener("click",toggle);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}});
+ if(isEcm){const termControl=g.querySelector("#ecmTermState");termControl.style.cursor="pointer";const toggleEcmTerm=e=>{e.stopPropagation();s.ecmTermConnected=!s.ecmTermConnected;render()};termControl.addEventListener("click",toggleEcmTerm);termControl.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleEcmTerm(e)}})}
 });
 const term=$("terminators");term.setAttribute("role","button");term.setAttribute("tabindex","0");term.setAttribute("aria-label","Toggle 120 ohm end terminator");
 term.style.cursor="pointer";
@@ -53,7 +54,7 @@ function solveResistance(start,end){
   add(i+5,i+6,s.fault==="openL"&&i===brokenAt?Infinity:0.05);
  }
  modules.forEach((_,i)=>{if(!s.off.includes(i)){const node=moduleNodes[i];add(node,node+5,moduleInputOhms)}});
- if(!s.off.includes(1))add(1,6,120);
+ if(!s.off.includes(1)&&s.ecmTermConnected)add(1,6,120);
  if(s.endTermConnected&&s.fault!=="missingTerm")add(4,9,120);
  if(s.fault==="extraTerm")add(2,7,120);
  if(s.fault==="shortTogether")add(2,7,0.2);
@@ -89,6 +90,7 @@ function render(){
  term.classList.toggle("off",!s.endTermConnected);
  termState.textContent=s.endTermConnected?"CONNECTED":"ISOLATED";
  termState.setAttribute("fill",s.endTermConnected?"#70c69a":"#f07865");
+ const ecmTermState=$("ecmTermState");if(ecmTermState){ecmTermState.textContent=s.ecmTermConnected?"120Ω TERM: CONNECTED":"120Ω TERM: ISOLATED";ecmTermState.setAttribute("fill",s.ecmTermConnected?"#70c69a":"#f07865")}
  const leads=$("leads");leads.innerHTML="";
  ["red","black"].forEach(c=>{const q=pts[s[c]];leads.append(svg("path",{class:"lead "+c,d:"M550 440 Q"+((550+q[0])/2)+" 420 "+q[0]+" "+q[1]}))});
  let n,unit;
@@ -113,7 +115,7 @@ $("volts").onclick=()=>{s.mode="voltage";$("volts").classList.add("active");$("o
 $("ohms").onclick=()=>{s.mode="resistance";$("ohms").classList.add("active");$("volts").classList.remove("active");render()};
 $("key").onclick=()=>{s.key=!s.key;render()};
 $("fault").onchange=e=>{s.fault=e.target.value;render()};
-$("reset").onclick=()=>{s.fault="healthy";s.key=true;s.off=[];s.endTermConnected=true;$("fault").value="healthy";s.red="h3";s.black="gnd";render()};
+$("reset").onclick=()=>{s.fault="healthy";s.key=true;s.off=[];s.endTermConnected=true;s.ecmTermConnected=true;$("fault").value="healthy";s.red="h3";s.black="gnd";render()};
 render();
 })();
 </script></body></html>
