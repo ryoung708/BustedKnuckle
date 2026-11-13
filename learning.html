@@ -366,6 +366,7 @@ benchModel();
 
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t===b));const first=lessons.find(x=>filter==="all"||x.cat===filter);if(first)active=first.id;render()});render();
 </script>
+<script src="./js/engine-cycle.js"></script>
 <script>
 (function(){
 const modules={
@@ -668,8 +669,8 @@ function animateEngineCrank(){
    const untilFire=(fourStrokeMs-sinceFire)%fourStrokeMs;
    // 720-degree cycle after firing TDC: power, exhaust, intake, compression.
    const cycleDegrees=(sinceFire/fourStrokeMs)*720;
-   const exhaustOpen=cycleDegrees>=180&&cycleDegrees<360;
-   const intakeOpen=cycleDegrees>=360&&cycleDegrees<540;
+   const valveState=window.IronKnuckleEngineCycle.getValveState(cycleDegrees);
+   const {intakeOpen,exhaustOpen}=valveState;
    const lift=7;
    const iv=intakeValves.find(v=>Number(v.dataset.cylinder)===i),ev=exhaustValves.find(v=>Number(v.dataset.cylinder)===i);
    if(iv)iv.setAttribute("transform","translate(0 "+(intakeOpen?lift:0)+")");
