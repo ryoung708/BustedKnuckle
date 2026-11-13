@@ -66,7 +66,7 @@ function solveResistance(start,end){
   if(b!==ground){const ib=idx.get(b);A[ib][ib]+=c;if(a!==ground)A[ib][idx.get(a)]-=c;else A[ib][m]+=c}
  }
  // Inject 1 A at the red probe node; the black probe is the 0 V reference.
- if(start!==ground)A[idx.get(start)][n-1]+=1;
+ if(start!==ground)A[idx.get(start)][m]+=1;
  for(let col=0;col<m;col++){
   let pivot=col;for(let row=col+1;row<m;row++)if(Math.abs(A[row][col])>Math.abs(A[pivot][col]))pivot=row;
   if(Math.abs(A[pivot][col])<1e-10)return Infinity;
