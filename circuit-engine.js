@@ -129,7 +129,7 @@
       add("tailFuseOut", "tailSwitchIn", 0.02);
       add("tailSwitchIn", "tailSwitchOut", 0.05, state.tail);
       add("tailSwitchOut", "tailSplice", 0.05, state.fault !== "openTail");
-      add("tailSplice", "leftTailIn", 0.05, state.fault !== "lampOpen");
+      add("tailSplice", "leftTailIn", 0.05);
       add("tailSplice", "rightTailIn", 0.05);
       add("brakeFuseIn", "brakeFuseOut", 0.02, state.brakeFuseGood);
       add("brakeFuseOut", "brakeSwitchIn", 0.02);
@@ -137,12 +137,12 @@
       add("brakeSwitchOut", "brakeSplice", 0.05, state.fault !== "openBrake");
       add("brakeSplice", "leftBrakeIn", 0.05);
       add("brakeSplice", "rightBrakeIn", 0.05);
-      add("leftTailIn", "leftGround", 2.5, state.fault !== "lampOpen");
+      add("leftTailIn", "leftGround", 2.5, state.fault !== "lampOpen"); // Burnt lamp: open only the lamp element, not its feed/ground wiring.
       add("rightTailIn", "rightGround", 2.5);
       add("leftBrakeIn", "leftGround", 2.5);
       add("rightBrakeIn", "rightGround", 2.5);
       const groundR = state.fault === "poorGround" ? 5 : 0.05;
-      add("leftGround", "ground", groundR, state.fault !== "openGround" && state.fault !== "lampOpen");
+      add("leftGround", "ground", groundR, state.fault !== "openGround");
       add("rightGround", "ground", groundR, state.fault !== "openGround");
       add("ground", "negative", 0.05, state.fault !== "openGround");
 
