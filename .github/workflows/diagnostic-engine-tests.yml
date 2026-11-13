@@ -3,6 +3,12 @@ on:
   pull_request:
     paths:
       - "js/diagnostic-engine.js"
+      - "js/engine-cycle.js"
+      - "circuit-engine.js"
+      - "learning.html"
+      - "chassis-lab.html"
+      - "diagnostic-challenge.html"
+      - "scripts/test-training-regressions.mjs"
       - "scripts/test-diagnostic-engine.mjs"
       - "diagnostics.html"
       - "package.json"
@@ -18,4 +24,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm run test:diagnostics
+      - run: npm test

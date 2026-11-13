@@ -7,6 +7,7 @@
     "test:diagnostics": "node scripts/test-diagnostic-engine.mjs",
     "test:electrical": "node scripts/test-electrical-network.mjs",
     "test:decision": "node scripts/test-wiringhound-decision-engine.mjs",
-    "test": "npm run test:diagnostics && npm run test:electrical && npm run test:decision"
+    "test": "npm run test:diagnostics && npm run test:electrical && npm run test:decision && npm run test:training",
+    "test:training": "node scripts/test-training-regressions.mjs"
   }
 }
