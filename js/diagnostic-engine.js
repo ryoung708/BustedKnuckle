@@ -96,6 +96,28 @@ export const workflows = {
     ]
   }
   ,
+  aftertreatment_fault: {
+    title:"After-treatment fault / derate", category:"Aftertreatment",
+    caution:"After-treatment layouts, regeneration permissions, temperature limits and pressure specifications vary by engine, emissions level and calibration. Use the exact OEM procedure; never force a regeneration or bypass an inhibit without authorization.",
+    steps:[
+      {id:"complaint",title:"Define the after-treatment complaint",instruction:"Record warning lamps, driver messages, derate level, operating conditions, recent regeneration history and whether the complaint is active or intermittent.",choices:["After-treatment warning / message","Derate or inducement active","Regeneration will not complete","Frequent / interrupted regeneration","Complaint not currently present"]},
+      {id:"codes",title:"Capture controller faults and event data",instruction:"Record exact SPN/FMI or OEM codes, source controller, status, occurrence count and freeze-frame/event data. Identify which faults are primary and which may be consequences.",choices:["Active after-treatment fault(s) present","Only inactive / historic faults","Multiple related faults","No relevant faults / scan incomplete"]},
+      {id:"data",title:"Review temperatures, pressures and dosing data",instruction:"Compare commanded and actual sensor values, differential pressure, dosing requests and regeneration state against the exact engine/calibration specifications and operating conditions.",choices:["Sensor or data plausibility concern","Pressure / restriction evidence","Dosing / DEF system concern","Values appear within specification","More data required"]},
+      {id:"inspection",title:"Inspect the indicated subsystem",instruction:"Follow the OEM fault tree to inspect the supported subsystem: sensors and tubes, exhaust leaks, wiring/connectors, DEF quality/supply/dosing, dosing hardware or substrate condition. Do not infer a failed component from a code alone.",choices:["Physical defect found","Leak / restriction evidence found","Electrical or connector concern found","No physical defect confirmed","Inspection incomplete"]},
+      {id:"verify",title:"Repair, run authorized procedure and verify",instruction:"Document the confirmed cause and repair. Perform only the OEM-authorized reset, service routine or regeneration when all prerequisites are met. Recheck data, faults and original operating conditions.",choices:["Repair and verification complete","Repair complete; verification pending","Cause remains unconfirmed","Procedure inhibited / not authorized"],terminal:true}
+    ]
+  },
+  drivetrain_fault: {
+    title:"Transmission / drivetrain concern", category:"Drivetrain",
+    caution:"Transmission and driveline procedures are platform-specific. Secure the vehicle, follow OEM safety steps and use exact clutch, pressure, temperature, speed and calibration specifications.",
+    steps:[
+      {id:"complaint",title:"Define the operating complaint",instruction:"Record shift behavior, gear, vehicle speed, engine speed, load, temperature, road conditions, noises, vibration and whether the concern is repeatable.",choices:["Harsh / delayed shift","No shift / gear unavailable","Slip / flare","Noise / vibration","Engagement or driveline concern","Complaint not reproduced"]},
+      {id:"codes",title:"Scan transmission and related controllers",instruction:"Capture active and inactive faults from transmission, engine, ABS and other relevant controllers. Record source, status, event data and any torque/shift inhibits.",choices:["Relevant active fault(s) found","Only inactive / historic faults","Related controller data unavailable","No relevant faults retrieved"]},
+      {id:"data",title:"Compare commanded and actual operation",instruction:"Review commanded gear, actual gear, input/output speed, clutch state, temperatures, pressures and torque requests where available. Compare only with the correct transmission service information.",choices:["Command and actual state disagree","Speed / ratio evidence abnormal","Pressure / temperature evidence abnormal","Data agrees with expected operation","More data required"]},
+      {id:"inspection",title:"Inspect the indicated mechanical / hydraulic system",instruction:"Use evidence to guide inspection of fluid level/condition, leaks, wiring and connectors, mounts, driveline joints, shafts, bearings or transmission-specific components. Do not condemn a unit from a symptom or code alone.",choices:["Leak / fluid issue found","Mechanical driveline defect found","Control / electrical issue indicated","Internal transmission concern supported","No defect confirmed"]},
+      {id:"verify",title:"Repair and verify under original conditions",instruction:"Record the confirmed cause, repair and any required OEM setup or relearn. Recreate the original operating conditions and verify shift/driveline operation and related faults.",choices:["Repair verified under original conditions","Repair complete; verification pending","Cause remains unconfirmed","Road test / verification not yet safe"],terminal:true}
+    ]
+  },
   light_inop: {
     title:"Light INOP", category:"Electrical / lighting",
     caution:"Use the exact vehicle wiring schematic and lighting architecture. Confirm lamp type, controller strategy, fuse protection and connector pinout. Perform voltage-drop tests with the circuit operating under the prescribed load. Never use resistance mode on an energized circuit.",
