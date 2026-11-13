@@ -1,9 +1,30 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import "../circuit-engine.js";
+import "../js/engine-cycle.js";
 
 const { createCircuit, solveEquivalentResistance } = globalThis.IronKnuckleCircuitEngine;
 assert.equal(typeof createCircuit, "function");
+
+const { getValveState } = globalThis.IronKnuckleEngineCycle;
+for (const [angle, phase, intakeOpen, exhaustOpen] of [
+  [0, "power", false, false],
+  [179.999, "power", false, false],
+  [180, "exhaust", false, true],
+  [359.999, "exhaust", false, true],
+  [360, "intake", true, false],
+  [539.999, "intake", true, false],
+  [540, "compression", false, false],
+  [719.999, "compression", false, false],
+  [720, "power", false, false],
+  [-180, "intake", true, false]
+]) {
+  const state = getValveState(angle);
+  assert.equal(state.phase, phase, `Unexpected phase at ${angle}°`);
+  assert.equal(state.intakeOpen, intakeOpen, `Unexpected intake valve state at ${angle}°`);
+  assert.equal(state.exhaustOpen, exhaustOpen, `Unexpected exhaust valve state at ${angle}°`);
+}
+assert.throws(() => getValveState(Number.NaN), /finite number/);
 
 // Meter safety: resistance mode must not return a reading while power is present.
 const powered = createCircuit({ tail: true, powerIsolated: false });
@@ -49,21 +70,29 @@ assert.ok(Math.abs(solveEquivalentResistance([
 assert.equal(solveEquivalentResistance([], "source", "return"), Infinity);
 assert.equal(solveEquivalentResistance([], "source", "source"), 0);
 
-// Guard the actual challenge UI's power-off interlock and OL display behavior.
+// Verify the Chassis Lab's remaining physical/schematic controls and all
+// literal DOM lookups. The challenge and J1939 experiences live on their
+// dedicated pages; their obsolete hidden panels/tabs must not return.
 const chassis = await readFile(new URL("../chassis-lab.html", import.meta.url), "utf8");
-assert.match(chassis, /challengePowerOff/);
-assert.match(chassis, /if\(!\$\("challengePowerOff"\)\.checked\)/);
-assert.match(chassis, /Number\.isFinite\(ohms\).*:"OL"/);
-
-// Every statically referenced getElementById helper target must exist in the page.
-// This catches null onclick/onchange assignments when a tab/control is removed.
-const ids = new Set([...chassis.matchAll(/\bid=["']([^"']+)["']/g)].map(match => match[1]));
-const references = new Set([...chassis.matchAll(/\$\(["']([^"']+)["']\)/g)].map(match => match[1]));
-const missing = [...references].filter(id => !ids.has(id));
-assert.deepEqual(missing, [], `Chassis Lab references missing element IDs: ${missing.join(", ")}`);
-for (const id of ["physicalTab", "schematicTab", "challengeTab", "j1939Tab", "startChallenge", "submitDiagnosis"]) {
-  assert.ok(ids.has(id), `Expected existing Chassis Lab control #${id}`);
+const chassisIds = new Set([...chassis.matchAll(/\\bid=["']([^"']+)["']/g)].map(match => match[1]));
+const chassisRefs = new Set([...chassis.matchAll(/\\$\\(["']([^"']+)["']\\)/g)].map(match => match[1]));
+const missingChassis = [...chassisRefs].filter(id => !chassisIds.has(id));
+assert.deepEqual(missingChassis, [], `Chassis Lab references missing element IDs: ${missingChassis.join(", ")}`);
+for (const id of ["physicalTab", "schematicTab", "physicalSvg", "schematicStage", "resetBtn"]) {
+  assert.ok(chassisIds.has(id), `Expected Chassis Lab control #${id}`);
 }
+assert.match(chassis, /href=["']\\.\\/diagnostic-challenge\\.html["']/);
+assert.match(chassis, /href=["']\\.\\/j1939-trainer\\.html["']/);
+assert.doesNotMatch(chassis, /challengeTab|j1939Tab|challengePanel|j1939Panel/);
+
+// Verify Build-a-Fault's actual power-off guard, OL formatting and DOM references.
+const challenge = await readFile(new URL("../diagnostic-challenge.html", import.meta.url), "utf8");
+assert.match(challenge, /if\\(!\\$\\("powerOff"\\)\\.checked\\)/);
+assert.match(challenge, /Number\\.isFinite\\(value\\).*:"OL"/);
+const challengeIds = new Set([...challenge.matchAll(/\\bid=["']([^"']+)["']/g)].map(match => match[1]));
+const challengeRefs = new Set([...challenge.matchAll(/\\$\\(["']([^"']+)["']\\)/g)].map(match => match[1]));
+const missingChallenge = [...challengeRefs].filter(id => !challengeIds.has(id));
+assert.deepEqual(missingChallenge, [], `Build-a-Fault references missing element IDs: ${missingChallenge.join(", ")}`);
 
 // The Learning Center must load and use the exact tested four-stroke helper.
 const learning = await readFile(new URL("../learning.html", import.meta.url), "utf8");
