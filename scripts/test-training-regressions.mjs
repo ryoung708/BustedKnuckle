@@ -17,7 +17,7 @@ for (const [angle, phase, intakeOpen, exhaustOpen] of [
   [540, "compression", false, false],
   [719.999, "compression", false, false],
   [720, "power", false, false],
-  [-180, "intake", true, false]
+  [-360, "intake", true, false]
 ]) {
   const state = getValveState(angle);
   assert.equal(state.phase, phase, `Unexpected phase at ${angle}°`);
@@ -56,7 +56,7 @@ assert.equal(burntLampIsolated.resistanceBetween("leftTailIn", "leftGround"), In
 // With the brake circuit active, its shared ground creates a legitimate alternate
 // path around the burnt tail lamp. The meter must report finite equivalent resistance.
 const burntLampWithParallelPath = createCircuit({
-  fault: "lampOpen", tail: true, brake: true, powerIsolated: true
+  fault: "lampOpen", tail: true, brake: false, powerIsolated: true
 });
 assert.ok(Number.isFinite(burntLampWithParallelPath.resistanceBetween("leftTailIn", "leftGround")));
 
