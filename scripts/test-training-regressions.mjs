@@ -74,25 +74,25 @@ assert.equal(solveEquivalentResistance([], "source", "source"), 0);
 // literal DOM lookups. The challenge and J1939 experiences live on their
 // dedicated pages; their obsolete hidden panels/tabs must not return.
 const chassis = await readFile(new URL("../chassis-lab.html", import.meta.url), "utf8");
-const chassisIds = new Set([...chassis.matchAll(/\\bid=["']([^"']+)["']/g)].map(match => match[1]));
-const chassisRefs = new Set([...chassis.matchAll(/\\$\\(["']([^"']+)["']\\)/g)].map(match => match[1]));
+const chassisIds = new Set([...chassis.matchAll(/\bid=["']([^"']+)["']/g)].map(match => match[1]));
+const chassisRefs = new Set([...chassis.matchAll(/\$\(["']([^"']+)["']\)/g)].map(match => match[1]));
 const missingChassis = [...chassisRefs].filter(id => !chassisIds.has(id));
-assert.deepEqual(missingChassis, [], `Chassis Lab references missing element IDs: ${missingChassis.join(", ")}`);
+assert.deepEqual(missingChassis, [], "Chassis Lab references missing element IDs: " + missingChassis.join(", "));
 for (const id of ["physicalTab", "schematicTab", "physicalSvg", "schematicStage", "resetBtn"]) {
-  assert.ok(chassisIds.has(id), `Expected Chassis Lab control #${id}`);
+  assert.ok(chassisIds.has(id), "Expected Chassis Lab control #" + id);
 }
-assert.match(chassis, /href=["']\\.\\/diagnostic-challenge\\.html["']/);
-assert.match(chassis, /href=["']\\.\\/j1939-trainer\\.html["']/);
+assert.match(chassis, /href=["']\.\/diagnostic-challenge\.html["']/);
+assert.match(chassis, /href=["']\.\/j1939-trainer\.html["']/);
 assert.doesNotMatch(chassis, /challengeTab|j1939Tab|challengePanel|j1939Panel/);
 
 // Verify Build-a-Fault's actual power-off guard, OL formatting and DOM references.
 const challenge = await readFile(new URL("../diagnostic-challenge.html", import.meta.url), "utf8");
-assert.match(challenge, /if\\(!\\$\\("powerOff"\\)\\.checked\\)/);
-assert.match(challenge, /Number\\.isFinite\\(value\\).*:"OL"/);
-const challengeIds = new Set([...challenge.matchAll(/\\bid=["']([^"']+)["']/g)].map(match => match[1]));
-const challengeRefs = new Set([...challenge.matchAll(/\\$\\(["']([^"']+)["']\\)/g)].map(match => match[1]));
+assert.match(challenge, /if\(!\$\("powerOff"\)\.checked\)/);
+assert.match(challenge, /Number\.isFinite\(value\).*:"OL"/);
+const challengeIds = new Set([...challenge.matchAll(/\bid=["']([^"']+)["']/g)].map(match => match[1]));
+const challengeRefs = new Set([...challenge.matchAll(/\$\(["']([^"']+)["']\)/g)].map(match => match[1]));
 const missingChallenge = [...challengeRefs].filter(id => !challengeIds.has(id));
-assert.deepEqual(missingChallenge, [], `Build-a-Fault references missing element IDs: ${missingChallenge.join(", ")}`);
+assert.deepEqual(missingChallenge, [], "Build-a-Fault references missing element IDs: " + missingChallenge.join(", "));
 
 // The Learning Center must load and use the exact tested four-stroke helper.
 const learning = await readFile(new URL("../learning.html", import.meta.url), "utf8");
