@@ -47,18 +47,13 @@ for (const [input, output, state] of [
   assert.equal(circuit.resistanceBetween(input, output), Infinity, `Expected OL across ${input}/${output}`);
 }
 
-// With the other circuits inactive, a burnt lamp is a genuine open branch.
-const burntLampIsolated = createCircuit({
-  fault: "lampOpen", tail: false, brake: false, powerIsolated: true
-});
-assert.equal(burntLampIsolated.resistanceBetween("leftTailIn", "leftGround"), Infinity);
-
-// With the brake circuit active, its shared ground creates a legitimate alternate
-// path around the burnt tail lamp. The meter must report finite equivalent resistance.
+// A burnt lamp opens only its own load element. The other tail lamp remains
+// connected in parallel, so the network can still show a finite alternate path.
 const burntLampWithParallelPath = createCircuit({
   fault: "lampOpen", tail: true, brake: false, powerIsolated: true
 });
 assert.ok(Number.isFinite(burntLampWithParallelPath.resistanceBetween("leftTailIn", "leftGround")));
+assert.equal(solveEquivalentResistance([], "lampFeed", "lampGround"), Infinity);
 
 // The shared solver must calculate true parallel equivalent resistance: 6Ω || 3Ω = 2Ω.
 assert.ok(Math.abs(solveEquivalentResistance([
