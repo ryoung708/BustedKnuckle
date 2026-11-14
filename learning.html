@@ -1338,8 +1338,11 @@ function initDifferential3D(){
  // Rear differential housing tube: retain the structural tubular section on the
  // far side of the ring gear. Its axis follows the axle (X) axis and it sits
  // behind the gear plane, leaving the camera-facing ring-gear face unobstructed.
- const rearHousingTube=new THREE.Mesh(new THREE.CylinderGeometry(1.78,1.78,.68,64,1,true),dark);
- rearHousingTube.rotation.z=Math.PI/2;rearHousingTube.position.x=-.48;
+ // Keep the tubular housing entirely behind the ring-gear assembly. The
+ // previous sleeve ended too close to the gear and its near rim crossed the
+ // tooth-face sightline from the inspection camera.
+ const rearHousingTube=new THREE.Mesh(new THREE.CylinderGeometry(1.86,1.86,1.10,64,1,true),dark);
+ rearHousingTube.rotation.z=Math.PI/2;rearHousingTube.position.x=-1.38;
  rearHousingTube.castShadow=true;rearHousingTube.receiveShadow=true;root.add(rearHousingTube);
  // Ring gear stands in the YZ plane, rotating around the axle's X axis. Teeth are solid blocks around its rim.
  ring=new THREE.Group();ring.position.x=.40;root.add(ring);
