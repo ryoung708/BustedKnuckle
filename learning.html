@@ -1338,8 +1338,8 @@ function initDifferential3D(){
   new THREE.SphereGeometry(1.72,64,40,0,Math.PI*2,Math.PI*.58,Math.PI*.36),
   dark
  );
- lowerCase.scale.set(.82,1,1);
- lowerCase.position.set(-1.05,0,-.12);
+ lowerCase.scale.set(.90,1.08,1.02);
+ lowerCase.position.set(.40,0,-.12);
  lowerCase.castShadow=true;
  lowerCase.receiveShadow=true;
  root.add(lowerCase);
@@ -1350,7 +1350,11 @@ function initDifferential3D(){
  // previous sleeve ended too close to the gear and its near rim crossed the
  // tooth-face sightline from the inspection camera.
  const rearHousingTube=new THREE.Mesh(new THREE.CylinderGeometry(1.86,1.86,1.10,64,1,true),dark);
- rearHousingTube.rotation.z=Math.PI/2;rearHousingTube.position.x=-1.38;
+ rearHousingTube.rotation.z=Math.PI/2;
+ // The rear housing sleeve belongs immediately behind the ring-gear plane,
+ // not outboard on the far axle side. This places its open cylindrical wall
+ // around the gearset's perimeter while keeping its front edge behind the gear.
+ rearHousingTube.position.x=-.30;
  rearHousingTube.castShadow=true;rearHousingTube.receiveShadow=true;root.add(rearHousingTube);
  // Ring gear stands in the YZ plane, rotating around the axle's X axis. Teeth are solid blocks around its rim.
  ring=new THREE.Group();ring.position.x=.40;root.add(ring);
