@@ -340,25 +340,27 @@
 <style id="differential-sketch-layout">
 /* Side-view axle layout based on the technician's reference sketch. */
 #diffDiagram{background:radial-gradient(ellipse at 50% 45%,#243945 0%,#111d26 68%,#0a1117 100%)}
-#diffDiagram .d3-ring-assembly{transform-box:view-box;transform-origin:600px 350px;animation:diffRingRoll 4.8s linear infinite}
-#diffDiagram .d3-carrier-assembly{transform-box:view-box;transform-origin:600px 350px;animation:diffRingRoll 4.8s linear infinite}
-#diffDiagram .d3-pinion-assembly{transform-box:fill-box;transform-origin:center;animation:diffPinionRoll 1.2s linear infinite}
+#diffDiagram .d3-ring-assembly{transform-box:view-box;transform-origin:600px 350px;transform-style:preserve-3d;animation:diffRingRoll 4.8s linear infinite}
+#diffDiagram .d3-carrier-assembly{transform-box:view-box;transform-origin:600px 350px;transform-style:preserve-3d;animation:diffRingRoll 4.8s linear infinite}
+#diffDiagram .d3-pinion-assembly{transform-box:fill-box;transform-origin:center;transform-style:preserve-3d;animation:diffPinionRoll 1.2s linear infinite}
+#diffDiagram .d3-wheel{transform-box:fill-box;transform-origin:center;transform-style:preserve-3d;animation:diffWheelRoll 1.1s linear infinite}
 #diffDiagram .d3-wheel .d3-tread{animation:diffTreadRoll 1.1s linear infinite}
-#diffDiagram .d3-axle-spin{animation:diffAxleRoll .7s linear infinite}
-#diffDiagram .d3-side-gear{transform-box:fill-box;transform-origin:center;animation:diffSideRoll 4.8s linear infinite}
-#diffDiagram .d3-spider-pinion{transform-box:fill-box;transform-origin:center}
+#diffDiagram .d3-axle-spin{transform-box:fill-box;transform-origin:center;animation:diffAxleRoll .7s linear infinite}
+#diffDiagram .d3-side-gear{transform-box:fill-box;transform-origin:center;transform-style:preserve-3d;animation:diffSideRoll 4.8s linear infinite}
+#diffDiagram .d3-spider-pinion{transform-box:fill-box;transform-origin:center;transform-style:preserve-3d}
 #diffDiagram[data-mode="turn"] .d3-spider-pinion{animation:diffSpiderRoll 1.2s linear infinite}
 #diffDiagram[data-mode="straight"] .d3-spider-pinion{animation:none}
 #diffDiagram .d3-flow{fill:none;opacity:1;animation:diffFlow 1s linear infinite}
 #diffDiagram[data-mode="turn"] .d3-left-flow{animation-duration:5.2s;opacity:.65}
 #diffDiagram[data-mode="turn"] .d3-right-flow{animation-duration:3s;opacity:1}
-@keyframes diffRingRoll{to{transform:rotate(360deg)}}
-@keyframes diffPinionRoll{to{transform:rotate(-360deg)}}
+@keyframes diffRingRoll{to{transform:rotateX(360deg)}}
+@keyframes diffPinionRoll{to{transform:rotateY(-360deg)}}
 @keyframes diffTreadRoll{to{stroke-dashoffset:-84}}
 @keyframes diffAxleRoll{to{stroke-dashoffset:-40}}
-@keyframes diffSideRoll{to{transform:rotate(360deg)}}
-@keyframes diffSpiderRoll{to{transform:rotate(360deg)}}
+@keyframes diffSideRoll{to{transform:rotateX(360deg)}}
+@keyframes diffSpiderRoll{to{transform:rotateY(360deg)}}
 @keyframes diffFlow{to{stroke-dashoffset:-48}}
+@keyframes diffWheelRoll{to{transform:rotateX(360deg)}}
 @media(prefers-reduced-motion:reduce){#diffDiagram *{animation:none!important}}
 </style>
 </head><body><div class="wrap">
