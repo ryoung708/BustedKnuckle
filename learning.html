@@ -1327,9 +1327,19 @@ function initDifferential3D(){
   const hub=cyl(.48,.48,.32,steel);hub.position.x=sign*5.05;root.add(hub);
   // Wheel assembly spins as one unit around the axle's X axis.
   const wheelSpin=new THREE.Group();wheelSpin.position.x=sign*5.38;root.add(wheelSpin);
-  const tire=new THREE.Mesh(new THREE.TorusGeometry(.92,.28,20,72),rubber);tire.rotation.y=Math.PI/2;tire.castShadow=true;wheelSpin.add(tire);
-  const tread=new THREE.Mesh(new THREE.TorusGeometry(.92,.285,8,48),mat(0x39434a,.1,.85));tread.rotation.y=Math.PI/2;wheelSpin.add(tread);
-  const rim=new THREE.Mesh(new THREE.CylinderGeometry(.55,.55,.16,48),steel);rim.rotation.z=Math.PI/2;wheelSpin.add(rim);
+  // Real wheel silhouette: pneumatic tire, visible tread blocks, deep rim barrel,
+  // polished outer lip, dished wheel face, spokes and lug hardware.
+  const tire=new THREE.Mesh(new THREE.TorusGeometry(.94,.29,24,96),rubber);tire.rotation.y=Math.PI/2;tire.castShadow=true;wheelSpin.add(tire);
+  const sidewall=new THREE.Mesh(new THREE.TorusGeometry(.76,.055,12,80),mat(0x30383e,.08,.78));sidewall.rotation.y=Math.PI/2;sidewall.position.x=sign*.17;wheelSpin.add(sidewall);
+  const treadMat=mat(0x30383e,.08,.86);
+  for(let n=0;n<48;n++){const a=n*Math.PI*2/48;const block=new THREE.Mesh(new THREE.BoxGeometry(.42,.16,.12),treadMat);block.position.set(0,Math.cos(a)*1.19,Math.sin(a)*1.19);block.rotation.x=-a;wheelSpin.add(block);}
+  const rimBarrel=new THREE.Mesh(new THREE.CylinderGeometry(.66,.66,.38,64),steel);rimBarrel.rotation.z=Math.PI/2;wheelSpin.add(rimBarrel);
+  const rimLip=new THREE.Mesh(new THREE.TorusGeometry(.64,.055,12,80),gearMat);rimLip.rotation.y=Math.PI/2;rimLip.position.x=sign*.23;wheelSpin.add(rimLip);
+  const dish=new THREE.Mesh(new THREE.CylinderGeometry(.49,.49,.10,48),dark);dish.rotation.z=Math.PI/2;dish.position.x=sign*.25;wheelSpin.add(dish);
+  const hubFace=new THREE.Mesh(new THREE.CylinderGeometry(.19,.19,.13,32),gold);hubFace.rotation.z=Math.PI/2;hubFace.position.x=sign*.32;wheelSpin.add(hubFace);
+  const spokeMat=mat(0xb8c5cc,.86,.24);
+  for(let n=0;n<10;n++){const a=n*Math.PI*2/10;const spoke=new THREE.Mesh(new THREE.BoxGeometry(.085,.38,.075),spokeMat);spoke.position.set(sign*.31,Math.cos(a)*.31,Math.sin(a)*.31);spoke.rotation.x=-a;wheelSpin.add(spoke);
+    const lug=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.07,12),gold);lug.rotation.z=Math.PI/2;lug.position.set(sign*.34,Math.cos(a)*.40,Math.sin(a)*.40);wheelSpin.add(lug);}
   wheels.push(wheelSpin);
  }
  // Cutaway axle housing: retain the lower/rear shell as a visible cradle,
@@ -1339,12 +1349,12 @@ function initDifferential3D(){
  const caseRim=new THREE.Mesh(new THREE.TorusGeometry(1.55,.10,12,80,Math.PI*1.12),steel);
  caseRim.rotation.set(Math.PI*.0,Math.PI/2,Math.PI*.44);caseRim.position.z=.02;root.add(caseRim);
  // Ring gear stands in the YZ plane, rotating around the axle's X axis. Teeth are solid blocks around its rim.
- ring=new THREE.Group();root.add(ring);
+ ring=new THREE.Group();ring.position.x=.40;root.add(ring);
  const tor=new THREE.Mesh(new THREE.TorusGeometry(1.48,.19,18,96),gearMat);tor.rotation.y=Math.PI/2;ring.add(tor);
  const rear=new THREE.Mesh(new THREE.TorusGeometry(1.55,.25,16,96),dark);rear.rotation.y=Math.PI/2;rear.position.x=-.13;ring.add(rear);
  for(let i=0;i<64;i++){const a=i*Math.PI*2/64;const tooth=new THREE.Mesh(new THREE.BoxGeometry(.25,.19,.16),gearMat);tooth.position.set(0,Math.cos(a)*1.62,Math.sin(a)*1.62);tooth.rotation.x=-a;tooth.castShadow=true;ring.add(tooth);}
  // Carrier and cross-pin rotate with ring gear; side gears are aligned to each axle shaft.
- carrier=new THREE.Group();ring.add(carrier);
+ carrier=new THREE.Group();carrier.position.x=-.40;ring.add(carrier);
  const basket=new THREE.Mesh(new THREE.CylinderGeometry(.91,.91,.9,48,1,true),steel);basket.rotation.z=Math.PI/2;carrier.add(basket);
  for(const sign of [-1,1]){const side=cyl(.46,.46,.22,gearMat);side.position.x=sign*.48;carrier.add(side);for(let n=0;n<16;n++){const a=n*Math.PI/8;const t=new THREE.Mesh(new THREE.BoxGeometry(.12,.11,.08),gold);t.position.set(sign*.48,Math.cos(a)*.43,Math.sin(a)*.43);carrier.add(t);}}
  const cross=cyl(.10,.10,1.2,gold,"z");carrier.add(cross);
@@ -1379,7 +1389,7 @@ function initDifferential3D(){
  const driveFlange=cyl(.25,.25,.16,dark,"y");driveFlange.position.set(0,-.57,0);yokeGroup.add(driveFlange);
  // Pinion local axis is its Y axis; this orientation turns that axis onto
  // world Z, exactly collinear with the driveshaft. Rotate its parent about Z.
- const pinionDrive=new THREE.Group();pinionDrive.position.set(0,0,-1.48);root.add(pinionDrive);
+ const pinionDrive=new THREE.Group();pinionDrive.position.set(0,0,-1.78);root.add(pinionDrive);
  pinion=new THREE.Group();pinion.rotation.x=Math.PI/2;pinionDrive.add(pinion);
  const cone=new THREE.Mesh(new THREE.ConeGeometry(.52,.9,48),gold);cone.rotation.x=Math.PI;cone.position.y=.12;pinion.add(cone);
  const pTip=new THREE.Mesh(new THREE.CylinderGeometry(.12,.28,.35,32),gearMat);pTip.position.y=.55;pinion.add(pTip);
@@ -1388,7 +1398,7 @@ function initDifferential3D(){
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,22),mat(0x101a22,.1,.9));floor.rotation.x=-Math.PI/2;floor.position.y=-3.7;floor.receiveShadow=true;scene.add(floor);
  const grid=new THREE.GridHelper(18,36,0x38505d,0x243641);grid.position.y=-3.68;scene.add(grid);
  const resize=new ResizeObserver(()=>{if(!stage.isConnected)return;const W=stage.clientWidth,H=stage.clientHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H);});resize.observe(stage);
- const animate=()=>{if(!stage.isConnected){resize.disconnect();renderer.dispose();return;}frame++;if(mode!=="pause"){const speed=mode==="turn"?1.25:1;driveshaftSpin.rotation.z+=.035;pinionDrive.rotation.z+=.035;ring.rotation.x+=.007;axles.forEach((o,i)=>{const ratio=mode==="turn"?(i===0?.35:1.65):1;o.rotation.x+=.018*ratio;});wheels.forEach((o,i)=>{const ratio=mode==="turn"?(i===0?.35:1.65):1;o.rotation.x+=.018*ratio;});spiders.forEach(o=>{if(mode==="turn")o.rotation.z+=.08;else o.rotation.z*=.98;});}controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);};animate();
+ const animate=()=>{if(!stage.isConnected){resize.disconnect();renderer.dispose();return;}frame++;if(mode!=="pause"){const speed=mode==="turn"?1.25:1;driveshaftSpin.rotation.z+=.035;pinionDrive.rotation.z+=.035;ring.rotation.x+=.007;axles.forEach((o,i)=>{const ratio=mode==="turn"?(i===0?.35:1.65):1;o.rotation.x-=.018*ratio;});wheels.forEach((o,i)=>{const ratio=mode==="turn"?(i===0?.35:1.65):1;o.rotation.x-=.018*ratio;});spiders.forEach(o=>{if(mode==="turn")o.rotation.z+=.08;else o.rotation.z*=.98;});}controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);};animate();
  const status=$("diffStatus");if(status)status.textContent="Power path: driveshaft → hypoid pinion → ring gear → carrier → side gears → axle shafts → wheels.";
  const controlsRoot=$("diffControls");controlsRoot?.querySelectorAll("[data-diff-mode]").forEach(btn=>btn.addEventListener("click",()=>{mode=btn.dataset.diffMode;controlsRoot.querySelectorAll("[data-diff-mode]").forEach(x=>x.classList.toggle("active",x===btn));if(status)status.textContent=mode==="turn"?"TURNING: outside wheel is rotating much faster than the inside wheel; spider pinions spin on the cross-pin to allow the speed difference.":"STRAIGHT LINE: both axle shafts and wheels rotate at the same speed; spider pinions travel with the carrier without spinning on the cross-pin."; }));
 }
