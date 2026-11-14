@@ -1352,7 +1352,21 @@ function initDifferential3D(){
  for(const z of [-.34,.34]){const sg=new THREE.Mesh(new THREE.SphereGeometry(.27,24,16),gearMat);sg.position.set(0,0,z);carrier.add(sg);spiders.push(sg);for(let n=0;n<10;n++){const a=n*Math.PI/5;const t=new THREE.Mesh(new THREE.BoxGeometry(.07,.22,.08),gold);t.position.set(0,Math.cos(a)*.25,z+Math.sin(a)*.12);carrier.add(t);}}
  // Perpendicular driveshaft and hypoid pinion. The tapered gear axis is vertical (Y), not the ring's axle axis.
  const input=cyl(.14,.14,2.25,steel,"y");input.position.set(0,-2.15,0);root.add(input);
- const yoke=cyl(.28,.28,.25,gold,"y");yoke.position.set(0,-3.25,0);root.add(yoke);
+ // Front pinion yoke: recognizable U-shaped driveline yoke with two ears,
+ // visible U-joint cross, and a short driveshaft stub entering from the front.
+ const yokeGroup=new THREE.Group();yokeGroup.position.set(0,-3.18,0);root.add(yokeGroup);
+ const yokeHub=cyl(.23,.23,.42,gold,"y");yokeHub.position.y=.08;yokeGroup.add(yokeHub);
+ const earMat=mat(0xd6a65e,.82,.24);
+ for(const x of [-.34,.34]){
+  const ear=new THREE.Mesh(new THREE.BoxGeometry(.16,.78,.22),earMat);
+  ear.position.set(x,-.22,0);ear.castShadow=true;yokeGroup.add(ear);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(.105,.105,.20,24),gearMat);
+  cap.rotation.z=Math.PI/2;cap.position.set(x,-.48,0);yokeGroup.add(cap);
+ }
+ const crossBar=cyl(.095,.095,.78,steel,"x");crossBar.position.set(0,-.48,0);yokeGroup.add(crossBar);
+ const jointBody=new THREE.Mesh(new THREE.SphereGeometry(.14,20,16),gold);jointBody.position.set(0,-.48,0);yokeGroup.add(jointBody);
+ const driveStub=cyl(.16,.16,1.05,steel,"y");driveStub.position.set(0,-1.02,0);yokeGroup.add(driveStub);
+ const driveFlange=cyl(.25,.25,.16,dark,"y");driveFlange.position.set(0,-.57,0);yokeGroup.add(driveFlange);
  pinion=new THREE.Group();pinion.position.set(0,-1.25,0);root.add(pinion);
  const cone=new THREE.Mesh(new THREE.ConeGeometry(.52,.9,48),gold);cone.rotation.x=Math.PI;cone.position.y=.12;pinion.add(cone);
  const pTip=new THREE.Mesh(new THREE.CylinderGeometry(.12,.28,.35,32),gearMat);pTip.position.y=.55;pinion.add(pTip);
