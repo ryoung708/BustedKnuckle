@@ -197,8 +197,7 @@
 #diffDiagram .diff-wheel,
 #diffDiagram .diff-axle-collar,
 #diffDiagram .diff-side-gear,
-#diffDiagram .diff-spider-pinion {  transform-box: fill-box !important;
-  transform-origin: center center !important;
+#diffDiagram .diff-spider-pinion {  transform-box: fill-box !important;  transform-origin: center center !important;
 }
 #diffDiagram .diff-wheel,
 #diffDiagram .diff-axle-collar,
@@ -398,7 +397,6 @@
   <article class="summary-card"><div class="summary-icon">≋</div><h3>Aftertreatment</h3><p>Follow exhaust from the engine through DOC, DPF and SCR.</p><ul><li>Understand temperature, pressure and NOx feedback.</li><li>Check enable conditions before forcing a regeneration.</li><li>Separate sensor, dosing, restriction and catalyst concerns.</li></ul></article>
  </div> <div class="summary-footer"><span><b style="color:#91d8b1">Remember:</b> diagrams in this center are simplified teaching models. Confirm vehicle configuration, connector views, specifications and repair steps using applicable OEM information.</span><a class="summary-link" href="./diagnostics.html">Open diagnostics →</a></div>
 </section>
-
 <nav class="tabs"><button class="tab active" data-filter="all">All</button><button class="tab" data-filter="circuits">Circuit basics</button><button class="tab" data-filter="meter">Meter skills</button><button class="tab" data-filter="testing">Testing tips</button></nav>
 <div class="layout"><aside class="list" id="lessonList"></aside><main class="panel" id="lessonPanel" aria-live="polite"></main></div>
 
@@ -597,8 +595,7 @@ function benchModel(){
   try{ohms=equivalentResistance(probeRed,probeBlack);}catch(_){ohms=Infinity;}
   const hasPath=Number.isFinite(ohms);  reading.textContent=mode==="resistance"?(hasPath?ohms.toFixed(2)+" Ω":"OL"):(hasPath?(ohms<=5?"BEEP":"HIGH RESISTANCE"):"OPEN");
   explain.style.whiteSpace="pre-line";
-  explain.textContent="Isolated-circuit equivalent resistance from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+": "+(hasPath?ohms.toFixed(2)+" Ω":"OL — no connected path.")+"\n\nThis is the network's equivalent resistance, including parallel paths—not just the lowest-resistance route. The poor-ground fault adds 4.8 Ω between load output (G) and chassis ground (H), so probes across G-H show that resistance. Point I represents the detached battery-negative cable lug, not the battery post; the cable between chassis ground (H) and lug (I) remains measurable. The battery itself is isolated at the post-to-lug connection.";
- }
+  explain.textContent="Isolated-circuit equivalent resistance from "+nodeNames[probeRed]+" to "+nodeNames[probeBlack]+": "+(hasPath?ohms.toFixed(2)+" Ω":"OL — no connected path.")+"\n\nThis is the network's equivalent resistance, including parallel paths—not just the lowest-resistance route. The poor-ground fault adds 4.8 Ω between load output (G) and chassis ground (H), so probes across G-H show that resistance. Point I represents the detached battery-negative cable lug, not the battery post; the cable between chassis ground (H) and lug (I) remains measurable. The battery itself is isolated at the post-to-lug connection."; }
  status.className="bench-status";
  const faultText={
   good:"Healthy circuit. Operating current and voltage are calculated from the same resistor network.",
@@ -797,8 +794,7 @@ engine:{eyebrow:"ENGINE BASICS / INTERACTIVE CUTAWAY",title:"Follow the four-str
 <g class="click-part" data-part="crank"> <path d="M815 635H1100" stroke="#c2cdd4" stroke-width="18" stroke-linecap="round"/>
  <g fill="#52636e" stroke="#d2dce2" stroke-width="4">
   <circle cx="850" cy="635" r="19"/><circle cx="916" cy="635" r="19"/><circle cx="982" cy="635" r="19"/><circle cx="1048" cy="635" r="19"/>
- </g>
- <g class="crank-web" data-crank-index="0"><path d="M850 635L850 607" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="850" cy="607" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
+ </g> <g class="crank-web" data-crank-index="0"><path d="M850 635L850 607" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="850" cy="607" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
  <g class="crank-web" data-crank-index="1"><path d="M916 635L916 607" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="916" cy="607" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
  <g class="crank-web" data-crank-index="2"><path d="M982 635L982 607" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="982" cy="607" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
  <g class="crank-web" data-crank-index="3"><path d="M1048 635L1048 607" stroke="#d6e0e6" stroke-width="13" stroke-linecap="round"/><circle cx="1048" cy="607" r="12" fill="#8b9ba5" stroke="#f0f4f6" stroke-width="3"/></g>
@@ -997,8 +993,7 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
 {id:"hog",name:"Hogs-head / carrier housing",role:"Encloses the differential gearset and supports the pinion and carrier bearings.",works:"The removable center carrier or third-member assembly mounts into the axle housing. It supports the drive pinion, ring gear, differential carrier and their bearings.",look:"Check for cracks, leaks, loose fasteners, damaged mounting surfaces and bearing noise.",test:"Use the correct carrier removal, setup and bearing-preload procedure for the axle family."},
 {id:"driveshaft",name:"Driveshaft & pinion yoke",role:"Brings torque from the transmission into the axle.",works:"The driveshaft turns the pinion through the yoke and pinion shaft. The pinion axis is perpendicular to the ring-gear axis in a conventional hypoid axle.",look:"Inspect U-joints, slip joint, yoke, balance weights, operating angles and vibration.",test:"Check driveline angles, runout and U-joint condition using OEM limits."},
 {id:"pinion",name:"Drive pinion",role:"Drives the ring gear at a right angle.",works:"The pinion gear meshes with the ring gear. The gear pair changes direction and provides the final-drive ratio.",look:"Inspect tooth contact, pitting, chipped teeth, bearing condition, preload history and drive/coast noise.",test:"Measure pinion bearing preload, backlash and tooth contact with the specified setup procedure."},
-{id:"ring",name:"Ring gear",role:"Turns the differential carrier.",works:"The ring gear is bolted to the differential case/carrier. Pinion rotation turns the ring gear and carrier assembly.",look:"Look for pitting, scoring, chipped teeth, uneven contact pattern and loose fasteners.",test:"Measure backlash and inspect contact pattern with the axle-specific method."},
-{id:"carrier",name:"Differential case / carrier",role:"Rotates with the ring gear and carries the internal differential gears.",works:"The carrier rotates as one assembly with the ring gear. It supports the cross-shaft and spider pinions, while the side gears are splined to the axle shafts.",look:"Inspect cracks, cross-shaft bores, bearing journals, thrust surfaces and gear movement.",test:"Inspect internal clearances and components using the axle manufacturer's service procedure."},
+{id:"ring",name:"Ring gear",role:"Turns the differential carrier.",works:"The ring gear is bolted to the differential case/carrier. Pinion rotation turns the ring gear and carrier assembly.",look:"Look for pitting, scoring, chipped teeth, uneven contact pattern and loose fasteners.",test:"Measure backlash and inspect contact pattern with the axle-specific method."},{id:"carrier",name:"Differential case / carrier",role:"Rotates with the ring gear and carries the internal differential gears.",works:"The carrier rotates as one assembly with the ring gear. It supports the cross-shaft and spider pinions, while the side gears are splined to the axle shafts.",look:"Inspect cracks, cross-shaft bores, bearing journals, thrust surfaces and gear movement.",test:"Inspect internal clearances and components using the axle manufacturer's service procedure."},
 {id:"spider",name:"Spider & side gears",role:"Allow the left and right axle shafts to turn at different speeds.",works:"The spider pinions mesh with the two side gears. In straight travel with equal traction they do not spin on the cross-pin; in a turn they rotate on it so the outside axle shaft can turn faster than the inside shaft.",look:"Inspect tooth wear, cross-pin scoring, thrust washers, chipped teeth and metal in lubricant.",test:"Confirm tire sizes and rolling circumference, then inspect gear condition and clearances per OEM procedure."},
 {id:"axles",name:"Axle shafts",role:"Carry torque from the side gears to the wheel ends.",works:"Each axle shaft splines into a side gear and runs through the axle tube to its wheel end. Both receive torque while being free to rotate at different speeds in an open differential.",look:"Inspect splines, shaft condition, wheel-end seals, bearing play and abnormal end play.",test:"Follow axle-specific shaft end-play, seal and wheel-end inspection procedures."},
 {id:"bearings",name:"Carrier bearings",role:"Support the rotating differential carrier and maintain gear alignment.",works:"Carrier bearings support the differential case on each side of the ring gear. Pinion bearings support the pinion shaft.",look:"Check roughness, pitting, heat discoloration, lubricant contamination and noise that changes between drive and coast.",test:"Measure preload and adjust only to the axle manufacturer's specified procedure."}
@@ -1197,8 +1192,7 @@ function animateEngineCrank(){
    if(part.flash){
     const progress=sinceFire/260;
     part.flash.style.opacity=sinceFire<260?String(Math.max(0,1-progress)):"0";
-    part.flash.style.transform="scale("+(sinceFire<260?1.08-progress*.28:.8)+")";
-   }
+    part.flash.style.transform="scale("+(sinceFire<260?1.08-progress*.28:.8)+")";   }
    if(part.fuel){
     const injecting=untilFire<230&&untilFire>35;
     part.fuel.style.opacity=injecting?String(Math.min(1,(230-untilFire)/55,untilFire/35)):"0";
@@ -1338,13 +1332,13 @@ function initDifferential3D(){
  }
  // Cutaway axle housing: retain the lower/rear shell as a visible cradle,
  // but leave the camera-facing half open so the complete gearset can be inspected.
- const lowerCase=new THREE.Mesh(new THREE.SphereGeometry(1.72,48,32,0,Math.PI*2,Math.PI*.48,Math.PI*.52),dark);
+ // Keep only a shallow lower cradle; the former half-shell obscured the ring-gear teeth.
+ const lowerCase=new THREE.Mesh(new THREE.SphereGeometry(1.72,48,32,0,Math.PI*2,Math.PI*.68,Math.PI*.30),dark);
  lowerCase.scale.set(.82,1,1);lowerCase.position.z=-.12;lowerCase.castShadow=true;root.add(lowerCase);
- // Rear half of the hogs-head sits behind the ring gear, opposite the pinion-facing cutaway.
- // DoubleSide keeps the dark inner casting visible through the open inspection side;
- // its negative-X position leaves the ring-gear teeth and pinion mesh unobstructed.
+ // Rear hogs-head wall belongs on the FAR side of the ring gear (negative X),
+ // not the camera-facing side. The half-shell leaves the entire visible tooth face open.
  const rearHousingMat=mat(0x080d11,.28,.66);rearHousingMat.side=THREE.DoubleSide;
- const rearHousing=new THREE.Mesh(new THREE.SphereGeometry(1.72,48,32,Math.PI*1.5,Math.PI,.12,Math.PI*.76),rearHousingMat);
+ const rearHousing=new THREE.Mesh(new THREE.SphereGeometry(1.72,48,32,Math.PI*.5,Math.PI,.12,Math.PI*.76),rearHousingMat);
  rearHousing.scale.set(.82,1,1);rearHousing.position.set(-.18,0,-.12);rearHousing.castShadow=true;rearHousing.receiveShadow=true;root.add(rearHousing);
  const caseRim=new THREE.Mesh(new THREE.TorusGeometry(1.55,.10,12,80,Math.PI*1.12),steel);
  caseRim.rotation.set(Math.PI*.0,Math.PI/2,Math.PI*.44);caseRim.position.z=.02;root.add(caseRim);
@@ -1358,8 +1352,20 @@ function initDifferential3D(){
  const basket=new THREE.Mesh(new THREE.CylinderGeometry(.91,.91,.9,48,1,true),steel);basket.rotation.z=Math.PI/2;carrier.add(basket);
  for(const sign of [-1,1]){const side=cyl(.46,.46,.22,gearMat);side.position.x=sign*.48;carrier.add(side);for(let n=0;n<16;n++){const a=n*Math.PI/8;const t=new THREE.Mesh(new THREE.BoxGeometry(.12,.11,.08),gold);t.position.set(sign*.48,Math.cos(a)*.43,Math.sin(a)*.43);carrier.add(t);}}
  const cross=cyl(.10,.10,1.2,gold,"z");carrier.add(cross);
- // Spider pinions on cross-pin: small bevel-like toothed bodies between the two side gears.
- for(const z of [-.34,.34]){const sg=new THREE.Mesh(new THREE.SphereGeometry(.27,24,16),gearMat);sg.position.set(0,0,z);carrier.add(sg);spiders.push(sg);for(let n=0;n<10;n++){const a=n*Math.PI/5;const t=new THREE.Mesh(new THREE.BoxGeometry(.07,.22,.08),gold);t.position.set(0,Math.cos(a)*.25,z+Math.sin(a)*.12);carrier.add(t);}}
+ // Spider pinions on the cross-pin. Each gear, including its visible teeth, is
+ // one rotating assembly so rotation is obvious in the cutaway view.
+ for(const z of [-.34,.34]){
+  const spiderGear=new THREE.Group();spiderGear.position.set(0,0,z);carrier.add(spiderGear);
+  const spiderBody=new THREE.Mesh(new THREE.CylinderGeometry(.22,.17,.24,32),gearMat);spiderBody.rotation.x=Math.PI/2;spiderGear.add(spiderBody);
+  const spiderCap=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,.27,20),gold);spiderCap.rotation.x=Math.PI/2;spiderGear.add(spiderCap);
+  for(let n=0;n<12;n++){
+   const a=n*Math.PI*2/12;
+   const tooth=new THREE.Mesh(new THREE.BoxGeometry(.105,.115,.16),gold);
+   tooth.position.set(Math.cos(a)*.215,Math.sin(a)*.215,0);
+   tooth.rotation.z=a+Math.PI/2;tooth.castShadow=true;spiderGear.add(tooth);
+  }
+  spiders.push(spiderGear);
+ }
  // Extended front nose: the pinion sits in the forward nose, above the lower
  // housing, and its axis approaches the ring gear from the front (-Z).
  // Partially cut away the extended pinion nose. The 250-degree shell leaves
@@ -1397,8 +1403,7 @@ function initDifferential3D(){
  // Ground plane and labels.
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,22),mat(0x101a22,.1,.9));floor.rotation.x=-Math.PI/2;floor.position.y=-3.7;floor.receiveShadow=true;scene.add(floor);
  const grid=new THREE.GridHelper(18,36,0x38505d,0x243641);grid.position.y=-3.68;scene.add(grid);
- const resize=new ResizeObserver(()=>{if(!stage.isConnected)return;const W=stage.clientWidth,H=stage.clientHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H);});resize.observe(stage); const animate=()=>{if(!stage.isConnected){resize.disconnect();renderer.dispose();return;}frame++;if(mode!=="pause"){const speed=mode==="turn"?1.25:1;driveshaftSpin.rotation.z+=.035;pinionDrive.rotation.z+=.035;ring.rotation.x+=.007;axles.forEach((o,i)=>{const ratio=mode==="turn"?(i===0?.35:1.65):1;o.rotation.x-=.018*ratio;});wheels.forEach((o,i)=>{const ratio=mode==="turn"?(i===0?.35:1.65):1;o.rotation.x-=.018*ratio;});spiders.forEach(o=>{if(mode==="turn")o.rotation.z+=.08;else o.rotation.z*=.98;});}controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);};animate();
- const status=$("diffStatus");if(status)status.textContent="Power path: driveshaft → hypoid pinion → ring gear → carrier → side gears → axle shafts → wheels.";
+ const resize=new ResizeObserver(()=>{if(!stage.isConnected)return;const W=stage.clientWidth,H=stage.clientHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H);});resize.observe(stage); const animate=()=>{if(!stage.isConnected){resize.disconnect();renderer.dispose();return;}frame++;if(mode!=="pause"){const speed=mode==="turn"?1.25:1;driveshaftSpin.rotation.z+=.035;pinionDrive.rotation.z+=.035;ring.rotation.x+=.007;axles.forEach((o,i)=>{const ratio=mode==="turn"?(i===0?.35:1.65):1;o.rotation.x-=.018*ratio;});wheels.forEach((o,i)=>{const ratio=mode==="turn"?(i===0?.35:1.65):1;o.rotation.x-=.018*ratio;});spiders.forEach(o=>{if(mode==="turn")o.rotation.z+=.08;else o.rotation.z*=.98;});}controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);};animate(); const status=$("diffStatus");if(status)status.textContent="Power path: driveshaft → hypoid pinion → ring gear → carrier → side gears → axle shafts → wheels.";
  const controlsRoot=$("diffControls");controlsRoot?.querySelectorAll("[data-diff-mode]").forEach(btn=>btn.addEventListener("click",()=>{mode=btn.dataset.diffMode;controlsRoot.querySelectorAll("[data-diff-mode]").forEach(x=>x.classList.toggle("active",x===btn));if(status)status.textContent=mode==="turn"?"TURNING: outside wheel is rotating much faster than the inside wheel; spider pinions spin on the cross-pin to allow the speed difference.":"STRAIGHT LINE: both axle shafts and wheels rotate at the same speed; spider pinions travel with the carrier without spinning on the cross-pin."; }));
 }
 window.initIronKnuckleDifferential3D=initDifferential3D;
