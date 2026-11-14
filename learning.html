@@ -1358,7 +1358,7 @@ function initDifferential3D(){
  noseFlange.rotation.x=Math.PI/2;noseFlange.position.set(0,0,-1.78);root.add(noseFlange);
  // One rotating driveline group ties the yoke, U-joint and driveshaft to the pinion.
  const driveshaftSpin=new THREE.Group();driveshaftSpin.position.set(0,0,0);root.add(driveshaftSpin);
- const input=cyl(.14,.14,2.35,steel,"z");input.position.set(0,0,-2.10);driveshaftSpin.add(input);
+ const input=cyl(.14,.14,2.85,steel,"z");input.position.set(0,0,-2.25);driveshaftSpin.add(input);
  // Front pinion yoke: horizontal and centered on the extended nose.
  const yokeGroup=new THREE.Group();yokeGroup.position.set(0,0,-3.18);yokeGroup.rotation.x=Math.PI/2;driveshaftSpin.add(yokeGroup);
  const yokeHub=cyl(.23,.23,.42,gold,"y");yokeHub.position.y=.08;yokeGroup.add(yokeHub);
