@@ -1350,11 +1350,17 @@ function initDifferential3D(){
  const cross=cyl(.10,.10,1.2,gold,"z");carrier.add(cross);
  // Spider pinions on cross-pin: small bevel-like toothed bodies between the two side gears.
  for(const z of [-.34,.34]){const sg=new THREE.Mesh(new THREE.SphereGeometry(.27,24,16),gearMat);sg.position.set(0,0,z);carrier.add(sg);spiders.push(sg);for(let n=0;n<10;n++){const a=n*Math.PI/5;const t=new THREE.Mesh(new THREE.BoxGeometry(.07,.22,.08),gold);t.position.set(0,Math.cos(a)*.25,z+Math.sin(a)*.12);carrier.add(t);}}
- // Perpendicular driveshaft and hypoid pinion. The tapered gear axis is vertical (Y), not the ring's axle axis.
- const input=cyl(.14,.14,2.25,steel,"z");input.position.set(0,-1.25,-2.15);root.add(input);
- // Front pinion yoke: recognizable U-shaped driveline yoke with two ears,
- // visible U-joint cross, and a short driveshaft stub entering from the front.
- const yokeGroup=new THREE.Group();yokeGroup.position.set(0,-1.25,-3.18);yokeGroup.rotation.x=Math.PI/2;root.add(yokeGroup);
+ // Extended front nose: the pinion sits in the forward nose, above the lower
+ // housing, and its axis approaches the ring gear from the front (-Z).
+ const nose=new THREE.Mesh(new THREE.CylinderGeometry(.72,.88,1.45,48),dark);
+ nose.rotation.x=Math.PI/2;nose.position.set(0,0,-1.02);nose.castShadow=true;root.add(nose);
+ const noseFlange=new THREE.Mesh(new THREE.TorusGeometry(.69,.085,12,64),steel);
+ noseFlange.rotation.x=Math.PI/2;noseFlange.position.set(0,0,-1.78);root.add(noseFlange);
+ // One rotating driveline group ties the yoke, U-joint and driveshaft to the pinion.
+ const driveshaftSpin=new THREE.Group();driveshaftSpin.position.set(0,0,0);root.add(driveshaftSpin);
+ const input=cyl(.14,.14,2.85,steel,"z");input.position.set(0,0,-2.25);driveshaftSpin.add(input);
+ // Front pinion yoke: horizontal and centered on the extended nose.
+ const yokeGroup=new THREE.Group();yokeGroup.position.set(0,0,-3.18);yokeGroup.rotation.x=Math.PI/2;driveshaftSpin.add(yokeGroup);
  const yokeHub=cyl(.23,.23,.42,gold,"y");yokeHub.position.y=.08;yokeGroup.add(yokeHub);
  const earMat=mat(0xd6a65e,.82,.24);
  for(const x of [-.34,.34]){
@@ -1367,7 +1373,7 @@ function initDifferential3D(){
  const jointBody=new THREE.Mesh(new THREE.SphereGeometry(.14,20,16),gold);jointBody.position.set(0,-.48,0);yokeGroup.add(jointBody);
  const driveStub=cyl(.16,.16,1.05,steel,"y");driveStub.position.set(0,-1.02,0);yokeGroup.add(driveStub);
  const driveFlange=cyl(.25,.25,.16,dark,"y");driveFlange.position.set(0,-.57,0);yokeGroup.add(driveFlange);
- pinion=new THREE.Group();pinion.position.set(0,-1.25,0);pinion.rotation.x=Math.PI/2;root.add(pinion);
+ pinion=new THREE.Group();pinion.position.set(0,0,-1.55);pinion.rotation.x=Math.PI/2;root.add(pinion);
  const cone=new THREE.Mesh(new THREE.ConeGeometry(.52,.9,48),gold);cone.rotation.x=Math.PI;cone.position.y=.12;pinion.add(cone);
  const pTip=new THREE.Mesh(new THREE.CylinderGeometry(.12,.28,.35,32),gearMat);pTip.position.y=.55;pinion.add(pTip);
  for(let n=0;n<12;n++){const a=n*Math.PI*2/12;const tooth=new THREE.Mesh(new THREE.BoxGeometry(.14,.45,.13),gearMat);tooth.position.set(Math.cos(a)*.43,.16,Math.sin(a)*.43);tooth.rotation.y=-a;pinion.add(tooth);}
@@ -1375,7 +1381,7 @@ function initDifferential3D(){
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,22),mat(0x101a22,.1,.9));floor.rotation.x=-Math.PI/2;floor.position.y=-3.7;floor.receiveShadow=true;scene.add(floor);
  const grid=new THREE.GridHelper(18,36,0x38505d,0x243641);grid.position.y=-3.68;scene.add(grid);
  const resize=new ResizeObserver(()=>{if(!stage.isConnected)return;const W=stage.clientWidth,H=stage.clientHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H);});resize.observe(stage);
- const animate=()=>{if(!stage.isConnected){resize.disconnect();renderer.dispose();return;}frame++;if(mode!=="pause"){const speed=mode==="turn"?1.25:1;ring.rotation.x+=.006*speed;pinion.rotation.y-=.035;axles.forEach((o,i)=>{o.rotation.x+=.018*(mode==="turn"?(i===0?.72:1.28):1);});wheels.forEach((o,i)=>{o.rotation.x+=.018*(mode==="turn"?(i===0?.72:1.28):1);});spiders.forEach(o=>{if(mode==="turn")o.rotation.z+=.025;});}controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);};animate();
+ const animate=()=>{if(!stage.isConnected){resize.disconnect();renderer.dispose();return;}frame++;if(mode!=="pause"){const speed=mode==="turn"?1.25:1;ring.rotation.x+=.006*speed;driveshaftSpin.rotation.z+=.035;pinion.rotation.z+=.035;axles.forEach((o,i)=>{o.rotation.x+=.018*(mode==="turn"?(i===0?.72:1.28):1);});wheels.forEach((o,i)=>{o.rotation.x+=.018*(mode==="turn"?(i===0?.72:1.28):1);});spiders.forEach(o=>{if(mode==="turn")o.rotation.z+=.025;});}controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);};animate();
  const status=$("diffStatus");if(status)status.textContent="Power path: driveshaft → hypoid pinion → ring gear → carrier → side gears → axle shafts → wheels.";
  const controlsRoot=$("diffControls");controlsRoot?.querySelectorAll("[data-diff-mode]").forEach(btn=>btn.addEventListener("click",()=>{mode=btn.dataset.diffMode;controlsRoot.querySelectorAll("[data-diff-mode]").forEach(x=>x.classList.toggle("active",x===btn));if(status)status.textContent=mode==="turn"?"Turning: spider pinions allow the axle shafts to rotate at different speeds.":mode==="pause"?"Animation paused. Drag the model to inspect the gear arrangement.":"Straight line: both axle shafts and wheels rotate together."; }));
 }
