@@ -1,27 +1,29 @@
-name: Diagnostic Engine Tests
+name: IronKnuckle Regression Gate
+
 on:
   pull_request:
-    paths:
-      - "js/diagnostic-engine.js"
-      - "js/engine-cycle.js"
-      - "circuit-engine.js"
-      - "learning.html"
-      - "chassis-lab.html"
-      - "diagnostic-challenge.html"
-      - "scripts/test-training-regressions.mjs"
-      - "scripts/test-diagnostic-engine.mjs"
-      - "diagnostics.html"
-      - "package.json"
   push:
     branches:
       - main
-      - ironknuckle-diagnostic-engine-v1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ironknuckle-regression-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  regression:
+    name: Full regression suite
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - run: npm test
+          node-version: 22
+      - name: Run all regression and page-integrity tests
+        run: npm test
