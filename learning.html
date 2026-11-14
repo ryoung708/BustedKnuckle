@@ -168,6 +168,17 @@
 @keyframes diffWheelSpin{to{transform:rotate(360deg)}}
 @keyframes diffSpiderSpin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){#amtDiagram .amt-gear,#amtDiagram .amt-output-spin,#amtDiagram .amt-flywheel-spin,#diffDiagram .diff-input-yoke,#diffDiagram .diff-pinion,#diffDiagram .diff-gear,#diffDiagram .diff-side-gear,#diffDiagram .diff-wheel,#diffDiagram #diffSpiderGears{animation:none!important}}
+
+/* Differential v2: align animated rotations to the rebuilt assembly's actual centers. */
+#diffDiagram .d3-ring-assembly,#diffDiagram .d3-carrier-assembly{transform-box:view-box;transform-origin:600px 350px;}
+#diffDiagram .d3-ring-assembly{animation:dmRing 5.4s linear infinite}
+#diffDiagram .d3-carrier-assembly{animation:dmRing 5.4s linear infinite}
+#diffDiagram .d3-side-gear{transform-box:fill-box;transform-origin:center;animation:dmSide 5.4s linear infinite}
+#diffDiagram .d3-spider-pinion{transform-box:fill-box;transform-origin:center}
+#diffDiagram[data-mode="turn"] .d3-spider-pinion{animation:dmSpider 1.1s linear infinite}
+#diffDiagram[data-mode="straight"] .d3-spider-pinion{animation:none}
+#diffDiagram .d3-wheel{transform-box:fill-box;transform-origin:center;animation:dmWheel 5.4s linear infinite}
+@media(prefers-reduced-motion:reduce){#diffDiagram *{animation:none!important}}
 </style><style>#diffDiagram .diff-wheel{transform-box:fill-box;transform-origin:center;animation:diffWheelRoll 4s linear infinite}#diffDiagram .diff-axle-collar{transform-box:fill-box;transform-origin:center;animation:diffAxleRoll 2.2s linear infinite}#diffDiagram .diff-gear{transform-box:fill-box;transform-origin:center;animation:diffRingRoll 4s linear infinite}#diffDiagram #diffSpiderGears{transform-box:fill-box;transform-origin:center;animation:diffCarrierRoll 4s linear infinite}#diffDiagram[data-mode="turn"] .diff-wheel-left{animation-duration:5.2s}#diffDiagram[data-mode="turn"] .diff-wheel-right{animation-duration:3s}#diffDiagram[data-mode="straight"] .diff-spider-pinion{animation:none!important}#diffDiagram[data-mode="turn"] .diff-spider-pinion{transform-box:fill-box;transform-origin:center;animation:diffSpiderRoll 1.2s linear infinite}#diffDiagram .diff-spider-pinion{transform-box:fill-box;transform-origin:center}#amtDiagram .amt-main-gear{animation:amtGearForward 3.2s linear infinite}#amtDiagram .amt-counter-gear,#amtDiagram .amt-counter-drive,#amtDiagram .amt-reverse-counter{animation:amtGearReverse 3.2s linear infinite}#amtDiagram .amt-reverse-main{animation:amtGearReverse 3.2s linear infinite}#amtDiagram .amt-reverse-idler{animation:amtGearForward 3.2s linear infinite}#amtDiagram #amtReverseIdler{opacity:0}#amtDiagram[data-gear="R"] #amtReverseIdler{opacity:1}#amtDiagram[data-gear="R"] .amt-output-spin{animation-direction:reverse}#amtDiagram[data-gear="N"] .amt-output-spin{animation-play-state:paused;opacity:.4}#amtDiagram[data-gear="N"] .amt-output-flow{opacity:.08}#amtDiagram[data-gear="1"] [data-main-gear="1"],#amtDiagram[data-gear="2"] [data-main-gear="2"],#amtDiagram[data-gear="3"] [data-main-gear="3"],#amtDiagram[data-gear="4"] [data-main-gear="4"],#amtDiagram[data-gear="R"] [data-main-gear="R"]{stroke:#ffbd63;stroke-width:6;filter:drop-shadow(0 0 8px #ff9f1c)}#amtDiagram .amt-gear{transform-box:fill-box;transform-origin:center}@keyframes diffWheelRoll{to{transform:rotate(360deg)}}@keyframes diffAxleRoll{to{transform:rotate(360deg)}}@keyframes diffRingRoll{to{transform:rotate(360deg)}}@keyframes diffCarrierRoll{to{transform:rotate(360deg)}}@keyframes diffSpiderRoll{to{transform:rotate(360deg)}}@keyframes amtGearForward{to{transform:rotate(360deg)}}@keyframes amtGearReverse{to{transform:rotate(-360deg)}}@media(prefers-reduced-motion:reduce){#diffDiagram .diff-wheel,#diffDiagram .diff-axle-collar,#diffDiagram .diff-gear,#diffDiagram #diffSpiderGears,#diffDiagram .diff-spider-pinion,#amtDiagram .amt-gear{animation:none!important}}</style>
 <style id="diff-motion-correction">
 /* Keep every rotating differential part anchored to its own mechanical center.
@@ -986,12 +997,12 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
 <!-- Wheel assemblies sit at the axle ends. Their sidewalls face the viewer; tread blocks mark rotation. -->
 <g class="click-part" data-part="axles">
  <g transform="translate(125 350)"><g class="d3-wheel d3-wheel-left">
-  <ellipse rx="78" ry="145" fill="#030609" stroke="#647580" stroke-width="12"/>
-  <ellipse rx="67" ry="133" fill="url(#dfTire)" stroke="#a4b1b8" stroke-width="5"/>
-  <ellipse rx="52" ry="112" fill="none" stroke="#303f48" stroke-width="12" stroke-dasharray="12 9"/>
-  <ellipse rx="35" ry="84" fill="#263b45" stroke="#c2cdd3" stroke-width="7"/>
-  <ellipse rx="22" ry="53" fill="#101c23" stroke="#8497a1" stroke-width="6"/>
-  <ellipse rx="10" ry="25" fill="#dce5e9" stroke="#293e48" stroke-width="5"/>
+  <circle r="116" fill="#030609" stroke="#647580" stroke-width="12"/>
+  <circle r="103" fill="url(#dfTire)" stroke="#a4b1b8" stroke-width="5"/>
+  <circle r="82" fill="none" stroke="#303f48" stroke-width="12" stroke-dasharray="12 9"/>
+  <circle r="59" fill="#263b45" stroke="#c2cdd3" stroke-width="7"/>
+  <circle r="36" fill="#101c23" stroke="#8497a1" stroke-width="6"/>
+  <circle r="15" fill="#dce5e9" stroke="#293e48" stroke-width="5"/>
   <g stroke="#aebbc3" stroke-width="7" stroke-linecap="round"><path d="M-42 -104L-31 -88M0 -126V-106M42 -104L31 -88M-54 -48L-39 -42M54 -48L39 -42M-54 48L-39 42M54 48L39 42M-42 104L-31 88M0 126V106M42 104L31 88"/></g>
  </g></g>
  <g transform="translate(1075 350)"><g class="d3-wheel d3-wheel-right">
@@ -1050,19 +1061,19 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
 </g>
 <!-- Side gears face inward and are splined to the axle shafts. -->
 <g class="click-part" data-part="spider">
- <g class="d3-side-gear d3-side-left" transform="translate(510 350)">
+ <g transform="translate(510 350)"><g class="d3-side-gear d3-side-left">
   <path d="M-8 -58L-28 -50L-20 -39L-40 -27L-26 -14L-44 0L-26 14L-40 27L-20 39L-28 50L-8 58L0 43L8 58L28 50L20 39L40 27L26 14L44 0L26 -14L40 -27L20 -39L28 -50L8 -58L0 -43Z" fill="url(#dfGear)" stroke="#edf2f4" stroke-width="5"/>
   <ellipse rx="23" ry="38" fill="#172a34" stroke="#c3d0d6" stroke-width="6"/>
- </g>
- <g class="d3-side-gear d3-side-right" transform="translate(690 350)">
+ </g></g>
+ <g transform="translate(690 350)"><g class="d3-side-gear d3-side-right">
   <path d="M-8 -58L-28 -50L-20 -39L-40 -27L-26 -14L-44 0L-26 14L-40 27L-20 39L-28 50L-8 58L0 43L8 58L28 50L20 39L40 27L26 14L44 0L26 -14L40 -27L20 -39L28 -50L8 -58L0 -43Z" fill="url(#dfGear)" stroke="#edf2f4" stroke-width="5"/>
   <ellipse rx="23" ry="38" fill="#172a34" stroke="#c3d0d6" stroke-width="6"/>
- </g>
+ </g></g>
 </g>
 <!-- Spider pinions sit on the cross-pin between the side gears. -->
 <g class="click-part" data-part="spider">
- <g class="d3-spider-pinion" transform="translate(600 295)"><ellipse rx="25" ry="42" fill="url(#dfGear)" stroke="#f0f4f6" stroke-width="5"/><path d="M-20 -25H20M-23 -10H23M-24 7H24M-18 23H18" stroke="#263e49" stroke-width="5"/></g>
- <g class="d3-spider-pinion" transform="translate(600 405)"><ellipse rx="25" ry="42" fill="url(#dfGear)" stroke="#f0f4f6" stroke-width="5"/><path d="M-20 -25H20M-23 -10H23M-24 7H24M-18 23H18" stroke="#263e49" stroke-width="5"/></g>
+ <g transform="translate(600 295)"><g class="d3-spider-pinion"><ellipse rx="25" ry="42" fill="url(#dfGear)" stroke="#f0f4f6" stroke-width="5"/><path d="M-20 -25H20M-23 -10H23M-24 7H24M-18 23H18" stroke="#263e49" stroke-width="5"/></g></g>
+ <g transform="translate(600 405)"><g class="d3-spider-pinion"><ellipse rx="25" ry="42" fill="url(#dfGear)" stroke="#f0f4f6" stroke-width="5"/><path d="M-20 -25H20M-23 -10H23M-24 7H24M-18 23H18" stroke="#263e49" stroke-width="5"/></g></g>
  <path d="M600 240V460" stroke="#d9e2e7" stroke-width="13" stroke-linecap="round"/>
  <circle cx="600" cy="240" r="11" fill="#8fa1aa" stroke="#e1e8ec" stroke-width="4"/><circle cx="600" cy="460" r="11" fill="#8fa1aa" stroke="#e1e8ec" stroke-width="4"/>
 </g>
