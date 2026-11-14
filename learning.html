@@ -1357,9 +1357,9 @@ function initDifferential3D(){
  const nose=new THREE.Mesh(new THREE.CylinderGeometry(.78,.91,1.55,64,1,true,.96,Math.PI*1.39),dark);
  nose.rotation.x=Math.PI/2;nose.position.set(0,0,-1.03);nose.castShadow=true;root.add(nose);
  const noseFrontRim=new THREE.Mesh(new THREE.TorusGeometry(.76,.075,12,80,Math.PI*1.39),steel);
- noseFrontRim.rotation.set(Math.PI/2,0,.96);noseFrontRim.position.set(0,0,-1.82);root.add(noseFrontRim);
+ noseFrontRim.rotation.z=.96;noseFrontRim.position.set(0,0,-1.82);root.add(noseFrontRim);
  const noseRearRim=new THREE.Mesh(new THREE.TorusGeometry(.89,.065,12,80,Math.PI*1.39),steel);
- noseRearRim.rotation.set(Math.PI/2,0,.96);noseRearRim.position.set(0,0,-.25);root.add(noseRearRim);
+ noseRearRim.rotation.z=.96;noseRearRim.position.set(0,0,-.25);root.add(noseRearRim);
  // One rotating driveline group ties the yoke, U-joint and driveshaft to the pinion.
  const driveshaftSpin=new THREE.Group();driveshaftSpin.position.set(0,0,0);root.add(driveshaftSpin);
  const input=cyl(.14,.14,2.85,steel,"z");input.position.set(0,0,-2.25);driveshaftSpin.add(input);
