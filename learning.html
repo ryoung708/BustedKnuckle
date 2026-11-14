@@ -168,7 +168,58 @@
 @keyframes diffWheelSpin{to{transform:rotate(360deg)}}
 @keyframes diffSpiderSpin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){#amtDiagram .amt-gear,#amtDiagram .amt-output-spin,#amtDiagram .amt-flywheel-spin,#diffDiagram .diff-input-yoke,#diffDiagram .diff-pinion,#diffDiagram .diff-gear,#diffDiagram .diff-side-gear,#diffDiagram .diff-wheel,#diffDiagram #diffSpiderGears{animation:none!important}}
-</style><style>#diffDiagram .diff-wheel{transform-box:fill-box;transform-origin:center;animation:diffWheelRoll 4s linear infinite}#diffDiagram .diff-axle-collar{transform-box:fill-box;transform-origin:center;animation:diffAxleRoll 2.2s linear infinite}#diffDiagram .diff-gear{transform-box:fill-box;transform-origin:center;animation:diffRingRoll 4s linear infinite}#diffDiagram #diffSpiderGears{transform-box:fill-box;transform-origin:center;animation:diffCarrierRoll 4s linear infinite}#diffDiagram[data-mode="turn"] .diff-wheel-left{animation-duration:5.2s}#diffDiagram[data-mode="turn"] .diff-wheel-right{animation-duration:3s}#diffDiagram[data-mode="straight"] .diff-spider-pinion{animation:none!important}#diffDiagram[data-mode="turn"] .diff-spider-pinion{transform-box:fill-box;transform-origin:center;animation:diffSpiderRoll 1.2s linear infinite}#diffDiagram .diff-spider-pinion{transform-box:fill-box;transform-origin:center}#amtDiagram .amt-main-gear{animation:amtGearForward 3.2s linear infinite}#amtDiagram .amt-counter-gear,#amtDiagram .amt-counter-drive,#amtDiagram .amt-reverse-counter{animation:amtGearReverse 3.2s linear infinite}#amtDiagram .amt-reverse-main{animation:amtGearReverse 3.2s linear infinite}#amtDiagram .amt-reverse-idler{animation:amtGearForward 3.2s linear infinite}#amtDiagram #amtReverseIdler{opacity:0}#amtDiagram[data-gear="R"] #amtReverseIdler{opacity:1}#amtDiagram[data-gear="R"] .amt-output-spin{animation-direction:reverse}#amtDiagram[data-gear="N"] .amt-output-spin{animation-play-state:paused;opacity:.4}#amtDiagram[data-gear="N"] .amt-output-flow{opacity:.08}#amtDiagram[data-gear="1"] [data-main-gear="1"],#amtDiagram[data-gear="2"] [data-main-gear="2"],#amtDiagram[data-gear="3"] [data-main-gear="3"],#amtDiagram[data-gear="4"] [data-main-gear="4"],#amtDiagram[data-gear="R"] [data-main-gear="R"]{stroke:#ffbd63;stroke-width:6;filter:drop-shadow(0 0 8px #ff9f1c)}#amtDiagram .amt-gear{transform-box:fill-box;transform-origin:center}@keyframes diffWheelRoll{to{transform:rotate(360deg)}}@keyframes diffAxleRoll{to{transform:rotate(360deg)}}@keyframes diffRingRoll{to{transform:rotate(360deg)}}@keyframes diffCarrierRoll{to{transform:rotate(360deg)}}@keyframes diffSpiderRoll{to{transform:rotate(360deg)}}@keyframes amtGearForward{to{transform:rotate(360deg)}}@keyframes amtGearReverse{to{transform:rotate(-360deg)}}@media(prefers-reduced-motion:reduce){#diffDiagram .diff-wheel,#diffDiagram .diff-axle-collar,#diffDiagram .diff-gear,#diffDiagram #diffSpiderGears,#diffDiagram .diff-spider-pinion,#amtDiagram .amt-gear{animation:none!important}}</style></head><body><div class="wrap">
+</style><style>#diffDiagram .diff-wheel{transform-box:fill-box;transform-origin:center;animation:diffWheelRoll 4s linear infinite}#diffDiagram .diff-axle-collar{transform-box:fill-box;transform-origin:center;animation:diffAxleRoll 2.2s linear infinite}#diffDiagram .diff-gear{transform-box:fill-box;transform-origin:center;animation:diffRingRoll 4s linear infinite}#diffDiagram #diffSpiderGears{transform-box:fill-box;transform-origin:center;animation:diffCarrierRoll 4s linear infinite}#diffDiagram[data-mode="turn"] .diff-wheel-left{animation-duration:5.2s}#diffDiagram[data-mode="turn"] .diff-wheel-right{animation-duration:3s}#diffDiagram[data-mode="straight"] .diff-spider-pinion{animation:none!important}#diffDiagram[data-mode="turn"] .diff-spider-pinion{transform-box:fill-box;transform-origin:center;animation:diffSpiderRoll 1.2s linear infinite}#diffDiagram .diff-spider-pinion{transform-box:fill-box;transform-origin:center}#amtDiagram .amt-main-gear{animation:amtGearForward 3.2s linear infinite}#amtDiagram .amt-counter-gear,#amtDiagram .amt-counter-drive,#amtDiagram .amt-reverse-counter{animation:amtGearReverse 3.2s linear infinite}#amtDiagram .amt-reverse-main{animation:amtGearReverse 3.2s linear infinite}#amtDiagram .amt-reverse-idler{animation:amtGearForward 3.2s linear infinite}#amtDiagram #amtReverseIdler{opacity:0}#amtDiagram[data-gear="R"] #amtReverseIdler{opacity:1}#amtDiagram[data-gear="R"] .amt-output-spin{animation-direction:reverse}#amtDiagram[data-gear="N"] .amt-output-spin{animation-play-state:paused;opacity:.4}#amtDiagram[data-gear="N"] .amt-output-flow{opacity:.08}#amtDiagram[data-gear="1"] [data-main-gear="1"],#amtDiagram[data-gear="2"] [data-main-gear="2"],#amtDiagram[data-gear="3"] [data-main-gear="3"],#amtDiagram[data-gear="4"] [data-main-gear="4"],#amtDiagram[data-gear="R"] [data-main-gear="R"]{stroke:#ffbd63;stroke-width:6;filter:drop-shadow(0 0 8px #ff9f1c)}#amtDiagram .amt-gear{transform-box:fill-box;transform-origin:center}@keyframes diffWheelRoll{to{transform:rotate(360deg)}}@keyframes diffAxleRoll{to{transform:rotate(360deg)}}@keyframes diffRingRoll{to{transform:rotate(360deg)}}@keyframes diffCarrierRoll{to{transform:rotate(360deg)}}@keyframes diffSpiderRoll{to{transform:rotate(360deg)}}@keyframes amtGearForward{to{transform:rotate(360deg)}}@keyframes amtGearReverse{to{transform:rotate(-360deg)}}@media(prefers-reduced-motion:reduce){#diffDiagram .diff-wheel,#diffDiagram .diff-axle-collar,#diffDiagram .diff-gear,#diffDiagram #diffSpiderGears,#diffDiagram .diff-spider-pinion,#amtDiagram .amt-gear{animation:none!important}}</style>
+<style id="diff-motion-correction">
+/* Keep every rotating differential part anchored to its own mechanical center.
+   Explicit view-box origins prevent SVG group transforms from inheriting the
+   wrong bounding-box origin and appearing to jump away from the axle. */
+#diffDiagram .diff-gear {
+  transform-box: view-box !important;
+  transform-origin: 560px 390px !important;
+  animation: diffRingCorrected 4s linear infinite !important;
+}
+#diffDiagram .diff-pinion {
+  transform-box: fill-box !important;
+  transform-origin: center center !important;
+  animation: diffPinionCorrected 2.5s linear infinite !important;
+}
+#diffDiagram .diff-wheel,
+#diffDiagram .diff-axle-collar,
+#diffDiagram .diff-side-gear,
+#diffDiagram .diff-spider-pinion {
+  transform-box: fill-box !important;
+  transform-origin: center center !important;
+}
+#diffDiagram .diff-wheel,
+#diffDiagram .diff-axle-collar,
+#diffDiagram .diff-side-gear {
+  animation: diffAxleCorrected 4s linear infinite !important;
+}
+#diffDiagram[data-mode="turn"] .diff-wheel-left { animation-duration: 5.2s !important; }
+#diffDiagram[data-mode="turn"] .diff-wheel-right { animation-duration: 3s !important; }
+#diffDiagram[data-mode="turn"] .diff-spider-pinion {
+  animation: diffSpiderCorrected 1.2s linear infinite !important;
+}
+#diffDiagram[data-mode="straight"] .diff-spider-pinion { animation: none !important; }
+#diffDiagram #diffSpiderGears {
+  transform-box: view-box !important;
+  transform-origin: 560px 390px !important;
+  animation: none !important;
+}
+@keyframes diffRingCorrected { to { transform: rotate(-360deg); } }
+@keyframes diffPinionCorrected { to { transform: rotate(360deg); } }
+@keyframes diffAxleCorrected { to { transform: rotate(-360deg); } }
+@keyframes diffSpiderCorrected { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  #diffDiagram .diff-gear, #diffDiagram .diff-pinion,
+  #diffDiagram .diff-wheel, #diffDiagram .diff-axle-collar,
+  #diffDiagram .diff-side-gear, #diffDiagram .diff-spider-pinion {
+    animation: none !important;
+  }
+}
+</style>
+
+</head><body><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./index.html">← Back to workspace</a></header>
 <section class="hero"><div class="eyebrow">Technician learning • visual first</div><h1 id="learningHeroTitle">See the circuit.<br>Understand the test.</h1><p id="learningHeroIntro">Short, practical lessons for the bay. Pick a topic, study the diagram, then check your understanding. No textbook required.</p></section>
 <section class="learning-path" aria-label="IronKnuckle lesson method"><div class="path-step"><b>01 Understand</b><span>How the selected system works</span></div><div class="path-step"><b>02 Set up</b><span>Tools, safety and test conditions</span></div><div class="path-step"><b>03 Test</b><span>Where and how to measure</span></div><div class="path-step"><b>04 Interpret</b><span>What the evidence supports</span></div><div class="path-step"><b>05 Verify</b><span>Confirm the fault and repair</span></div></section>
