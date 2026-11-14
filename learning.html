@@ -168,7 +168,7 @@
 @keyframes diffWheelSpin{to{transform:rotate(360deg)}}
 @keyframes diffSpiderSpin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){#amtDiagram .amt-gear,#amtDiagram .amt-output-spin,#amtDiagram .amt-flywheel-spin,#diffDiagram .diff-input-yoke,#diffDiagram .diff-pinion,#diffDiagram .diff-gear,#diffDiagram .diff-side-gear,#diffDiagram .diff-wheel,#diffDiagram #diffSpiderGears{animation:none!important}}
-</style></head><body><div class="wrap">
+</style><style>#diffDiagram .diff-wheel{transform-box:fill-box;transform-origin:center;animation:diffWheelRoll 4s linear infinite}#diffDiagram .diff-axle-collar{transform-box:fill-box;transform-origin:center;animation:diffAxleRoll 2.2s linear infinite}#diffDiagram .diff-gear{transform-box:fill-box;transform-origin:560px 390px;animation:diffRingRoll 4s linear infinite}#diffDiagram #diffSpiderGears{transform-box:fill-box;transform-origin:560px 390px;animation:diffCarrierRoll 4s linear infinite}#diffDiagram[data-mode="turn"] .diff-wheel:first-of-type{animation-duration:5.2s}#diffDiagram[data-mode="turn"] .diff-wheel:last-of-type{animation-duration:3s}#diffDiagram[data-mode="straight"] .diff-spider-pinion{animation:none!important}#diffDiagram[data-mode="turn"] .diff-spider-pinion{transform-box:fill-box;transform-origin:center;animation:diffSpiderRoll 1.2s linear infinite}#diffDiagram .diff-spider-pinion{transform-box:fill-box;transform-origin:center}#amtDiagram .amt-main-gear{animation:amtGearForward 3.2s linear infinite}#amtDiagram .amt-counter-gear,#amtDiagram .amt-counter-drive,#amtDiagram .amt-reverse-counter{animation:amtGearReverse 3.2s linear infinite}#amtDiagram .amt-reverse-main{animation:amtGearReverse 3.2s linear infinite}#amtDiagram .amt-reverse-idler{animation:amtGearForward 3.2s linear infinite}#amtDiagram #amtReverseIdler{opacity:0}#amtDiagram[data-gear="R"] #amtReverseIdler{opacity:1}#amtDiagram[data-gear="R"] .amt-output-spin{animation-direction:reverse}#amtDiagram[data-gear="N"] .amt-output-spin{animation-play-state:paused;opacity:.4}#amtDiagram[data-gear="N"] .amt-output-flow{opacity:.08}#amtDiagram[data-gear="1"] [data-main-gear="1"],#amtDiagram[data-gear="2"] [data-main-gear="2"],#amtDiagram[data-gear="3"] [data-main-gear="3"],#amtDiagram[data-gear="4"] [data-main-gear="4"],#amtDiagram[data-gear="R"] [data-main-gear="R"]{stroke:#ffbd63;stroke-width:6;filter:drop-shadow(0 0 8px #ff9f1c)}#amtDiagram .amt-gear{transform-box:fill-box;transform-origin:center}@keyframes diffWheelRoll{to{transform:rotate(360deg)}}@keyframes diffAxleRoll{to{transform:rotate(360deg)}}@keyframes diffRingRoll{to{transform:rotate(360deg)}}@keyframes diffCarrierRoll{to{transform:rotate(360deg)}}@keyframes diffSpiderRoll{to{transform:rotate(360deg)}}@keyframes amtGearForward{to{transform:rotate(360deg)}}@keyframes amtGearReverse{to{transform:rotate(-360deg)}}@media(prefers-reduced-motion:reduce){#diffDiagram .diff-wheel,#diffDiagram .diff-axle-collar,#diffDiagram .diff-gear,#diffDiagram #diffSpiderGears,#diffDiagram .diff-spider-pinion,#amtDiagram .amt-gear{animation:none!important}}</style></head><body><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./index.html">← Back to workspace</a></header>
 <section class="hero"><div class="eyebrow">Technician learning • visual first</div><h1 id="learningHeroTitle">See the circuit.<br>Understand the test.</h1><p id="learningHeroIntro">Short, practical lessons for the bay. Pick a topic, study the diagram, then check your understanding. No textbook required.</p></section>
 <section class="learning-path" aria-label="IronKnuckle lesson method"><div class="path-step"><b>01 Understand</b><span>How the selected system works</span></div><div class="path-step"><b>02 Set up</b><span>Tools, safety and test conditions</span></div><div class="path-step"><b>03 Test</b><span>Where and how to measure</span></div><div class="path-step"><b>04 Interpret</b><span>What the evidence supports</span></div><div class="path-step"><b>05 Verify</b><span>Confirm the fault and repair</span></div></section>
@@ -689,7 +689,7 @@ transmission:{eyebrow:"HEAVY-DUTY AMT / TRANSMISSION CUTAWAY",title:"See the AMT
 <div class="drive-control-copy"><b>AMT gearset / through-shaft trainer</b><span>Engine flywheel drives the clutch and input shaft. The input gear drives the countershaft; the selected gear pair drives the through-shaft and output yoke.</span></div>
 <div class="drive-control-actions"><button type="button" class="drive-mode active" data-amt-gear="1">1st</button><button type="button" class="drive-mode" data-amt-gear="2">2nd</button><button type="button" class="drive-mode" data-amt-gear="3">3rd</button><button type="button" class="drive-mode" data-amt-gear="4">4th</button><button type="button" class="drive-mode" data-amt-gear="R">Reverse</button><button type="button" class="drive-mode" data-amt-gear="N">Neutral</button></div>
 <div class="drive-status" id="amtStatus" aria-live="polite">1st gear selected: input gear drives the countershaft, then the selected gear pair drives the through-shaft and output yoke.</div></div>
-<div class="cutaway-shell"><svg id="amtDiagram" viewBox="0 0 1180 700" role="img" aria-label="Heavy-duty automated manual transmission cutaway showing engine flywheel, clutch, input shaft, meshing countershaft gearsets, through-shaft, output shaft and rotating output yoke">
+<div class="cutaway-shell"><svg id="amtDiagram" viewBox="0 0 1450 700" role="img" aria-label="Heavy-duty automated manual transmission cutaway showing engine flywheel, clutch, input shaft, meshing countershaft gearsets, through-shaft, output shaft and rotating output yoke">
 <defs>
 <linearGradient id="amtSteel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#edf3f6"/><stop offset=".42" stop-color="#9aabb5"/><stop offset="1" stop-color="#43535e"/></linearGradient>
 <linearGradient id="amtCase" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#81939e" stop-opacity=".52"/><stop offset="1" stop-color="#172630" stop-opacity=".9"/></linearGradient>
@@ -714,20 +714,20 @@ transmission:{eyebrow:"HEAVY-DUTY AMT / TRANSMISSION CUTAWAY",title:"See the AMT
 <text x="270" y="520" class="micro-label">CLUTCH DISC COUPLES FLYWHEEL TO INPUT</text>
 </g>
 <!-- transmission case, opened to expose gear train -->
-<path d="M335 145Q365 115 415 125H1030Q1085 130 1100 180V500Q1080 545 1030 550H415Q365 550 335 515Z" fill="url(#amtCase)" stroke="#b7c5ce" stroke-width="5"/>
-<path d="M360 178H1070V495H360Z" fill="#091219" fill-opacity=".83" stroke="#687d89" stroke-width="2"/>
+<path d="M335 145Q365 115 415 125H1270Q1325 130 1340 180V500Q1320 545 1270 550H415Q365 550 335 515Z" fill="url(#amtCase)" stroke="#b7c5ce" stroke-width="5"/>
+<path d="M360 178H1310V495H360Z" fill="#091219" fill-opacity=".83" stroke="#687d89" stroke-width="2"/>
 <text x="720" y="95" class="part-label">TRANSMISSION CASE — CUTAWAY</text>
 <!-- input shaft and through-shaft are coaxial -->
 <g class="click-part" data-part="input">
-<path d="M310 330H1000" stroke="url(#amtSteel)" stroke-width="26" stroke-linecap="round"/>
-<path d="M310 330H1000" stroke="#344955" stroke-width="8"/>
+<path d="M310 330H1270" stroke="url(#amtSteel)" stroke-width="26" stroke-linecap="round"/>
+<path d="M310 330H1270" stroke="#344955" stroke-width="8"/>
 <path d="M305 330H420" class="amt-flow amt-input-flow" stroke="#ff9f1c" stroke-width="7" stroke-dasharray="13 11"/>
 <text x="385" y="275" class="micro-label">INPUT SHAFT</text>
 <text x="720" y="365" class="micro-label">MAIN / THROUGH-SHAFT</text>
 </g>
 <!-- input drive gear and fixed countershaft drive gear -->
 <g class="click-part" data-part="counter">
-<path d="M300 480H1000" stroke="url(#amtSteel)" stroke-width="22" stroke-linecap="round"/>
+<path d="M300 480H1270" stroke="url(#amtSteel)" stroke-width="22" stroke-linecap="round"/>
 <text x="720" y="525" class="micro-label">COUNTERSHAFT — FIXED GEAR CLUSTER</text>
 <g transform="translate(330 330)"><g class="amt-gear amt-input-gear">
 <circle r="48" fill="url(#amtGearFace)" stroke="#e4edf1" stroke-width="4"/>
@@ -743,7 +743,7 @@ transmission:{eyebrow:"HEAVY-DUTY AMT / TRANSMISSION CUTAWAY",title:"See the AMT
 </g></g>
 <text x="330" y="205" class="micro-label">INPUT DRIVE GEAR</text><text x="330" y="615" class="micro-label">COUNTERSHAFT DRIVE GEAR</text>
 </g>
-<!-- Three meshing ratio pairs: each pair has a common shaft center distance -->
+<!-- Four forward gear pairs: each pair shares a 150-unit shaft center distance -->
 <g class="click-part" data-part="main">
 <g transform="translate(520 330)"><g class="amt-gear amt-main-gear" data-main-gear="1">
 <circle r="58" fill="url(#amtGearFace)" stroke="#e4edf1" stroke-width="4"/><circle r="58" fill="none" stroke="#eaf0f4" stroke-width="11" stroke-dasharray="5 5"/><circle r="38" fill="none" stroke="#3a505c" stroke-width="8"/><circle r="12" fill="#182832" stroke="#e4edf1" stroke-width="4"/><path d="M0 -46V-15M0 15V46M-46 0H-15M15 0H46M-32 -32L-11 -11M11 11L32 32M32 -32L11 -11M-11 11L-32 32" stroke="#e4edf1" stroke-width="8"/>
@@ -754,6 +754,7 @@ transmission:{eyebrow:"HEAVY-DUTY AMT / TRANSMISSION CUTAWAY",title:"See the AMT
 <g transform="translate(910 330)"><g class="amt-gear amt-main-gear" data-main-gear="3">
 <circle r="82" fill="url(#amtGearFace)" stroke="#e4edf1" stroke-width="4"/><circle r="82" fill="none" stroke="#eaf0f4" stroke-width="12" stroke-dasharray="5 5"/><circle r="55" fill="none" stroke="#3a505c" stroke-width="8"/><circle r="12" fill="#182832" stroke="#e4edf1" stroke-width="4"/><path d="M0 -68V-16M0 16V68M-68 0H-16M16 0H68M-48 -48L-12 -12M12 12L48 48M48 -48L12 -12M-12 12L-48 48" stroke="#e4edf1" stroke-width="10"/>
 </g></g>
+<g transform="translate(1105 330)"><g class="amt-gear amt-main-gear" data-main-gear="4"><circle r="60" fill="url(#amtGearFace)" stroke="#e4edf1" stroke-width="4"/><circle r="60" fill="none" stroke="#eaf0f4" stroke-width="11" stroke-dasharray="5 5"/><circle r="40" fill="none" stroke="#3a505c" stroke-width="8"/><circle r="12" fill="#182832" stroke="#e4edf1" stroke-width="4"/><path d="M0 -48V-15M0 15V48M-48 0H-15M15 0H48M-34 -34L-11 -11M11 11L34 34M34 -34L11 -11M-11 11L-34 34" stroke="#e4edf1" stroke-width="8"/></g></g>
 </g>
 <g class="click-part" data-part="counter">
 <g transform="translate(520 480)"><g class="amt-gear amt-counter-gear" data-counter-gear="1">
@@ -766,27 +767,30 @@ transmission:{eyebrow:"HEAVY-DUTY AMT / TRANSMISSION CUTAWAY",title:"See the AMT
 <circle r="68" fill="url(#amtGearFace)" stroke="#e4edf1" stroke-width="4"/><circle r="68" fill="none" stroke="#eaf0f4" stroke-width="11" stroke-dasharray="5 5"/><circle r="46" fill="none" stroke="#3a505c" stroke-width="8"/><circle r="15" fill="#182832" stroke="#e4edf1" stroke-width="4"/><path d="M0 -54V-18M0 18V54M-54 0H-18M18 0H54M-38 -38L-13 -13M13 13L38 38M38 -38L13 -13M-13 13L-38 38" stroke="#e4edf1" stroke-width="9"/>
 </g></g>
 </g>
+<g transform="translate(1105 480)"><g class="amt-gear amt-counter-gear" data-counter-gear="4"><circle r="90" fill="url(#amtGearFace)" stroke="#e4edf1" stroke-width="4"/><circle r="90" fill="none" stroke="#eaf0f4" stroke-width="12" stroke-dasharray="6 5"/><circle r="63" fill="none" stroke="#3a505c" stroke-width="8"/><circle r="15" fill="#182832" stroke="#e4edf1" stroke-width="4"/><path d="M0 -75V-20M0 20V75M-75 0H-20M20 0H75M-53 -53L-14 -14M14 14L53 53M53 -53L14 -14M-14 14L-53 53" stroke="#e4edf1" stroke-width="10"/></g></g>
+<g class="click-part" data-part="counter"><g transform="translate(1260 480)"><g class="amt-gear amt-reverse-counter"><circle r="38" fill="url(#amtGearFace)" stroke="#e4edf1" stroke-width="4"/><circle r="38" fill="none" stroke="#eaf0f4" stroke-width="9" stroke-dasharray="5 4"/><circle r="12" fill="#182832" stroke="#e4edf1" stroke-width="4"/><path d="M0 -29V-12M0 12V29M-29 0H-12M12 0H29" stroke="#e4edf1" stroke-width="7"/></g></g></g><g class="click-part" data-part="main"><g transform="translate(1260 330)"><g class="amt-gear amt-reverse-main" data-main-gear="R"><circle r="38" fill="url(#amtGearFace)" stroke="#e4edf1" stroke-width="4"/><circle r="38" fill="none" stroke="#eaf0f4" stroke-width="9" stroke-dasharray="5 4"/><circle r="12" fill="#182832" stroke="#e4edf1" stroke-width="4"/><path d="M0 -29V-12M0 12V29M-29 0H-12M12 0H29" stroke="#e4edf1" stroke-width="7"/></g></g></g><g class="click-part" data-part="counter"><g id="amtReverseIdler" transform="translate(1260 405)"><g class="amt-gear amt-reverse-idler"><circle r="37" fill="url(#amtGearFace)" stroke="#ffbd63" stroke-width="4"/><circle r="37" fill="none" stroke="#eaf0f4" stroke-width="9" stroke-dasharray="5 4"/><circle r="11" fill="#182832" stroke="#e4edf1" stroke-width="4"/><path d="M0 -28V-11M0 11V28M-28 0H-11M11 0H28M-20 -20L-8 -8M8 8L20 20M20 -20L8 -8M-8 8L-20 20" stroke="#e4edf1" stroke-width="6"/></g></g><text x="1310" y="415" class="micro-label">REVERSE IDLER</text></g>
+</g>
 <!-- shift collars on the through-shaft couple one selected free-running gear to the shaft -->
 <g class="click-part" data-part="collar">
 <rect x="445" y="307" width="35" height="46" rx="7" fill="#d6e0e6" stroke="#ffbd63" stroke-width="4"/><path d="M452 307V353M463 307V353" stroke="#344955" stroke-width="5"/>
 <rect x="625" y="307" width="35" height="46" rx="7" fill="#d6e0e6" stroke="#ffbd63" stroke-width="4"/><path d="M632 307V353M643 307V353" stroke="#344955" stroke-width="5"/>
-<rect x="820" y="307" width="35" height="46" rx="7" fill="#d6e0e6" stroke="#ffbd63" stroke-width="4"/><path d="M827 307V353M838 307V353" stroke="#344955" stroke-width="5"/>
+<rect x="820" y="307" width="35" height="46" rx="7" fill="#d6e0e6" stroke="#ffbd63" stroke-width="4"/><path d="M827 307V353M838 307V353" stroke="#344955" stroke-width="5"/><rect x="1015" y="307" width="35" height="46" rx="7" fill="#d6e0e6" stroke="#ffbd63" stroke-width="4"/><path d="M1022 307V353M1033 307V353" stroke="#344955" stroke-width="5"/>
 <text x="650" y="240" class="micro-label">SHIFT COLLARS / SYNCHRONIZER ELEMENTS</text>
 </g>
 <!-- selected torque path through the through-shaft to output yoke -->
 <g class="click-part" data-part="output">
-<path d="M960 330H1065" stroke="url(#amtSteel)" stroke-width="27" stroke-linecap="round"/>
-<path d="M960 330H1070" class="amt-flow amt-output-flow" stroke="#ff9f1c" stroke-width="8" stroke-dasharray="14 10" marker-end="url(#amtArrow)"/>
-<g transform="translate(1080 330)"><g class="amt-output-spin">
+<path d="M960 330H1355" stroke="url(#amtSteel)" stroke-width="27" stroke-linecap="round"/>
+<path d="M960 330H1355" class="amt-flow amt-output-flow" stroke="#ff9f1c" stroke-width="8" stroke-dasharray="14 10" marker-end="url(#amtArrow)"/>
+<g transform="translate(1370 330)"><g class="amt-output-spin">
 <circle r="29" fill="#253640" stroke="#e2eaf0" stroke-width="6"/><path d="M0 -28V28M-28 0H28" stroke="#dce5ea" stroke-width="6"/>
 <path d="M-10 -28V-48H10V-28M-10 28V48H10V28" stroke="#e2eaf0" stroke-width="8" fill="none"/>
 <path d="M-48 -8H-28M28 8H48" stroke="#ffbd63" stroke-width="8"/>
 </g></g>
-<text x="1080" y="240" class="part-label">OUTPUT YOKE</text><path d="M1080 252V285" class="leader"/>
-<text x="1005" y="400" class="micro-label">YOKE ROTATES WITH OUTPUT SHAFT</text>
+<text x="1370" y="240" class="part-label">OUTPUT YOKE</text><path d="M1370 252V285" class="leader"/>
+<text x="1230" y="400" class="micro-label">YOKE ROTATES WITH OUTPUT SHAFT</text>
 </g>
-<g class="click-part" data-part="oil"><path d="M390 565H1010" stroke="#d7ae43" stroke-width="4" stroke-dasharray="7 8"/><path d="M440 565V510M800 565V510" stroke="#d7ae43" stroke-width="4"/><text x="700" y="595" class="micro-label">SPLASH / DIRECTED LUBRICATION TO GEAR MESHES AND BEARINGS</text></g>
-<path d="M420 620H1030" class="amt-flow amt-output-flow" stroke="#ff9f1c" stroke-width="5" stroke-dasharray="13 11" marker-end="url(#amtArrow)"/>
+<g class="click-part" data-part="oil"><path d="M390 565H1280" stroke="#d7ae43" stroke-width="4" stroke-dasharray="7 8"/><path d="M440 565V510M800 565V510" stroke="#d7ae43" stroke-width="4"/><text x="700" y="595" class="micro-label">SPLASH / DIRECTED LUBRICATION TO GEAR MESHES AND BEARINGS</text></g>
+<path d="M420 620H1320" class="amt-flow amt-output-flow" stroke="#ff9f1c" stroke-width="5" stroke-dasharray="13 11" marker-end="url(#amtArrow)"/>
 <text x="720" y="660" class="micro-label">TORQUE PATH: FLYWHEEL → CLUTCH → INPUT → COUNTERSHAFT → SELECTED GEAR → THROUGH-SHAFT → OUTPUT YOKE</text>
 <text x="720" y="35" class="micro-label">CONCEPTUAL COUNTERSHAFT AMT — ACTUAL RATIOS / SHAFT LAYOUTS VARY BY MODEL</text>
 </svg></div>`},
@@ -813,8 +817,8 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
 </defs>
 <!-- tires and wheel ends -->
 <g class="click-part" data-part="axles">
-<g transform="translate(88 390)"><g class="diff-wheel"><rect x="-42" y="-118" width="84" height="236" rx="34" fill="#10161b" stroke="#8b969d" stroke-width="8"/><rect x="-27" y="-100" width="54" height="200" rx="24" fill="#27333b" stroke="#c2cdd3" stroke-width="4"/><circle r="35" fill="#43545e" stroke="#e0e8ed" stroke-width="5"/><circle r="12" fill="#1b2b35" stroke="#e0e8ed" stroke-width="4"/><path d="M-25 0H25M0 -25V25" stroke="#c9d5dc" stroke-width="6"/></g></g>
-<g transform="translate(1092 390)"><g class="diff-wheel"><rect x="-42" y="-118" width="84" height="236" rx="34" fill="#10161b" stroke="#8b969d" stroke-width="8"/><rect x="-27" y="-100" width="54" height="200" rx="24" fill="#27333b" stroke="#c2cdd3" stroke-width="4"/><circle r="35" fill="#43545e" stroke="#e0e8ed" stroke-width="5"/><circle r="12" fill="#1b2b35" stroke="#e0e8ed" stroke-width="4"/><path d="M-25 0H25M0 -25V25" stroke="#c9d5dc" stroke-width="6"/></g></g>
+<g transform="translate(88 390)"><g class="diff-wheel"><circle r="82" fill="#10161b" stroke="#8b969d" stroke-width="10"/><circle r="66" fill="#27333b" stroke="#c2cdd3" stroke-width="5"/><circle r="48" fill="#43545e" stroke="#e0e8ed" stroke-width="5"/><circle r="16" fill="#1b2b35" stroke="#e0e8ed" stroke-width="4"/><path d="M0 -60V-20M0 20V60M-60 0H-20M20 0H60M-42 -42L-14 -14M14 14L42 42M42 -42L14 -14M-14 14L-42 42" stroke="#c9d5dc" stroke-width="7"/><path d="M-28 -76L-22 -66M0 -82V-70M28 -76L22 -66M76 -28L66 -22M82 0H70M76 28L66 22M28 76L22 66M0 82V70M-28 76L-22 66M-76 28L-66 22M-82 0H-70M-76 -28L-66 -22" stroke="#d4dde3" stroke-width="7" stroke-linecap="round"/></g></g>
+<g transform="translate(1092 390)"><g class="diff-wheel"><circle r="82" fill="#10161b" stroke="#8b969d" stroke-width="10"/><circle r="66" fill="#27333b" stroke="#c2cdd3" stroke-width="5"/><circle r="48" fill="#43545e" stroke="#e0e8ed" stroke-width="5"/><circle r="16" fill="#1b2b35" stroke="#e0e8ed" stroke-width="4"/><path d="M0 -60V-20M0 20V60M-60 0H-20M20 0H60M-42 -42L-14 -14M14 14L42 42M42 -42L14 -14M-14 14L-42 42" stroke="#c9d5dc" stroke-width="7"/><path d="M-28 -76L-22 -66M0 -82V-70M28 -76L22 -66M76 -28L66 -22M82 0H70M76 28L66 22M28 76L22 66M0 82V70M-28 76L-22 66M-76 28L-66 22M-82 0H-70M-76 -28L-66 -22" stroke="#d4dde3" stroke-width="7" stroke-linecap="round"/></g></g>
 </g>
 <text x="88" y="245" class="part-label">LEFT TIRE</text><text x="1092" y="245" class="part-label">RIGHT TIRE</text>
 <!-- axle housing and tubes -->
@@ -825,7 +829,7 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
 <path d="M130 390H555" class="diff-flow diff-axle-flow diff-left-flow" stroke="#ff9f1c" stroke-width="6" stroke-dasharray="14 12" marker-end="url(#diffArrow)"/><path d="M565 390H1050" class="diff-flow diff-axle-flow diff-right-flow" stroke="#ff9f1c" stroke-width="6" stroke-dasharray="14 12" marker-end="url(#diffArrow)"/>
 <text x="280" y="325" class="micro-label">LEFT AXLE TUBE / SHAFT</text><text x="880" y="325" class="micro-label">RIGHT AXLE TUBE / SHAFT</text>
 </g>
-<!-- hogs-head / removable third-member housing -->
+<g class="click-part" data-part="axles"><g transform="translate(300 390)" class="diff-axle-collar"><circle r="23" fill="#253640" stroke="#dce5ea" stroke-width="5"/><circle r="15" fill="none" stroke="#ffbd63" stroke-width="4"/><path d="M0 -18V18M-18 0H18" stroke="#f1f4f7" stroke-width="4"/></g><g transform="translate(880 390)" class="diff-axle-collar"><circle r="23" fill="#253640" stroke="#dce5ea" stroke-width="5"/><circle r="15" fill="none" stroke="#ffbd63" stroke-width="4"/><path d="M0 -18V18M-18 0H18" stroke="#f1f4f7" stroke-width="4"/></g></g><!-- hogs-head / removable third-member housing -->
 <g class="click-part" data-part="carrier">
 <path d="M430 275Q430 235 485 220L520 185H600L635 220Q690 235 690 285V505Q690 545 645 565H475Q430 545 430 505Z" fill="url(#diffCase)" stroke="#d0dbe1" stroke-width="6"/>
 <path d="M455 285Q465 250 510 250H610Q655 250 665 285V490Q650 530 615 535H505Q470 530 455 490Z" fill="#0a1319" stroke="#8ea0aa" stroke-width="4"/>
@@ -837,7 +841,7 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
 <circle cx="560" cy="390" r="145" fill="url(#diffGearFace)" stroke="#dfe7ec" stroke-width="6"/>
 <circle cx="560" cy="390" r="145" fill="none" stroke="#e7eef2" stroke-width="15" stroke-dasharray="7 6"/>
 <circle cx="560" cy="390" r="119" fill="#15232c" stroke="#8fa0aa" stroke-width="7"/>
-<circle cx="560" cy="390" r="104" fill="none" stroke="#b8c6ce" stroke-width="5" stroke-dasharray="3 6"/>
+<circle cx="560" cy="390" r="104" fill="none" stroke="#b8c6ce" stroke-width="5" stroke-dasharray="3 6"/><path d="M560 258L574 290L604 300M560 522L546 490L516 480M692 390L660 376L650 346" fill="none" stroke="#ffbd63" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="560" cy="390" r="137" fill="none" stroke="#f2f6f8" stroke-width="5" stroke-dasharray="2 16"/>
 </g><text x="560" y="220" class="part-label">RING GEAR / CROWN WHEEL</text>
 </g>
 <g class="click-part" data-part="carrier">
