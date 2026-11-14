@@ -241,8 +241,8 @@
 </style>
 <style id="drivetrain-powerflow-depth-v3">
 /* Transmission: a moving clutch rotor, selected synchronizer and visible torque path. */
-#amtDiagram .amt-clutch-rotor{transform-box:fill-box;transform-origin:center;animation:amtClutchTurn 1.7s linear infinite;filter:drop-shadow(0 0 5px #ffbd6388)}
-@keyframes amtClutchTurn{to{transform:rotate(360deg)}}
+#amtDiagram .amt-clutch-rotor{transform-box:view-box;transform-origin:0 0;animation:amtClutchTurn 1.7s linear infinite;filter:drop-shadow(0 0 5px #ffbd6388)}
+@keyframes amtClutchTurn{to{transform:translate(270px,330px) rotate(360deg)}}
 #amtDiagram .amt-power-path{fill:none;stroke:#ffb34d;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:15 13;marker-end:url(#amtArrow);opacity:0;filter:drop-shadow(0 0 5px #ff9f1c);animation:amtPowerTravel .72s linear infinite}
 #amtDiagram .amt-power-path[data-power-gear="1"]{opacity:0}
 #amtDiagram[data-gear="1"] .amt-power-path[data-power-gear="1"],
@@ -1087,7 +1087,7 @@ function wireDrivelineControls(key){
    `);
    const bell=[...svg.querySelectorAll('g[data-part="bell"]')][1];
    if(bell&&!bell.querySelector(".amt-clutch-rotor"))bell.insertAdjacentHTML("beforeend",`
-    <g class="amt-clutch-rotor" transform="translate(270 330)">
+    <g class="amt-clutch-rotor">
      <circle r="51" fill="none" stroke="#ffbd63" stroke-width="7" stroke-dasharray="11 5"/>
      <circle r="39" fill="none" stroke="#dce5ea" stroke-width="4"/>
      <path d="M0 -45V-30M0 30V45M-45 0H-30M30 0H45M-32 -32L-22 -22M22 22L32 32M32 -32L22 -22M-22 22L-32 32" stroke="#fff0d5" stroke-width="5" stroke-linecap="round"/>
