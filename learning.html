@@ -238,7 +238,42 @@
 #diffDiagram .diff-input-yoke{animation:gearTurn3d 2.7s linear infinite}#diffDiagram .diff-pinion{animation:gearTurn3dReverse 2.7s linear infinite}#diffDiagram .diff-gear{animation:gearTurn3d 4s linear infinite}#diffDiagram .diff-side-gear{animation:gearTurn3dReverse 4s linear infinite}#diffDiagram .diff-wheel{animation:gearTurn3d 3.8s linear infinite}#diffDiagram[data-mode="turn"] .diff-wheel-left{animation-duration:5.2s}#diffDiagram[data-mode="turn"] .diff-wheel-right{animation-duration:3.1s}#diffDiagram[data-mode="turn"] .diff-spider-pinion{animation:gearTurn3d 1.25s linear infinite}#diffDiagram[data-mode="straight"] .diff-spider-pinion{animation:none}
 @keyframes gearTurn3d{to{transform:rotate(360deg)}}@keyframes gearTurn3dReverse{to{transform:rotate(-360deg)}}
 @media(prefers-reduced-motion:reduce){#amtDiagram *,#diffDiagram *{animation:none!important;transition:none!important}}
-</style></head><body><div class="wrap">
+</style>
+<style id="drivetrain-powerflow-depth-v3">
+/* Transmission: a moving clutch rotor, selected synchronizer and visible torque path. */
+#amtDiagram .amt-clutch-rotor{transform-box:fill-box;transform-origin:center;animation:amtClutchTurn 1.7s linear infinite;filter:drop-shadow(0 0 5px #ffbd6388)}
+@keyframes amtClutchTurn{to{transform:rotate(360deg)}}
+#amtDiagram .amt-power-path{fill:none;stroke:#ffb34d;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:15 13;marker-end:url(#amtArrow);opacity:0;filter:drop-shadow(0 0 5px #ff9f1c);animation:amtPowerTravel .72s linear infinite}
+#amtDiagram .amt-power-path[data-power-gear="1"]{opacity:0}
+#amtDiagram[data-gear="1"] .amt-power-path[data-power-gear="1"],
+#amtDiagram[data-gear="2"] .amt-power-path[data-power-gear="2"],
+#amtDiagram[data-gear="3"] .amt-power-path[data-power-gear="3"],
+#amtDiagram[data-gear="4"] .amt-power-path[data-power-gear="4"],
+#amtDiagram[data-gear="R"] .amt-power-path[data-power-gear="R"],
+#amtDiagram[data-gear="N"] .amt-power-path[data-power-gear="N"]{opacity:1}
+#amtDiagram .amt-power-path.reverse{stroke:#ff806b;marker-end:none;animation-direction:reverse}
+#amtDiagram .amt-power-path.neutral{stroke:#69b7e8;stroke-dasharray:7 13;marker-end:none;opacity:0}
+#amtDiagram[data-gear="N"] .amt-power-path.neutral{opacity:.9}
+@keyframes amtPowerTravel{to{stroke-dashoffset:-56}}
+#amtDiagram .amt-output-spin{animation:amtYokeSpeed 5.4s linear infinite!important}
+#amtDiagram[data-gear="2"] .amt-output-spin{animation-duration:4.1s!important}
+#amtDiagram[data-gear="3"] .amt-output-spin{animation-duration:3s!important}
+#amtDiagram[data-gear="4"] .amt-output-spin{animation-duration:2.2s!important}
+#amtDiagram[data-gear="R"] .amt-output-spin{animation-duration:3.2s!important;animation-direction:reverse!important}
+#amtDiagram[data-gear="N"] .amt-output-spin{animation-play-state:paused!important;opacity:.25}
+@keyframes amtYokeSpeed{to{transform:rotate(360deg)}}
+/* Differential: layered rear carrier, machined rim and visible depth around the gearset. */
+#diffDiagram #diffDepthRim{filter:drop-shadow(0 9px 7px #000b)}
+#diffDiagram .diff-gear{filter:drop-shadow(8px 10px 4px #000b)}
+#diffDiagram .diff-side-gear{filter:drop-shadow(4px 5px 2px #000c)}
+#diffDiagram .diff-spider-pinion{filter:drop-shadow(4px 5px 2px #000c)}
+#diffDiagram .diff-internal-depth{opacity:.72}
+#diffDiagram .diff-pinion{filter:drop-shadow(5px 7px 3px #000b)}
+@media(prefers-reduced-motion:reduce){
+ #amtDiagram .amt-clutch-rotor,#amtDiagram .amt-power-path{animation:none!important}
+}
+</style>
+</head><body><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./index.html">← Back to workspace</a></header>
 <section class="hero"><div class="eyebrow">Technician learning • visual first</div><h1 id="learningHeroTitle">See the circuit.<br>Understand the test.</h1><p id="learningHeroIntro">Short, practical lessons for the bay. Pick a topic, study the diagram, then check your understanding. No textbook required.</p></section>
 <section class="learning-path" aria-label="IronKnuckle lesson method"><div class="path-step"><b>01 Understand</b><span>How the selected system works</span></div><div class="path-step"><b>02 Set up</b><span>Tools, safety and test conditions</span></div><div class="path-step"><b>03 Test</b><span>Where and how to measure</span></div><div class="path-step"><b>04 Interpret</b><span>What the evidence supports</span></div><div class="path-step"><b>05 Verify</b><span>Confirm the fault and repair</span></div></section>
@@ -1029,7 +1064,90 @@ function animateEngineCrank(){
  draw(0);engineCrankFrame=requestAnimationFrame(tick);
 }
 function renderModule(key){const m=modules[key];document.getElementById("moduleEyebrow").textContent=m.eyebrow;document.getElementById("moduleTitle").textContent=m.title;document.getElementById("moduleIntro").textContent=m.intro;document.getElementById("diagramCaption").textContent=m.caption;document.getElementById("systemDiagram").innerHTML=m.svg;wireDrivelineControls(key);const list=document.getElementById("componentList");list.innerHTML="";m.parts.forEach(p=>{const b=document.createElement("button");b.type="button";b.className="component-chip";b.dataset.part=p.id;b.textContent=p.name;b.addEventListener("click",()=>selectPart(key,p.id));list.appendChild(b);});document.querySelectorAll("#systemDiagram [data-part]").forEach(n=>n.addEventListener("click",()=>selectPart(key,n.dataset.part)));selectPart(key,m.parts[0].id);if(key==="engine")animateEngineCrank();}
-function wireDrivelineControls(key){if(key==="transmission"){const root=document.getElementById("amtControls");if(!root)return;root.querySelectorAll("[data-amt-gear]").forEach(b=>b.addEventListener("click",()=>{const gear=b.dataset.amtGear;root.querySelectorAll("[data-amt-gear]").forEach(x=>x.classList.toggle("active",x===b));const svg=document.getElementById("amtDiagram");svg.dataset.gear=gear;const speed=document.getElementById("amtOutputSpeed");if(speed)speed.textContent=({1:"1st • LOW",2:"2nd • MEDIUM",3:"3rd • HIGH",4:"4th • HIGHEST",R:"REVERSE",N:"NEUTRAL"})[gear];const status=document.getElementById("amtStatus");const labels={1:"1st gear: input drives the countershaft; the selected low gear transfers torque to the mainshaft for maximum reduction.",2:"2nd gear: the next gear pair is engaged. Output speed rises and torque multiplication decreases.",3:"3rd gear: a higher ratio is selected. The engaged collar locks the chosen free-running gear to the mainshaft.",4:"4th gear: the highest illustrated ratio is selected. This model does not represent a universal direct-drive or overdrive arrangement.",R:"Reverse: the idler changes the direction of rotation before torque reaches the selected reverse gear.",N:"Neutral: the input and countershaft can rotate, but no ratio is locked to the mainshaft; no drive torque reaches the output."};status.textContent=labels[gear];}));root.querySelector('[data-amt-gear="1"]').click();}if(key==="differential"){const root=document.getElementById("diffControls");if(!root)return;root.querySelectorAll("[data-diff-mode]").forEach(b=>b.addEventListener("click",()=>{const mode=b.dataset.diffMode;root.querySelectorAll("[data-diff-mode]").forEach(x=>x.classList.toggle("active",x===b));const svg=document.getElementById("diffDiagram");svg.dataset.mode=mode;document.getElementById("diffStatus").textContent=mode==="straight"?"Straight line: carrier and both axle shafts rotate at the same speed. Spider pinions travel with the carrier but do not spin on the cross-pin." :"Turning: carrier speed is the average of the two axle-shaft speeds. The spider pinion(s) rotate on the cross-pin, allowing the outside wheel to turn faster and the inside wheel slower."; }));root.querySelector('[data-diff-mode="straight"]').click();}}
+function wireDrivelineControls(key){
+ if(key==="transmission"){
+  const root=document.getElementById("amtControls"),svg=document.getElementById("amtDiagram");if(!root||!svg)return;
+  if(!svg.querySelector("#amtPowerFlow")){
+   svg.insertAdjacentHTML("beforeend",`
+    <g id="amtPowerFlow" pointer-events="none">
+     <path class="amt-power-path" data-power-gear="1" d="M330 330V480H520V330H1370"/>
+     <path class="amt-power-path" data-power-gear="2" d="M330 330V480H715V330H1370"/>
+     <path class="amt-power-path" data-power-gear="3" d="M330 330V480H910V330H1370"/>
+     <path class="amt-power-path" data-power-gear="4" d="M330 330V480H1105V330H1370"/>
+     <path class="amt-power-path reverse" data-power-gear="R" d="M330 330V480H1260V405V330H1370"/>
+     <path class="amt-power-path neutral" data-power-gear="N" d="M330 330V480H520"/>
+    </g>
+    <g id="amtShiftEngagement" pointer-events="none" transform="translate(520 330)">
+     <circle r="25" fill="#ff9f1c" fill-opacity=".12" stroke="#ffc36c" stroke-width="7"/>
+     <circle r="13" fill="none" stroke="#fff0d5" stroke-width="3" stroke-dasharray="4 4"/>
+     <path d="M0 -39V-55H24" stroke="#ffc36c" stroke-width="4" fill="none" stroke-linecap="round"/>
+     <text x="30" y="-49" fill="#ffe0ad" font-size="13" font-weight="900">ENGAGED</text>
+    </g>
+    <text id="amtOutputReadout" x="1235" y="185" fill="#ffcf8b" font-size="18" font-weight="900" text-anchor="middle">OUTPUT SPEED • LOW</text>
+   `);
+   const bell=[...svg.querySelectorAll('g[data-part="bell"]')][1];
+   if(bell&&!bell.querySelector(".amt-clutch-rotor"))bell.insertAdjacentHTML("beforeend",`
+    <g class="amt-clutch-rotor" transform="translate(270 330)">
+     <circle r="51" fill="none" stroke="#ffbd63" stroke-width="7" stroke-dasharray="11 5"/>
+     <circle r="39" fill="none" stroke="#dce5ea" stroke-width="4"/>
+     <path d="M0 -45V-30M0 30V45M-45 0H-30M30 0H45M-32 -32L-22 -22M22 22L32 32M32 -32L22 -22M-22 22L-32 32" stroke="#fff0d5" stroke-width="5" stroke-linecap="round"/>
+     <circle r="10" fill="#1b2a34" stroke="#ffbd63" stroke-width="4"/>
+    </g>`);
+  }
+  const positions={"1":520,"2":715,"3":910,"4":1105,"R":1260,"N":715};
+  const speedLabels={"1":"OUTPUT SPEED • LOW","2":"OUTPUT SPEED • RISING","3":"OUTPUT SPEED • HIGH","4":"OUTPUT SPEED • HIGHEST","R":"OUTPUT SPEED • REVERSE","N":"OUTPUT SPEED • NO DRIVE"};
+  root.querySelectorAll("[data-amt-gear]").forEach(b=>b.addEventListener("click",()=>{
+   const gear=b.dataset.amtGear;
+   root.querySelectorAll("[data-amt-gear]").forEach(x=>x.classList.toggle("active",x===b));
+   svg.dataset.gear=gear;
+   const shift=svg.querySelector("#amtShiftEngagement");if(shift)shift.setAttribute("transform","translate("+positions[gear]+" 330)");
+   const readout=svg.querySelector("#amtOutputReadout");if(readout)readout.textContent=speedLabels[gear];
+   const speed=document.getElementById("amtOutputSpeed");if(speed)speed.textContent=speedLabels[gear];
+   const status=document.getElementById("amtStatus");
+   const labels={
+    1:"1st gear: clutch and input drive the countershaft. The largest reduction in this trainer is selected; the synchronizer collar locks the 1st-gear wheel to the mainshaft. Output speed is lowest.",
+    2:"2nd gear: the shift collar moves to the 2nd-gear engagement point and locks that free-running gear to the mainshaft. Output speed rises as reduction decreases.",
+    3:"3rd gear: the synchronizer collar engages the 3rd-gear wheel. The dashed path follows that gear pair to the output; yoke speed increases again.",
+    4:"4th gear: the collar engages the highest illustrated ratio. The output yoke turns fastest in this conceptual model. Actual direct-drive and overdrive arrangements vary by transmission.",
+    R:"Reverse: torque passes through the countershaft and reverse idler before reaching the reverse gear. Output direction reverses.",
+    N:"Neutral: the clutch, input and countershaft can rotate, but no synchronizer collar locks a gear to the mainshaft. Power flow stops before the output."
+   };
+   status.textContent=labels[gear];
+  }));
+  root.querySelector('[data-amt-gear="1"]').click();
+ }
+ if(key==="differential"){
+  const root=document.getElementById("diffControls"),svg=document.getElementById("diffDiagram");if(!root||!svg)return;
+  if(!svg.querySelector("#diffDepthRim")){
+   const housing=svg.querySelector('g[data-part="carrier"]');
+   const ring=svg.querySelector('g[data-part="ring"]');
+   const depth=`
+    <g id="diffDepthRim" pointer-events="none">
+     <ellipse cx="580" cy="372" rx="157" ry="137" fill="#172832" stroke="#9cabb5" stroke-width="24"/>
+     <ellipse cx="580" cy="372" rx="157" ry="137" fill="none" stroke="#d7e0e5" stroke-width="7" stroke-dasharray="9 7"/>
+     <path d="M432 335L450 318M435 450L455 463M560 526L560 548M680 450L700 465M720 340L700 325" stroke="#c3d0d8" stroke-width="12" stroke-linecap="round"/>
+     <ellipse cx="560" cy="390" rx="145" ry="126" fill="none" stroke="#0a141b" stroke-width="17" opacity=".9"/>
+    </g>`;
+   if(ring)ring.insertAdjacentHTML("beforebegin",depth);
+   const internals=svg.querySelector('g[data-part="spider"]');
+   if(internals)internals.insertAdjacentHTML("afterbegin",`
+    <g class="diff-internal-depth" pointer-events="none">
+     <ellipse cx="560" cy="390" rx="105" ry="77" fill="#0d1b24" stroke="#647985" stroke-width="9"/>
+     <path d="M500 390H620M560 330V450" stroke="#d4dee4" stroke-width="20" stroke-linecap="round" opacity=".24"/>
+     <path d="M478 390H495M625 390H642M560 314V328M560 452V466" stroke="#ffcf8b" stroke-width="7" stroke-linecap="round"/>
+    </g>`);
+  }
+  root.querySelectorAll("[data-diff-mode]").forEach(b=>b.addEventListener("click",()=>{
+   const mode=b.dataset.diffMode;
+   root.querySelectorAll("[data-diff-mode]").forEach(x=>x.classList.toggle("active",x===b));
+   svg.dataset.mode=mode;
+   document.getElementById("diffStatus").textContent=mode==="straight"
+    ?"Straight line: pinion turns the ring gear and carrier. Both side gears and axle shafts turn together at the same speed; spider pinions travel with the carrier without spinning on their cross-pin."
+    :"Turning: the carrier continues to drive both side gears. Spider pinions rotate on the cross-pin, allowing the outside axle shaft and tire to turn faster than the inside.";
+  }));
+  root.querySelector('[data-diff-mode="straight"]').click();
+ }
+}
 function selectPart(key,id){const m=modules[key],p=m.parts.find(x=>x.id===id);if(!p)return;document.querySelectorAll("#systemDiagram [data-part]").forEach(n=>n.classList.toggle("selected",n.dataset.part===id));document.querySelectorAll("#componentList [data-part]").forEach(n=>n.classList.toggle("active",n.dataset.part===id));const panel=document.getElementById("componentPanel");panel.innerHTML='<div class="component-kicker">Component overview</div><h3></h3><p class="component-role"></p><div class="component-facts"><div class="component-fact"><b>How it works</b><span></span></div><div class="component-fact"><b>What to look for</b><span></span></div><div class="component-fact"><b>Testing direction</b><span></span></div></div><div class="module-check"><h4 id="checkQuestion"></h4><button type="button" data-answer="0"></button><button type="button" data-answer="1"></button><div class="module-feedback" id="moduleFeedback">Quick check: choose the best answer.</div></div>';panel.querySelector("h3").textContent=p.name;panel.querySelector(".component-role").textContent=p.role;const spans=panel.querySelectorAll(".component-fact span");spans[0].textContent=p.works;spans[1].textContent=p.look;spans[2].textContent=p.test;const q=key==="engine"?"Which approach is the best starting point?":"What should happen before condemning this component?";const answers=key==="engine"?["Use system evidence and the OEM test for the complaint","Replace it whenever a related fault code appears"]:["Verify operating conditions, sensor plausibility and related system evidence","Replace the component based on one fault code alone"];panel.querySelector("#checkQuestion").textContent=q;panel.querySelectorAll("[data-answer]").forEach((b,i)=>{b.textContent=answers[i];b.addEventListener("click",()=>{const f=panel.querySelector("#moduleFeedback");f.textContent=i===0?"Good approach. Confirm the fault with the correct test conditions and specifications.":"Not quite. A fault code or symptom identifies a system to investigate; it does not prove a component has failed.";f.style.color=i===0?"#70c69a":"#ffb34d";});});}
 tabs.forEach(t=>t.addEventListener("click",()=>selectSystem(t.dataset.system)));selectSystem("electrical");
 })();
