@@ -12,18 +12,6 @@ let htmlCount = 0;
 let inlineScriptCount = 0;
 let sourceFileCount = 0;
 
-async function walk(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const files = [];
-  for (const entry of entries) {
-    if (entry.name === "node_modules" || entry.name === ".git") continue;
-    const fullPath = join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...await walk(fullPath));
-    else if (entry.isFile()) files.push(fullPath);
-  }
-  return files;
-}
-
 try {
   // Parse every shipped JavaScript source file, including test and helper scripts.
   for (const directory of [root, join(root, "js"), join(root, "scripts")]) {
@@ -38,8 +26,10 @@ try {
     }
   }
 
-  const files = await walk(root);
-  const htmlFiles = files.filter(file => extname(file).toLowerCase() === ".html");
+  const rootEntries = await readdir(root, { withFileTypes: true });
+  const htmlFiles = rootEntries
+    .filter(entry => entry.isFile() && extname(entry.name).toLowerCase() === ".html")
+    .map(entry => join(root, entry.name));
   assert.ok(htmlFiles.length > 0, "Expected shipped HTML pages to validate");
 
   for (const file of htmlFiles) {
