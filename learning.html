@@ -1321,15 +1321,23 @@ function initDifferential3D(){
  // Axle tubes and exposed axle shafts: left and right shafts terminate inside the carrier at their side gears.
  for(const sign of [-1,1]){
   const tube=cyl(.42,.42,3.05,cut);tube.position.x=sign*2.85;root.add(tube);
-  const shaft=cyl(.105,.105,4.5,steel);shaft.position.x=sign*2.35;root.add(shaft);axles.push(shaft);
-  const spline=cyl(.145,.145,.42,gold);spline.position.x=sign*.64;root.add(spline);
+  const axleSpin=new THREE.Group();axleSpin.position.x=sign*2.35;root.add(axleSpin);
+  const shaft=cyl(.105,.105,4.5,steel);shaft.position.x=-sign*.0;axleSpin.add(shaft);axles.push(axleSpin);
+  const spline=cyl(.145,.145,.42,gold);spline.position.x=-sign*1.71;axleSpin.add(spline);
   const hub=cyl(.48,.48,.32,steel);hub.position.x=sign*5.05;root.add(hub);
-  const tire=new THREE.Mesh(new THREE.TorusGeometry(.92,.28,20,72),rubber);tire.rotation.y=Math.PI/2;tire.position.x=sign*5.38;tire.castShadow=true;root.add(tire);wheels.push(tire);
-  const tread=new THREE.Mesh(new THREE.TorusGeometry(.92,.285,8,48),mat(0x39434a,.1,.85));tread.rotation.y=Math.PI/2;tread.position.x=sign*5.38;root.add(tread);
+  // Wheel assembly spins as one unit around the axle's X axis.
+  const wheelSpin=new THREE.Group();wheelSpin.position.x=sign*5.38;root.add(wheelSpin);
+  const tire=new THREE.Mesh(new THREE.TorusGeometry(.92,.28,20,72),rubber);tire.rotation.y=Math.PI/2;tire.castShadow=true;wheelSpin.add(tire);
+  const tread=new THREE.Mesh(new THREE.TorusGeometry(.92,.285,8,48),mat(0x39434a,.1,.85));tread.rotation.y=Math.PI/2;wheelSpin.add(tread);
+  const rim=new THREE.Mesh(new THREE.CylinderGeometry(.55,.55,.16,48),steel);rim.rotation.z=Math.PI/2;wheelSpin.add(rim);
+  wheels.push(wheelSpin);
  }
- // Central differential pumpkin and open inspection side so internal gearset remains visible.
- const pumpkin=new THREE.Mesh(new THREE.SphereGeometry(1.62,48,32),dark);pumpkin.scale.set(.78,1,1);pumpkin.castShadow=true;root.add(pumpkin);
- const opening=new THREE.Mesh(new THREE.SphereGeometry(1.48,48,32,0,Math.PI*2,0,Math.PI*.56),mat(0x0b151d,.2,.7));opening.rotation.x=Math.PI*.22;opening.position.z=.22;root.add(opening);
+ // Cutaway axle housing: retain the lower/rear shell as a visible cradle,
+ // but leave the camera-facing half open so the complete gearset can be inspected.
+ const lowerCase=new THREE.Mesh(new THREE.SphereGeometry(1.72,48,32,0,Math.PI*2,Math.PI*.48,Math.PI*.52),dark);
+ lowerCase.scale.set(.82,1,1);lowerCase.position.z=-.12;lowerCase.castShadow=true;root.add(lowerCase);
+ const caseRim=new THREE.Mesh(new THREE.TorusGeometry(1.55,.10,12,80,Math.PI*1.12),steel);
+ caseRim.rotation.set(Math.PI*.0,Math.PI/2,Math.PI*.44);caseRim.position.z=.02;root.add(caseRim);
  // Ring gear stands in the YZ plane, rotating around the axle's X axis. Teeth are solid blocks around its rim.
  ring=new THREE.Group();root.add(ring);
  const tor=new THREE.Mesh(new THREE.TorusGeometry(1.48,.19,18,96),gearMat);tor.rotation.y=Math.PI/2;ring.add(tor);
@@ -1353,7 +1361,7 @@ function initDifferential3D(){
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,22),mat(0x101a22,.1,.9));floor.rotation.x=-Math.PI/2;floor.position.y=-3.7;floor.receiveShadow=true;scene.add(floor);
  const grid=new THREE.GridHelper(18,36,0x38505d,0x243641);grid.position.y=-3.68;scene.add(grid);
  const resize=new ResizeObserver(()=>{if(!stage.isConnected)return;const W=stage.clientWidth,H=stage.clientHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H);});resize.observe(stage);
- const animate=()=>{if(!stage.isConnected){resize.disconnect();renderer.dispose();return;}frame++;if(mode!=="pause"){const speed=mode==="turn"?1.25:1;ring.rotation.x+=.006*speed;pinion.rotation.y-=.035;carrier.rotation.x+=.006*speed;wheels.forEach((o,i)=>{o.rotation.x+=.018*(mode==="turn"?(i===0?.72:1.28):1);});spiders.forEach(o=>{if(mode==="turn")o.rotation.z+=.025;});}controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);};animate();
+ const animate=()=>{if(!stage.isConnected){resize.disconnect();renderer.dispose();return;}frame++;if(mode!=="pause"){const speed=mode==="turn"?1.25:1;ring.rotation.x+=.006*speed;pinion.rotation.y-=.035;axles.forEach((o,i)=>{o.rotation.x+=.018*(mode==="turn"?(i===0?.72:1.28):1);});wheels.forEach((o,i)=>{o.rotation.x+=.018*(mode==="turn"?(i===0?.72:1.28):1);});spiders.forEach(o=>{if(mode==="turn")o.rotation.z+=.025;});}controls.update();renderer.render(scene,camera);requestAnimationFrame(animate);};animate();
  const status=$("diffStatus");if(status)status.textContent="Power path: driveshaft → hypoid pinion → ring gear → carrier → side gears → axle shafts → wheels.";
  const controlsRoot=$("diffControls");controlsRoot?.querySelectorAll("[data-diff-mode]").forEach(btn=>btn.addEventListener("click",()=>{mode=btn.dataset.diffMode;controlsRoot.querySelectorAll("[data-diff-mode]").forEach(x=>x.classList.toggle("active",x===btn));if(status)status.textContent=mode==="turn"?"Turning: spider pinions allow the axle shafts to rotate at different speeds.":mode==="pause"?"Animation paused. Drag the model to inspect the gear arrangement.":"Straight line: both axle shafts and wheels rotate together."; }));
 }
