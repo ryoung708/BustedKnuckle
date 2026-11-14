@@ -273,6 +273,34 @@
  #amtDiagram .amt-clutch-rotor,#amtDiagram .amt-power-path{animation:none!important}
 }
 </style>
+
+<style id="differential-front-three-quarter-rebuild">
+#diffDiagram{background:radial-gradient(ellipse at 50% 42%,#243945 0%,#111d26 68%,#0a1117 100%)}
+#diffDiagram .d3-wheel{transform-box:fill-box;transform-origin:center;animation:d3WheelRoll 3.8s linear infinite}
+#diffDiagram .d3-wheel-right{transform-origin:center}
+#diffDiagram[data-mode="turn"] .d3-wheel-left{animation-duration:5.2s}
+#diffDiagram[data-mode="turn"] .d3-wheel-right{animation-duration:3s}
+#diffDiagram .d3-ring-assembly{transform-box:view-box;transform-origin:548px 281px;animation:d3RingTurn 4s linear infinite}
+ #diffDiagram .d3-pinion-assembly{transform-box:fill-box;transform-origin:center;animation:d3PinionTurn 2s linear infinite}
+#diffDiagram .d3-input-yoke{transform-box:fill-box;transform-origin:center;animation:d3PinionTurn 2s linear infinite}
+#diffDiagram .d3-side-gear{transform-box:fill-box;transform-origin:center;animation:d3SideTurn 4s linear infinite}
+#diffDiagram .d3-spider-pinion{transform-box:fill-box;transform-origin:center}
+#diffDiagram[data-mode="turn"] .d3-spider-pinion{animation:d3SpiderTurn 1.2s linear infinite}
+#diffDiagram[data-mode="straight"] .d3-spider-pinion{animation:none}
+#diffDiagram .d3-flow{fill:none;opacity:.95;animation:d3Flow 1s linear infinite}
+#diffDiagram .d3-left-flow{animation-duration:3.8s}
+#diffDiagram .d3-right-flow{animation-duration:3.8s}
+#diffDiagram[data-mode="turn"] .d3-left-flow{animation-duration:5.2s}
+#diffDiagram[data-mode="turn"] .d3-right-flow{animation-duration:3s}
+#diffDiagram .d3-pinion-flow{animation-duration:.8s}
+@keyframes d3WheelRoll{to{transform:rotate(360deg)}}
+@keyframes d3RingTurn{to{transform:rotate(360deg)}}
+@keyframes d3PinionTurn{to{transform:rotate(-360deg)}}
+@keyframes d3SideTurn{to{transform:rotate(360deg)}}
+@keyframes d3SpiderTurn{to{transform:rotate(360deg)}}
+@keyframes d3Flow{to{stroke-dashoffset:-46}}
+@media(prefers-reduced-motion:reduce){#diffDiagram *{animation:none!important}}
+</style>
 </head><body><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./index.html">← Back to workspace</a></header>
 <section class="hero"><div class="eyebrow">Technician learning • visual first</div><h1 id="learningHeroTitle">See the circuit.<br>Understand the test.</h1><p id="learningHeroIntro">Short, practical lessons for the bay. Pick a topic, study the diagram, then check your understanding. No textbook required.</p></section>
@@ -910,76 +938,138 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
 {id:"axles",name:"Axle shafts",role:"Carry torque from the side gears to the wheel ends.",works:"Each axle shaft splines into a side gear and runs through the axle tube to its wheel end. Both receive torque while being free to rotate at different speeds in an open differential.",look:"Inspect splines, shaft condition, wheel-end seals, bearing play and abnormal end play.",test:"Follow axle-specific shaft end-play, seal and wheel-end inspection procedures."},
 {id:"bearings",name:"Carrier bearings",role:"Support the rotating differential carrier and maintain gear alignment.",works:"Carrier bearings support the differential case on each side of the ring gear. Pinion bearings support the pinion shaft.",look:"Check roughness, pitting, heat discoloration, lubricant contamination and noise that changes between drive and coast.",test:"Measure preload and adjust only to the axle manufacturer's specified procedure."}
 ],svg:`<div class="driveline-controls" id="diffControls">
-<div class="drive-control-copy"><b>Heavy-duty drive axle / open differential trainer</b><span>Follow torque from the driveshaft yoke into the pinion, through the ring gear and carrier, out the axle shafts and to both tires.</span></div>
+<div class="drive-control-copy"><b>Heavy-duty drive axle / open differential — front three-quarter cutaway</b><span>Look into the open face of the carrier. The ring gear stands upright in the housing; the pinion drives it from the driveshaft side. Axle shafts leave the side gears toward the upright tires.</span></div>
 <div class="drive-control-actions"><button type="button" class="drive-mode active" data-diff-mode="straight">Straight line</button><button type="button" class="drive-mode" data-diff-mode="turn">Turning</button></div>
-<div class="drive-status" id="diffStatus" aria-live="polite">Straight line: pinion drives the ring gear and carrier; both axle shafts and tires turn at the same speed.</div></div>
-<div class="cutaway-shell"><svg id="diffDiagram" viewBox="0 0 1180 700" role="img" aria-label="Heavy-duty drive axle cutaway showing rotating input yoke and driveshaft, pinion gear, ring gear, differential carrier, spider and side gears, axle shafts, axle housing tubes and spinning tires">
+<div class="drive-status" id="diffStatus" aria-live="polite">Straight line: ring gear and carrier rotate together. Both axle shafts and tires turn at the same speed; spider pinions do not spin on the cross-pin.</div></div>
+<div class="cutaway-shell diff-rebuilt-shell"><svg id="diffDiagram" viewBox="0 0 1100 680" role="img" aria-label="Front three-quarter cutaway of a heavy-duty open differential with upright ring gear inside the carrier housing, driveshaft pinion entering from the foreground, side gears and spider pinions inside the carrier, axle shafts extending to upright rolling tires">
 <defs>
-<linearGradient id="diffSteel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e7eef2"/><stop offset=".45" stop-color="#8a9ca7"/><stop offset="1" stop-color="#354752"/></linearGradient>
-<linearGradient id="diffCase" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#728591" stop-opacity=".62"/><stop offset="1" stop-color="#1a2932" stop-opacity=".95"/></linearGradient>
-<linearGradient id="diffGearFace" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e2e9ed"/><stop offset=".5" stop-color="#738894"/><stop offset="1" stop-color="#2a3b45"/></linearGradient>
-<marker id="diffArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#ff9f1c"/></marker>
+ <linearGradient id="d3Steel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e8f0f4"/><stop offset=".35" stop-color="#9aabb5"/><stop offset=".72" stop-color="#526671"/><stop offset="1" stop-color="#263943"/></linearGradient>
+ <linearGradient id="d3DarkSteel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#718691"/><stop offset=".5" stop-color="#344a56"/><stop offset="1" stop-color="#172832"/></linearGradient>
+ <linearGradient id="d3Housing" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9babb4"/><stop offset=".22" stop-color="#536975"/><stop offset=".6" stop-color="#263b47"/><stop offset="1" stop-color="#101d25"/></linearGradient>
+ <linearGradient id="d3Gear" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f0f4f6"/><stop offset=".22" stop-color="#aab9c2"/><stop offset=".55" stop-color="#667d89"/><stop offset="1" stop-color="#273d48"/></linearGradient>
+ <linearGradient id="d3Tire" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#080d11"/><stop offset=".25" stop-color="#27323a"/><stop offset=".55" stop-color="#10171c"/><stop offset=".82" stop-color="#3d4a52"/><stop offset="1" stop-color="#0a1015"/></linearGradient>
+ <radialGradient id="d3Cavity"><stop stop-color="#233a46"/><stop offset=".72" stop-color="#101e27"/><stop offset="1" stop-color="#070e13"/></radialGradient>
+ <marker id="d3Arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#ffad3d"/></marker>
+ <clipPath id="d3CavityClip"><path d="M365 185Q390 150 445 145H655Q710 150 735 185L765 285L735 425Q710 460 655 465H445Q390 460 365 425L335 285Z"/></clipPath>
 </defs>
-<!-- tires and wheel ends -->
+<!-- Axle tubes sit behind the center section; shafts remain concentric inside them. -->
+<g class="click-part" data-part="housing">
+ <path d="M65 310L365 260L390 365L92 425Z" fill="url(#d3Housing)" stroke="#aebdc5" stroke-width="5"/>
+ <path d="M735 260L1035 310L1008 425L710 365Z" fill="url(#d3Housing)" stroke="#aebdc5" stroke-width="5"/>
+ <path d="M85 342L370 294L382 350L98 398Z" fill="#111d25" stroke="#6d818c" stroke-width="5"/>
+ <path d="M718 294L1015 342L1002 398L706 350Z" fill="#111d25" stroke="#6d818c" stroke-width="5"/>
+ <path d="M65 310L365 260M92 425L390 365M735 260L1035 310M710 365L1008 425" stroke="#d1dce2" stroke-width="4" opacity=".65"/>
+</g>
+<!-- Upright tires: visible tread width and sidewall, not horizontal discs. -->
 <g class="click-part" data-part="axles">
-<g transform="translate(88 390)"><g class="diff-wheel diff-wheel-left"><circle r="82" fill="#10161b" stroke="#8b969d" stroke-width="10"/><circle r="66" fill="#27333b" stroke="#c2cdd3" stroke-width="5"/><circle r="48" fill="#43545e" stroke="#e0e8ed" stroke-width="5"/><circle r="16" fill="#1b2b35" stroke="#e0e8ed" stroke-width="4"/><path d="M0 -60V-20M0 20V60M-60 0H-20M20 0H60M-42 -42L-14 -14M14 14L42 42M42 -42L14 -14M-14 14L-42 42" stroke="#c9d5dc" stroke-width="7"/><path d="M-28 -76L-22 -66M0 -82V-70M28 -76L22 -66M76 -28L66 -22M82 0H70M76 28L66 22M28 76L22 66M0 82V70M-28 76L-22 66M-76 28L-66 22M-82 0H-70M-76 -28L-66 -22" stroke="#d4dde3" stroke-width="7" stroke-linecap="round"/></g></g>
-<g transform="translate(1092 390)"><g class="diff-wheel diff-wheel-right"><circle r="82" fill="#10161b" stroke="#8b969d" stroke-width="10"/><circle r="66" fill="#27333b" stroke="#c2cdd3" stroke-width="5"/><circle r="48" fill="#43545e" stroke="#e0e8ed" stroke-width="5"/><circle r="16" fill="#1b2b35" stroke="#e0e8ed" stroke-width="4"/><path d="M0 -60V-20M0 20V60M-60 0H-20M20 0H60M-42 -42L-14 -14M14 14L42 42M42 -42L14 -14M-14 14L-42 42" stroke="#c9d5dc" stroke-width="7"/><path d="M-28 -76L-22 -66M0 -82V-70M28 -76L22 -66M76 -28L66 -22M82 0H70M76 28L66 22M28 76L22 66M0 82V70M-28 76L-22 66M-76 28L-66 22M-82 0H-70M-76 -28L-66 -22" stroke="#d4dde3" stroke-width="7" stroke-linecap="round"/></g></g>
+ <g transform="translate(85 360) rotate(-9)"><g class="d3-wheel d3-wheel-left">
+  <ellipse cx="12" cy="0" rx="52" ry="119" fill="#080d11" stroke="#667781" stroke-width="9"/>
+  <ellipse cx="0" cy="0" rx="43" ry="111" fill="url(#d3Tire)" stroke="#9aa8b0" stroke-width="4"/>
+  <ellipse cx="-8" cy="0" rx="27" ry="82" fill="#293943" stroke="#c4cfd5" stroke-width="5"/>
+  <ellipse cx="-10" cy="0" rx="17" ry="58" fill="#101d25" stroke="#81949e" stroke-width="5"/>
+  <path d="M-44 -84L-23 -75M-50 -50L-27 -43M-52 -14L-27 -10M-52 24L-27 20M-46 60L-24 52M-35 91L-18 78" stroke="#d1dce1" stroke-width="7" stroke-linecap="round"/>
+  <path d="M8 -100L27 -91M10 -65L32 -58M11 -28L34 -22M11 10L34 16M10 48L31 55M7 84L25 94" stroke="#899aa3" stroke-width="5" stroke-linecap="round"/>
+ </g></g>
+ <g transform="translate(1015 360) rotate(9)"><g class="d3-wheel d3-wheel-right">
+  <ellipse cx="-12" cy="0" rx="52" ry="119" fill="#080d11" stroke="#667781" stroke-width="9"/>
+  <ellipse cx="0" cy="0" rx="43" ry="111" fill="url(#d3Tire)" stroke="#9aa8b0" stroke-width="4"/>
+  <ellipse cx="8" cy="0" rx="27" ry="82" fill="#293943" stroke="#c4cfd5" stroke-width="5"/>
+  <ellipse cx="10" cy="0" rx="17" ry="58" fill="#101d25" stroke="#81949e" stroke-width="5"/>
+  <path d="M44 -84L23 -75M50 -50L27 -43M52 -14L27 -10M52 24L27 20M46 60L24 52M35 91L18 78" stroke="#d1dce1" stroke-width="7" stroke-linecap="round"/>
+  <path d="M-8 -100L-27 -91M-10 -65L-32 -58M-11 -28L-34 -22M-11 10L-34 16M-10 48L-31 55M-7 84L-25 94" stroke="#899aa3" stroke-width="5" stroke-linecap="round"/>
+ </g></g>
 </g>
-<text x="88" y="245" class="part-label">LEFT TIRE</text><text x="1092" y="245" class="part-label">RIGHT TIRE</text>
-<!-- axle housing and tubes -->
+<!-- Axle shafts, from wheel hubs through tubes to the side gears. -->
 <g class="click-part" data-part="axles">
-<path d="M130 390H450M730 390H1050" stroke="url(#diffCase)" stroke-width="86" stroke-linecap="round"/>
-<path d="M130 390H450M730 390H1050" stroke="#0b141b" stroke-width="44" stroke-linecap="round"/>
-<path d="M130 390H1050" stroke="url(#diffSteel)" stroke-width="18" stroke-linecap="round"/>
-<path d="M130 390H555" class="diff-flow diff-axle-flow diff-left-flow" stroke="#ff9f1c" stroke-width="6" stroke-dasharray="14 12" marker-end="url(#diffArrow)"/><path d="M565 390H1050" class="diff-flow diff-axle-flow diff-right-flow" stroke="#ff9f1c" stroke-width="6" stroke-dasharray="14 12" marker-end="url(#diffArrow)"/>
-<text x="280" y="325" class="micro-label">LEFT AXLE TUBE / SHAFT</text><text x="880" y="325" class="micro-label">RIGHT AXLE TUBE / SHAFT</text>
+ <path d="M100 360L470 300" stroke="#0b141a" stroke-width="29" stroke-linecap="round"/>
+ <path d="M100 360L470 300" stroke="url(#d3Steel)" stroke-width="13" stroke-linecap="round"/>
+ <path d="M1000 360L630 300" stroke="#0b141a" stroke-width="29" stroke-linecap="round"/>
+ <path d="M1000 360L630 300" stroke="url(#d3Steel)" stroke-width="13" stroke-linecap="round"/>
+ <path class="d3-flow d3-left-flow" d="M145 352L460 302" stroke="#ffad3d" stroke-width="6" stroke-dasharray="13 11" marker-end="url(#d3Arrow)"/>
+ <path class="d3-flow d3-right-flow" d="M955 352L640 302" stroke="#ffad3d" stroke-width="6" stroke-dasharray="13 11" marker-end="url(#d3Arrow)"/>
 </g>
-<g class="click-part" data-part="axles"><g transform="translate(300 390)" class="diff-axle-collar"><circle r="23" fill="#253640" stroke="#dce5ea" stroke-width="5"/><circle r="15" fill="none" stroke="#ffbd63" stroke-width="4"/><path d="M0 -18V18M-18 0H18" stroke="#f1f4f7" stroke-width="4"/></g><g transform="translate(880 390)" class="diff-axle-collar"><circle r="23" fill="#253640" stroke="#dce5ea" stroke-width="5"/><circle r="15" fill="none" stroke="#ffbd63" stroke-width="4"/><path d="M0 -18V18M-18 0H18" stroke="#f1f4f7" stroke-width="4"/></g></g><!-- hogs-head / removable third-member housing -->
-<g class="click-part" data-part="carrier">
-<path d="M430 275Q430 235 485 220L520 185H600L635 220Q690 235 690 285V505Q690 545 645 565H475Q430 545 430 505Z" fill="url(#diffCase)" stroke="#d0dbe1" stroke-width="6"/>
-<path d="M455 285Q465 250 510 250H610Q655 250 665 285V490Q650 530 615 535H505Q470 530 455 490Z" fill="#0a1319" stroke="#8ea0aa" stroke-width="4"/>
-<path d="M470 280L505 245H615L650 280" stroke="#c3cfd6" stroke-width="7" fill="none"/>
-<text x="560" y="610" class="part-label">HOGS-HEAD / THIRD-MEMBER HOUSING</text>
+<!-- Main third-member shell and deep cavity. The gearset is clipped to the opening. -->
+<g class="click-part" data-part="hog">
+ <path d="M365 185Q390 135 450 125H650Q710 135 735 185L785 285L735 445Q710 495 650 505H450Q390 495 365 445L315 285Z" fill="url(#d3Housing)" stroke="#d1dce2" stroke-width="9"/>
+ <path d="M365 185Q390 150 445 145H655Q710 150 735 185L765 285L735 425Q710 460 655 465H445Q390 460 365 425L335 285Z" fill="url(#d3Cavity)" stroke="#111e26" stroke-width="12"/>
+ <path d="M365 185Q390 150 445 145H655Q710 150 735 185L765 285L735 425Q710 460 655 465H445Q390 460 365 425L335 285Z" fill="none" stroke="#9aabb4" stroke-width="7"/>
+ <path d="M395 175L445 145H655L705 175M335 285L365 185M765 285L735 185M365 425L395 455H705L735 425" fill="none" stroke="#dce5ea" stroke-width="6" opacity=".7"/>
+ <path d="M405 165L435 150M665 150L695 165M350 285L370 205M750 205L770 285" stroke="#ffbd63" stroke-width="5" opacity=".75"/>
 </g>
-<!-- ring gear and differential carrier -->
-<g class="click-part" data-part="ring"><g class="diff-gear">
-<circle cx="560" cy="390" r="145" fill="url(#diffGearFace)" stroke="#dfe7ec" stroke-width="6"/>
-<circle cx="560" cy="390" r="145" fill="none" stroke="#e7eef2" stroke-width="15" stroke-dasharray="7 6"/>
-<circle cx="560" cy="390" r="119" fill="#15232c" stroke="#8fa0aa" stroke-width="7"/>
-<circle cx="560" cy="390" r="104" fill="none" stroke="#b8c6ce" stroke-width="5" stroke-dasharray="3 6"/><path d="M560 258L574 290L604 300M560 522L546 490L516 480M692 390L660 376L650 346" fill="none" stroke="#ffbd63" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="560" cy="390" r="137" fill="none" stroke="#f2f6f8" stroke-width="5" stroke-dasharray="2 16"/>
-</g><text x="560" y="220" class="part-label">RING GEAR / CROWN WHEEL</text>
+<!-- Rear depth of ring gear, then the upright ring gear face. -->
+<g class="click-part" data-part="ring" clip-path="url(#d3CavityClip)">
+ <g class="d3-ring-assembly">
+  <ellipse cx="565" cy="295" rx="155" ry="132" fill="#111c23" stroke="#070d12" stroke-width="12" transform="translate(17 14)"/>
+  <ellipse cx="548" cy="281" rx="180" ry="171" fill="url(#d3Gear)" stroke="#e1e9ed" stroke-width="7"/>
+  <ellipse cx="548" cy="281" rx="180" ry="171" fill="none" stroke="#f0f4f6" stroke-width="18" stroke-dasharray="8 5"/>
+  <ellipse cx="548" cy="281" rx="136" ry="115" fill="none" stroke="#263b46" stroke-width="15"/>
+  <ellipse cx="548" cy="281" rx="122" ry="103" fill="#182b35" stroke="#9aabb4" stroke-width="7"/>
+  <ellipse cx="548" cy="281" rx="110" ry="91" fill="none" stroke="#e1e8ec" stroke-width="5" stroke-dasharray="4 8"/>
+  <path d="M548 125V155M548 407V437M390 281H420M676 281H706" stroke="#ffca7a" stroke-width="7" stroke-linecap="round"/>
+ </g>
 </g>
-<g class="click-part" data-part="carrier">
-<circle cx="560" cy="390" r="88" fill="url(#diffCase)" stroke="#e0e8ed" stroke-width="6"/>
-<circle cx="560" cy="390" r="67" fill="#15232c" stroke="#9eafb9" stroke-width="5"/>
-<path d="M492 390H628" stroke="#c9d5dc" stroke-width="14" stroke-linecap="round"/>
-<text x="560" y="505" class="micro-label">ROTATING DIFFERENTIAL CASE / CARRIER</text>
+<!-- Differential carrier and internal bevel gears: all within the ring gear opening. -->
+<g class="click-part" data-part="carrier" clip-path="url(#d3CavityClip)">
+ <ellipse cx="548" cy="281" rx="107" ry="98" fill="#0a151c" stroke="#9babb4" stroke-width="10"/>
+ <ellipse cx="548" cy="281" rx="94" ry="86" fill="url(#d3DarkSteel)" stroke="#d0dbe1" stroke-width="6"/>
+ <path d="M458 281Q548 245 638 281Q548 317 458 281Z" fill="#1a2d38" stroke="#9eafb8" stroke-width="5"/>
+ <path d="M548 190V372" stroke="#d8e1e6" stroke-width="12" stroke-linecap="round"/>
+ <path d="M465 281H631" stroke="#d8e1e6" stroke-width="12" stroke-linecap="round"/>
+ <ellipse cx="548" cy="281" rx="65" ry="57" fill="#111f28" stroke="#8fa2ac" stroke-width="5"/>
 </g>
-<!-- bevel side gears splined to axle shafts, spider pinions on cross-pin -->
-<g class="click-part" data-part="spider">
-<g transform="translate(500 390)"><g class="diff-side-gear"><circle r="43" fill="url(#diffGearFace)" stroke="#e5edf1" stroke-width="4"/><circle r="43" fill="none" stroke="#eaf0f4" stroke-width="10" stroke-dasharray="5 5"/><circle r="18" fill="#182832" stroke="#dce5ea" stroke-width="4"/><path d="M0 -34V-10M0 10V34M-34 0H-10M10 0H34" stroke="#eaf0f4" stroke-width="7"/></g></g>
-<g transform="translate(620 390)"><g class="diff-side-gear"><circle r="43" fill="url(#diffGearFace)" stroke="#e5edf1" stroke-width="4"/><circle r="43" fill="none" stroke="#eaf0f4" stroke-width="10" stroke-dasharray="5 5"/><circle r="18" fill="#182832" stroke="#dce5ea" stroke-width="4"/><path d="M0 -34V-10M0 10V34M-34 0H-10M10 0H34" stroke="#eaf0f4" stroke-width="7"/></g></g>
-<g id="diffSpiderGears">
-<g transform="translate(560 330)"><g class="diff-spider-pinion"><circle r="30" fill="url(#diffGearFace)" stroke="#e5edf1" stroke-width="4"/><circle r="30" fill="none" stroke="#eaf0f4" stroke-width="9" stroke-dasharray="5 4"/><circle r="10" fill="#172832" stroke="#dce5ea" stroke-width="3"/><path d="M0 -22V-9M0 9V22M-22 0H-9M9 0H22" stroke="#eaf0f4" stroke-width="6"/></g></g>
-<g transform="translate(560 450)"><g class="diff-spider-pinion"><circle r="30" fill="url(#diffGearFace)" stroke="#e5edf1" stroke-width="4"/><circle r="30" fill="none" stroke="#eaf0f4" stroke-width="9" stroke-dasharray="5 4"/><circle r="10" fill="#172832" stroke="#dce5ea" stroke-width="3"/><path d="M0 -22V-9M0 9V22M-22 0H-9M9 0H22" stroke="#eaf0f4" stroke-width="6"/></g></g>
-<path d="M560 298V482" stroke="#dce5ea" stroke-width="11" stroke-linecap="round"/>
+<g class="click-part" data-part="spider" clip-path="url(#d3CavityClip)">
+ <!-- Side gears sit at the left and right ends of the cross shaft. -->
+ <g transform="translate(476 281)"><g class="d3-side-gear d3-side-left">
+  <ellipse rx="31" ry="51" fill="url(#d3Gear)" stroke="#e8eef1" stroke-width="5"/>
+  <ellipse rx="22" ry="39" fill="none" stroke="#263b46" stroke-width="7" stroke-dasharray="5 4"/>
+  <ellipse rx="11" ry="23" fill="#111e26" stroke="#e1e9ed" stroke-width="4"/>
+ </g></g>
+ <g transform="translate(620 281)"><g class="d3-side-gear d3-side-right">
+  <ellipse rx="31" ry="51" fill="url(#d3Gear)" stroke="#e8eef1" stroke-width="5"/>
+  <ellipse rx="22" ry="39" fill="none" stroke="#263b46" stroke-width="7" stroke-dasharray="5 4"/>
+  <ellipse rx="11" ry="23" fill="#111e26" stroke="#e1e9ed" stroke-width="4"/>
+ </g></g>
+ <!-- Spider pinions on the cross pin, visibly meshing between the side gears. -->
+ <g id="d3SpiderPair">
+  <g transform="translate(548 220)"><g class="d3-spider-pinion">
+   <ellipse rx="26" ry="19" fill="url(#d3Gear)" stroke="#edf2f4" stroke-width="4"/>
+   <ellipse rx="17" ry="11" fill="none" stroke="#273d48" stroke-width="5" stroke-dasharray="4 3"/>
+   <circle r="7" fill="#111e26" stroke="#e1e9ed" stroke-width="3"/>
+  </g></g>
+  <g transform="translate(548 342)"><g class="d3-spider-pinion">
+   <ellipse rx="26" ry="19" fill="url(#d3Gear)" stroke="#edf2f4" stroke-width="4"/>
+   <ellipse rx="17" ry="11" fill="none" stroke="#273d48" stroke-width="5" stroke-dasharray="4 3"/>
+   <circle r="7" fill="#111e26" stroke="#e1e9ed" stroke-width="3"/>
+  </g></g>
+ </g>
+ <path d="M548 193V369" stroke="#e2e9ed" stroke-width="12" stroke-linecap="round"/>
+ <circle cx="548" cy="281" r="10" fill="#182832" stroke="#f0f4f6" stroke-width="4"/>
 </g>
-<text x="560" y="540" class="micro-label">SPIDER PINIONS MESH WITH SIDE GEARS</text>
-</g>
-<!-- pinion shaft, pinion gear and rotating input yoke -->
+<!-- Foreground pinion and driveshaft: the pinion meets the lower edge of the ring gear. -->
 <g class="click-part" data-part="driveshaft">
-<path d="M560 45V180" stroke="url(#diffSteel)" stroke-width="28" stroke-linecap="round"/>
-<path d="M560 45V180" class="diff-flow diff-input-flow" stroke="#ff9f1c" stroke-width="8" stroke-dasharray="14 10" marker-end="url(#diffArrow)"/>
-<g transform="translate(560 55)"><g class="diff-input-yoke"><circle r="24" fill="#263944" stroke="#e3ebef" stroke-width="5"/><path d="M-40 -8H-22M22 8H40M-9 -24V-42H9V-24M-9 24V42H9V24" stroke="#e3ebef" stroke-width="9" fill="none"/></g></g>
-<text x="700" y="55" class="part-label">INPUT YOKE</text><path d="M685 60H605" class="leader"/>
-<text x="700" y="82" class="micro-label">FROM TRANSMISSION DRIVESHAFT</text>
+ <path d="M548 650L548 526" stroke="#111b22" stroke-width="55" stroke-linecap="round"/>
+ <path d="M548 650L548 526" stroke="url(#d3Steel)" stroke-width="37" stroke-linecap="round"/>
+ <path d="M528 628L568 628M528 600L568 600" stroke="#263b46" stroke-width="6"/>
+ <g transform="translate(548 440)"><g class="d3-pinion-assembly">
+  <ellipse rx="48" ry="31" fill="url(#d3Gear)" stroke="#edf2f4" stroke-width="6"/>
+  <ellipse rx="35" ry="22" fill="none" stroke="#263b46" stroke-width="8" stroke-dasharray="6 4"/>
+  <ellipse rx="18" ry="11" fill="#172832" stroke="#dce5ea" stroke-width="4"/>
+ </g></g>
+ <g transform="translate(548 654)"><g class="d3-input-yoke">
+  <circle r="25" fill="#253640" stroke="#e2eaf0" stroke-width="6"/>
+  <path d="M-10 -23V-42H10V-23M-10 23V42H10V23M-42 -8H-23M23 8H42" stroke="#dce5ea" stroke-width="8" fill="none"/>
+ </g></g>
+ <path d="M548 625V471" class="d3-flow d3-pinion-flow" stroke="#ffad3d" stroke-width="7" stroke-dasharray="12 10" marker-end="url(#d3Arrow)"/>
 </g>
-<g class="click-part" data-part="pinion">
-<g transform="translate(560 220)"><g class="diff-pinion"><circle r="49" fill="url(#diffGearFace)" stroke="#e5edf1" stroke-width="4"/><circle r="49" fill="none" stroke="#eaf0f4" stroke-width="12" stroke-dasharray="6 5"/><circle r="20" fill="#182832" stroke="#dce5ea" stroke-width="4"/><path d="M0 -39V-15M0 15V39M-39 0H-15M15 0H39M-28 -28L-10 -10M10 10L28 28M28 -28L10 -10M-10 10L-28 28" stroke="#eaf0f4" stroke-width="8"/></g></g>
-<text x="700" y="200" class="part-label">DRIVE PINION</text><path d="M680 205H620" class="leader"/>
+<!-- Power flow and identification labels. -->
+<g pointer-events="none">
+ <text x="548" y="48" class="part-label" text-anchor="middle">UPRIGHT RING GEAR INSIDE THE CARRIER</text>
+ <path d="M548 60V105" class="leader"/>
+ <text x="548" y="675" class="micro-label" text-anchor="middle">DRIVESHAFT INPUT / PINION</text>
+ <text x="105" y="205" class="part-label">LEFT WHEEL END</text><path d="M130 215L100 240" class="leader"/>
+ <text x="995" y="205" class="part-label" text-anchor="end">RIGHT WHEEL END</text><path d="M970 215L1000 240" class="leader"/>
+ <text x="548" y="105" class="micro-label" text-anchor="middle">RING GEAR + CARRIER ROTATE TOGETHER</text>
 </g>
-<g class="click-part" data-part="bearings"><circle cx="465" cy="390" r="22" fill="none" stroke="#69b7e8" stroke-width="7"/><circle cx="655" cy="390" r="22" fill="none" stroke="#69b7e8" stroke-width="7"/><text x="560" y="650" class="micro-label">CARRIER BEARINGS HOLD RING GEAR ALIGNMENT • PINION BEARINGS SUPPORT THE PINION SHAFT</text></g>
-<text x="560" y="680" class="micro-label">CONCEPTUAL OPEN DIFFERENTIAL • ACTUAL AXLE / HYPOID GEOMETRY VARIES BY OEM</text>
 </svg></div>`}
 
 };
@@ -1118,32 +1208,17 @@ function wireDrivelineControls(key){
  }
  if(key==="differential"){
   const root=document.getElementById("diffControls"),svg=document.getElementById("diffDiagram");if(!root||!svg)return;
-  if(!svg.querySelector("#diffDepthRim")){
-   const housing=svg.querySelector('g[data-part="carrier"]');
-   const ring=svg.querySelector('g[data-part="ring"]');
-   const depth=`
-    <g id="diffDepthRim" pointer-events="none">
-     <ellipse cx="580" cy="372" rx="157" ry="137" fill="#172832" stroke="#9cabb5" stroke-width="24"/>
-     <ellipse cx="580" cy="372" rx="157" ry="137" fill="none" stroke="#d7e0e5" stroke-width="7" stroke-dasharray="9 7"/>
-     <path d="M432 335L450 318M435 450L455 463M560 526L560 548M680 450L700 465M720 340L700 325" stroke="#c3d0d8" stroke-width="12" stroke-linecap="round"/>
-     <ellipse cx="560" cy="390" rx="145" ry="126" fill="none" stroke="#0a141b" stroke-width="17" opacity=".9"/>
-    </g>`;
-   if(ring)ring.insertAdjacentHTML("beforebegin",depth);
-   const internals=svg.querySelector('g[data-part="spider"]');
-   if(internals)internals.insertAdjacentHTML("afterbegin",`
-    <g class="diff-internal-depth" pointer-events="none">
-     <ellipse cx="560" cy="390" rx="105" ry="77" fill="#0d1b24" stroke="#647985" stroke-width="9"/>
-     <path d="M500 390H620M560 330V450" stroke="#d4dee4" stroke-width="20" stroke-linecap="round" opacity=".24"/>
-     <path d="M478 390H495M625 390H642M560 314V328M560 452V466" stroke="#ffcf8b" stroke-width="7" stroke-linecap="round"/>
-    </g>`);
-  }
   root.querySelectorAll("[data-diff-mode]").forEach(b=>b.addEventListener("click",()=>{
    const mode=b.dataset.diffMode;
    root.querySelectorAll("[data-diff-mode]").forEach(x=>x.classList.toggle("active",x===b));
    svg.dataset.mode=mode;
-   document.getElementById("diffStatus").textContent=mode==="straight"
-    ?"Straight line: pinion turns the ring gear and carrier. Both side gears and axle shafts turn together at the same speed; spider pinions travel with the carrier without spinning on their cross-pin."
-    :"Turning: the carrier continues to drive both side gears. Spider pinions rotate on the cross-pin, allowing the outside axle shaft and tire to turn faster than the inside.";
+   const left=svg.querySelector(".d3-wheel-left"),right=svg.querySelector(".d3-wheel-right");
+   if(left)left.style.animationDuration=mode==="turn"?"5.2s":"3.8s";
+   if(right)right.style.animationDuration=mode==="turn"?"3.0s":"3.8s";
+   const status=document.getElementById("diffStatus");
+   status.textContent=mode==="straight"
+    ?"Straight line: pinion drives the upright ring gear and carrier. Both side gears, axle shafts and tires turn at the same speed. Spider pinions travel with the carrier without spinning on the cross-pin."
+    :"Turning: the carrier still drives both side gears. The spider pinions rotate on the cross-pin, allowing the outside wheel to turn faster than the inside wheel.";
   }));
   root.querySelector('[data-diff-mode="straight"]').click();
  }
