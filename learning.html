@@ -242,7 +242,7 @@
 <style id="drivetrain-powerflow-depth-v3">
 /* Transmission: a moving clutch rotor, selected synchronizer and visible torque path. */
 #amtDiagram .amt-clutch-rotor{transform-box:fill-box;transform-origin:center;animation:amtClutchTurn 1.7s linear infinite;filter:drop-shadow(0 0 5px #ffbd6388)}
-@keyframes amtClutchTurn{to{transform:translate(270px,330px) rotate(360deg)}}
+@keyframes amtClutchTurn{to{transform:rotate(360deg)}}
 #amtDiagram .amt-power-path{fill:none;stroke:#ffb34d;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:15 13;marker-end:url(#amtArrow);opacity:0;filter:drop-shadow(0 0 5px #ff9f1c);animation:amtPowerTravel .72s linear infinite}
 #amtDiagram .amt-power-path[data-power-gear="1"]{opacity:0}
 #amtDiagram[data-gear="1"] .amt-power-path[data-power-gear="1"],
