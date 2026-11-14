@@ -85,26 +85,26 @@ try {
   // Guard the Learning Center's highest-risk interactive paths against silent regressions.
   const learning = await readFile(join(root, "learning.html"), "utf8");
   for (const system of ["electrical", "engine", "aftertreatment", "transmission", "differential", "summary"]) {
-    assert.match(learning, new RegExp('data-system=["\\']' + system + '["\\']'),
+    assert.match(learning, new RegExp("data-system=[\\\"']" + system + "[\\\"']"),
       "Learning Center system tab is missing: " + system);
   }
-  assert.match(learning, /document\.querySelectorAll\("\\[data-system\\]"\)/);
+  assert.match(learning, /document\.querySelectorAll\("\[data-system\]"\)/);
   assert.match(learning, /tabs\.forEach\(t=>t\.addEventListener\("click"/,
     "Learning Center system tabs must have click handlers");
   assert.match(learning, /function renderModule\(key\)/);
   assert.match(learning, /wireDrivelineControls\(key\)/,
     "Newly rendered drivetrain controls must be wired after rendering");
   for (const gear of ["1", "2", "3", "4", "R", "N"]) {
-    assert.match(learning, new RegExp('data-amt-gear=["\\']' + gear + '["\\']'),
+    assert.match(learning, new RegExp("data-amt-gear=[\\\"']" + gear + "[\\\"']"),
       "AMT selector is missing gear " + gear);
   }
   for (const mode of ["straight", "turn"]) {
-    assert.match(learning, new RegExp('data-diff-mode=["\\']' + mode + '["\\']'),
+    assert.match(learning, new RegExp("data-diff-mode=[\\\"']" + mode + "[\\\"']"),
       "Differential mode control is missing: " + mode);
   }
-  assert.match(learning, /root\.querySelectorAll\("\\[data-amt-gear\\]"\)\.forEach\(b=>b\.addEventListener\("click"/,
+  assert.match(learning, /root\.querySelectorAll\("\[data-amt-gear\]"\)\.forEach\(b=>b\.addEventListener\("click"/,
     "AMT gear buttons must have click handlers");
-  assert.match(learning, /root\.querySelectorAll\("\\[data-diff-mode\\]"\)\.forEach\(b=>b\.addEventListener\("click"/,
+  assert.match(learning, /root\.querySelectorAll\("\[data-diff-mode\]"\)\.forEach\(b=>b\.addEventListener\("click"/,
     "Differential mode buttons must have click handlers");
 
   console.log("IronKnuckle page-integrity checks passed: " +
