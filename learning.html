@@ -276,13 +276,13 @@
 
 <style id="differential-front-three-quarter-rebuild">
 #diffDiagram{background:radial-gradient(ellipse at 50% 42%,#243945 0%,#111d26 68%,#0a1117 100%)}
-#diffDiagram .d3-wheel{transform-box:view-box;transform-origin:85px 360px;animation:d3WheelRoll 3.8s linear infinite}
+#diffDiagram .d3-wheel{transform-box:fill-box;transform-origin:center;animation:d3WheelRoll 3.8s linear infinite}
 #diffDiagram .d3-wheel-right{transform-origin:1015px 360px}
 #diffDiagram[data-mode="turn"] .d3-wheel-left{animation-duration:5.2s}
 #diffDiagram[data-mode="turn"] .d3-wheel-right{animation-duration:3s}
 #diffDiagram .d3-ring-assembly{transform-box:view-box;transform-origin:548px 281px;animation:d3RingTurn 4s linear infinite}
-#diffDiagram .d3-pinion-assembly{transform-box:view-box;transform-origin:548px 498px;animation:d3PinionTurn 2s linear infinite}
-#diffDiagram .d3-input-yoke{transform-box:view-box;transform-origin:548px 654px;animation:d3PinionTurn 2s linear infinite}
+ #diffDiagram .d3-pinion-assembly{transform-box:fill-box;transform-origin:center;animation:d3PinionTurn 2s linear infinite}
+#diffDiagram .d3-input-yoke{transform-box:fill-box;transform-origin:center;animation:d3PinionTurn 2s linear infinite}
 #diffDiagram .d3-side-gear{transform-box:fill-box;transform-origin:center;animation:d3SideTurn 4s linear infinite}
 #diffDiagram .d3-spider-pinion{transform-box:fill-box;transform-origin:center}
 #diffDiagram[data-mode="turn"] .d3-spider-pinion{animation:d3SpiderTurn 1.2s linear infinite}
@@ -962,22 +962,22 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
 </g>
 <!-- Upright tires: visible tread width and sidewall, not horizontal discs. -->
 <g class="click-part" data-part="axles">
- <g class="d3-wheel d3-wheel-left" transform="translate(85 360) rotate(-9)">
+ <g transform="translate(85 360) rotate(-9)"><g class="d3-wheel d3-wheel-left">
   <ellipse cx="12" cy="0" rx="52" ry="119" fill="#080d11" stroke="#667781" stroke-width="9"/>
   <ellipse cx="0" cy="0" rx="43" ry="111" fill="url(#d3Tire)" stroke="#9aa8b0" stroke-width="4"/>
   <ellipse cx="-8" cy="0" rx="27" ry="82" fill="#293943" stroke="#c4cfd5" stroke-width="5"/>
   <ellipse cx="-10" cy="0" rx="17" ry="58" fill="#101d25" stroke="#81949e" stroke-width="5"/>
   <path d="M-44 -84L-23 -75M-50 -50L-27 -43M-52 -14L-27 -10M-52 24L-27 20M-46 60L-24 52M-35 91L-18 78" stroke="#d1dce1" stroke-width="7" stroke-linecap="round"/>
   <path d="M8 -100L27 -91M10 -65L32 -58M11 -28L34 -22M11 10L34 16M10 48L31 55M7 84L25 94" stroke="#899aa3" stroke-width="5" stroke-linecap="round"/>
- </g>
- <g class="d3-wheel d3-wheel-right" transform="translate(1015 360) rotate(9)">
+ </g></g>
+ <g transform="translate(1015 360) rotate(9)"><g class="d3-wheel d3-wheel-right">
   <ellipse cx="-12" cy="0" rx="52" ry="119" fill="#080d11" stroke="#667781" stroke-width="9"/>
   <ellipse cx="0" cy="0" rx="43" ry="111" fill="url(#d3Tire)" stroke="#9aa8b0" stroke-width="4"/>
   <ellipse cx="8" cy="0" rx="27" ry="82" fill="#293943" stroke="#c4cfd5" stroke-width="5"/>
   <ellipse cx="10" cy="0" rx="17" ry="58" fill="#101d25" stroke="#81949e" stroke-width="5"/>
   <path d="M44 -84L23 -75M50 -50L27 -43M52 -14L27 -10M52 24L27 20M46 60L24 52M35 91L18 78" stroke="#d1dce1" stroke-width="7" stroke-linecap="round"/>
   <path d="M-8 -100L-27 -91M-10 -65L-32 -58M-11 -28L-34 -22M-11 10L-34 16M-10 48L-31 55M-7 84L-25 94" stroke="#899aa3" stroke-width="5" stroke-linecap="round"/>
- </g>
+ </g></g>
 </g>
 <!-- Axle shafts, from wheel hubs through tubes to the side gears. -->
 <g class="click-part" data-part="axles">
@@ -1019,28 +1019,28 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
 </g>
 <g class="click-part" data-part="spider" clip-path="url(#d3CavityClip)">
  <!-- Side gears sit at the left and right ends of the cross shaft. -->
- <g class="d3-side-gear d3-side-left" transform="translate(476 281)">
+ <g transform="translate(476 281)"><g class="d3-side-gear d3-side-left">
   <ellipse rx="31" ry="51" fill="url(#d3Gear)" stroke="#e8eef1" stroke-width="5"/>
   <ellipse rx="22" ry="39" fill="none" stroke="#263b46" stroke-width="7" stroke-dasharray="5 4"/>
   <ellipse rx="11" ry="23" fill="#111e26" stroke="#e1e9ed" stroke-width="4"/>
- </g>
- <g class="d3-side-gear d3-side-right" transform="translate(620 281)">
+ </g></g>
+ <g transform="translate(620 281)"><g class="d3-side-gear d3-side-right">
   <ellipse rx="31" ry="51" fill="url(#d3Gear)" stroke="#e8eef1" stroke-width="5"/>
   <ellipse rx="22" ry="39" fill="none" stroke="#263b46" stroke-width="7" stroke-dasharray="5 4"/>
   <ellipse rx="11" ry="23" fill="#111e26" stroke="#e1e9ed" stroke-width="4"/>
- </g>
+ </g></g>
  <!-- Spider pinions on the cross pin, visibly meshing between the side gears. -->
  <g id="d3SpiderPair">
-  <g class="d3-spider-pinion" transform="translate(548 220)">
+  <g transform="translate(548 220)"><g class="d3-spider-pinion">
    <ellipse rx="26" ry="19" fill="url(#d3Gear)" stroke="#edf2f4" stroke-width="4"/>
    <ellipse rx="17" ry="11" fill="none" stroke="#273d48" stroke-width="5" stroke-dasharray="4 3"/>
    <circle r="7" fill="#111e26" stroke="#e1e9ed" stroke-width="3"/>
-  </g>
-  <g class="d3-spider-pinion" transform="translate(548 342)">
+  </g></g>
+  <g transform="translate(548 342)"><g class="d3-spider-pinion">
    <ellipse rx="26" ry="19" fill="url(#d3Gear)" stroke="#edf2f4" stroke-width="4"/>
    <ellipse rx="17" ry="11" fill="none" stroke="#273d48" stroke-width="5" stroke-dasharray="4 3"/>
    <circle r="7" fill="#111e26" stroke="#e1e9ed" stroke-width="3"/>
-  </g>
+  </g></g>
  </g>
  <path d="M548 193V369" stroke="#e2e9ed" stroke-width="12" stroke-linecap="round"/>
  <circle cx="548" cy="281" r="10" fill="#182832" stroke="#f0f4f6" stroke-width="4"/>
@@ -1050,16 +1050,16 @@ differential:{eyebrow:"HEAVY-DUTY DRIVE AXLE / HOGS-HEAD CUTAWAY",title:"See ins
  <path d="M548 650L548 526" stroke="#111b22" stroke-width="55" stroke-linecap="round"/>
  <path d="M548 650L548 526" stroke="url(#d3Steel)" stroke-width="37" stroke-linecap="round"/>
  <path d="M528 628L568 628M528 600L568 600" stroke="#263b46" stroke-width="6"/>
- <g transform="translate(548 498)" class="d3-pinion-assembly">
+ <g transform="translate(548 466)"><g class="d3-pinion-assembly">
   <ellipse rx="48" ry="31" fill="url(#d3Gear)" stroke="#edf2f4" stroke-width="6"/>
   <ellipse rx="35" ry="22" fill="none" stroke="#263b46" stroke-width="8" stroke-dasharray="6 4"/>
   <ellipse rx="18" ry="11" fill="#172832" stroke="#dce5ea" stroke-width="4"/>
- </g>
- <g transform="translate(548 654)" class="d3-input-yoke">
+ </g></g>
+ <g transform="translate(548 654)"><g class="d3-input-yoke">
   <circle r="25" fill="#253640" stroke="#e2eaf0" stroke-width="6"/>
   <path d="M-10 -23V-42H10V-23M-10 23V42H10V23M-42 -8H-23M23 8H42" stroke="#dce5ea" stroke-width="8" fill="none"/>
- </g>
- <path d="M548 625V526" class="d3-flow d3-pinion-flow" stroke="#ffad3d" stroke-width="7" stroke-dasharray="12 10" marker-end="url(#d3Arrow)"/>
+ </g></g>
+ <path d="M548 625V494" class="d3-flow d3-pinion-flow" stroke="#ffad3d" stroke-width="7" stroke-dasharray="12 10" marker-end="url(#d3Arrow)"/>
 </g>
 <!-- Power flow and identification labels. -->
 <g pointer-events="none">
