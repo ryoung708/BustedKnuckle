@@ -1368,19 +1368,21 @@ function initDifferential3D(){
   }
   spiders.push(spiderGear);
  }
- // Extended front nose: the pinion sits in the forward nose, above the lower
- // housing, and its axis approaches the ring gear from the front (-Z).
- // Partially cut away the extended pinion nose. The 250-degree shell leaves
- // a broad inspection window so the pinion can be seen inside the housing.
- // Deeply cut away the elongated pinion nose. Leave only a narrow lower/rear
- // structural arc so the pinion and its mesh with the ring gear remain visible.
- const noseCutStart=Math.PI*1.75,noseCutArc=Math.PI*1.5;
- const nose=new THREE.Mesh(new THREE.CylinderGeometry(.78,.91,1.55,64,1,true,noseCutStart,noseCutArc),dark);
- nose.rotation.x=Math.PI/2;nose.position.set(0,0,-1.03);nose.castShadow=true;root.add(nose);
- const noseFrontRim=new THREE.Mesh(new THREE.TorusGeometry(.76,.055,10,80,noseCutArc),steel);
- noseFrontRim.rotation.z=noseCutStart;noseFrontRim.position.set(0,0,-1.82);root.add(noseFrontRim);
- const noseRearRim=new THREE.Mesh(new THREE.TorusGeometry(.89,.05,10,80,noseCutArc),steel);
- noseRearRim.rotation.z=noseCutStart;noseRearRim.position.set(0,0,-.25);root.add(noseRearRim);
+ // Pinion nose housing: keep only the forward lower half of the tube.
+ // The old 270-degree sleeve extended across the ring-gear plane, obscuring
+ // the tooth face and intruding into the pinion/ring-gear mesh. This shorter
+ // 180-degree cutaway ends ahead of the mesh, leaving the pinion teeth exposed.
+ // CylinderGeometry's local Y axis is rotated onto world Z; this angular span
+ // retains the lower half (world -Y) and removes the top for inspection.
+ const noseCutStart=Math.PI*1.5,noseCutArc=Math.PI;
+ const noseLength=1.0,noseCenterZ=-2.15;
+ const nose=new THREE.Mesh(new THREE.CylinderGeometry(.78,.86,noseLength,64,1,true,noseCutStart,noseCutArc),dark);
+ nose.rotation.x=Math.PI/2;nose.position.set(0,0,noseCenterZ);nose.castShadow=true;root.add(nose);
+ // Keep only the forward cutaway rim. The rear end is deliberately rimless so
+ // no circular lip sits beside the pinion teeth or across the ring-gear face.
+ const noseFrontZ=noseCenterZ-noseLength/2;
+ const noseFrontRim=new THREE.Mesh(new THREE.TorusGeometry(.78,.045,10,80,noseCutArc),steel);
+ noseFrontRim.rotation.z=noseCutStart;noseFrontRim.position.set(0,0,noseFrontZ);root.add(noseFrontRim);
  // One rotating driveline group ties the yoke, U-joint and driveshaft to the pinion.
  const driveshaftSpin=new THREE.Group();driveshaftSpin.position.set(0,0,0);root.add(driveshaftSpin);
  const input=cyl(.14,.14,2.85,steel,"z");input.position.set(0,0,-2.25);driveshaftSpin.add(input);
