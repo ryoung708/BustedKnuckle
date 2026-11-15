@@ -144,8 +144,30 @@ const auxCounterPivots=[];
  gear(pivot,2.35,0,0,.48,.3,'auxCounter',26);
  gear(pivot,3.25,0,0,.58,.3,'auxCounter',30);
 });
-// Auxiliary sliding selector and two-stage range gear cluster.
-axisCylinder(groups.range,.43,.43,.32,2.7,0,0,materials.clutch,'range',48);
+// Visible auxiliary shift collars: range and splitter move axially on the mainshaft.
+// These are separate from the fixed gear bodies so the selector controls produce an unmistakable mechanical movement.
+const rangeShiftAssembly=new THREE.Group();rangeShiftAssembly.position.set(2.72,0,0);groups.range.add(rangeShiftAssembly);
+axisCylinder(rangeShiftAssembly,.48,.48,.24,0,0,0,materials.clutch,'range',48);
+axisCylinder(rangeShiftAssembly,.53,.53,.065,-.15,0,0,materials.dark,'range',48);
+axisCylinder(rangeShiftAssembly,.53,.53,.065,.15,0,0,materials.dark,'range',48);
+addMesh(rangeShiftAssembly,new THREE.TorusGeometry(.51,.065,12,48),materials.clutch,[0,0,0],[0,Math.PI/2,0],'range');
+addMesh(rangeShiftAssembly,new THREE.BoxGeometry(.13,.52,.16),materials.clutch,[0,.55,0],[0,0,0],'range');
+addMesh(rangeShiftAssembly,new THREE.BoxGeometry(.72,.12,.16),materials.steel,[0,.84,0],[0,0,0],'range');
+const splitterShiftAssembly=new THREE.Group();splitterShiftAssembly.position.set(3.55,0,0);groups.range.add(splitterShiftAssembly);
+axisCylinder(splitterShiftAssembly,.40,.40,.22,0,0,0,materials.clutch,'range',48);
+axisCylinder(splitterShiftAssembly,.45,.45,.06,-.14,0,0,materials.dark,'range',48);
+axisCylinder(splitterShiftAssembly,.45,.45,.06,.14,0,0,materials.dark,'range',48);
+addMesh(splitterShiftAssembly,new THREE.TorusGeometry(.43,.055,12,48),materials.clutch,[0,0,0],[0,Math.PI/2,0],'range');
+addMesh(splitterShiftAssembly,new THREE.BoxGeometry(.12,.48,.15),materials.clutch,[0,.48,0],[0,0,0],'range');
+addMesh(splitterShiftAssembly,new THREE.BoxGeometry(.65,.11,.15),materials.steel,[0,.75,0],[0,0,0],'range');
+function positionAuxiliarySelectors(){
+ // Axial collar travel is exaggerated slightly for training visibility.
+ rangeShiftAssembly.position.x=2.72+(flowState.range==='high'?.22:-.22);
+ splitterShiftAssembly.position.x=3.55+(flowState.splitter==='high'?.18:-.18);
+ rangeShiftAssembly.traverse(o=>{if(o.isMesh&&o.material)o.material.emissive=new THREE.Color(flowState.range==='high'?0x145b35:0x000000);if(o.isMesh&&o.material)o.material.emissiveIntensity=flowState.range==='high'?.65:0});
+ splitterShiftAssembly.traverse(o=>{if(o.isMesh&&o.material)o.material.emissive=new THREE.Color(flowState.splitter==='high'?0x145b35:0x000000);if(o.isMesh&&o.material)o.material.emissiveIntensity=flowState.splitter==='high'?.65:0});
+}
+// Existing auxiliary gear cluster and output gearing.
 axisCylinder(groups.range,.57,.57,.3,3.65,0,0,materials.gear,'range',48);
 gear(groups.range,4.05,0,0,.72,.32,'range',36);
 axisCylinder(groups.output,.17,.17,1.55,4.65,0,0,materials.shaft,'output');
@@ -223,6 +245,7 @@ function paintHighlights(){selectable.forEach(m=>{const sh=m.userData.part===sel
 function selectPart(id){selected=id;document.querySelectorAll('.part-btn').forEach(b=>b.classList.toggle('active',b.dataset.part===id));document.getElementById('selectedTitle').textContent=descriptions[id][0];document.getElementById('selectedText').textContent=descriptions[id][1];paintHighlights()}
 function markGroup(group,active){group.traverse(o=>{if(o.isMesh)o.userData.flowActive=active})}
 function updatePowerFlow(){
+ positionAuxiliarySelectors();
  const front=flowState.front,idx=front==='lo'?0:front==='1'?1:front==='2'?2:front==='3'?3:front==='4'?4:-1;
  const neutral=front==='neutral',reverse=front==='reverse',active=!neutral;
  Object.values(groups).forEach(g=>markGroup(g,false));
@@ -233,7 +256,7 @@ function updatePowerFlow(){
  }
  const label=front==='neutral'?'Neutral':front==='lo'?'LO':front==='reverse'?'Reverse':({'1':'1st','2':'2nd','3':'3rd','4':'4th'}[front]||front);
  document.getElementById('flowTitle').textContent=neutral?'Power flow: Neutral':'Power flow: '+label+' · '+flowState.range+' range · Splitter '+flowState.splitter;
- document.getElementById('flowText').textContent=neutral?'No selected forward or reverse ratio is engaged. There is no locked torque path through the selected mainshaft ratio.':reverse?'Reverse selected. This conceptual view highlights the input, countershafts, reverse path, auxiliary section and output; exact reverse idler geometry is a future OEM-specific refinement.':'Engine input → twin front countershafts → selected mainshaft gear → auxiliary range/splitter section → output shaft. Green indicates the conceptual torque path; exact ratio-specific engagement is still being validated.';
+ document.getElementById('flowText').textContent=neutral?'No selected forward or reverse ratio is engaged. There is no locked torque path through the selected mainshaft ratio.':reverse?'Reverse selected. This conceptual view highlights the input, countershafts, reverse path, auxiliary section and output; exact reverse idler geometry is a future OEM-specific refinement.':'Engine input → twin front countershafts → selected mainshaft gear → auxiliary section → output. The '+flowState.range+'-range collar is shifted '+(flowState.range==='low'?'rearward':'forward')+' and the '+flowState.splitter+'-splitter collar is shifted '+(flowState.splitter==='low'?'rearward':'forward')+'. Green highlights the selected auxiliary collar and conceptual torque path.';
  paintHighlights();
 }
 document.querySelectorAll('.part-btn').forEach(b=>b.addEventListener('click',()=>selectPart(b.dataset.part)));
