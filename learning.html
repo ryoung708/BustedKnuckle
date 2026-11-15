@@ -1335,12 +1335,12 @@ function initDifferential3D(){
  // The shell sits behind the ring gear; its lower arc gives the housing a
  // recognizable pumpkin shape without covering the ring-gear tooth face.
  const lowerCase=new THREE.Mesh(
-  new THREE.SphereGeometry(2.08,64,48,0,Math.PI*2,Math.PI*.34,Math.PI*.66),
+  // Keep only the bottom half of the previous bowl's angular coverage. This
+  // lowers the housing lip and clears the pinion nose while retaining a
+  // substantial rounded cradle beneath the carrier.
+  new THREE.SphereGeometry(2.08,64,48,0,Math.PI*2,Math.PI*.67,Math.PI*.33),
   dark
  );
- // Center the larger, rounder lower bowl on the ring-gear/carrier centerline.
- // The wider polar sweep gives the pumpkin a fuller, more symmetrical lower
- // profile while leaving the driver's-side gear face open for inspection.
  lowerCase.scale.set(.92,1.08,1.06);
  lowerCase.position.set(.40,0,-.12);
  lowerCase.castShadow=true;
@@ -1422,13 +1422,22 @@ function initDifferential3D(){
  const jointBody=new THREE.Mesh(new THREE.SphereGeometry(.14,20,16),gold);jointBody.position.set(0,-.48,0);yokeGroup.add(jointBody);
  const driveStub=cyl(.16,.16,1.05,steel,"y");driveStub.position.set(0,-1.02,0);yokeGroup.add(driveStub);
  const driveFlange=cyl(.25,.25,.16,dark,"y");driveFlange.position.set(0,-.57,0);yokeGroup.add(driveFlange);
- // Pinion local axis is its Y axis; this orientation turns that axis onto
- // world Z, exactly collinear with the driveshaft. Rotate its parent about Z.
+ // Pinion local Y maps to world +Z: the driveshaft/input is at negative Z
+ // and the ring gear is at positive Z. The large base therefore faces the
+ // input, while the small end tapers toward the ring gear.
  const pinionDrive=new THREE.Group();pinionDrive.position.set(0,0,-1.78);root.add(pinionDrive);
  pinion=new THREE.Group();pinion.rotation.x=Math.PI/2;pinionDrive.add(pinion);
- const cone=new THREE.Mesh(new THREE.ConeGeometry(.52,.9,48),gold);cone.rotation.x=Math.PI;cone.position.y=.12;pinion.add(cone);
+ // Frustum replaces the reversed cone: wide at local -Y (input side), narrow
+ // at local +Y (ring-gear mesh side). Do not flip this mesh 180 degrees.
+ const cone=new THREE.Mesh(new THREE.CylinderGeometry(.12,.52,.9,48,1,false),gold);
+ cone.position.y=.12;pinion.add(cone);
  const pTip=new THREE.Mesh(new THREE.CylinderGeometry(.12,.28,.35,32),gearMat);pTip.position.y=.55;pinion.add(pTip);
- for(let n=0;n<12;n++){const a=n*Math.PI*2/12;const tooth=new THREE.Mesh(new THREE.BoxGeometry(.14,.45,.13),gearMat);tooth.position.set(Math.cos(a)*.43,.16,Math.sin(a)*.43);tooth.rotation.y=-a;pinion.add(tooth);}
+ for(let n=0;n<12;n++){
+  const a=n*Math.PI*2/12;
+  const tooth=new THREE.Mesh(new THREE.BoxGeometry(.14,.45,.13),gearMat);
+  tooth.position.set(Math.cos(a)*.40,.12,Math.sin(a)*.40);
+  tooth.rotation.y=-a;pinion.add(tooth);
+ }
  // Ground plane and labels.
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,22),mat(0x101a22,.1,.9));floor.rotation.x=-Math.PI/2;floor.position.y=-3.7;floor.receiveShadow=true;scene.add(floor);
  const grid=new THREE.GridHelper(18,36,0x38505d,0x243641);grid.position.y=-3.68;scene.add(grid);
