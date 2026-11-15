@@ -281,7 +281,10 @@ function getOutputSpeed(){
  const splitterSpeed=flowState.splitter==='high'?1.18:1.0;
  return frontSpeed*rangeSpeed*splitterSpeed;
 }
-function animate(){requestAnimationFrame(animate);if(flowRunning){const dt=.035;flowClock+=dt;const speed=getOutputSpeed(),direction=flowState.front==='reverse'?-1:1;\n // Exposed input and output shafts remain animated in exterior view as well as cutaway.\n groups.input.rotation.x+=dt;groups.output.rotation.x+=dt*speed*direction*2.2;\n if(mode!=='exterior'&&!exploded){frontCounterPivots.forEach(g=>g.rotation.x-=dt*.82);mainshaftShaft.rotation.x+=dt*(flowState.front==='neutral'?0:.62);mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?1:flowState.front==='2'?2:flowState.front==='3'?3:flowState.front==='4'?4:-1;g.rotation.x+=dt*(i===selectedIndex?.62:.82)});auxCounterPivots.forEach(g=>g.rotation.x-=dt*.62);groups.range.rotation.x+=dt*speed*.8}}renderer.render(scene,camera)}
+function animate(){requestAnimationFrame(animate);if(flowRunning){const dt=.035;flowClock+=dt;const speed=getOutputSpeed(),direction=flowState.front==='reverse'?-1:1;
+ // Exposed input and output shafts remain animated in exterior view as well as cutaway.
+ groups.input.rotation.x+=dt;groups.output.rotation.x+=dt*speed*direction*2.2;
+ if(mode!=='exterior'&&!exploded){frontCounterPivots.forEach(g=>g.rotation.x-=dt*.82);mainshaftShaft.rotation.x+=dt*(flowState.front==='neutral'?0:.62);mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?1:flowState.front==='2'?2:flowState.front==='3'?3:flowState.front==='4'?4:-1;g.rotation.x+=dt*(i===selectedIndex?.62:.82)});auxCounterPivots.forEach(g=>g.rotation.x-=dt*.62);groups.range.rotation.x+=dt*speed*.8}}renderer.render(scene,camera)}
 animate();loading.style.display='none';selectPart('case');updatePowerFlow();applyMechanicalSelection();
 </script>
 </body></html>
