@@ -17,6 +17,7 @@
 <button class="part" data-part="counter"><b>Countershaft</b><small>Fixed gear stack driven by the input gear</small></button>
 <button class="part" data-part="main"><b>Mainshaft & gears</b><small>Free-running gears and synchronizer hubs</small></button>
 <button class="part" data-part="forks"><b>Shift rails & forks</b><small>Forks slide synchronizer sleeves into engagement</small></button>
+<button class="part" data-part="reverse"><b>Reverse synchronizer</b><small>Dedicated reverse sleeve, fork and idler gear path</small></button>
 <button class="part" data-part="pneumatic"><b>Pneumatic actuators</b><small>Air cylinders and linkage operate clutch and shifts</small></button>
 <button class="part" data-part="output"><b>Output shaft & yoke</b><small>Delivers torque to the driveline</small></button></div>
 <div class="readout"><b id="partTitle">Transmission case</b><p id="partText">The housing supports the shafts, bearings, gear train and pneumatic shift hardware.</p></div>
@@ -86,24 +87,43 @@ function addSynchronizer(leftX,rightX){
 }
 addSynchronizer(gearX[0],gearX[1]);
 addSynchronizer(gearX[2],gearX[3]);
-// Reverse idler and reverse dog engagement are represented separately from the four forward pairs.
-makeGear(groups.main,2.45,-.35,.35,.34,.24,'main',24);
+// Dedicated reverse gear and idler path. The reverse gear free-runs on the mainshaft
+// until its own synchronizer sleeve slides left and locks it to the shaft.
+const reverseGear=new THREE.Group();reverseGear.position.set(2.55,0,0);groups.main.add(reverseGear);
+makeGear(reverseGear,0,0,0,.32,.28,'reverse',24);
+const reverseIdler=new THREE.Group();reverseIdler.position.set(2.48,-.43,.34);groups.main.add(reverseIdler);
+makeGear(reverseIdler,0,0,0,.23,.24,'reverse',18);
+const reverseSyncCenter=3.02;
+const reverseHub=cyl(groups.main,.255,.36,reverseSyncCenter,0,0,M.steel,'reverse');
+const reverseHubRing=cyl(groups.main,.31,.08,reverseSyncCenter,0,0,M.clutch,'reverse');
+const reverseSleeve=new THREE.Group();reverseSleeve.position.set(reverseSyncCenter,0,0);groups.main.add(reverseSleeve);
+cyl(reverseSleeve,.355,.24,0,0,0,M.clutch,'reverse');
+cyl(reverseSleeve,.375,.055,-.13,0,0,M.steel,'reverse');
+cyl(reverseSleeve,.375,.055,.13,0,0,M.steel,'reverse');
+for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(reverseSleeve,new THREE.BoxGeometry(.09,.055,.055),M.gear,[-.17,Math.cos(a)*.36,Math.sin(a)*.36],[a,0,0],'reverse')}
+const reverseFork=new THREE.Group();reverseFork.position.set(reverseSyncCenter,0,0);groups.forks.add(reverseFork);
+mesh(reverseFork,new THREE.TorusGeometry(.405,.052,12,48),M.gear,[0,0,0],[0,Math.PI/2,0],'reverse');
+mesh(reverseFork,new THREE.BoxGeometry(.12,.68,.13),M.gear,[0,.48,0],null,'reverse');
+mesh(reverseFork,new THREE.BoxGeometry(.13,.16,.20),M.steel,[0,.82,0],null,'reverse');
+cyl(groups.forks,.045,1.8,reverseSyncCenter,.98,-.72,M.steel,'reverse','x');
+const reverseSync={sleeve:reverseSleeve,fork:reverseFork,hub:reverseHub,hubRing:reverseHubRing,center:reverseSyncCenter,target:0,leftOffset:-.27};
+syncs.push(reverseSync);
 // Pneumatic clutch actuator mounted above bell housing; cylinder, piston rod, clevis and release lever.
 cyl(groups.pneumatic,.20,1.12,-2.8,1.25,.65,M.air,'pneumatic');cyl(groups.pneumatic,.105,.76,-2.15,1.25,.65,M.steel,'pneumatic');
 const clutchRod=new THREE.Group();clutchRod.position.set(-2.15,1.25,.65);groups.pneumatic.add(clutchRod);mesh(clutchRod,new THREE.BoxGeometry(.14,.14,.82),M.steel,[0,-.32,0],null,'pneumatic');mesh(clutchRod,new THREE.SphereGeometry(.13,20,16),M.gear,[0,-.72,0],null,'pneumatic');
 // Clutch release fork pivot and two arms.
 const releaseFork=new THREE.Group();releaseFork.position.set(-2.7,.15,.55);groups.clutch.add(releaseFork);mesh(releaseFork,new THREE.BoxGeometry(.13,1.0,.15),M.gear,[0,.35,0],[0,0,-.3],'clutch');mesh(releaseFork,new THREE.BoxGeometry(.13,.55,.15),M.gear,[0,-.1,.28],[0,0,.3],'clutch');
-// Two pneumatic shift cylinders, one for each selector rail.
+// Three selector actuators: two forward synchronizer rails and a dedicated reverse rail.
 const shiftRams=[];
-[-.2,1.55].forEach((x,i)=>{cyl(groups.pneumatic,.15,.92,x,1.25,-.72,M.air,'pneumatic');const rod=new THREE.Group();rod.position.set(x+.46,1.25,-.72);groups.pneumatic.add(rod);cyl(rod,.07,.68,0,0,0,M.steel,'pneumatic');shiftRams.push(rod)});
-[-.2,1.55].forEach(x=>{cyl(groups.forks,.055,2.0,x,.98,-.72,M.steel,'forks')});
+[-.2,1.55,3.02].forEach((x,i)=>{cyl(groups.pneumatic,.15,.92,x,1.25,-.72,M.air,'pneumatic');const rod=new THREE.Group();rod.position.set(x+.46,1.25,-.72);groups.pneumatic.add(rod);cyl(rod,.07,.68,0,0,0,M.steel,'pneumatic');shiftRams.push(rod)});
+[-.2,1.55,3.02].forEach(x=>{cyl(groups.forks,.055,2.0,x,.98,-.72,M.steel,'forks')});
 // Output shaft and yoke.
 cyl(groups.output,.17,1.7,3.55,0,0,M.shaft,'output');cyl(groups.output,.54,.18,4.45,0,0,M.dark,'output');
 const yoke=new THREE.Group();yoke.position.set(4.58,0,0);groups.output.add(yoke);cyl(yoke,.22,.24,0,0,0,M.steel,'output');[-.36,.36].forEach(y=>{mesh(yoke,new THREE.BoxGeometry(.16,.72,.20),M.gear,[.12,y,0],null,'output');cyl(yoke,.11,.22,.12,y,0,M.steel,'output')});mesh(yoke,new THREE.BoxGeometry(.2,.12,.82),M.steel,[.12,0,0],null,'output');
 label('CLUTCH / FLYWHEEL',-3.25,1.65,0);label('PNEUMATIC CLUTCH ACTUATOR',-2.4,2.05,.7);label('INPUT',-.8,1.65,0);label('COUNTERSHAFT',-.4,-1.65,0);label('MAIN SHAFT',1.1,1.45,0);label('SHIFT RAILS / FORKS',1.0,2.05,-.8);label('OUTPUT YOKE',4.45,1.25,0);
 const floor=new THREE.GridHelper(13,26,0x385064,0x233542);floor.position.y=-1.8;scene.add(floor);
 const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let selected='case';
-const desc={case:['Transmission case','The casting supports the geartrain, shafts, bearings and actuator hardware.'],clutch:['Clutch & release system','The flywheel and clutch transfer engine torque to the input shaft. The pneumatic clutch actuator strokes the release fork and bearing to disengage the clutch during a shift.'],input:['Input shaft','The input shaft receives clutch torque. Its drive gear turns the countershaft; splines connect the clutch disc to the shaft.'],counter:['Countershaft','The countershaft carries fixed gears in constant mesh with the free-running mainshaft gears.'],main:['Mainshaft & gears','Mainshaft gears rotate freely until the synchronizer sleeve locks the selected gear to the shaft.'],forks:['Shift rails & forks','The shift actuator moves a rail. Its fork slides the synchronizer sleeve to lock the selected gear to the mainshaft.'],pneumatic:['Pneumatic actuators','Compressed air moves the clutch actuator and selector cylinders. Pressure and position feedback are controlled by the AMT system.'],output:['Output shaft & yoke','The engaged mainshaft drives the output shaft and yoke, sending torque to the driveline.']};
+const desc={reverse:['Reverse synchronizer & idler','A dedicated selector fork slides the reverse synchronizer sleeve toward the reverse gear. The sleeve dog teeth lock that free-running gear to the mainshaft; the idler adds the extra gear mesh that reverses output direction.'],case:['Transmission case','The casting supports the geartrain, shafts, bearings and actuator hardware.'],clutch:['Clutch & release system','The flywheel and clutch transfer engine torque to the input shaft. The pneumatic clutch actuator strokes the release fork and bearing to disengage the clutch during a shift.'],input:['Input shaft','The input shaft receives clutch torque. Its drive gear turns the countershaft; splines connect the clutch disc to the shaft.'],counter:['Countershaft','The countershaft carries fixed gears in constant mesh with the free-running mainshaft gears.'],main:['Mainshaft & gears','Mainshaft gears rotate freely until the synchronizer sleeve locks the selected gear to the shaft.'],forks:['Shift rails & forks','The shift actuator moves a rail. Its fork slides the synchronizer sleeve to lock the selected gear to the mainshaft.'],pneumatic:['Pneumatic actuators','Compressed air moves the clutch actuator and selector cylinders. Pressure and position feedback are controlled by the AMT system.'],output:['Output shaft & yoke','The engaged mainshaft drives the output shaft and yoke, sending torque to the driveline.']};
 function choosePart(p){selected=p;document.querySelectorAll('.part').forEach(b=>b.classList.toggle('active',b.dataset.part===p));document.getElementById('partTitle').textContent=desc[p][0];document.getElementById('partText').textContent=desc[p][1];pick.forEach(o=>{o.material.emissive=new THREE.Color(o.userData.part===p?0x5b3100:0);o.material.emissiveIntensity=o.userData.part===p?.7:0})}
 function applyGear(){
   syncs.forEach(s=>s.target=0);
@@ -111,8 +131,9 @@ function applyGear(){
   if(gear==='2')syncs[0].target=syncs[0].rightOffset;
   if(gear==='3')syncs[1].target=syncs[1].leftOffset;
   if(gear==='4')syncs[1].target=syncs[1].rightOffset;
+  if(gear==='R')reverseSync.target=reverseSync.leftOffset;
   document.getElementById('stateTitle').textContent=(gear==='N'?'Neutral':gear==='R'?'Reverse':gear+' gear')+' · clutch '+(clutch?'engaged':'released');
-  document.getElementById('stateText').textContent=gear==='N'?'Both synchronizer sleeves are centered in neutral; the free-running gears are not locked to the mainshaft.':gear==='R'?'Reverse idler path selected; output rotation reverses in this conceptual layout.':'Input → countershaft fixed gear → matching free-running mainshaft gear → sliding synchronizer sleeve → mainshaft → output yoke.';
+  document.getElementById('stateText').textContent=gear==='N'?'Both synchronizer sleeves are centered in neutral; the free-running gears are not locked to the mainshaft.':gear==='R'?'The dedicated reverse fork moves its sleeve onto the reverse gear. The idler gear adds a mesh, locking the reverse gear to the mainshaft and reversing output rotation.':'Input → countershaft fixed gear → matching free-running mainshaft gear → sliding synchronizer sleeve → mainshaft → output yoke.';
 }
 function setMode(next){
  mode=next;
@@ -168,10 +189,12 @@ function animate(){requestAnimationFrame(animate);clock+=.02;
 if(clutch){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftPivot.rotation.x=-clock*.8}
 const ratios=[1,1.18,1.38,1.62];
 freeGearGroups.forEach((g,i)=>{g.rotation.x=clutch?clock*.8*ratios[i]:0});
-const selectedSync=gear==='1'||gear==='2'?0:gear==='3'||gear==='4'?1:-1;
+reverseGear.rotation.x=clutch?clock*.8:0;
+reverseIdler.rotation.x=clutch?-clock*1.1:0;
+const selectedSync=gear==='1'||gear==='2'?0:gear==='3'||gear==='4'?1:gear==='R'?2:-1;
 const mainSpeed=gear==='1'?.42:gear==='2'?.58:gear==='3'?.78:gear==='4'?1:gear==='R'?.5:0;
 mainshaft.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;
 syncs.forEach((s,i)=>{s.sleeve.position.x+=(s.center+s.target-s.sleeve.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22;s.hub.rotation.x=mainshaft.rotation.x;s.hubRing.rotation.x=mainshaft.rotation.x;s.sleeve.rotation.x=mainshaft.rotation.x});
 if(clutch&&gear!=='N'){groups.output.rotation.x=clock*mainSpeed*(gear==='R'?-1:1)}
-clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(i===0?.26:2.01)+(selectedSync===i?syncs[i].target:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
+clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;const railBases=[.26,2.01,3.48];shiftRams.forEach((r,i)=>r.position.x=railBases[i]+(selectedSync===i?syncs[i].target:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
