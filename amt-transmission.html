@@ -79,7 +79,33 @@ const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let selected='case';
 const desc={case:['Transmission case','The casting supports the geartrain, shafts, bearings and actuator hardware.'],clutch:['Clutch & release system','The flywheel and clutch transfer engine torque to the input shaft. The pneumatic clutch actuator strokes the release fork and bearing to disengage the clutch during a shift.'],input:['Input shaft','The input shaft receives clutch torque. Its drive gear turns the countershaft; splines connect the clutch disc to the shaft.'],counter:['Countershaft','The countershaft carries fixed gears in constant mesh with the free-running mainshaft gears.'],main:['Mainshaft & gears','Mainshaft gears rotate freely until the synchronizer sleeve locks the selected gear to the shaft.'],forks:['Shift rails & forks','The shift actuator moves a rail. Its fork slides the synchronizer sleeve to lock the selected gear to the mainshaft.'],pneumatic:['Pneumatic actuators','Compressed air moves the clutch actuator and selector cylinders. Pressure and position feedback are controlled by the AMT system.'],output:['Output shaft & yoke','The engaged mainshaft drives the output shaft and yoke, sending torque to the driveline.']};
 function choosePart(p){selected=p;document.querySelectorAll('.part').forEach(b=>b.classList.toggle('active',b.dataset.part===p));document.getElementById('partTitle').textContent=desc[p][0];document.getElementById('partText').textContent=desc[p][1];pick.forEach(o=>{o.material.emissive=new THREE.Color(o.userData.part===p?0x5b3100:0);o.material.emissiveIntensity=o.userData.part===p?.7:0})}
 function applyGear(){const n=Number(gear)||0;const target=gear==='R'?2.45:gear==='N'?-99:gear==='1'?.05:gear==='2'?.72:gear==='3'?1.48:2.15;sleeves.forEach((s,i)=>{s.position.x=i===0?(gear==='1'?.05:gear==='2'?.72:.34):i===1?(gear==='3'?1.48:gear==='4'?2.15:1.85):s.position.x});document.getElementById('stateTitle').textContent=(gear==='N'?'Neutral':gear==='R'?'Reverse':gear+' gear')+' · clutch '+(clutch?'engaged':'released');document.getElementById('stateText').textContent=gear==='N'?'No synchronizer is locked to the mainshaft; output is not driven.':gear==='R'?'Reverse idler path selected; output rotation reverses in this conceptual layout.':'Input → countershaft → selected free-running gear → synchronizer sleeve → mainshaft → output yoke.'}
-function setMode(next){mode=next;const cut=next!=='exterior';groups.case.visible=cut;Object.keys(groups).forEach(k=>{if(k!=='case')groups[k].visible=cut});document.getElementById('viewLabel').textContent=next.toUpperCase()+' VIEW';document.getElementById('cutBtn').classList.toggle('active',next==='cutaway');document.getElementById('extBtn').classList.toggle('active',next==='exterior');document.getElementById('explodeBtn').classList.toggle('active',next==='exploded');if(next==='exploded'){groups.input.position.x=-.55;groups.clutch.position.y=.55;groups.counter.position.y=-.35;groups.main.position.y=.4;groups.forks.position.y=.65;groups.pneumatic.position.y=.65;groups.output.position.x=.7}else{Object.values(groups).forEach(g=>g.position.set(0,0,0))}}
+function setMode(next){
+ mode=next;
+ const exterior=next==='exterior';
+ const explodedView=next==='exploded';
+ // The housing must remain visible in every view. Exterior keeps only externally visible assemblies.
+ groups.case.visible=true;
+ groups.case.children.forEach(part=>{
+  if(part.material&&part.material.color){
+   part.material.transparent=!exterior;
+   part.material.opacity=exterior?1:.22;
+   part.material.needsUpdate=true;
+  }
+ });
+ Object.keys(groups).forEach(name=>{
+  groups[name].visible=!exterior||name==='case'||name==='clutch'||name==='input'||name==='output';
+ });
+ if(explodedView){
+  groups.input.position.x=-.55;groups.clutch.position.y=.55;groups.counter.position.y=-.35;
+  groups.main.position.y=.4;groups.forks.position.y=.65;groups.pneumatic.position.y=.65;groups.output.position.x=.7;
+ }else{
+  Object.values(groups).forEach(g=>g.position.set(0,0,0));
+ }
+ document.getElementById('viewLabel').textContent=next.toUpperCase()+' VIEW';
+ document.getElementById('cutBtn').classList.toggle('active',next==='cutaway');
+ document.getElementById('extBtn').classList.toggle('active',exterior);
+ document.getElementById('explodeBtn').classList.toggle('active',explodedView);
+}
 function cameraSet(){phi=Math.max(.2,Math.min(1.5,phi));camera.position.set(radius*Math.sin(phi)*Math.cos(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.sin(theta));camera.lookAt(.25,0,0)}
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(canvas);resize();cameraSet();
 canvas.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
