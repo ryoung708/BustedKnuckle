@@ -190,7 +190,7 @@ function applyMechanicalSelection(){
 const floor=new THREE.GridHelper(12,24,0x385064,0x233542);floor.position.y=-1.55;scene.add(floor);
 // Coordinate labels are simple sprites so the section split remains legible at any angle.
 function label(text,x,y,z){const c=document.createElement('canvas');c.width=512;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 34px system-ui';ctx.textAlign='center';ctx.fillText(text,256,58);const tex=new THREE.CanvasTexture(c);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sp.position.set(x,y,z);sp.scale.set(2.6,.49,1);root.add(sp);return sp}
-const labels=[label('FRONT SECTION',-.55,1.8,0),label('AUXILIARY SECTION',3.25,1.65,0)];
+const labels=[label('INPUT SPLINES',-4.35,.72,.15),label('FRONT SECTION',-.55,1.8,0),label('AUXILIARY SECTION',3.25,1.65,0),label('OUTPUT YOKE',5.95,.95,.1)];
 let mode='exterior',selected='case',spinning=true,exploded=false,dragging=false,lastX=0,lastY=0,theta=.72,phi=1.02,radius=12;
 let flowRunning=true,flowClock=0,flowState={front:'1',range:'low',splitter:'low'};
 const originalPositions=new Map();
