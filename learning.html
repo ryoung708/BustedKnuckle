@@ -1346,22 +1346,17 @@ function initDifferential3D(){
  lowerCase.castShadow=true;
  lowerCase.receiveShadow=true;
  root.add(lowerCase);
- // Rear differential housing tube: keep the structural sleeve on the
- // PASSENGER-side/far side of the gearset. The inspection viewpoint is fixed
- // from the DRIVER side (negative X), looking across the axle toward positive X.
- // The open sleeve therefore sits beyond the ring-gear plane and cannot put
- // its tubular wall between the driver's-side viewer and the ring-gear face.
- const rearHousingTube=new THREE.Mesh(new THREE.CylinderGeometry(1.86,1.86,1.10,64,1,true),dark);
- rearHousingTube.rotation.z=Math.PI/2;
- rearHousingTube.position.x=1.25;
- rearHousingTube.castShadow=true;rearHousingTube.receiveShadow=true;root.add(rearHousingTube);
- // Close the far/passenger-side end with a rounded cast housing cap. This
- // turns the exposed sleeve into one enclosed, pumpkin-shaped housing side;
- // it remains behind the ring gear from the driver's-side inspection view.
- const rearHousingCap=new THREE.Mesh(new THREE.SphereGeometry(1.86,64,48),dark);
- rearHousingCap.scale.set(.42,1,1);
- rearHousingCap.position.set(1.78,0,0);
- rearHousingCap.castShadow=true;rearHousingCap.receiveShadow=true;root.add(rearHousingCap);
+ // Rounded passenger-side hogs-head shell. Replace the straight sleeve
+ // and separate end cap with one continuous ellipsoidal cast shape. Its
+ // rounded profile echoes the lower bowl instead of reading as a cylinder.
+ // Keep its front edge behind the ring-gear plane so the driver-side
+ // inspection view (camera on negative X) stays open.
+ const rearHousing=new THREE.Mesh(new THREE.SphereGeometry(2.02,80,64),dark);
+ rearHousing.scale.set(.40,1.03,1.02);
+ rearHousing.position.set(1.35,0,0);
+ rearHousing.castShadow=true;
+ rearHousing.receiveShadow=true;
+ root.add(rearHousing);
  // Ring gear stands in the YZ plane, rotating around the axle's X axis. Teeth are solid blocks around its rim.
  ring=new THREE.Group();ring.position.x=.40;root.add(ring);
  const tor=new THREE.Mesh(new THREE.TorusGeometry(1.48,.19,18,96),gearMat);tor.rotation.y=Math.PI/2;ring.add(tor);
