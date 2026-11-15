@@ -38,7 +38,6 @@
   <button class="control active" id="exteriorBtn" type="button">Exterior</button>
   <button class="control" id="cutawayBtn" type="button">Interactive cutaway</button>
   <button class="control" id="explodeBtn" type="button">Exploded view</button>
-  <button class="control" id="rotateBtn" type="button">Pause rotation</button>
   <button class="control" id="resetBtn" type="button">Reset view</button>
  </div>
  <div class="controls" id="powerControls" aria-label="Gear selection and power flow">
@@ -85,7 +84,7 @@ const root=new THREE.Group();scene.add(root);
 const groups={case:new THREE.Group(),input:new THREE.Group(),frontCounter:new THREE.Group(),mainshaft:new THREE.Group(),shift:new THREE.Group(),auxCounter:new THREE.Group(),range:new THREE.Group(),output:new THREE.Group()};
 Object.values(groups).forEach(g=>root.add(g));
 const materials={
- housing:new THREE.MeshStandardMaterial({color:0x71808a,metalness:.72,roughness:.34,transparent:true,opacity:.96}),
+ housing:new THREE.MeshStandardMaterial({color:0x71808a,metalness:.72,roughness:.34,transparent:false,opacity:1}),
  dark:new THREE.MeshStandardMaterial({color:0x29343d,metalness:.68,roughness:.42}),
  steel:new THREE.MeshStandardMaterial({color:0x9aa9b3,metalness:.88,roughness:.24}),
  gear:new THREE.MeshStandardMaterial({color:0xc18b3d,metalness:.82,roughness:.27}),
@@ -99,8 +98,8 @@ function axisCylinder(group,r1,r2,len,x,y,z,mat,part,segments=48){return addMesh
 function gear(group,x,y,z,r,width,part,teeth=32){axisCylinder(group,r*.9,r*.9,width,x,y,z,materials.gear,part,64);for(let i=0;i<teeth;i++){const a=i*Math.PI*2/teeth;const tooth=addMesh(group,new THREE.BoxGeometry(width*.88,r*.16,r*.22),materials.gear,[x,y+Math.cos(a)*r,z+Math.sin(a)*r],[a,0,0],part);tooth.castShadow=true}}
 function makeGearSet(parent,x,y,z,r,width,part,teeth,index){const set=new THREE.Group();set.position.set(x,y,z);set.userData.gearIndex=index;parent.add(set);gear(set,0,0,0,r,width,part,teeth);return set;}
 // Case castings: separate front and auxiliary housings, with an open lower inspection side in cutaway.
-const frontBody=addMesh(groups.case,new THREE.BoxGeometry(4.35,2.45,2.5),materials.housing,[-.35,0,0],[0,0,0],'case');
-const auxBody=addMesh(groups.case,new THREE.BoxGeometry(2.55,2.2,2.3),materials.housing,[3.15,0,0],[0,0,0],'case');
+const frontBody=addMesh(groups.case,new THREE.BoxGeometry(4.35,3.12,2.5),materials.housing,[-.35,0,0],[0,0,0],'case');
+const auxBody=addMesh(groups.case,new THREE.BoxGeometry(2.55,2.88,2.3),materials.housing,[3.15,0,0],[0,0,0],'case');
 const bell=addMesh(groups.case,new THREE.CylinderGeometry(1.62,1.38,.72,64,1,true),materials.housing,[-2.78,0,0],[0,0,Math.PI/2],'case');
 const bellLip=axisCylinder(groups.case,1.64,1.64,.12,-3.16,0,0,materials.dark,'case',64);
 const frontRib1=addMesh(groups.case,new THREE.BoxGeometry(.16,2.35,2.42),materials.dark,[-1.65,0,0],[0,0,0],'case');
@@ -191,7 +190,7 @@ const floor=new THREE.GridHelper(12,24,0x385064,0x233542);floor.position.y=-1.55
 // Coordinate labels are simple sprites so the section split remains legible at any angle.
 function label(text,x,y,z){const c=document.createElement('canvas');c.width=512;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 34px system-ui';ctx.textAlign='center';ctx.fillText(text,256,58);const tex=new THREE.CanvasTexture(c);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sp.position.set(x,y,z);sp.scale.set(2.6,.49,1);root.add(sp);return sp}
 const labels=[label('INPUT SPLINES',-4.35,.72,.15),label('FRONT SECTION',-.55,1.8,0),label('AUXILIARY SECTION',3.25,1.65,0),label('OUTPUT YOKE',5.95,.95,.1)];
-let mode='exterior',selected='case',spinning=true,exploded=false,dragging=false,lastX=0,lastY=0,theta=.72,phi=1.02,radius=12;
+let mode='exterior',selected='case',exploded=false,dragging=false,lastX=0,lastY=0,theta=.72,phi=1.02,radius=12;
 let flowRunning=true,flowClock=0,flowState={front:'1',range:'low',splitter:'low'};
 const originalPositions=new Map();
 Object.entries(groups).forEach(([name,g])=>originalPositions.set(name,g.position.clone()));
@@ -200,7 +199,7 @@ function setCamera(){phi=Math.max(.25,Math.min(1.48,phi));camera.position.set(ra
 setCamera();
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 new ResizeObserver(resize).observe(canvas);resize();
-function setMode(next){mode=next;const cut=next!=='exterior';groups.case.children.forEach((m)=>{m.visible=!cut||m.geometry.type==='SphereGeometry'||m.geometry.type==='CylinderGeometry'&&m.position.x< -2.5||m.position.x>4.7});groups.case.children.forEach(m=>{if(cut&&m.userData.part==='case'){m.material=m.userData.baseMaterial===materials.housing?materials.housing.clone():materials.dark.clone();if(m.userData.baseMaterial===materials.housing){m.material.transparent=true;m.material.opacity=.12}}else if(m.userData.part==='case'){m.material=m.userData.baseMaterial.clone();m.material.transparent=false;m.material.opacity=1}});
+function setMode(next){mode=next;const cut=next!=='exterior';groups.case.children.forEach(m=>{const isOuterWall=m===frontBody||m===auxBody||m===frontRib1||m===frontRib2;m.visible=!cut||!isOuterWall;if(m.userData.part==='case'){m.material=m.userData.baseMaterial.clone();if(cut&&m.userData.baseMaterial===materials.housing){m.material.transparent=true;m.material.opacity=.14}else if(!cut){m.material.transparent=false;m.material.opacity=1}}});
 document.getElementById('exteriorBtn').classList.toggle('active',next==='exterior');document.getElementById('cutawayBtn').classList.toggle('active',next==='cutaway');document.getElementById('viewLabel').textContent=next==='exterior'?'EXTERIOR VIEW':next==='cutaway'?'INTERACTIVE CUTAWAY':'EXPLODED VIEW';
 Object.values(groups).forEach(g=>{if(g!==groups.case)g.visible=cut});
 }
@@ -243,14 +242,14 @@ document.getElementById('cutawayBtn').addEventListener('click',()=>{setExploded(
 document.getElementById('explodeBtn').addEventListener('click',()=>setExploded(!exploded));
 ['frontGear','rangeSelect','splitterSelect'].forEach(id=>document.getElementById(id).addEventListener('change',e=>{const k=id==='frontGear'?'front':id==='rangeSelect'?'range':'splitter';flowState[k]=e.target.value;updatePowerFlow()}));
 document.getElementById('flowBtn').addEventListener('click',e=>{flowRunning=!flowRunning;e.currentTarget.textContent=flowRunning?'Pause power flow':'Resume power flow'});
-document.getElementById('rotateBtn').addEventListener('click',e=>{spinning=!spinning;e.currentTarget.textContent=spinning?'Pause rotation':'Resume rotation'});
+
 document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.02;radius=12;setCamera();root.rotation.set(0,0,0);flowClock=0;Object.values(groups).forEach(g=>g.rotation.set(0,0,0));setExploded(false);setMode('exterior')});
 canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;theta-=dx*.008;phi-=dy*.008;setCamera()});
 canvas.addEventListener('pointerup',e=>{dragging=false;const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(selectable,true);if(hits.length&&hits[0].object.userData.part){selectPart(hits[0].object.userData.part)}});
 canvas.addEventListener('pointercancel',()=>dragging=false);
 canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(7,Math.min(19,radius+e.deltaY*.008));setCamera()},{passive:false});
-function animate(){requestAnimationFrame(animate);if(spinning&&!dragging)root.rotation.y+=.0015;if(flowRunning&&mode!=='exterior'&&!exploded){flowClock+=.035;groups.input.rotation.x=flowClock;frontCounterPivots.forEach(g=>g.rotation.x=-flowClock*.82);mainshaftShaft.rotation.x=flowClock*.62;mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?1:flowState.front==='2'?2:flowState.front==='3'?3:flowState.front==='4'?4:-1;g.rotation.x=flowClock*(i===selectedIndex ? 0.62 : 0.82)});auxCounterPivots.forEach(g=>g.rotation.x=-flowClock*.62);groups.range.rotation.x=flowClock*.42;groups.output.rotation.x=flowClock*.42}renderer.render(scene,camera)}
+function animate(){requestAnimationFrame(animate);if(flowRunning&&mode!=='exterior'&&!exploded){flowClock+=.035;groups.input.rotation.x=flowClock;frontCounterPivots.forEach(g=>g.rotation.x=-flowClock*.82);mainshaftShaft.rotation.x=flowClock*.62;mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?1:flowState.front==='2'?2:flowState.front==='3'?3:flowState.front==='4'?4:-1;g.rotation.x=flowClock*(i===selectedIndex ? 0.62 : 0.82)});auxCounterPivots.forEach(g=>g.rotation.x=-flowClock*.62);groups.range.rotation.x=flowClock*.42;groups.output.rotation.x=flowClock*.42}renderer.render(scene,camera)}
 animate();loading.style.display='none';selectPart('case');updatePowerFlow();applyMechanicalSelection();
 </script>
 </body></html>
