@@ -41,6 +41,12 @@
   <button class="control" id="rotateBtn" type="button">Pause rotation</button>
   <button class="control" id="resetBtn" type="button">Reset view</button>
  </div>
+ <div class="controls" id="powerControls" aria-label="Gear selection and power flow">
+  <label class="control">Front box <select id="frontGear" style="margin-left:7px;background:#101820;color:inherit;border:1px solid #536170;border-radius:5px;padding:5px"><option value="neutral">Neutral</option><option value="lo">LO</option><option value="1" selected>1st</option><option value="2">2nd</option><option value="3">3rd</option><option value="4">4th</option><option value="reverse">Reverse</option></select></label>
+  <label class="control">Range <select id="rangeSelect" style="margin-left:7px;background:#101820;color:inherit;border:1px solid #536170;border-radius:5px;padding:5px"><option value="low" selected>Low</option><option value="high">High</option></select></label>
+  <label class="control">Splitter <select id="splitterSelect" style="margin-left:7px;background:#101820;color:inherit;border:1px solid #536170;border-radius:5px;padding:5px"><option value="low" selected>Low</option><option value="high">High</option></select></label>
+  <button class="control primary" id="flowBtn" type="button">Pause power flow</button>
+ </div>
  <div class="model-layout">
   <div class="stage-wrap"><canvas id="stage" aria-label="Interactive three-dimensional Eaton Fuller 18-speed transmission model"></canvas><div class="loading" id="loading">BUILDING TRANSMISSION MODEL…</div><div class="hint">Drag to rotate · Scroll or pinch to zoom · Select a component</div></div>
   <aside class="side"><h3>Explore components</h3><p>Select a component to highlight it in the model and read its job in the transmission.</p>
@@ -55,6 +61,7 @@
     <button class="part-btn" data-part="output"><b>Output shaft</b><small>Delivers torque to the driveline</small></button>
    </div>
    <div class="selection" aria-live="polite"><b id="selectedTitle">Transmission case</b><p id="selectedText">The main housing supports the shafts, bearings and gearsets. The front and auxiliary sections work together as one transmission.</p></div>
+   <div class="selection" style="border-left-color:var(--amber);margin-top:9px"><b id="flowTitle">Power flow: 1st · Low range · Splitter low</b><p id="flowText">Engine input → twin front countershafts → selected mainshaft gear → auxiliary section → output shaft.</p></div>
   </aside>
  </div>
  <div class="legend"><span><i class="swatch" style="background:#8294a2"></i>Cast housing</span><span><i class="swatch" style="background:#d7a64e"></i>Gear steel</span><span><i class="swatch" style="background:#69b7e8"></i>Shafts</span><span><i class="swatch" style="background:#70c69a"></i>Engagement components</span><span><i class="swatch" style="background:#ff9f1c"></i>Selected component</span></div>
@@ -90,6 +97,7 @@ const selectable=[];
 function addMesh(group,geo,mat,pos,rot,part,cast=true){const m=new THREE.Mesh(geo,part?mat.clone():mat);m.userData.baseMaterial=mat;m.position.set(...pos);if(rot)m.rotation.set(...rot);m.castShadow=cast;m.receiveShadow=true;m.userData.part=part;group.add(m);if(part)selectable.push(m);return m}
 function axisCylinder(group,r1,r2,len,x,y,z,mat,part,segments=48){return addMesh(group,new THREE.CylinderGeometry(r1,r2,len,segments),mat,[x,y,z],[0,0,Math.PI/2],part)}
 function gear(group,x,y,z,r,width,part,teeth=32){axisCylinder(group,r*.9,r*.9,width,x,y,z,materials.gear,part,64);for(let i=0;i<teeth;i++){const a=i*Math.PI*2/teeth;const tooth=addMesh(group,new THREE.BoxGeometry(width*.88,r*.16,r*.22),materials.gear,[x,y+Math.cos(a)*r,z+Math.sin(a)*r],[a,0,0],part);tooth.castShadow=true}}
+function makeGearSet(parent,x,y,z,r,width,part,teeth,index){const set=new THREE.Group();set.position.set(x,y,z);set.userData.gearIndex=index;parent.add(set);gear(set,0,0,0,r,width,part,teeth);return set;}
 // Case castings: separate front and auxiliary housings, with an open lower inspection side in cutaway.
 const frontBody=addMesh(groups.case,new THREE.BoxGeometry(4.35,2.45,2.5),materials.housing,[-.35,0,0],[0,0,0],'case');
 const auxBody=addMesh(groups.case,new THREE.BoxGeometry(2.55,2.2,2.3),materials.housing,[3.15,0,0],[0,0,0],'case');
@@ -108,13 +116,14 @@ gear(groups.input,-2.65,0,0,.88,.34,'input',36);
 // Front mainshaft on the transmission centerline.
 axisCylinder(groups.mainshaft,.19,.19,4.7,-.05,0,0,materials.shaft,'mainshaft');
 const frontGearXs=[-1.65,-.95,-.25,.45,1.05];const frontGearRs=[.74,.68,.62,.57,.53];
-frontGearXs.forEach((x,i)=>gear(groups.mainshaft,x,0,0,frontGearRs[i],.34,'mainshaft',28+i*2));
+const mainGearSets=frontGearXs.map((x,i)=>makeGearSet(groups.mainshaft,x,0,0,frontGearRs[i],.34,'mainshaft',28+i*2,i));
 // Two opposed front countershafts and their gear stacks.
+const counterGearSets=[];
 [-1,1].forEach(side=>{
  const y=side*.91;
  axisCylinder(groups.frontCounter,.14,.14,4.15,-.25,y,0,materials.shaft,'frontCounter');
  gear(groups.frontCounter,-2.55,y,0,.55,.34,'frontCounter',28);
- frontGearXs.forEach((x,i)=>gear(groups.frontCounter,x,y,0,frontGearRs[i]*.62,.27,'frontCounter',24+i));
+ frontGearXs.forEach((x,i)=>counterGearSets.push(makeGearSet(groups.frontCounter,x,y,0,frontGearRs[i]*.62,.27,'frontCounter',24+i,i)));
 });
 // Mainshaft sliding clutch sleeves shown in the neutral position between gear hubs.
 [-1.3,-.05,1.0].forEach(x=>{
@@ -147,6 +156,9 @@ const floor=new THREE.GridHelper(12,24,0x385064,0x233542);floor.position.y=-1.55
 function label(text,x,y,z){const c=document.createElement('canvas');c.width=512;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 34px system-ui';ctx.textAlign='center';ctx.fillText(text,256,58);const tex=new THREE.CanvasTexture(c);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sp.position.set(x,y,z);sp.scale.set(2.6,.49,1);root.add(sp);return sp}
 const labels=[label('FRONT SECTION',-.55,1.8,0),label('AUXILIARY SECTION',3.25,1.65,0)];
 let mode='exterior',selected='case',spinning=true,exploded=false,dragging=false,lastX=0,lastY=0,theta=.72,phi=1.02,radius=12;
+let flowRunning=true,flowClock=0,flowState={front:'1',range:'low',splitter:'low'};
+const originalPositions=new Map();
+Object.entries(groups).forEach(([name,g])=>originalPositions.set(name,g.position.clone()));
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
 function setCamera(){phi=Math.max(.25,Math.min(1.48,phi));camera.position.set(radius*Math.sin(phi)*Math.cos(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.sin(theta));camera.lookAt(.7,0,0)}
 setCamera();
@@ -156,7 +168,12 @@ function setMode(next){mode=next;const cut=next!=='exterior';groups.case.childre
 document.getElementById('exteriorBtn').classList.toggle('active',next==='exterior');document.getElementById('cutawayBtn').classList.toggle('active',next==='cutaway');document.getElementById('viewLabel').textContent=next==='exterior'?'EXTERIOR VIEW':next==='cutaway'?'INTERACTIVE CUTAWAY':'EXPLODED VIEW';
 Object.values(groups).forEach(g=>{if(g!==groups.case)g.visible=cut});
 }
-function setExploded(on){exploded=on;groups.input.position.x=on?-.35:0;groups.frontCounter.position.y=on ? 0.25 : 0;groups.mainshaft.position.y=on ? -0.15 : 0;groups.shift.position.y=on ? 0.18 : 0;groups.auxCounter.position.y=on ? 0.3 : 0;groups.range.position.x=on ? 0.25 : 0;groups.output.position.x=on ? 0.5 : 0;document.getElementById('explodeBtn').classList.toggle('active',on);if(on)setMode('cutaway')}
+function setExploded(on){
+ exploded=on;
+ const offsets={input:[-.72,0,0],frontCounter:[0,.95,0],mainshaft:[0,-.72,0],shift:[0,1.05,.62],auxCounter:[0,.95,-.55],range:[.88,0,0],output:[1.05,0,0]};
+ Object.entries(offsets).forEach(([name,d])=>{const b=originalPositions.get(name);groups[name].position.set(b.x+(on?d[0]:0),b.y+(on?d[1]:0),b.z+(on?d[2]:0))});
+ document.getElementById('explodeBtn').classList.toggle('active',on);if(on)setMode('cutaway');
+}
 const descriptions={
 case:['Transmission case','The housing supports shaft bearings and gear assemblies. The front box and auxiliary section are bolted together and function as one transmission.'],
 input:['Input shaft & drive gear','The clutch connects the engine to the input shaft. The input shaft drive gear meshes with both front countershaft drive gears, dividing torque between them.'],
@@ -167,11 +184,29 @@ auxCounter:['Auxiliary countershafts','The auxiliary section uses paired counter
 range:['Range section','The range selector chooses the low- or high-range path. The splitter provides a second ratio step within the range section.'],
 output:['Output shaft','The output shaft delivers the selected transmission ratio to the driveshaft and rear axle.']
 };
-function selectPart(id){selected=id;document.querySelectorAll('.part-btn').forEach(b=>b.classList.toggle('active',b.dataset.part===id));document.getElementById('selectedTitle').textContent=descriptions[id][0];document.getElementById('selectedText').textContent=descriptions[id][1];selectable.forEach(m=>{const is=m.userData.part===id;m.material.emissive=new THREE.Color(is?0x5b3100:0x000000);m.material.emissiveIntensity=is ? 0.75 : 0});}
+function paintHighlights(){selectable.forEach(m=>{const sh=m.userData.part===selected,fh=m.userData.flowActive===true;m.material.emissive=new THREE.Color(sh?0x5b3100:fh?0x07552b:0x000000);m.material.emissiveIntensity=sh?0.75:fh?0.55:0})}
+function selectPart(id){selected=id;document.querySelectorAll('.part-btn').forEach(b=>b.classList.toggle('active',b.dataset.part===id));document.getElementById('selectedTitle').textContent=descriptions[id][0];document.getElementById('selectedText').textContent=descriptions[id][1];paintHighlights()}
+function markGroup(group,active){group.traverse(o=>{if(o.isMesh)o.userData.flowActive=active})}
+function updatePowerFlow(){
+ const front=flowState.front,idx=front==='lo'?0:front==='1'?0:front==='2'?1:front==='3'?2:front==='4'?3:4;
+ const neutral=front==='neutral',reverse=front==='reverse',active=!neutral;
+ Object.values(groups).forEach(g=>markGroup(g,false));
+ if(active){
+  ['input','frontCounter','auxCounter','range','output','mainshaft','shift'].forEach(k=>markGroup(groups[k],true));
+  mainGearSets.forEach((g,i)=>markGroup(g,i===idx));
+  counterGearSets.forEach(g=>markGroup(g,g.userData.gearIndex===idx));
+ }
+ const label=front==='neutral'?'Neutral':front==='lo'?'LO':front==='reverse'?'Reverse':({'1':'1st','2':'2nd','3':'3rd','4':'4th'}[front]||front);
+ document.getElementById('flowTitle').textContent=neutral?'Power flow: Neutral':'Power flow: '+label+' · '+flowState.range+' range · Splitter '+flowState.splitter;
+ document.getElementById('flowText').textContent=neutral?'No selected forward or reverse ratio is engaged. There is no locked torque path through the selected mainshaft ratio.':reverse?'Reverse selected. This conceptual view highlights the input, countershafts, reverse path, auxiliary section and output; exact reverse idler geometry is a future OEM-specific refinement.':'Engine input → twin front countershafts → selected mainshaft gear → auxiliary range/splitter section → output shaft. Green indicates the conceptual torque path; exact ratio-specific engagement is still being validated.';
+ paintHighlights();
+}
 document.querySelectorAll('.part-btn').forEach(b=>b.addEventListener('click',()=>selectPart(b.dataset.part)));
 document.getElementById('exteriorBtn').addEventListener('click',()=>{setExploded(false);setMode('exterior')});
 document.getElementById('cutawayBtn').addEventListener('click',()=>setMode('cutaway'));
 document.getElementById('explodeBtn').addEventListener('click',()=>setExploded(!exploded));
+['frontGear','rangeSelect','splitterSelect'].forEach(id=>document.getElementById(id).addEventListener('change',e=>{const k=id==='frontGear'?'front':id==='rangeSelect'?'range':'splitter';flowState[k]=e.target.value;updatePowerFlow()}));
+document.getElementById('flowBtn').addEventListener('click',e=>{flowRunning=!flowRunning;e.currentTarget.textContent=flowRunning?'Pause power flow':'Resume power flow'});
 document.getElementById('rotateBtn').addEventListener('click',e=>{spinning=!spinning;e.currentTarget.textContent=spinning?'Pause rotation':'Resume rotation'});
 document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.02;radius=12;setCamera();root.rotation.set(0,0,0);setExploded(false);setMode('exterior')});
 canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
@@ -179,7 +214,7 @@ canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX
 canvas.addEventListener('pointerup',e=>{dragging=false;const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(selectable,true);if(hits.length&&hits[0].object.userData.part){selectPart(hits[0].object.userData.part)}});
 canvas.addEventListener('pointercancel',()=>dragging=false);
 canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(7,Math.min(19,radius+e.deltaY*.008));setCamera()},{passive:false});
-function animate(){requestAnimationFrame(animate);if(spinning&&!dragging)root.rotation.y+=.0015;renderer.render(scene,camera)}
-animate();loading.style.display='none';selectPart('case');
+function animate(){requestAnimationFrame(animate);if(spinning&&!dragging)root.rotation.y+=.0015;if(flowRunning&&mode!=='exterior'&&!exploded){flowClock+=.035;groups.input.rotation.x=flowClock;groups.frontCounter.rotation.x=-flowClock*.82;groups.mainshaft.rotation.x=flowClock*.62;groups.auxCounter.rotation.x=-flowClock*.62;groups.range.rotation.x=flowClock*.42;groups.output.rotation.x=flowClock*.42}renderer.render(scene,camera)}
+animate();loading.style.display='none';selectPart('case');updatePowerFlow();
 </script>
 </body></html>
