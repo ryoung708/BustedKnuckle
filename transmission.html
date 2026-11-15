@@ -256,7 +256,8 @@ function updatePowerFlow(){
  }
  const label=front==='neutral'?'Neutral':front==='lo'?'LO':front==='reverse'?'Reverse':({'1':'1st','2':'2nd','3':'3rd','4':'4th'}[front]||front);
  document.getElementById('flowTitle').textContent=neutral?'Power flow: Neutral':'Power flow: '+label+' · '+flowState.range+' range · Splitter '+flowState.splitter;
- document.getElementById('flowText').textContent=neutral?'No selected forward or reverse ratio is engaged. There is no locked torque path through the selected mainshaft ratio.':reverse?'Reverse selected. This conceptual view highlights the input, countershafts, reverse path, auxiliary section and output; exact reverse idler geometry is a future OEM-specific refinement.':'Engine input → twin front countershafts → selected mainshaft gear → auxiliary section → output. The '+flowState.range+'-range collar is shifted '+(flowState.range==='low'?'rearward':'forward')+' and the '+flowState.splitter+'-splitter collar is shifted '+(flowState.splitter==='low'?'rearward':'forward')+'. Green highlights the selected auxiliary collar and conceptual torque path.';
+ const outputSpeed=getOutputSpeed();
+ document.getElementById('flowText').textContent=neutral?'Neutral: the output shaft is not driven. Relative output speed: 0.00× input.':reverse?'Reverse: the output shaft turns in the opposite direction. Relative output speed: '+outputSpeed.toFixed(2)+'× input. This is an illustrative training value, not an OEM ratio.':'Engine input → twin front countershafts → selected mainshaft gear → auxiliary section → output. The '+flowState.range+'-range collar is shifted '+(flowState.range==='low'?'rearward':'forward')+' and the '+flowState.splitter+'-splitter collar is shifted '+(flowState.splitter==='low'?'rearward':'forward')+'. Relative output speed: '+outputSpeed.toFixed(2)+'× input. These are illustrative relative values, not OEM Eaton ratios.';
  paintHighlights();
 }
 document.querySelectorAll('.part-btn').forEach(b=>b.addEventListener('click',()=>selectPart(b.dataset.part)));
@@ -272,7 +273,14 @@ canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX
 canvas.addEventListener('pointerup',e=>{dragging=false;const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(selectable,true);if(hits.length&&hits[0].object.userData.part){selectPart(hits[0].object.userData.part)}});
 canvas.addEventListener('pointercancel',()=>dragging=false);
 canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(7,Math.min(19,radius+e.deltaY*.008));setCamera()},{passive:false});
-function animate(){requestAnimationFrame(animate);if(flowRunning&&mode!=='exterior'&&!exploded){flowClock+=.035;groups.input.rotation.x=flowClock;frontCounterPivots.forEach(g=>g.rotation.x=-flowClock*.82);mainshaftShaft.rotation.x=flowClock*.62;mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?1:flowState.front==='2'?2:flowState.front==='3'?3:flowState.front==='4'?4:-1;g.rotation.x=flowClock*(i===selectedIndex ? 0.62 : 0.82)});auxCounterPivots.forEach(g=>g.rotation.x=-flowClock*.62);groups.range.rotation.x=flowClock*.42;groups.output.rotation.x=flowClock*.42}renderer.render(scene,camera)}
+function getOutputSpeed(){
+ // Relative teaching values only; not OEM Eaton gear ratios. Higher front gears, high range and high splitter increase output speed.
+ const frontSpeed={lo:.10,'1':.14,'2':.19,'3':.26,'4':.34,reverse:.14,neutral:0}[flowState.front]??0;
+ const rangeSpeed=flowState.range==='high'?3.0:1.0;
+ const splitterSpeed=flowState.splitter==='high'?1.18:1.0;
+ return frontSpeed*rangeSpeed*splitterSpeed;
+}
+function animate(){requestAnimationFrame(animate);if(flowRunning&&mode!=='exterior'&&!exploded){const dt=.035;flowClock+=dt;groups.input.rotation.x+=dt;frontCounterPivots.forEach(g=>g.rotation.x-=dt*.82);const speed=getOutputSpeed(),direction=flowState.front==='reverse'?-1:1;mainshaftShaft.rotation.x+=dt*(flowState.front==='neutral'?0:.62);mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?1:flowState.front==='2'?2:flowState.front==='3'?3:flowState.front==='4'?4:-1;g.rotation.x+=dt*(i===selectedIndex?.62:.82)});auxCounterPivots.forEach(g=>g.rotation.x-=dt*.62);groups.range.rotation.x+=dt*speed*.8;groups.output.rotation.x+=dt*speed*direction*2.2}renderer.render(scene,camera)}
 animate();loading.style.display='none';selectPart('case');updatePowerFlow();applyMechanicalSelection();
 </script>
 </body></html>
