@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b0e">
+<title>Eaton Fuller 18-Speed | IronKnuckle Learning Center</title>
+<style>
+:root{color-scheme:dark;--bg:#090b0e;--panel:#11171d;--raised:#1a232c;--line:#354250;--amber:#ff9f1c;--text:#f1f4f7;--muted:#a2afbc;--green:#70c69a;--blue:#69b7e8}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#ff9f1c13,transparent 42%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
+.wrap{width:min(1250px,100%);margin:auto;padding:16px 18px 48px}.top{display:flex;justify-content:space-between;gap:12px;padding:8px 0 17px;border-bottom:1px solid var(--line)}
+.brand{font-size:13px;font-weight:950;letter-spacing:.15em}.brand span,.eyebrow{color:var(--amber)}a{color:inherit}.back{font-size:12px;color:var(--muted);text-decoration:none}
+.hero{padding:27px 0 18px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.19em;text-transform:uppercase}.hero h1{font-size:clamp(30px,5vw,45px);line-height:1.04;margin:8px 0}.hero p{max-width:820px;color:var(--muted);line-height:1.6;margin:0;font-size:14px}
+.architecture{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:15px 0 18px}.arch-card{padding:13px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}.arch-card b{display:block;color:var(--amber);font-size:11px;letter-spacing:.07em;text-transform:uppercase}.arch-card p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+.model-shell{border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}.model-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}.model-head h2{margin:0;font-size:16px}.model-head small{color:var(--muted);font-size:11px}
+.controls{display:flex;gap:7px;flex-wrap:wrap;padding:11px 14px;border-bottom:1px solid var(--line)}button{font:inherit}.control{padding:9px 12px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--text);font-size:11px;font-weight:850;cursor:pointer}.control.active,.control:hover{border-color:var(--amber);color:var(--amber)}.control.primary{border-color:#ff9f1c88;color:var(--amber)}
+.model-layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;min-height:560px}.stage-wrap{position:relative;min-width:0;background:radial-gradient(ellipse at 50% 45%,#263d4b 0%,#101c26 63%,#080e14 100%)}#stage{width:100%;height:560px;display:block;touch-action:none}.loading{position:absolute;inset:0;display:grid;place-items:center;color:#d9e5eb;font-size:12px;font-weight:850;letter-spacing:.1em;pointer-events:none}.hint{position:absolute;left:13px;bottom:12px;padding:8px 10px;border:1px solid #ffffff20;border-radius:7px;background:#080d11b8;color:#b9c9d2;font-size:10px;pointer-events:none}
+.side{padding:15px;border-left:1px solid var(--line);background:#0e141a}.side h3{margin:0 0 8px;font-size:13px}.side p{font-size:12px;line-height:1.55;color:var(--muted);margin:0 0 12px}.part-list{display:grid;gap:6px}.part-btn{width:100%;text-align:left;padding:10px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--text);cursor:pointer}.part-btn b{display:block;font-size:11px}.part-btn small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.4}.part-btn.active{border-color:var(--amber);background:#ff9f1c12}.selection{margin-top:13px;padding:12px;border-left:3px solid var(--green);border-radius:5px;background:#70c69a12}.selection b{display:block;font-size:12px}.selection p{margin:5px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:12px;padding:12px 15px;border-top:1px solid var(--line);color:var(--muted);font-size:10px}.legend span{display:flex;align-items:center;gap:6px}.swatch{width:9px;height:9px;border-radius:50%;display:inline-block}
+.notes{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-top:15px}.note-card{padding:15px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}.note-card h3{font-size:14px;margin:0 0 8px}.note-card p,.note-card li{color:var(--muted);font-size:12px;line-height:1.6}.note-card ul{padding-left:18px;margin:7px 0}
+.warning{margin-top:12px;padding:12px;border:1px solid #8a5a20;border-radius:8px;background:#ff9f1c10;color:#eac58f;font-size:11px;line-height:1.55}
+@media(max-width:850px){.model-layout{grid-template-columns:1fr}.side{border-left:0;border-top:1px solid var(--line)}#stage{height:470px}.model-layout{min-height:0}.part-list{grid-template-columns:repeat(2,minmax(0,1fr))}.notes{grid-template-columns:1fr}}
+@media(max-width:560px){.wrap{padding:12px}.architecture{grid-template-columns:1fr}.model-head{align-items:flex-start;flex-direction:column}.controls{gap:6px}.control{padding:9px 10px}.part-list{grid-template-columns:1fr 1fr}#stage{height:410px}}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js"}}</script>
+</head>
+<body><div class="wrap">
+<header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./learning.html">← Back to Learning Center</a></header>
+<section class="hero"><div class="eyebrow">Heavy-duty drivetrain • interactive 3D architecture</div><h1>Eaton Fuller 18-speed</h1><p>A twin-countershaft manual transmission built from two working sections: a five-speed front box and a four-ratio auxiliary section. Explore the outside first, then open the case to see how torque travels through the gear train.</p></section>
+<section class="architecture" aria-label="Transmission architecture">
+ <article class="arch-card"><b>01 / Front section</b><p>Five forward positions: LO, 1st, 2nd, 3rd and 4th. The input drive gear feeds two countershafts, which drive the selected mainshaft gear.</p></article>
+ <article class="arch-card"><b>02 / Auxiliary section</b><p>Range and splitter combine to provide four auxiliary ratio states. The LO front-section position is used only in low range.</p></article>
+ <article class="arch-card"><b>03 / Total ratios</b><p>Eighteen forward speeds and four reverse speeds. The same main-box ratios are reused across low and high range, with splitter steps between them.</p></article>
+</section>
+<section class="model-shell">
+ <div class="model-head"><div><h2>Transmission assembly</h2><small>Conceptual RT-style Eaton Fuller 18-speed layout</small></div><small id="viewLabel">EXTERIOR VIEW</small></div>
+ <div class="controls" aria-label="3D model controls">
+  <button class="control active" id="exteriorBtn" type="button">Exterior</button>
+  <button class="control" id="cutawayBtn" type="button">Interactive cutaway</button>
+  <button class="control" id="explodeBtn" type="button">Exploded view</button>
+  <button class="control" id="rotateBtn" type="button">Pause rotation</button>
+  <button class="control" id="resetBtn" type="button">Reset view</button>
+ </div>
+ <div class="model-layout">
+  <div class="stage-wrap"><canvas id="stage" aria-label="Interactive three-dimensional Eaton Fuller 18-speed transmission model"></canvas><div class="loading" id="loading">BUILDING TRANSMISSION MODEL…</div><div class="hint">Drag to rotate · Scroll or pinch to zoom · Select a component</div></div>
+  <aside class="side"><h3>Explore components</h3><p>Select a component to highlight it in the model and read its job in the transmission.</p>
+   <div class="part-list" id="partList">
+    <button class="part-btn active" data-part="case"><b>Transmission case</b><small>Exterior structure and section boundaries</small></button>
+    <button class="part-btn" data-part="input"><b>Input shaft & drive gear</b><small>Receives engine torque</small></button>
+    <button class="part-btn" data-part="frontCounter"><b>Front countershafts</b><small>Split input torque across two shafts</small></button>
+    <button class="part-btn" data-part="mainshaft"><b>Mainshaft & gear stack</b><small>Selected gears couple to the shaft</small></button>
+    <button class="part-btn" data-part="shift"><b>Sliding clutches</b><small>Lock the selected gear to the shaft</small></button>
+    <button class="part-btn" data-part="auxCounter"><b>Auxiliary countershafts</b><small>Carry torque through range and splitter gearing</small></button>
+    <button class="part-btn" data-part="range"><b>Range section</b><small>Low or high range selection</small></button>
+    <button class="part-btn" data-part="output"><b>Output shaft</b><small>Delivers torque to the driveline</small></button>
+   </div>
+   <div class="selection" aria-live="polite"><b id="selectedTitle">Transmission case</b><p id="selectedText">The main housing supports the shafts, bearings and gearsets. The front and auxiliary sections work together as one transmission.</p></div>
+  </aside>
+ </div>
+ <div class="legend"><span><i class="swatch" style="background:#8294a2"></i>Cast housing</span><span><i class="swatch" style="background:#d7a64e"></i>Gear steel</span><span><i class="swatch" style="background:#69b7e8"></i>Shafts</span><span><i class="swatch" style="background:#70c69a"></i>Engagement components</span><span><i class="swatch" style="background:#ff9f1c"></i>Selected component</span></div>
+</section>
+<section class="notes">
+ <article class="note-card"><h3>How the architecture works</h3><ul><li>Engine torque enters through the input shaft and main drive gear.</li><li>The main drive gear drives both front countershafts; their gears mesh with the mainshaft gear stack.</li><li>A sliding clutch couples the selected mainshaft gear to the mainshaft.</li><li>Torque passes into the auxiliary section, where splitter and range gearing establish the final ratio.</li><li>The auxiliary output shaft sends torque to the driveshaft.</li></ul></article>
+ <article class="note-card"><h3>What we'll make interactive next</h3><ul><li>Select LO through 4th in the front box.</li><li>Switch low/high range and splitter states.</li><li>Animate only the gears and shafts carrying torque.</li><li>Show the 18 forward and 4 reverse paths with direction and relative speed.</li></ul></article>
+</section>
+<div class="warning"><b>Model accuracy note:</b> This first pass is a teaching architecture, not an OEM dimensional drawing or a specific transmission serial-number configuration. Gear tooth counts, exact shaft offsets, bearing locations, shift rails and synchronizer details will be refined against the applicable Eaton model/service information before we teach exact power-flow behavior.</div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+const canvas=document.getElementById('stage'),loading=document.getElementById('loading');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x101c26);
+const camera=new THREE.PerspectiveCamera(38,1,.1,100);camera.position.set(8.2,6.3,9.4);
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+scene.add(new THREE.HemisphereLight(0xb9d5e5,0x18212a,2.0));
+const key=new THREE.DirectionalLight(0xffffff,2.5);key.position.set(4,8,7);key.castShadow=true;scene.add(key);
+const rim=new THREE.DirectionalLight(0x69b7e8,1.2);rim.position.set(-7,2,-5);scene.add(rim);
+const root=new THREE.Group();scene.add(root);
+const groups={case:new THREE.Group(),input:new THREE.Group(),frontCounter:new THREE.Group(),mainshaft:new THREE.Group(),shift:new THREE.Group(),auxCounter:new THREE.Group(),range:new THREE.Group(),output:new THREE.Group()};
+Object.values(groups).forEach(g=>root.add(g));
+const materials={
+ housing:new THREE.MeshStandardMaterial({color:0x71808a,metalness:.72,roughness:.34,transparent:true,opacity:.96}),
+ dark:new THREE.MeshStandardMaterial({color:0x29343d,metalness:.68,roughness:.42}),
+ steel:new THREE.MeshStandardMaterial({color:0x9aa9b3,metalness:.88,roughness:.24}),
+ gear:new THREE.MeshStandardMaterial({color:0xc18b3d,metalness:.82,roughness:.27}),
+ shaft:new THREE.MeshStandardMaterial({color:0x69b7e8,metalness:.8,roughness:.22}),
+ clutch:new THREE.MeshStandardMaterial({color:0x70c69a,metalness:.62,roughness:.3}),
+ bolt:new THREE.MeshStandardMaterial({color:0x29343d,metalness:.8,roughness:.3})
+};
+const selectable=[];
+function addMesh(group,geo,mat,pos,rot,part,cast=true){const m=new THREE.Mesh(geo,mat);m.position.set(...pos);if(rot)m.rotation.set(...rot);m.castShadow=cast;m.receiveShadow=true;m.userData.part=part;group.add(m);if(part)selectable.push(m);return m}
+function axisCylinder(group,r1,r2,len,x,y,z,mat,part,segments=48){return addMesh(group,new THREE.CylinderGeometry(r1,r2,len,segments),mat,[x,y,z],[0,0,Math.PI/2],part)}
+function gear(group,x,y,z,r,width,part,teeth=32){axisCylinder(group,r*.9,r*.9,width,x,y,z,materials.gear,part,64);for(let i=0;i<teeth;i++){const a=i*Math.PI*2/teeth;const tooth=addMesh(group,new THREE.BoxGeometry(width*.88,r*.16,r*.22),materials.gear,[x,y+Math.cos(a)*r,z+Math.sin(a)*r],[a,0,0],part);tooth.castShadow=true}}
+// Case castings: separate front and auxiliary housings, with an open lower inspection side in cutaway.
+const frontBody=addMesh(groups.case,new THREE.BoxGeometry(4.35,2.45,2.5),materials.housing,[-.35,0,0],[0,0,0],'case');
+const auxBody=addMesh(groups.case,new THREE.BoxGeometry(2.55,2.2,2.3),materials.housing,[3.15,0,0],[0,0,0],'case');
+const bell=addMesh(groups.case,new THREE.CylinderGeometry(1.62,1.38,.72,64,1,true),materials.housing,[-2.78,0,0],[0,0,Math.PI/2],'case');
+const bellLip=axisCylinder(groups.case,1.64,1.64,.12,-3.16,0,0,materials.dark,'case',64);
+const frontRib1=addMesh(groups.case,new THREE.BoxGeometry(.16,2.35,2.42),materials.dark,[-1.65,0,0],[0,0,0],'case');
+const frontRib2=addMesh(groups.case,new THREE.BoxGeometry(.14,2.25,2.3),materials.dark,[1.55,0,0],[0,0,0],'case');
+const auxCap=addMesh(groups.case,new THREE.CylinderGeometry(1.15,1.15,.34,64,1,true),materials.housing,[4.55,0,0],[0,0,Math.PI/2],'case');
+const tailFlange=axisCylinder(groups.case,.74,.74,.2,4.78,0,0,materials.dark,'case',64);
+// Bolt rings around bell and rear flange.
+for(let i=0;i<16;i++){const a=i*Math.PI*2/16;addMesh(groups.case,new THREE.SphereGeometry(.065,12,8),materials.bolt,[-3.18,Math.cos(a)*1.48,Math.sin(a)*1.48],null,'case',false)}
+for(let i=0;i<10;i++){const a=i*Math.PI*2/10;addMesh(groups.case,new THREE.SphereGeometry(.055,12,8),materials.bolt,[4.9,Math.cos(a)*.64,Math.sin(a)*.64],null,'case',false)}
+// Input shaft and main drive gear.
+axisCylinder(groups.input,.18,.18,1.55,-3.75,0,0,materials.shaft,'input');
+gear(groups.input,-2.65,0,0,.88,.34,'input',36);
+// Front mainshaft on the transmission centerline.
+axisCylinder(groups.mainshaft,.19,.19,4.7,-.05,0,0,materials.shaft,'mainshaft');
+const frontGearXs=[-1.65,-.95,-.25,.45,1.05];const frontGearRs=[.74,.68,.62,.57,.53];
+frontGearXs.forEach((x,i)=>gear(groups.mainshaft,x,0,0,frontGearRs[i],.34,'mainshaft',28+i*2));
+// Two opposed front countershafts and their gear stacks.
+[-1,1].forEach(side=>{
+ const y=side*.91;
+ axisCylinder(groups.frontCounter,.14,.14,4.15,-.25,y,0,materials.shaft,'frontCounter');
+ gear(groups.frontCounter,-2.55,y,0,.55,.34,'frontCounter',28);
+ frontGearXs.forEach((x,i)=>gear(groups.frontCounter,x,y,0,frontGearRs[i]*.62,.27,'frontCounter',24+i));
+});
+// Mainshaft sliding clutch sleeves shown in the neutral position between gear hubs.
+[-1.3,-.05,1.0].forEach(x=>{
+ const sleeve=axisCylinder(groups.shift,.34,.34,.32,x,0,0,materials.clutch,'shift',48);
+ const collar=axisCylinder(groups.shift,.39,.39,.08,x,0,0,materials.dark,'shift',48);
+});
+// Auxiliary input gear, splitter pair, range gears and paired auxiliary countershafts.
+axisCylinder(groups.mainshaft,.17,.17,1.45,2.1,0,0,materials.shaft,'mainshaft');
+gear(groups.range,1.95,0,0,.68,.3,'range',32);
+[-1,1].forEach(side=>{
+ const y=side*.76;
+ axisCylinder(groups.auxCounter,.13,.13,2.65,3.1,y,0,materials.shaft,'auxCounter');
+ gear(groups.auxCounter,2.35,y,0,.48,.3,'auxCounter',26);
+ gear(groups.auxCounter,3.25,y,0,.58,.3,'auxCounter',30);
+});
+// Auxiliary sliding selector and two-stage range gear cluster.
+axisCylinder(groups.range,.43,.43,.32,2.7,0,0,materials.clutch,'range',48);
+axisCylinder(groups.range,.57,.57,.3,3.65,0,0,materials.gear,'range',48);
+gear(groups.range,4.05,0,0,.72,.32,'range',36);
+axisCylinder(groups.output,.17,.17,1.55,4.65,0,0,materials.shaft,'output');
+axisCylinder(groups.output,.62,.62,.18,5.4,0,0,materials.dark,'output',64);
+// Small bearing blocks and fork/rail cues.
+[-2.1,1.35,4.35].forEach(x=>{addMesh(groups.case,new THREE.BoxGeometry(.22,.5,.62),materials.dark,[x,0,0],[0,0,0],'case')});
+[-1.3,1.0,2.7,3.65].forEach((x,i)=>{
+ const rail=axisCylinder(groups.shift,.045,.045,1.75,x,.98,0,materials.steel,'shift',24);
+ const fork=addMesh(groups.shift,new THREE.TorusGeometry(.39,.055,10,40,Math.PI),materials.clutch,[x,.2,0],[Math.PI/2,0,Math.PI/2],'shift');
+});
+const floor=new THREE.GridHelper(12,24,0x385064,0x233542);floor.position.y=-1.55;scene.add(floor);
+// Coordinate labels are simple sprites so the section split remains legible at any angle.
+function label(text,x,y,z){const c=document.createElement('canvas');c.width=512;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 34px system-ui';ctx.textAlign='center';ctx.fillText(text,256,58);const tex=new THREE.CanvasTexture(c);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sp.position.set(x,y,z);sp.scale.set(2.6,.49,1);root.add(sp);return sp}
+const labels=[label('FRONT SECTION',-.55,1.8,0),label('AUXILIARY SECTION',3.25,1.65,0)];
+let mode='exterior',selected='case',spinning=true,exploded=false,dragging=false,lastX=0,lastY=0,theta=.72,phi=1.02,radius=12;
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+function setCamera(){phi=Math.max(.25,Math.min(1.48,phi));camera.position.set(radius*Math.sin(phi)*Math.cos(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.sin(theta));camera.lookAt(.7,0,0)}
+setCamera();
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(canvas);resize();
+function setMode(next){mode=next;const cut=next!=='exterior';groups.case.children.forEach((m)=>{m.visible=!cut||m.geometry.type==='SphereGeometry'||m.geometry.type==='CylinderGeometry'&&m.position.x< -2.5||m.position.x>4.7});groups.case.children.forEach(m=>{if(cut&&m.userData.part==='case'){m.material=m.material===materials.housing?materials.housing:materials.dark;if(m.material===materials.housing){m.material.transparent=true;m.material.opacity=.12}}else if(m.userData.part==='case'){m.material= m.geometry.type==='SphereGeometry'?materials.bolt:(m.position.x>4.7?materials.dark:materials.housing);m.material.transparent=false;m.material.opacity=1}});
+document.getElementById('exteriorBtn').classList.toggle('active',next==='exterior');document.getElementById('cutawayBtn').classList.toggle('active',next==='cutaway');document.getElementById('viewLabel').textContent=next==='exterior'?'EXTERIOR VIEW':next==='cutaway'?'INTERACTIVE CUTAWAY':'EXPLODED VIEW';
+Object.values(groups).forEach(g=>{if(g!==groups.case)g.visible=cut});
+}
+function setExploded(on){exploded=on;groups.input.position.x=on?-.35:0;groups.frontCounter.position.y=on?.25:0;groups.mainshaft.position.y=on?-.15:0;groups.shift.position.y=on?.18:0;groups.auxCounter.position.y=on?.3:0;groups.range.position.x=on?.25:0;groups.output.position.x=on?.5:0;document.getElementById('explodeBtn').classList.toggle('active',on);if(on)setMode('cutaway')}
+const descriptions={
+case:['Transmission case','The housing supports shaft bearings and gear assemblies. The front box and auxiliary section are bolted together and function as one transmission.'],
+input:['Input shaft & drive gear','The clutch connects the engine to the input shaft. The input shaft drive gear meshes with both front countershaft drive gears, dividing torque between them.'],
+frontCounter:['Front countershafts','The twin countershafts carry fixed gears that remain in constant mesh with the mainshaft gears. Both shafts share the input load.'],
+mainshaft:['Mainshaft & gear stack','The mainshaft gears rotate freely until a sliding clutch engages the selected gear. Once coupled, that gear drives the mainshaft.'],
+shift:['Sliding clutches','The sliding clutch engages the selected mainshaft gear. In neutral, the clutch is not locking a ratio to the shaft.'],
+auxCounter:['Auxiliary countershafts','The auxiliary section uses paired countershafts to carry torque through the range and splitter gearsets.'],
+range:['Range section','The range selector chooses the low- or high-range path. The splitter provides a second ratio step within the range section.'],
+output:['Output shaft','The output shaft delivers the selected transmission ratio to the driveshaft and rear axle.']
+};
+function selectPart(id){selected=id;document.querySelectorAll('.part-btn').forEach(b=>b.classList.toggle('active',b.dataset.part===id));document.getElementById('selectedTitle').textContent=descriptions[id][0];document.getElementById('selectedText').textContent=descriptions[id][1];selectable.forEach(m=>{const is=m.userData.part===id;m.material.emissive=new THREE.Color(is?0x5b3100:0x000000);m.material.emissiveIntensity=is?.75:0});}
+document.querySelectorAll('.part-btn').forEach(b=>b.addEventListener('click',()=>selectPart(b.dataset.part)));
+document.getElementById('exteriorBtn').addEventListener('click',()=>{setExploded(false);setMode('exterior')});
+document.getElementById('cutawayBtn').addEventListener('click',()=>setMode('cutaway'));
+document.getElementById('explodeBtn').addEventListener('click',()=>setExploded(!exploded));
+document.getElementById('rotateBtn').addEventListener('click',e=>{spinning=!spinning;e.currentTarget.textContent=spinning?'Pause rotation':'Resume rotation'});
+document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.02;radius=12;setCamera();root.rotation.set(0,0,0);setExploded(false);setMode('exterior')});
+canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;theta-=dx*.008;phi-=dy*.008;setCamera()});
+canvas.addEventListener('pointerup',e=>{dragging=false;const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(selectable,true);if(hits.length&&hits[0].object.userData.part){selectPart(hits[0].object.userData.part)}});
+canvas.addEventListener('pointercancel',()=>dragging=false);
+canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(7,Math.min(19,radius+e.deltaY*.008));setCamera()},{passive:false});
+function animate(){requestAnimationFrame(animate);if(spinning&&!dragging)root.rotation.y+=.0015;renderer.render(scene,camera)}
+animate();loading.style.display='none';selectPart('case');
+</script>
+</body></html>
