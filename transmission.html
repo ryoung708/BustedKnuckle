@@ -38,7 +38,7 @@
   <button class="control active" id="exteriorBtn" type="button">Exterior</button>
   <button class="control" id="cutawayBtn" type="button">Interactive cutaway</button>
   <button class="control" id="explodeBtn" type="button">Exploded view</button>
-  <button class="control" id="resetBtn" type="button">Reset view</button>
+  <button class="control" id="resetBtn" type="button">Reset view</button><button class="control" id="zoomInBtn" type="button" aria-label="Zoom in">＋ Zoom</button><button class="control" id="zoomOutBtn" type="button" aria-label="Zoom out">－ Zoom</button>
  </div>
  <div class="controls" id="powerControls" aria-label="Gear selection and power flow">
   <label class="control">Front box <select id="frontGear" style="margin-left:7px;background:#101820;color:inherit;border:1px solid #536170;border-radius:5px;padding:5px"><option value="neutral">Neutral</option><option value="lo">LO</option><option value="1" selected>1st</option><option value="2">2nd</option><option value="3">3rd</option><option value="4">4th</option><option value="reverse">Reverse</option></select></label>
@@ -285,11 +285,18 @@ document.getElementById('explodeBtn').addEventListener('click',()=>setExploded(!
 document.getElementById('flowBtn').addEventListener('click',e=>{flowRunning=!flowRunning;e.currentTarget.textContent=flowRunning?'Pause power flow':'Resume power flow'});
 
 document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.02;radius=14;setCamera();root.rotation.set(0,0,0);flowClock=0;Object.values(groups).forEach(g=>g.rotation.set(0,0,0));setExploded(false);setMode('exterior')});
-canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
-canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;theta-=dx*.008;phi-=dy*.008;setCamera()});
-canvas.addEventListener('pointerup',e=>{dragging=false;const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(selectable,true);if(hits.length&&hits[0].object.userData.part){selectPart(hits[0].object.userData.part)}});
-canvas.addEventListener('pointercancel',()=>dragging=false);
-canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(7,Math.min(19,radius+e.deltaY*.008));setCamera()},{passive:false});
+const activePointers=new Map();let pinchStartDistance=0,pinchStartRadius=radius,gestureMoved=false;
+const clampRadius=v=>Math.max(7,Math.min(19,v));
+const pointerDistance=()=>{const p=[...activePointers.values()];return p.length<2?0:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)};
+function zoomBy(factor){radius=clampRadius(radius*factor);setCamera()}
+canvas.addEventListener('pointerdown',e=>{activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(activePointers.size===1){lastX=e.clientX;lastY=e.clientY;gestureMoved=false;dragging=true}else if(activePointers.size===2){pinchStartDistance=pointerDistance();pinchStartRadius=radius;gestureMoved=true}canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!activePointers.has(e.pointerId))return;activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(activePointers.size>=2){const d=pointerDistance();if(pinchStartDistance>0&&d>0){radius=clampRadius(pinchStartRadius*pinchStartDistance/d);setCamera()}return}if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.abs(dx)+Math.abs(dy)>2)gestureMoved=true;lastX=e.clientX;lastY=e.clientY;theta-=dx*.008;phi-=dy*.008;setCamera()});
+function finishPointer(e){const wasTap=!gestureMoved&&activePointers.size===1;activePointers.delete(e.pointerId);dragging=activePointers.size===1;if(dragging){const p=[...activePointers.values()][0];lastX=p.x;lastY=p.y}if(wasTap){const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(selectable,true);if(hits.length&&hits[0].object.userData.part)selectPart(hits[0].object.userData.part)}if(activePointers.size===0)gestureMoved=false}
+canvas.addEventListener('pointerup',finishPointer);
+canvas.addEventListener('pointercancel',e=>{activePointers.delete(e.pointerId);dragging=activePointers.size===1;gestureMoved=true});
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoomBy(Math.exp(e.deltaY*.0015))},{passive:false});
+document.getElementById('zoomInBtn').addEventListener('click',()=>zoomBy(.82));
+document.getElementById('zoomOutBtn').addEventListener('click',()=>zoomBy(1.22));
 function getOutputSpeed(){
  // Relative teaching values only; not OEM Eaton gear ratios. Higher front gears, high range and high splitter increase output speed.
  const frontSpeed={lo:.10,'1':.14,'2':.19,'3':.26,'4':.34,reverse:.14,neutral:0}[flowState.front]??0;

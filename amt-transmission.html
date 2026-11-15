@@ -7,7 +7,7 @@
 <body><div class="wrap"><header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./learning.html">← Back to Learning Center</a></header>
 <section class="hero"><div class="eyebrow">Automated manual transmission • 3D mechanical trainer</div><h1>AMT clutch & shift system</h1><p>Rotate the assembly, open the cutaway and watch the pneumatic actuators move the clutch release mechanism and shift forks. Select a gear to move the synchronizer sleeve, then engage the clutch to drive the output.</p></section>
 <section class="model"><div class="bar"><h2>Automated manual transmission assembly</h2><small id="viewLabel">CUTAWAY VIEW</small></div>
-<div class="controls"><button class="control active" id="cutBtn">Cutaway</button><button class="control" id="extBtn">Exterior</button><button class="control" id="explodeBtn">Exploded</button><button class="control" id="resetBtn">Reset view</button></div>
+<div class="controls"><button class="control active" id="cutBtn">Cutaway</button><button class="control" id="extBtn">Exterior</button><button class="control" id="explodeBtn">Exploded</button><button class="control" id="resetBtn">Reset view</button><button class="control" id="zoomInBtn" aria-label="Zoom in">＋ Zoom</button><button class="control" id="zoomOutBtn" aria-label="Zoom out">－ Zoom</button></div>
 <div class="controls"><span class="control">Gear <select id="gear" style="margin-left:8px;background:#101820;color:inherit;border:1px solid #536170;border-radius:5px;padding:5px"><option value="N">Neutral</option><option value="1" selected>1st</option><option value="2">2nd</option><option value="3">3rd</option><option value="4">4th</option><option value="R">Reverse</option></select></span><button class="control active" id="clutchBtn">Clutch engaged</button><button class="control" id="airBtn">Cycle shift air</button><span class="control" id="airReadout">Shift air: 120 psi</span></div>
 <div class="layout"><div class="stage"><canvas id="stage" aria-label="Rotatable 3D automated manual transmission cutaway"></canvas><div class="hint">Drag to rotate · Pinch/scroll to zoom · Select a component</div></div>
 <aside class="side"><h3>Explore components</h3><p>Tap a component or select it in the model.</p><div class="part-list" id="parts">
@@ -108,10 +108,18 @@ function setMode(next){
 }
 function cameraSet(){phi=Math.max(.2,Math.min(1.5,phi));camera.position.set(radius*Math.sin(phi)*Math.cos(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.sin(theta));camera.lookAt(.25,0,0)}
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(canvas);resize();cameraSet();
-canvas.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
-canvas.addEventListener('pointermove',e=>{if(!drag)return;theta-=(e.clientX-lastX)*.008;phi-=(e.clientY-lastY)*.008;lastX=e.clientX;lastY=e.clientY;cameraSet()});
-canvas.addEventListener('pointerup',e=>{drag=false;const r=canvas.getBoundingClientRect();pointer.x=(e.clientX-r.left)/r.width*2-1;pointer.y=-(e.clientY-r.top)/r.height*2+1;ray.setFromCamera(pointer,camera);const h=ray.intersectObjects(pick,true);if(h.length)choosePart(h[0].object.userData.part)});
-canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(7,Math.min(19,radius+e.deltaY*.008));cameraSet()},{passive:false});
+const activePointers=new Map();let pinchStartDistance=0,pinchStartRadius=radius,gestureMoved=false;
+const clampRadius=v=>Math.max(7,Math.min(19,v));
+const pointerDistance=()=>{const p=[...activePointers.values()];return p.length<2?0:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)};
+function zoomBy(factor){radius=clampRadius(radius*factor);cameraSet()}
+canvas.addEventListener('pointerdown',e=>{activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(activePointers.size===1){lastX=e.clientX;lastY=e.clientY;gestureMoved=false;drag=true}else if(activePointers.size===2){pinchStartDistance=pointerDistance();pinchStartRadius=radius;gestureMoved=true}canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!activePointers.has(e.pointerId))return;activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(activePointers.size>=2){const d=pointerDistance();if(pinchStartDistance>0&&d>0){radius=clampRadius(pinchStartRadius*pinchStartDistance/d);cameraSet()}return}if(!drag)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.abs(dx)+Math.abs(dy)>2)gestureMoved=true;theta-=dx*.008;phi-=dy*.008;lastX=e.clientX;lastY=e.clientY;cameraSet()});
+function finishPointer(e){const wasTap=!gestureMoved&&activePointers.size===1;activePointers.delete(e.pointerId);drag=activePointers.size===1;if(drag){const p=[...activePointers.values()][0];lastX=p.x;lastY=p.y}if(wasTap){const r=canvas.getBoundingClientRect();pointer.x=(e.clientX-r.left)/r.width*2-1;pointer.y=-(e.clientY-r.top)/r.height*2+1;ray.setFromCamera(pointer,camera);const h=ray.intersectObjects(pick,true);if(h.length)choosePart(h[0].object.userData.part)}if(activePointers.size===0)gestureMoved=false}
+canvas.addEventListener('pointerup',finishPointer);
+canvas.addEventListener('pointercancel',e=>{activePointers.delete(e.pointerId);drag=activePointers.size===1;gestureMoved=true});
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoomBy(Math.exp(e.deltaY*.0015))},{passive:false});
+document.getElementById('zoomInBtn').addEventListener('click',()=>zoomBy(.82));
+document.getElementById('zoomOutBtn').addEventListener('click',()=>zoomBy(1.22));
 document.getElementById('gear').addEventListener('change',e=>{gear=e.target.value;applyGear()});
 document.getElementById('clutchBtn').addEventListener('click',e=>{clutch=!clutch;e.currentTarget.textContent=clutch?'Clutch engaged':'Clutch released';e.currentTarget.classList.toggle('active',clutch);applyGear()});
 document.getElementById('airBtn').addEventListener('click',()=>{air=air===120?90:air===90?60:120;document.getElementById('airReadout').textContent='Shift air: '+air+' psi';});
