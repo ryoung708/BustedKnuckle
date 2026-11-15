@@ -222,9 +222,25 @@ function setCamera(){phi=Math.max(.25,Math.min(1.48,phi));camera.position.set(ra
 setCamera();
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 new ResizeObserver(resize).observe(canvas);resize();
-function setMode(next){mode=next;const cut=next!=='exterior';groups.case.children.forEach(m=>{const isOuterWall=m===frontBody||m===auxBody||m===frontRib1||m===frontRib2;m.visible=!cut||!isOuterWall;if(m.userData.part==='case'){m.material=m.userData.baseMaterial.clone();if(cut&&m.userData.baseMaterial===materials.housing){m.material.transparent=true;m.material.opacity=.14}else if(!cut){m.material.transparent=false;m.material.opacity=1}}});
-document.getElementById('exteriorBtn').classList.toggle('active',next==='exterior');document.getElementById('cutawayBtn').classList.toggle('active',next==='cutaway');document.getElementById('viewLabel').textContent=next==='exterior'?'EXTERIOR VIEW':next==='cutaway'?'INTERACTIVE CUTAWAY':'EXPLODED VIEW';
-Object.entries(groups).forEach(([name,g])=>{g.visible=cut||name==='input'||name==='output'});
+function setMode(next){
+ mode=next;
+ const exterior=next==='exterior';
+ // Always restore the complete case first, then apply the selected view's visibility.
+ groups.case.visible=true;
+ groups.case.children.forEach(m=>{
+  const isOuterWall=m===frontBody||m===auxBody||m===frontRib1||m===frontRib2;
+  m.visible=exterior||!isOuterWall;
+  if(m.userData.part==='case'){
+   m.material=m.userData.baseMaterial.clone();
+   if(!exterior&&m.userData.baseMaterial===materials.housing){m.material.transparent=true;m.material.opacity=.14}
+   else{m.material.transparent=false;m.material.opacity=1}
+   m.material.needsUpdate=true;
+  }
+ });
+ Object.entries(groups).forEach(([name,g])=>{g.visible=!exterior||name==='input'||name==='output'});
+ document.getElementById('exteriorBtn').classList.toggle('active',exterior);
+ document.getElementById('cutawayBtn').classList.toggle('active',next==='cutaway');
+ document.getElementById('viewLabel').textContent=exterior?'EXTERIOR VIEW':next==='cutaway'?'INTERACTIVE CUTAWAY':'EXPLODED VIEW';
 }
 function setExploded(on){
  exploded=on;
