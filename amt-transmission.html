@@ -50,17 +50,44 @@ for(let i=0;i<16;i++){const a=i*Math.PI*2/16;mesh(flywheel,new THREE.BoxGeometry
 cyl(groups.clutch,.20,.18,-2.93,0,0,M.steel,'clutch');cyl(groups.clutch,.28,.16,-2.72,0,0,M.clutch,'clutch');
 cyl(groups.input,.16,2.5,-1.65,0,0,M.shaft,'input');makeGear(groups.input,-.52,0,0,.70,.28,'input',30);
 for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(groups.input,new THREE.BoxGeometry(.52,.055,.045),M.gear,[-2.75,Math.cos(a)*.16,Math.sin(a)*.16],[a,0,0],'input')}
-// Countershaft fixed gear stack below the mainshaft.
-const countershaftPivot=new THREE.Group();countershaftPivot.position.set(0,-.92,0);groups.counter.add(countershaftPivot);cyl(countershaftPivot,.15,4.9,-.2,0,0,M.shaft,'counter');makeGear(countershaftPivot,-.52,0,0,.88,.32,'counter',34);
-const gearX=[-.05,.72,1.48,2.15],rads=[.66,.59,.52,.46],mainGears=[];
-gearX.forEach((x,i)=>{makeGear(groups.main,x,0,0,rads[i],.34,'main',26+i*2);mainGears.push({x,r:rads[i]})});
-cyl(groups.main,.18,4.9,.9,0,0,M.shaft,'main');
-cyl(groups.main,.34,.32,.34,0,0,M.clutch,'main');cyl(groups.main,.34,.32,1.85,0,0,M.clutch,'main');
-// Synchronizer sleeves move toward the selected gear; fork and rail are physically attached.
-const sleeves=[];
-[.34,1.85].forEach((x,i)=>{const assembly=new THREE.Group();assembly.position.set(x,0,0);groups.forks.add(assembly);cyl(assembly,.38,.22,0,0,0,M.clutch,'forks');mesh(assembly,new THREE.TorusGeometry(.39,.055,12,48,Math.PI),M.clutch,[0,.23,0],[Math.PI/2,0,Math.PI/2],'forks');cyl(assembly,.045,1.65,0,.98,0,M.steel,'forks');sleeves.push(assembly)});
-// Reverse idler between countershaft and reverse mainshaft gear.
-makeGear(groups.main,2.45,-.35,.35,.38,.24,'main',24);
+// Constant-mesh geartrain: one input drive pair plus four aligned forward gear pairs.
+const countershaftPivot=new THREE.Group();countershaftPivot.position.set(0,-.92,0);groups.counter.add(countershaftPivot);
+cyl(countershaftPivot,.15,4.9,-.2,0,0,M.shaft,'counter');
+makeGear(countershaftPivot,-.52,0,0,.22,.28,'counter',18); // input-to-countershaft drive gear
+const gearX=[-.05,.72,1.48,2.15],mainR=[.46,.42,.38,.34],counterR=[.46,.50,.54,.58],mainTeeth=[28,32,36,40],counterTeeth=[28,24,22,20];
+const mainshaft=cyl(groups.main,.16,4.9,.9,0,0,M.shaft,'main');
+const freeGearGroups=[];
+gearX.forEach((x,i)=>{
+  const cg=new THREE.Group();cg.position.set(x,0,0);countershaftPivot.add(cg);
+  makeGear(cg,0,0,0,counterR[i],.30,'counter',counterTeeth[i]);
+  const mg=new THREE.Group();mg.position.set(x,0,0);groups.main.add(mg);
+  makeGear(mg,0,0,0,mainR[i],.30,'main',mainTeeth[i]);
+  freeGearGroups.push(mg);
+});
+// Two synchronizer assemblies: 1st/2nd and 3rd/4th.
+// Each has a shaft-keyed hub, a sliding sleeve with dog teeth, and a fork riding in its groove.
+const syncs=[];
+function addSynchronizer(leftX,rightX){
+  const center=(leftX+rightX)/2;
+  const hub=cyl(groups.main,.255,.40,center,0,0,M.steel,'main');
+  const hubRing=cyl(groups.main,.31,.09,center,0,0,M.clutch,'main');
+  const sleeve=new THREE.Group();sleeve.position.set(center,0,0);groups.main.add(sleeve);
+  cyl(sleeve,.355,.25,0,0,0,M.clutch,'forks');
+  cyl(sleeve,.375,.055,-.13,0,0,M.steel,'forks');
+  cyl(sleeve,.375,.055,.13,0,0,M.steel,'forks');
+  // Dog teeth on both sleeve ends make engagement visible.
+  [-.17,.17].forEach(x=>{for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(sleeve,new THREE.BoxGeometry(.09,.055,.055),M.gear,[x,Math.cos(a)*.36,Math.sin(a)*.36],[a,0,0],'forks')}});
+  const fork=new THREE.Group();fork.position.set(center,0,0);groups.forks.add(fork);
+  mesh(fork,new THREE.TorusGeometry(.405,.052,12,48),M.gear,[0,0,0],[0,Math.PI/2,0],'forks');
+  mesh(fork,new THREE.BoxGeometry(.12,.68,.13),M.gear,[0,.48,0],null,'forks');
+  mesh(fork,new THREE.BoxGeometry(.13,.16,.20),M.steel,[0,.82,0],null,'forks');
+  const rail=cyl(groups.forks,.045,1.8,center,.98,-.72,M.steel,'forks','x');
+  syncs.push({hub,hubRing,sleeve,fork,center,leftOffset:leftX-center+.19,rightOffset:rightX-center-.19,target:0});
+}
+addSynchronizer(gearX[0],gearX[1]);
+addSynchronizer(gearX[2],gearX[3]);
+// Reverse idler and reverse dog engagement are represented separately from the four forward pairs.
+makeGear(groups.main,2.45,-.35,.35,.34,.24,'main',24);
 // Pneumatic clutch actuator mounted above bell housing; cylinder, piston rod, clevis and release lever.
 cyl(groups.pneumatic,.20,1.12,-2.8,1.25,.65,M.air,'pneumatic');cyl(groups.pneumatic,.105,.76,-2.15,1.25,.65,M.steel,'pneumatic');
 const clutchRod=new THREE.Group();clutchRod.position.set(-2.15,1.25,.65);groups.pneumatic.add(clutchRod);mesh(clutchRod,new THREE.BoxGeometry(.14,.14,.82),M.steel,[0,-.32,0],null,'pneumatic');mesh(clutchRod,new THREE.SphereGeometry(.13,20,16),M.gear,[0,-.72,0],null,'pneumatic');
@@ -78,7 +105,15 @@ const floor=new THREE.GridHelper(13,26,0x385064,0x233542);floor.position.y=-1.8;
 const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let selected='case';
 const desc={case:['Transmission case','The casting supports the geartrain, shafts, bearings and actuator hardware.'],clutch:['Clutch & release system','The flywheel and clutch transfer engine torque to the input shaft. The pneumatic clutch actuator strokes the release fork and bearing to disengage the clutch during a shift.'],input:['Input shaft','The input shaft receives clutch torque. Its drive gear turns the countershaft; splines connect the clutch disc to the shaft.'],counter:['Countershaft','The countershaft carries fixed gears in constant mesh with the free-running mainshaft gears.'],main:['Mainshaft & gears','Mainshaft gears rotate freely until the synchronizer sleeve locks the selected gear to the shaft.'],forks:['Shift rails & forks','The shift actuator moves a rail. Its fork slides the synchronizer sleeve to lock the selected gear to the mainshaft.'],pneumatic:['Pneumatic actuators','Compressed air moves the clutch actuator and selector cylinders. Pressure and position feedback are controlled by the AMT system.'],output:['Output shaft & yoke','The engaged mainshaft drives the output shaft and yoke, sending torque to the driveline.']};
 function choosePart(p){selected=p;document.querySelectorAll('.part').forEach(b=>b.classList.toggle('active',b.dataset.part===p));document.getElementById('partTitle').textContent=desc[p][0];document.getElementById('partText').textContent=desc[p][1];pick.forEach(o=>{o.material.emissive=new THREE.Color(o.userData.part===p?0x5b3100:0);o.material.emissiveIntensity=o.userData.part===p?.7:0})}
-function applyGear(){const n=Number(gear)||0;const target=gear==='R'?2.45:gear==='N'?-99:gear==='1'?.05:gear==='2'?.72:gear==='3'?1.48:2.15;sleeves.forEach((s,i)=>{s.position.x=i===0?(gear==='1'?.05:gear==='2'?.72:.34):i===1?(gear==='3'?1.48:gear==='4'?2.15:1.85):s.position.x});document.getElementById('stateTitle').textContent=(gear==='N'?'Neutral':gear==='R'?'Reverse':gear+' gear')+' · clutch '+(clutch?'engaged':'released');document.getElementById('stateText').textContent=gear==='N'?'No synchronizer is locked to the mainshaft; output is not driven.':gear==='R'?'Reverse idler path selected; output rotation reverses in this conceptual layout.':'Input → countershaft → selected free-running gear → synchronizer sleeve → mainshaft → output yoke.'}
+function applyGear(){
+  syncs.forEach(s=>s.target=0);
+  if(gear==='1')syncs[0].target=syncs[0].leftOffset;
+  if(gear==='2')syncs[0].target=syncs[0].rightOffset;
+  if(gear==='3')syncs[1].target=syncs[1].leftOffset;
+  if(gear==='4')syncs[1].target=syncs[1].rightOffset;
+  document.getElementById('stateTitle').textContent=(gear==='N'?'Neutral':gear==='R'?'Reverse':gear+' gear')+' · clutch '+(clutch?'engaged':'released');
+  document.getElementById('stateText').textContent=gear==='N'?'Both synchronizer sleeves are centered in neutral; the free-running gears are not locked to the mainshaft.':gear==='R'?'Reverse idler path selected; output rotation reverses in this conceptual layout.':'Input → countershaft fixed gear → matching free-running mainshaft gear → sliding synchronizer sleeve → mainshaft → output yoke.';
+}
 function setMode(next){
  mode=next;
  const exterior=next==='exterior';
@@ -130,8 +165,13 @@ document.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>cho
 function animate(){requestAnimationFrame(animate);clock+=.02;
 // Shaft rotation is independent of the camera/view mode: exterior must show the driveline working too.
 // With the clutch engaged, engine speed reaches the input and countershaft even in neutral.
-if(clutch){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftPivot.rotation.x=-clock*.8;groups.main.rotation.x=clock*(gear==='1'?.45:gear==='2'?.65:gear==='3'?.85:1)}
-// The output turns only when a forward/reverse gear is selected and the clutch is engaged.
-if(clutch&&gear!=='N'){groups.output.rotation.x=clock*(gear==='1'?.35:gear==='2'?.55:gear==='3'?.8:1.1)*(gear==='R'?-1:1)}
-clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(gear==='1'||gear==='2'?-.1:gear==='3'||gear==='4'?.12:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
+if(clutch){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftPivot.rotation.x=-clock*.8}
+const ratios=[1,1.18,1.38,1.62];
+freeGearGroups.forEach((g,i)=>{g.rotation.x=clutch?clock*.8*ratios[i]:0});
+const selectedSync=gear==='1'||gear==='2'?0:gear==='3'||gear==='4'?1:-1;
+const mainSpeed=gear==='1'?.42:gear==='2'?.58:gear==='3'?.78:gear==='4'?1:gear==='R'?.5:0;
+mainshaft.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;
+syncs.forEach((s,i)=>{s.sleeve.position.x+=(s.center+s.target-s.sleeve.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22;s.hub.rotation.x=mainshaft.rotation.x;s.hubRing.rotation.x=mainshaft.rotation.x;s.sleeve.rotation.x=mainshaft.rotation.x});
+if(clutch&&gear!=='N'){groups.output.rotation.x=clock*mainSpeed*(gear==='R'?-1:1)}
+clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(i===0?.26:2.01)+(selectedSync===i?syncs[i].target:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
