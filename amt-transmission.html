@@ -91,6 +91,7 @@ addSynchronizer(gearX[2],gearX[3]);
 // until its own synchronizer sleeve slides left and locks it to the shaft.
 const reverseGear=new THREE.Group();reverseGear.position.set(2.55,0,0);groups.main.add(reverseGear);
 makeGear(reverseGear,0,0,0,.32,.28,'reverse',24);
+for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(reverseGear,new THREE.BoxGeometry(.08,.055,.055),M.steel,[.16,Math.cos(a)*.35,Math.sin(a)*.35],[a,0,0],'reverse')}
 const reverseIdler=new THREE.Group();reverseIdler.position.set(2.48,-.43,.34);groups.main.add(reverseIdler);
 makeGear(reverseIdler,0,0,0,.23,.24,'reverse',18);
 const reverseSyncCenter=3.02;
@@ -106,7 +107,7 @@ mesh(reverseFork,new THREE.TorusGeometry(.405,.052,12,48),M.gear,[0,0,0],[0,Math
 mesh(reverseFork,new THREE.BoxGeometry(.12,.68,.13),M.gear,[0,.48,0],null,'reverse');
 mesh(reverseFork,new THREE.BoxGeometry(.13,.16,.20),M.steel,[0,.82,0],null,'reverse');
 cyl(groups.forks,.045,1.8,reverseSyncCenter,.98,-.72,M.steel,'reverse','x');
-const reverseSync={sleeve:reverseSleeve,fork:reverseFork,hub:reverseHub,hubRing:reverseHubRing,center:reverseSyncCenter,target:0,leftOffset:-.27};
+const reverseSync={sleeve:reverseSleeve,fork:reverseFork,hub:reverseHub,hubRing:reverseHubRing,center:reverseSyncCenter,target:0,leftOffset:-.16};
 syncs.push(reverseSync);
 // Pneumatic clutch actuator mounted above bell housing; cylinder, piston rod, clevis and release lever.
 cyl(groups.pneumatic,.20,1.12,-2.8,1.25,.65,M.air,'pneumatic');cyl(groups.pneumatic,.105,.76,-2.15,1.25,.65,M.steel,'pneumatic');
