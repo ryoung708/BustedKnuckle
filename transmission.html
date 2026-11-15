@@ -114,7 +114,8 @@ axisCylinder(groups.input,.18,.18,1.55,-3.75,0,0,materials.shaft,'input');
 // Exposed input-shaft pilot and longitudinal splines at the clutch end.
 axisCylinder(groups.input,.205,.205,.34,-4.68,0,0,materials.steel,'input',48);
 for(let n=0;n<12;n++){const a=n*Math.PI*2/12;addMesh(groups.input,new THREE.BoxGeometry(.48,.055,.045),materials.gear,[-4.63,Math.cos(a)*.205,Math.sin(a)*.205],[a,0,0],'input');}
-axisCylinder(groups.input,.255,.255,.09,-4.91,0,0,materials.dark,'input',48);
+// Retaining shoulder sits behind the spline section; leave the clutch-end spline tips exposed.
+axisCylinder(groups.input,.255,.255,.09,-4.34,0,0,materials.dark,'input',48);
 gear(groups.input,-2.65,0,0,.88,.34,'input',36);
 // Front mainshaft on the transmission centerline; keep its shaft separate from free-running gears.
 const mainshaftShaft=new THREE.Group();groups.mainshaft.add(mainshaftShaft);
@@ -223,7 +224,7 @@ function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setS
 new ResizeObserver(resize).observe(canvas);resize();
 function setMode(next){mode=next;const cut=next!=='exterior';groups.case.children.forEach(m=>{const isOuterWall=m===frontBody||m===auxBody||m===frontRib1||m===frontRib2;m.visible=!cut||!isOuterWall;if(m.userData.part==='case'){m.material=m.userData.baseMaterial.clone();if(cut&&m.userData.baseMaterial===materials.housing){m.material.transparent=true;m.material.opacity=.14}else if(!cut){m.material.transparent=false;m.material.opacity=1}}});
 document.getElementById('exteriorBtn').classList.toggle('active',next==='exterior');document.getElementById('cutawayBtn').classList.toggle('active',next==='cutaway');document.getElementById('viewLabel').textContent=next==='exterior'?'EXTERIOR VIEW':next==='cutaway'?'INTERACTIVE CUTAWAY':'EXPLODED VIEW';
-Object.values(groups).forEach(g=>{if(g!==groups.case)g.visible=cut});
+Object.entries(groups).forEach(([name,g])=>{g.visible=cut||name==='input'||name==='output'});
 }
 function setExploded(on){
  exploded=on;
@@ -280,7 +281,7 @@ function getOutputSpeed(){
  const splitterSpeed=flowState.splitter==='high'?1.18:1.0;
  return frontSpeed*rangeSpeed*splitterSpeed;
 }
-function animate(){requestAnimationFrame(animate);if(flowRunning&&mode!=='exterior'&&!exploded){const dt=.035;flowClock+=dt;groups.input.rotation.x+=dt;frontCounterPivots.forEach(g=>g.rotation.x-=dt*.82);const speed=getOutputSpeed(),direction=flowState.front==='reverse'?-1:1;mainshaftShaft.rotation.x+=dt*(flowState.front==='neutral'?0:.62);mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?1:flowState.front==='2'?2:flowState.front==='3'?3:flowState.front==='4'?4:-1;g.rotation.x+=dt*(i===selectedIndex?.62:.82)});auxCounterPivots.forEach(g=>g.rotation.x-=dt*.62);groups.range.rotation.x+=dt*speed*.8;groups.output.rotation.x+=dt*speed*direction*2.2}renderer.render(scene,camera)}
+function animate(){requestAnimationFrame(animate);if(flowRunning){const dt=.035;flowClock+=dt;const speed=getOutputSpeed(),direction=flowState.front==='reverse'?-1:1;\n // Exposed input and output shafts remain animated in exterior view as well as cutaway.\n groups.input.rotation.x+=dt;groups.output.rotation.x+=dt*speed*direction*2.2;\n if(mode!=='exterior'&&!exploded){frontCounterPivots.forEach(g=>g.rotation.x-=dt*.82);mainshaftShaft.rotation.x+=dt*(flowState.front==='neutral'?0:.62);mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?1:flowState.front==='2'?2:flowState.front==='3'?3:flowState.front==='4'?4:-1;g.rotation.x+=dt*(i===selectedIndex?.62:.82)});auxCounterPivots.forEach(g=>g.rotation.x-=dt*.62);groups.range.rotation.x+=dt*speed*.8}}renderer.render(scene,camera)}
 animate();loading.style.display='none';selectPart('case');updatePowerFlow();applyMechanicalSelection();
 </script>
 </body></html>
