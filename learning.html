@@ -1317,10 +1317,10 @@ function initDifferential3D(){
   const wheelSpin=new THREE.Group();wheelSpin.position.x=sign*5.38;root.add(wheelSpin);
   // Real wheel silhouette: pneumatic tire, visible tread blocks, deep rim barrel,
   // polished outer lip, dished wheel face, spokes and lug hardware.
-  const tire=new THREE.Mesh(new THREE.TorusGeometry(1.43,.43,28,112),rubber);tire.rotation.y=Math.PI/2;tire.castShadow=true;wheelSpin.add(tire);
-  const sidewall=new THREE.Mesh(new THREE.TorusGeometry(1.23,.065,12,96),mat(0x30383e,.08,.78));sidewall.rotation.y=Math.PI/2;sidewall.position.x=sign*.17;wheelSpin.add(sidewall);
+  const tire=new THREE.Mesh(new THREE.TorusGeometry(1.90,.52,28,112),rubber);tire.rotation.y=Math.PI/2;tire.castShadow=true;wheelSpin.add(tire);
+  const sidewall=new THREE.Mesh(new THREE.TorusGeometry(1.68,.07,12,96),mat(0x30383e,.08,.78));sidewall.rotation.y=Math.PI/2;sidewall.position.x=sign*.17;wheelSpin.add(sidewall);
   const treadMat=mat(0x30383e,.08,.86);
-  for(let n=0;n<48;n++){const a=n*Math.PI*2/48;const block=new THREE.Mesh(new THREE.BoxGeometry(.42,.16,.12),treadMat);block.position.set(0,Math.cos(a)*1.84,Math.sin(a)*1.84);block.rotation.x=-a;wheelSpin.add(block);}
+  for(let n=0;n<48;n++){const a=n*Math.PI*2/48;const block=new THREE.Mesh(new THREE.BoxGeometry(.48,.18,.14),treadMat);block.position.set(0,Math.cos(a)*2.40,Math.sin(a)*2.40);block.rotation.x=-a;wheelSpin.add(block);}
   const rimBarrel=new THREE.Mesh(new THREE.CylinderGeometry(.96,.96,.42,64),steel);rimBarrel.rotation.z=Math.PI/2;wheelSpin.add(rimBarrel);
   const rimLip=new THREE.Mesh(new THREE.TorusGeometry(.94,.06,12,96),gearMat);rimLip.rotation.y=Math.PI/2;rimLip.position.x=sign*.23;wheelSpin.add(rimLip);
   const dish=new THREE.Mesh(new THREE.CylinderGeometry(.72,.72,.10,48),dark);dish.rotation.z=Math.PI/2;dish.position.x=sign*.25;wheelSpin.add(dish);
@@ -1409,7 +1409,7 @@ function initDifferential3D(){
  // CylinderGeometry's local Y axis is rotated onto world Z; this angular span
  // retains the lower half (world -Y) and removes the top for inspection.
  const noseCutStart=Math.PI*1.5,noseCutArc=Math.PI;
- const noseLength=1.0,noseCenterZ=-2.15;
+ const noseLength=1.0,noseCenterZ=-1.65;
  // Relocate the remaining pinion-nose shell to the far (negative-X) side
  // of the ring gear. The pinion/driveshaft stays on its true axis at X=0;
  // this is a cutaway housing remnant, not a shaft support, so it must not
