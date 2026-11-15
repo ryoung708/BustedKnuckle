@@ -1409,27 +1409,26 @@ function initDifferential3D(){
  // CylinderGeometry's local Y axis is rotated onto world Z; this angular span
  // retains the lower half (world -Y) and removes the top for inspection.
  const noseCutStart=Math.PI*1.5,noseCutArc=Math.PI;
- const noseLength=1.0,noseCenterZ=-2.15;
+ const noseLength=1.0,noseCenterZ=-2.65;
  // Relocate the remaining pinion-nose shell to the far (negative-X) side
  // of the ring gear. The pinion/driveshaft stays on its true axis at X=0;
  // this is a cutaway housing remnant, not a shaft support, so it must not
  // cross the visible YZ ring-gear face or intersect the bevel-gear mesh.
  const nose=new THREE.Mesh(new THREE.CylinderGeometry(.78,.86,noseLength,64,1,true,noseCutStart,noseCutArc),dark);
  nose.rotation.x=Math.PI/2;nose.position.set(0,0,noseCenterZ);nose.castShadow=true;root.add(nose);
- // Flared pinion support neck: this cast boss grows out of the pumpkin
- // toward the elongated nose, then tightens to meet the nose sleeve. Its
- // open bore clears the pinion shaft and bevel gear while tying the nose
- // structurally into the front of the differential housing.
+ // Flared pinion support neck: shifted forward with the nose shell so it
+ // anchors the elongated nose ahead of the ring-gear mesh. Its open bore
+ // clears the pinion shaft and bevel gear.
  const pinionBoss=new THREE.Mesh(
   new THREE.CylinderGeometry(1.08,.84,.92,64,1,true),
   dark
  );
  pinionBoss.rotation.x=Math.PI/2;
- pinionBoss.position.set(0,0,-1.39);
+ pinionBoss.position.set(0,0,-1.89);
  pinionBoss.castShadow=true;
  pinionBoss.receiveShadow=true;
  root.add(pinionBoss);
- // Keep the original pinion-nose position; this tube was not the obstruction.
+ // Move the nose shell and its support boss forward toward the driveshaft input, away from the ring-gear mesh.
  const noseFrontZ=noseCenterZ-noseLength/2;
  const noseFrontRim=new THREE.Mesh(new THREE.TorusGeometry(.78,.045,10,80,noseCutArc),steel);
  noseFrontRim.rotation.z=noseCutStart;noseFrontRim.position.set(0,0,noseFrontZ);root.add(noseFrontRim);
