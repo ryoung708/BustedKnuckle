@@ -35,7 +35,7 @@ const M={case:mat(0x788b95,.7,.35,true,.22),dark:mat(0x263943,.72,.36),steel:mat
 const groups={case:new THREE.Group(),clutch:new THREE.Group(),input:new THREE.Group(),counter:new THREE.Group(),main:new THREE.Group(),forks:new THREE.Group(),pneumatic:new THREE.Group(),output:new THREE.Group()};Object.values(groups).forEach(g=>root.add(g));
 const pick=[];function mesh(g,geo,material,pos,rot,part){const o=new THREE.Mesh(geo,material.clone());o.position.set(...pos);if(rot)o.rotation.set(...rot);o.castShadow=true;o.receiveShadow=true;o.userData.part=part;g.add(o);if(part)pick.push(o);return o}
 function cyl(g,r,len,x,y,z,material,part,axis='x'){const o=mesh(g,new THREE.CylinderGeometry(r,r,len,48),material,[x,y,z],axis==='x'?[0,0,Math.PI/2]:axis==='z'?[Math.PI/2,0,0]:null,part);return o}
-function gear(g,x,y,z,r,w,part,teeth=28){cyl(g,r*.9,w,x,y,z,M.gear,part);for(let i=0;i<teeth;i++){const a=i*Math.PI*2/teeth;mesh(g,new THREE.BoxGeometry(w*.88,r*.16,r*.20),M.gear,[x,y+Math.cos(a)*r,z+Math.sin(a)*r],[a,0,0],part)}}
+function makeGear(g,x,y,z,r,w,part,teeth=28){cyl(g,r*.9,w,x,y,z,M.gear,part);for(let i=0;i<teeth;i++){const a=i*Math.PI*2/teeth;mesh(g,new THREE.BoxGeometry(w*.88,r*.16,r*.20),M.gear,[x,y+Math.cos(a)*r,z+Math.sin(a)*r],[a,0,0],part)}}
 function label(text,x,y,z){const c=document.createElement('canvas');c.width=512;c.height=90;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 32px system-ui';ctx.textAlign='center';ctx.fillText(text,256,56);const tex=new THREE.CanvasTexture(c),s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));s.position.set(x,y,z);s.scale.set(2.7,.48,1);root.add(s)}
 // Cutaway case, bell housing and rear tail casting.
 mesh(groups.case,new THREE.BoxGeometry(5.8,2.6,2.5),M.case,[.35,0,0],null,'case');
@@ -48,19 +48,19 @@ const flywheel=new THREE.Group();flywheel.position.set(-3.45,0,0);groups.clutch.
 cyl(flywheel,1.05,.18,0,0,0,M.steel,'clutch');cyl(flywheel,.72,.22,.18,0,0,M.dark,'clutch');cyl(flywheel,.46,.12,.32,0,0,M.clutch,'clutch');
 for(let i=0;i<16;i++){const a=i*Math.PI*2/16;mesh(flywheel,new THREE.BoxGeometry(.12,.10,.08),M.gear,[.0,Math.cos(a)*.94,Math.sin(a)*.94],[a,0,0],'clutch')}
 cyl(groups.clutch,.20,.18,-2.93,0,0,M.steel,'clutch');cyl(groups.clutch,.28,.16,-2.72,0,0,M.clutch,'clutch');
-cyl(groups.input,.16,2.5,-1.65,0,0,M.shaft,'input');gear(groups.input,-.52,0,0,.70,.28,'input',30);
+cyl(groups.input,.16,2.5,-1.65,0,0,M.shaft,'input');makeGear(groups.input,-.52,0,0,.70,.28,'input',30);
 for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(groups.input,new THREE.BoxGeometry(.52,.055,.045),M.gear,[-2.75,Math.cos(a)*.16,Math.sin(a)*.16],[a,0,0],'input')}
 // Countershaft fixed gear stack below the mainshaft.
-cyl(groups.counter,.15,4.9,-.2,-.92,0,M.shaft,'counter');gear(groups.counter,-.52,-.92,0,.88,.32,'counter',34);
+cyl(groups.counter,.15,4.9,-.2,-.92,0,M.shaft,'counter');makeGear(groups.counter,-.52,-.92,0,.88,.32,'counter',34);
 const gearX=[-.05,.72,1.48,2.15],rads=[.66,.59,.52,.46],mainGears=[];
-gearX.forEach((x,i)=>{gear(groups.main,x,0,0,rads[i],.34,'main',26+i*2);mainGears.push({x,r:rads[i]})});
+gearX.forEach((x,i)=>{makeGear(groups.main,x,0,0,rads[i],.34,'main',26+i*2);mainGears.push({x,r:rads[i]})});
 cyl(groups.main,.18,4.9,.9,0,0,M.shaft,'main');
 cyl(groups.main,.34,.32,.34,0,0,M.clutch,'main');cyl(groups.main,.34,.32,1.85,0,0,M.clutch,'main');
 // Synchronizer sleeves move toward the selected gear; fork and rail are physically attached.
 const sleeves=[];
 [.34,1.85].forEach((x,i)=>{const assembly=new THREE.Group();assembly.position.set(x,0,0);groups.forks.add(assembly);cyl(assembly,.38,.22,0,0,0,M.clutch,'forks');mesh(assembly,new THREE.TorusGeometry(.39,.055,12,48,Math.PI),M.clutch,[0,.23,0],[Math.PI/2,0,Math.PI/2],'forks');cyl(assembly,.045,1.65,0,.98,0,M.steel,'forks');sleeves.push(assembly)});
 // Reverse idler between countershaft and reverse mainshaft gear.
-gear(groups.main,2.45,-.35,.35,.38,.24,'main',24);
+makeGear(groups.main,2.45,-.35,.35,.38,.24,'main',24);
 // Pneumatic clutch actuator mounted above bell housing; cylinder, piston rod, clevis and release lever.
 cyl(groups.pneumatic,.20,1.12,-2.8,1.25,.65,M.air,'pneumatic');cyl(groups.pneumatic,.105,.76,-2.15,1.25,.65,M.steel,'pneumatic');
 const clutchRod=new THREE.Group();clutchRod.position.set(-2.15,1.25,.65);groups.pneumatic.add(clutchRod);mesh(clutchRod,new THREE.BoxGeometry(.14,.14,.82),M.steel,[0,-.32,0],null,'pneumatic');mesh(clutchRod,new THREE.SphereGeometry(.13,20,16),M.gear,[0,-.72,0],null,'pneumatic');
