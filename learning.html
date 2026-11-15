@@ -1335,11 +1335,14 @@ function initDifferential3D(){
  // The shell sits behind the ring gear; its lower arc gives the housing a
  // recognizable pumpkin shape without covering the ring-gear tooth face.
  const lowerCase=new THREE.Mesh(
-  new THREE.SphereGeometry(1.82,64,40,0,Math.PI*2,Math.PI*.42,Math.PI*.54),
+  new THREE.SphereGeometry(2.08,64,48,0,Math.PI*2,Math.PI*.34,Math.PI*.66),
   dark
  );
- lowerCase.scale.set(.88,1.10,1.05);
- lowerCase.position.set(.65,0,-.10);
+ // Center the larger, rounder lower bowl on the ring-gear/carrier centerline.
+ // The wider polar sweep gives the pumpkin a fuller, more symmetrical lower
+ // profile while leaving the driver's-side gear face open for inspection.
+ lowerCase.scale.set(.92,1.08,1.06);
+ lowerCase.position.set(.40,0,-.12);
  lowerCase.castShadow=true;
  lowerCase.receiveShadow=true;
  root.add(lowerCase);
@@ -1352,6 +1355,13 @@ function initDifferential3D(){
  rearHousingTube.rotation.z=Math.PI/2;
  rearHousingTube.position.x=1.25;
  rearHousingTube.castShadow=true;rearHousingTube.receiveShadow=true;root.add(rearHousingTube);
+ // Close the far/passenger-side end with a rounded cast housing cap. This
+ // turns the exposed sleeve into one enclosed, pumpkin-shaped housing side;
+ // it remains behind the ring gear from the driver's-side inspection view.
+ const rearHousingCap=new THREE.Mesh(new THREE.SphereGeometry(1.86,64,48),dark);
+ rearHousingCap.scale.set(.42,1,1);
+ rearHousingCap.position.set(1.78,0,0);
+ rearHousingCap.castShadow=true;rearHousingCap.receiveShadow=true;root.add(rearHousingCap);
  // Ring gear stands in the YZ plane, rotating around the axle's X axis. Teeth are solid blocks around its rim.
  ring=new THREE.Group();ring.position.x=.40;root.add(ring);
  const tor=new THREE.Mesh(new THREE.TorusGeometry(1.48,.19,18,96),gearMat);tor.rotation.y=Math.PI/2;ring.add(tor);
