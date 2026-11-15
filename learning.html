@@ -1335,11 +1335,11 @@ function initDifferential3D(){
  // The shell sits behind the ring gear; its lower arc gives the housing a
  // recognizable pumpkin shape without covering the ring-gear tooth face.
  const lowerCase=new THREE.Mesh(
-  new THREE.SphereGeometry(1.72,64,40,0,Math.PI*2,Math.PI*.58,Math.PI*.36),
+  new THREE.SphereGeometry(1.82,64,40,0,Math.PI*2,Math.PI*.42,Math.PI*.54),
   dark
  );
- lowerCase.scale.set(.90,1.08,1.02);
- lowerCase.position.set(.40,0,-.12);
+ lowerCase.scale.set(.88,1.10,1.05);
+ lowerCase.position.set(.65,0,-.10);
  lowerCase.castShadow=true;
  lowerCase.receiveShadow=true;
  root.add(lowerCase);
