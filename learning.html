@@ -1341,7 +1341,7 @@ function initDifferential3D(){
   new THREE.SphereGeometry(2.08,64,48,0,Math.PI*2,Math.PI*.67,Math.PI*.33),
   dark
  );
- lowerCase.scale.set(.92,1.08,1.06);
+ lowerCase.scale.set(.78,1.08,1.06);
  lowerCase.position.set(.40,0,-.12);
  lowerCase.castShadow=true;
  lowerCase.receiveShadow=true;
@@ -1416,6 +1416,19 @@ function initDifferential3D(){
  // cross the visible YZ ring-gear face or intersect the bevel-gear mesh.
  const nose=new THREE.Mesh(new THREE.CylinderGeometry(.78,.86,noseLength,64,1,true,noseCutStart,noseCutArc),dark);
  nose.rotation.x=Math.PI/2;nose.position.set(0,0,noseCenterZ);nose.castShadow=true;root.add(nose);
+ // Flared pinion support neck: this cast boss grows out of the pumpkin
+ // toward the elongated nose, then tightens to meet the nose sleeve. Its
+ // open bore clears the pinion shaft and bevel gear while tying the nose
+ // structurally into the front of the differential housing.
+ const pinionBoss=new THREE.Mesh(
+  new THREE.CylinderGeometry(1.08,.84,.92,64,1,true),
+  dark
+ );
+ pinionBoss.rotation.x=Math.PI/2;
+ pinionBoss.position.set(0,0,-1.39);
+ pinionBoss.castShadow=true;
+ pinionBoss.receiveShadow=true;
+ root.add(pinionBoss);
  // Keep the original pinion-nose position; this tube was not the obstruction.
  const noseFrontZ=noseCenterZ-noseLength/2;
  const noseFrontRim=new THREE.Mesh(new THREE.TorusGeometry(.78,.045,10,80,noseCutArc),steel);
