@@ -26,7 +26,7 @@
 <script type="module">
 import * as THREE from 'three';
 const canvas=document.getElementById('stage'),scene=new THREE.Scene();scene.background=new THREE.Color(0x101c26);
-const camera=new THREE.PerspectiveCamera(38,1,.1,100);let theta=.72,phi=1.05,radius=12,drag=false,lastX=0,lastY=0,exploded=false,mode='cutaway',gear='1',clutch=true,air=120,clock=0;
+const camera=new THREE.PerspectiveCamera(38,1,.1,100);let theta=.72,phi=1.05,radius=14,drag=false,lastX=0,lastY=0,exploded=false,mode='cutaway',gear='1',clutch=true,air=120,clock=0;
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 scene.add(new THREE.HemisphereLight(0xc6deeb,0x18212a,2));const key=new THREE.DirectionalLight(0xffffff,2.7);key.position.set(5,9,7);key.castShadow=true;scene.add(key);const rim=new THREE.DirectionalLight(0x69b7e8,1.5);rim.position.set(-7,3,-5);scene.add(rim);
 const root=new THREE.Group();scene.add(root);
@@ -91,7 +91,7 @@ document.getElementById('clutchBtn').addEventListener('click',e=>{clutch=!clutch
 document.getElementById('airBtn').addEventListener('click',()=>{air=air===120?90:air===90?60:120;document.getElementById('airReadout').textContent='Shift air: '+air+' psi';});
 document.getElementById('cutBtn').addEventListener('click',()=>setMode('cutaway'));document.getElementById('extBtn').addEventListener('click',()=>setMode('exterior'));document.getElementById('explodeBtn').addEventListener('click',()=>{exploded=!exploded;setMode(exploded?'exploded':'cutaway')});
 
-document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.05;radius=12;cameraSet();root.rotation.set(0,0,0);setMode('cutaway')});
+document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.05;radius=14;cameraSet();root.rotation.set(0,0,0);setMode('cutaway')});
 document.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>choosePart(b.dataset.part)));
 function animate(){requestAnimationFrame(animate);clock+=.02;if(clutch&&gear!=='N'&&mode!=='exterior'){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftPivot.rotation.x=-clock*.8;groups.main.rotation.x=clock*(gear==='1'?.45:gear==='2'?.65:gear==='3'?.85:1);groups.output.rotation.x=clock*(gear==='1'?.35:gear==='2'?.55:gear==='3'?.8:1.1)*(gear==='R'?-1:1)}else{groups.output.rotation.x*=.96}clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(gear==='1'||gear==='2'?-.1:gear==='3'||gear==='4'?.12:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
