@@ -237,7 +237,7 @@ function setMode(next){
    m.material.needsUpdate=true;
   }
  });
- Object.entries(groups).forEach(([name,g])=>{g.visible=!exterior||name==='input'||name==='output'});
+ Object.entries(groups).forEach(([name,g])=>{g.visible=exterior?(name==='case'||name==='input'||name==='output'):true;});
  document.getElementById('exteriorBtn').classList.toggle('active',exterior);
  document.getElementById('cutawayBtn').classList.toggle('active',next==='cutaway');
  document.getElementById('viewLabel').textContent=exterior?'EXTERIOR VIEW':next==='cutaway'?'INTERACTIVE CUTAWAY':'EXPLODED VIEW';
