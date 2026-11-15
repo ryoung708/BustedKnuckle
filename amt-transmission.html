@@ -171,7 +171,7 @@ freeGearGroups.forEach((g,i)=>{g.rotation.x=clutch?clock*.8*ratios[i]:0});
 const selectedSync=gear==='1'||gear==='2'?0:gear==='3'||gear==='4'?1:-1;
 const mainSpeed=gear==='1'?.42:gear==='2'?.58:gear==='3'?.78:gear==='4'?1:gear==='R'?.5:0;
 mainshaft.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;
-syncs.forEach((s,i)=>{s.sleeve.position.x+=(s.target-s.sleeve.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22;s.hub.rotation.x=mainshaft.rotation.x;s.hubRing.rotation.x=mainshaft.rotation.x;s.sleeve.rotation.x=mainshaft.rotation.x});
+syncs.forEach((s,i)=>{s.sleeve.position.x+=(s.center+s.target-s.sleeve.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22;s.hub.rotation.x=mainshaft.rotation.x;s.hubRing.rotation.x=mainshaft.rotation.x;s.sleeve.rotation.x=mainshaft.rotation.x});
 if(clutch&&gear!=='N'){groups.output.rotation.x=clock*mainSpeed*(gear==='R'?-1:1)}
-clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(selectedSync===i?syncs[i].target:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
+clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(i===0?.26:2.01)+(selectedSync===i?syncs[i].target:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
