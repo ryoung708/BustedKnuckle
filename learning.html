@@ -1379,10 +1379,28 @@ function initDifferential3D(){
  root.add(rearHousing);
  // Ring gear stands in the YZ plane, rotating around the axle's X axis. Teeth are solid blocks around its rim.
  ring=new THREE.Group();ring.position.x=.40;root.add(ring);
- const tor=new THREE.Mesh(new THREE.TorusGeometry(1.48,.19,18,96),gearMat);tor.rotation.y=Math.PI/2;ring.add(tor);
- // Removed the separate tubular backing rim. The ring gear's rear face is
- // left clear; the rebuilt lower housing cradle provides the cutaway structure.
- for(let i=0;i<64;i++){const a=i*Math.PI*2/64;const tooth=new THREE.Mesh(new THREE.BoxGeometry(.25,.19,.16),gearMat);tooth.position.set(0,Math.cos(a)*1.62,Math.sin(a)*1.62);tooth.rotation.x=-a;tooth.castShadow=true;ring.add(tooth);}
+ // Bevel-style ring gear: the body is a tapered annular casting rather than a flat torus.
+ // The larger cone face is toward the exposed driver-side camera; the back face
+ // tapers inward so the gear reads as a hypoid/bevel ring gear, not a spur gear.
+ const bevelProfile=[
+  new THREE.Vector2(1.27,-.18),
+  new THREE.Vector2(1.62,-.18),
+  new THREE.Vector2(1.48,.18),
+  new THREE.Vector2(1.27,.18)
+ ];
+ const bevelBody=new THREE.Mesh(new THREE.LatheGeometry(bevelProfile,96),gearMat);
+ bevelBody.rotation.z=Math.PI/2;
+ ring.add(bevelBody);
+ // Individual tapered teeth follow the conical face. Each tooth narrows toward
+ // the small/back side and leans with the ring circumference.
+ for(let i=0;i<64;i++){
+  const a=i*Math.PI*2/64;
+  const toothGeo=new THREE.CylinderGeometry(.105,.16,.34,4,1,false);
+  const tooth=new THREE.Mesh(toothGeo,gearMat);
+  tooth.rotation.set(-a,0,Math.PI/2);
+  tooth.position.set(0,Math.cos(a)*1.57,Math.sin(a)*1.57);
+  tooth.castShadow=true;tooth.receiveShadow=true;ring.add(tooth);
+ }
  // Carrier and cross-pin rotate with ring gear; side gears are aligned to each axle shaft.
  carrier=new THREE.Group();carrier.position.x=-.40;ring.add(carrier);
  const basket=new THREE.Mesh(new THREE.CylinderGeometry(.91,.91,.9,48,1,true),steel);basket.rotation.z=Math.PI/2;carrier.add(basket);
