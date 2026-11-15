@@ -113,8 +113,9 @@ for(let i=0;i<10;i++){const a=i*Math.PI*2/10;addMesh(groups.case,new THREE.Spher
 // Input shaft and main drive gear.
 axisCylinder(groups.input,.18,.18,1.55,-3.75,0,0,materials.shaft,'input');
 gear(groups.input,-2.65,0,0,.88,.34,'input',36);
-// Front mainshaft on the transmission centerline.
-axisCylinder(groups.mainshaft,.19,.19,4.7,-.05,0,0,materials.shaft,'mainshaft');
+// Front mainshaft on the transmission centerline; keep its shaft separate from free-running gears.
+const mainshaftShaft=new THREE.Group();groups.mainshaft.add(mainshaftShaft);
+axisCylinder(mainshaftShaft,.19,.19,4.7,-.05,0,0,materials.shaft,'mainshaft');
 const frontGearXs=[-1.65,-.95,-.25,.45,1.05];const frontGearRs=[.74,.68,.62,.57,.53];
 const mainGearSets=frontGearXs.map((x,i)=>makeGearSet(groups.mainshaft,x,0,0,frontGearRs[i],.34,'mainshaft',28+i*2,i));
 // Two opposed front countershafts and their gear stacks.
@@ -215,7 +216,7 @@ canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX
 canvas.addEventListener('pointerup',e=>{dragging=false;const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(selectable,true);if(hits.length&&hits[0].object.userData.part){selectPart(hits[0].object.userData.part)}});
 canvas.addEventListener('pointercancel',()=>dragging=false);
 canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(7,Math.min(19,radius+e.deltaY*.008));setCamera()},{passive:false});
-function animate(){requestAnimationFrame(animate);if(spinning&&!dragging)root.rotation.y+=.0015;if(flowRunning&&mode!=='exterior'&&!exploded){flowClock+=.035;groups.input.rotation.x=flowClock;frontCounterPivots.forEach(g=>g.rotation.x=-flowClock*.82);groups.mainshaft.rotation.x=flowClock*.62;auxCounterPivots.forEach(g=>g.rotation.x=-flowClock*.62);groups.range.rotation.x=flowClock*.42;groups.output.rotation.x=flowClock*.42}renderer.render(scene,camera)}
+function animate(){requestAnimationFrame(animate);if(spinning&&!dragging)root.rotation.y+=.0015;if(flowRunning&&mode!=='exterior'&&!exploded){flowClock+=.035;groups.input.rotation.x=flowClock;frontCounterPivots.forEach(g=>g.rotation.x=-flowClock*.82);mainshaftShaft.rotation.x=flowClock*.62;mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?0:flowState.front==='2'?1:flowState.front==='3'?2:flowState.front==='4'?3:4;g.rotation.x=flowClock*(i===selectedIndex ? 0.62 : 0.82)});auxCounterPivots.forEach(g=>g.rotation.x=-flowClock*.62);groups.range.rotation.x=flowClock*.42;groups.output.rotation.x=flowClock*.42}renderer.render(scene,camera)}
 animate();loading.style.display='none';selectPart('case');updatePowerFlow();
 </script>
 </body></html>
