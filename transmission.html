@@ -112,6 +112,10 @@ for(let i=0;i<16;i++){const a=i*Math.PI*2/16;addMesh(groups.case,new THREE.Spher
 for(let i=0;i<10;i++){const a=i*Math.PI*2/10;addMesh(groups.case,new THREE.SphereGeometry(.055,12,8),materials.bolt,[4.9,Math.cos(a)*.64,Math.sin(a)*.64],null,'case',false)}
 // Input shaft and main drive gear.
 axisCylinder(groups.input,.18,.18,1.55,-3.75,0,0,materials.shaft,'input');
+// Exposed input-shaft pilot and longitudinal splines at the clutch end.
+axisCylinder(groups.input,.205,.205,.34,-4.68,0,0,materials.steel,'input',48);
+for(let n=0;n<12;n++){const a=n*Math.PI*2/12;addMesh(groups.input,new THREE.BoxGeometry(.48,.055,.045),materials.gear,[-4.63,Math.cos(a)*.205,Math.sin(a)*.205],[a,0,0],'input');}
+axisCylinder(groups.input,.255,.255,.09,-4.91,0,0,materials.dark,'input',48);
 gear(groups.input,-2.65,0,0,.88,.34,'input',36);
 // Front mainshaft on the transmission centerline; keep its shaft separate from free-running gears.
 const mainshaftShaft=new THREE.Group();groups.mainshaft.add(mainshaftShaft);
@@ -147,12 +151,42 @@ axisCylinder(groups.range,.57,.57,.3,3.65,0,0,materials.gear,'range',48);
 gear(groups.range,4.05,0,0,.72,.32,'range',36);
 axisCylinder(groups.output,.17,.17,1.55,4.65,0,0,materials.shaft,'output');
 axisCylinder(groups.output,.62,.62,.18,5.4,0,0,materials.dark,'output',64);
-// Small bearing blocks and fork/rail cues.
-[-2.1,1.35,4.35].forEach(x=>{addMesh(groups.case,new THREE.BoxGeometry(.22,.5,.62),materials.dark,[x,0,0],[0,0,0],'case')});
-[-1.3,1.0,2.7,3.65].forEach((x,i)=>{
- const rail=axisCylinder(groups.shift,.045,.045,1.75,x,.98,0,materials.steel,'shift',24);
- const fork=addMesh(groups.shift,new THREE.TorusGeometry(.39,.055,10,40,Math.PI),materials.clutch,[x,.2,0],[Math.PI/2,0,Math.PI/2],'shift');
+// Output yoke, flange and U-joint ears make the driveline connection obvious.
+axisCylinder(groups.output,.28,.28,.22,5.58,0,0,materials.steel,'output',48);
+axisCylinder(groups.output,.19,.19,.48,5.92,0,0,materials.shaft,'output',40);
+[-1,1].forEach(side=>{
+ addMesh(groups.output,new THREE.BoxGeometry(.18,.72,.20),materials.gear,[6.08,side*.34,0],[0,0,0],'output');
+ axisCylinder(groups.output,.115,.115,.22,6.08,side*.34,0,materials.steel,'output',24);
 });
+addMesh(groups.output,new THREE.BoxGeometry(.20,.12,.82),materials.steel,[6.08,0,0],[0,0,0],'output');
+// Bearing blocks and three visible sliding synchronizer/clutch assemblies.
+[-2.1,1.35,4.35].forEach(x=>{addMesh(groups.case,new THREE.BoxGeometry(.22,.5,.62),materials.dark,[x,0,0],[0,0,0],'case')});
+const shiftAssemblies=[];
+[[-1.3,0], [.1,1], [1.0,2]].forEach(([x,index])=>{
+ const assembly=new THREE.Group();assembly.position.set(x,0,0);assembly.userData.selector=index;groups.shift.add(assembly);
+ axisCylinder(assembly,.34,.34,.30,0,0,0,materials.clutch,'shift',48);
+ axisCylinder(assembly,.40,.40,.075,-.17,0,0,materials.dark,'shift',48);
+ axisCylinder(assembly,.40,.40,.075,.17,0,0,materials.dark,'shift',48);
+ // Shift fork wraps the groove in the sliding collar; the rail is above it.
+ addMesh(assembly,new THREE.TorusGeometry(.39,.055,12,48,Math.PI),materials.clutch,[0,.20,0],[Math.PI/2,0,Math.PI/2],'shift');
+ axisCylinder(assembly,.045,.045,1.85,0,.98,0,materials.steel,'shift',24);
+ addMesh(assembly,new THREE.BoxGeometry(.13,.16,.28),materials.dark,[0,.98,0],[0,0,0],'shift');
+ shiftAssemblies.push(assembly);
+});
+function applyMechanicalSelection(){
+ const f=flowState.front;
+ const idx=f==='lo'?0:f==='1'?1:f==='2'?2:f==='3'?3:f==='4'?4:-1;
+ const targets=[-1.3,.1,1.0];
+ shiftAssemblies.forEach((a,i)=>{a.position.x=targets[i];});
+ if(idx===0)shiftAssemblies[0].position.x=-1.48;
+ if(idx===1)shiftAssemblies[0].position.x=-1.12;
+ if(idx===2)shiftAssemblies[1].position.x=-.08;
+ if(idx===3)shiftAssemblies[1].position.x=.28;
+ if(idx===4)shiftAssemblies[2].position.x=1.18;
+ shiftAssemblies.forEach((a,i)=>{
+  a.traverse(o=>{if(o.isMesh&&o.material){o.material.emissive=new THREE.Color(i===(idx<=1?0:idx<=3?1:2)&&idx>=0?0x145b35:0x000000);o.material.emissiveIntensity=idx>=0&&i===(idx<=1?0:idx<=3?1:2)?.9:0}});
+ });
+}
 const floor=new THREE.GridHelper(12,24,0x385064,0x233542);floor.position.y=-1.55;scene.add(floor);
 // Coordinate labels are simple sprites so the section split remains legible at any angle.
 function label(text,x,y,z){const c=document.createElement('canvas');c.width=512;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 34px system-ui';ctx.textAlign='center';ctx.fillText(text,256,58);const tex=new THREE.CanvasTexture(c);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sp.position.set(x,y,z);sp.scale.set(2.6,.49,1);root.add(sp);return sp}
@@ -217,6 +251,6 @@ canvas.addEventListener('pointerup',e=>{dragging=false;const rect=canvas.getBoun
 canvas.addEventListener('pointercancel',()=>dragging=false);
 canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(7,Math.min(19,radius+e.deltaY*.008));setCamera()},{passive:false});
 function animate(){requestAnimationFrame(animate);if(spinning&&!dragging)root.rotation.y+=.0015;if(flowRunning&&mode!=='exterior'&&!exploded){flowClock+=.035;groups.input.rotation.x=flowClock;frontCounterPivots.forEach(g=>g.rotation.x=-flowClock*.82);mainshaftShaft.rotation.x=flowClock*.62;mainGearSets.forEach((g,i)=>{const selectedIndex=flowState.front==='lo'?0:flowState.front==='1'?1:flowState.front==='2'?2:flowState.front==='3'?3:flowState.front==='4'?4:-1;g.rotation.x=flowClock*(i===selectedIndex ? 0.62 : 0.82)});auxCounterPivots.forEach(g=>g.rotation.x=-flowClock*.62);groups.range.rotation.x=flowClock*.42;groups.output.rotation.x=flowClock*.42}renderer.render(scene,camera)}
-animate();loading.style.display='none';selectPart('case');updatePowerFlow();
+animate();loading.style.display='none';selectPart('case');updatePowerFlow();applyMechanicalSelection();
 </script>
 </body></html>
