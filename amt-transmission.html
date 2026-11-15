@@ -119,5 +119,11 @@ document.getElementById('cutBtn').addEventListener('click',()=>setMode('cutaway'
 
 document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.05;radius=14;cameraSet();root.rotation.set(0,0,0);setMode('cutaway')});
 document.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>choosePart(b.dataset.part)));
-function animate(){requestAnimationFrame(animate);clock+=.02;if(clutch&&gear!=='N'&&mode!=='exterior'){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftPivot.rotation.x=-clock*.8;groups.main.rotation.x=clock*(gear==='1'?.45:gear==='2'?.65:gear==='3'?.85:1);groups.output.rotation.x=clock*(gear==='1'?.35:gear==='2'?.55:gear==='3'?.8:1.1)*(gear==='R'?-1:1)}else{groups.output.rotation.x*=.96}clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(gear==='1'||gear==='2'?-.1:gear==='3'||gear==='4'?.12:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
+function animate(){requestAnimationFrame(animate);clock+=.02;
+// Shaft rotation is independent of the camera/view mode: exterior must show the driveline working too.
+// With the clutch engaged, engine speed reaches the input and countershaft even in neutral.
+if(clutch){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftPivot.rotation.x=-clock*.8;groups.main.rotation.x=clock*(gear==='1'?.45:gear==='2'?.65:gear==='3'?.85:1)}
+// The output turns only when a forward/reverse gear is selected and the clutch is engaged.
+if(clutch&&gear!=='N'){groups.output.rotation.x=clock*(gear==='1'?.35:gear==='2'?.55:gear==='3'?.8:1.1)*(gear==='R'?-1:1)}
+clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(gear==='1'||gear==='2'?-.1:gear==='3'||gear==='4'?.12:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
