@@ -7,7 +7,7 @@
 <body><div class="wrap"><header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./learning.html">← Back to Learning Center</a></header>
 <section class="hero"><div class="eyebrow">Automated manual transmission • 3D mechanical trainer</div><h1>AMT clutch & shift system</h1><p>Rotate the assembly, open the cutaway and watch the pneumatic actuators move the clutch release mechanism and shift forks. Select a gear to move the synchronizer sleeve, then engage the clutch to drive the output.</p></section>
 <section class="model"><div class="bar"><h2>Automated manual transmission assembly</h2><small id="viewLabel">CUTAWAY VIEW</small></div>
-<div class="controls"><button class="control active" id="cutBtn">Cutaway</button><button class="control" id="extBtn">Exterior</button><button class="control" id="explodeBtn">Exploded</button><button class="control" id="spinBtn">Pause rotation</button><button class="control" id="resetBtn">Reset view</button></div>
+<div class="controls"><button class="control active" id="cutBtn">Cutaway</button><button class="control" id="extBtn">Exterior</button><button class="control" id="explodeBtn">Exploded</button><button class="control" id="resetBtn">Reset view</button></div>
 <div class="controls"><span class="control">Gear <select id="gear" style="margin-left:8px;background:#101820;color:inherit;border:1px solid #536170;border-radius:5px;padding:5px"><option value="N">Neutral</option><option value="1" selected>1st</option><option value="2">2nd</option><option value="3">3rd</option><option value="4">4th</option><option value="R">Reverse</option></select></span><button class="control active" id="clutchBtn">Clutch engaged</button><button class="control" id="airBtn">Cycle shift air</button><span class="control" id="airReadout">Shift air: 120 psi</span></div>
 <div class="layout"><div class="stage"><canvas id="stage" aria-label="Rotatable 3D automated manual transmission cutaway"></canvas><div class="hint">Drag to rotate · Pinch/scroll to zoom · Select a component</div></div>
 <aside class="side"><h3>Explore components</h3><p>Tap a component or select it in the model.</p><div class="part-list" id="parts">
@@ -26,7 +26,7 @@
 <script type="module">
 import * as THREE from 'three';
 const canvas=document.getElementById('stage'),scene=new THREE.Scene();scene.background=new THREE.Color(0x101c26);
-const camera=new THREE.PerspectiveCamera(38,1,.1,100);let theta=.72,phi=1.05,radius=12,drag=false,lastX=0,lastY=0,spin=true,exploded=false,mode='cutaway',gear='1',clutch=true,air=120,clock=0;
+const camera=new THREE.PerspectiveCamera(38,1,.1,100);let theta=.72,phi=1.05,radius=12,drag=false,lastX=0,lastY=0,exploded=false,mode='cutaway',gear='1',clutch=true,air=120,clock=0;
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 scene.add(new THREE.HemisphereLight(0xc6deeb,0x18212a,2));const key=new THREE.DirectionalLight(0xffffff,2.7);key.position.set(5,9,7);key.castShadow=true;scene.add(key);const rim=new THREE.DirectionalLight(0x69b7e8,1.5);rim.position.set(-7,3,-5);scene.add(rim);
 const root=new THREE.Group();scene.add(root);
@@ -51,7 +51,7 @@ cyl(groups.clutch,.20,.18,-2.93,0,0,M.steel,'clutch');cyl(groups.clutch,.28,.16,
 cyl(groups.input,.16,2.5,-1.65,0,0,M.shaft,'input');makeGear(groups.input,-.52,0,0,.70,.28,'input',30);
 for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(groups.input,new THREE.BoxGeometry(.52,.055,.045),M.gear,[-2.75,Math.cos(a)*.16,Math.sin(a)*.16],[a,0,0],'input')}
 // Countershaft fixed gear stack below the mainshaft.
-cyl(groups.counter,.15,4.9,-.2,-.92,0,M.shaft,'counter');makeGear(groups.counter,-.52,-.92,0,.88,.32,'counter',34);
+const countershaftPivot=new THREE.Group();countershaftPivot.position.set(0,-.92,0);groups.counter.add(countershaftPivot);cyl(countershaftPivot,.15,4.9,-.2,0,0,M.shaft,'counter');makeGear(countershaftPivot,-.52,0,0,.88,.32,'counter',34);
 const gearX=[-.05,.72,1.48,2.15],rads=[.66,.59,.52,.46],mainGears=[];
 gearX.forEach((x,i)=>{makeGear(groups.main,x,0,0,rads[i],.34,'main',26+i*2);mainGears.push({x,r:rads[i]})});
 cyl(groups.main,.18,4.9,.9,0,0,M.shaft,'main');
@@ -90,8 +90,8 @@ document.getElementById('gear').addEventListener('change',e=>{gear=e.target.valu
 document.getElementById('clutchBtn').addEventListener('click',e=>{clutch=!clutch;e.currentTarget.textContent=clutch?'Clutch engaged':'Clutch released';e.currentTarget.classList.toggle('active',clutch);applyGear()});
 document.getElementById('airBtn').addEventListener('click',()=>{air=air===120?90:air===90?60:120;document.getElementById('airReadout').textContent='Shift air: '+air+' psi';});
 document.getElementById('cutBtn').addEventListener('click',()=>setMode('cutaway'));document.getElementById('extBtn').addEventListener('click',()=>setMode('exterior'));document.getElementById('explodeBtn').addEventListener('click',()=>{exploded=!exploded;setMode(exploded?'exploded':'cutaway')});
-document.getElementById('spinBtn').addEventListener('click',e=>{spin=!spin;e.currentTarget.textContent=spin?'Pause rotation':'Resume rotation'});
-document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.05;radius=12;cameraSet();root.rotation.set(0,0,0);setMode('cutaway');spin=true;document.getElementById('spinBtn').textContent='Pause rotation'});
+
+document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.05;radius=12;cameraSet();root.rotation.set(0,0,0);setMode('cutaway')});
 document.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>choosePart(b.dataset.part)));
-function animate(){requestAnimationFrame(animate);clock+=.02;if(spin&&!drag&&mode!=='exploded')root.rotation.y+=.0008;if(clutch&&gear!=='N'&&mode!=='exterior'){flywheel.rotation.x=clock;groups.input.rotation.x=clock;groups.counter.rotation.x=-clock*.8;groups.main.rotation.x=clock*(gear==='1'?.45:gear==='2'?.65:gear==='3'?.85:1);groups.output.rotation.x=clock*(gear==='1'?.35:gear==='2'?.55:gear==='3'?.8:1.1)*(gear==='R'?-1:1)}else{groups.output.rotation.x*=.96}clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(gear==='1'||gear==='2'?-.1:gear==='3'||gear==='4'?.12:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
+function animate(){requestAnimationFrame(animate);clock+=.02;if(clutch&&gear!=='N'&&mode!=='exterior'){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftPivot.rotation.x=-clock*.8;groups.main.rotation.x=clock*(gear==='1'?.45:gear==='2'?.65:gear==='3'?.85:1);groups.output.rotation.x=clock*(gear==='1'?.35:gear==='2'?.55:gear==='3'?.8:1.1)*(gear==='R'?-1:1)}else{groups.output.rotation.x*=.96}clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;shiftRams.forEach((r,i)=>r.position.x=(gear==='1'||gear==='2'?-.1:gear==='3'||gear==='4'?.12:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
