@@ -1409,7 +1409,7 @@ function initDifferential3D(){
  // CylinderGeometry's local Y axis is rotated onto world Z; this angular span
  // retains the lower half (world -Y) and removes the top for inspection.
  const noseCutStart=Math.PI*1.5,noseCutArc=Math.PI;
- const noseLength=1.0,noseCenterZ=-2.65;
+ const noseLength=1.0,noseCenterZ=-3.15;
  // Relocate the remaining pinion-nose shell to the far (negative-X) side
  // of the ring gear. The pinion/driveshaft stays on its true axis at X=0;
  // this is a cutaway housing remnant, not a shaft support, so it must not
@@ -1424,7 +1424,7 @@ function initDifferential3D(){
   dark
  );
  pinionBoss.rotation.x=Math.PI/2;
- pinionBoss.position.set(0,0,-1.89);
+ pinionBoss.position.set(0,0,-2.39);
  pinionBoss.castShadow=true;
  pinionBoss.receiveShadow=true;
  root.add(pinionBoss);
