@@ -1346,25 +1346,32 @@ function initDifferential3D(){
  lowerCase.castShadow=true;
  lowerCase.receiveShadow=true;
  root.add(lowerCase);
- // Passenger-side half of the differential pumpkin. Use a revolved,
- // continuously rounded profile around the axle axis: broad beside the
- // ring-gear carrier, then smoothly tapering into the far-side housing nose.
- // This is deliberately a deep housing section (not a thin ellipsoid), and
- // it stays behind the ring-gear plane so the driver-side cutaway remains open.
+ // Passenger-side pumpkin housing with a real hollow interior. The profile
+ // travels along the outside of the casting, rounds over the far end, then
+ // returns along the inside wall. The open annular mouth faces the ring gear;
+ // the gear sits just inside that opening instead of against a solid dome.
+ // The driver-side camera view and exposed ring-gear face remain unobstructed.
  const housingProfile=[
-  new THREE.Vector2(0,0),
-  new THREE.Vector2(1.62,.10),
-  new THREE.Vector2(1.88,.28),
-  new THREE.Vector2(1.98,.52),
-  new THREE.Vector2(1.94,.82),
-  new THREE.Vector2(1.78,1.10),
-  new THREE.Vector2(1.48,1.34),
-  new THREE.Vector2(1.08,1.52),
-  new THREE.Vector2(.62,1.66),
-  new THREE.Vector2(.18,1.74),
-  new THREE.Vector2(0,1.76)
+  new THREE.Vector2(1.96,0),
+  new THREE.Vector2(2.02,.10),
+  new THREE.Vector2(2.06,.32),
+  new THREE.Vector2(2.02,.58),
+  new THREE.Vector2(1.90,.88),
+  new THREE.Vector2(1.68,1.18),
+  new THREE.Vector2(1.36,1.42),
+  new THREE.Vector2(.94,1.60),
+  new THREE.Vector2(.46,1.72),
+  new THREE.Vector2(0,1.76),
+  new THREE.Vector2(0,1.56),
+  new THREE.Vector2(.48,1.50),
+  new THREE.Vector2(.92,1.36),
+  new THREE.Vector2(1.28,1.14),
+  new THREE.Vector2(1.54,.86),
+  new THREE.Vector2(1.70,.54),
+  new THREE.Vector2(1.78,.22),
+  new THREE.Vector2(1.78,.08)
  ];
- const rearHousing=new THREE.Mesh(new THREE.LatheGeometry(housingProfile,80),dark);
+ const rearHousing=new THREE.Mesh(new THREE.LatheGeometry(housingProfile,96),dark);
  rearHousing.rotation.z=-Math.PI/2;
  rearHousing.position.set(.64,0,0);
  rearHousing.castShadow=true;
