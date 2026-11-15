@@ -156,7 +156,7 @@ function setMode(next){mode=next;const cut=next!=='exterior';groups.case.childre
 document.getElementById('exteriorBtn').classList.toggle('active',next==='exterior');document.getElementById('cutawayBtn').classList.toggle('active',next==='cutaway');document.getElementById('viewLabel').textContent=next==='exterior'?'EXTERIOR VIEW':next==='cutaway'?'INTERACTIVE CUTAWAY':'EXPLODED VIEW';
 Object.values(groups).forEach(g=>{if(g!==groups.case)g.visible=cut});
 }
-function setExploded(on){exploded=on;groups.input.position.x=on?-.35:0;groups.frontCounter.position.y=on?.25:0;groups.mainshaft.position.y=on?-.15:0;groups.shift.position.y=on?.18:0;groups.auxCounter.position.y=on?.3:0;groups.range.position.x=on?.25:0;groups.output.position.x=on?.5:0;document.getElementById('explodeBtn').classList.toggle('active',on);if(on)setMode('cutaway')}
+function setExploded(on){exploded=on;groups.input.position.x=on?-.35:0;groups.frontCounter.position.y=on ? 0.25 : 0;groups.mainshaft.position.y=on ? -0.15 : 0;groups.shift.position.y=on ? 0.18 : 0;groups.auxCounter.position.y=on ? 0.3 : 0;groups.range.position.x=on ? 0.25 : 0;groups.output.position.x=on ? 0.5 : 0;document.getElementById('explodeBtn').classList.toggle('active',on);if(on)setMode('cutaway')}
 const descriptions={
 case:['Transmission case','The housing supports shaft bearings and gear assemblies. The front box and auxiliary section are bolted together and function as one transmission.'],
 input:['Input shaft & drive gear','The clutch connects the engine to the input shaft. The input shaft drive gear meshes with both front countershaft drive gears, dividing torque between them.'],
@@ -167,7 +167,7 @@ auxCounter:['Auxiliary countershafts','The auxiliary section uses paired counter
 range:['Range section','The range selector chooses the low- or high-range path. The splitter provides a second ratio step within the range section.'],
 output:['Output shaft','The output shaft delivers the selected transmission ratio to the driveshaft and rear axle.']
 };
-function selectPart(id){selected=id;document.querySelectorAll('.part-btn').forEach(b=>b.classList.toggle('active',b.dataset.part===id));document.getElementById('selectedTitle').textContent=descriptions[id][0];document.getElementById('selectedText').textContent=descriptions[id][1];selectable.forEach(m=>{const is=m.userData.part===id;m.material.emissive=new THREE.Color(is?0x5b3100:0x000000);m.material.emissiveIntensity=is?.75:0});}
+function selectPart(id){selected=id;document.querySelectorAll('.part-btn').forEach(b=>b.classList.toggle('active',b.dataset.part===id));document.getElementById('selectedTitle').textContent=descriptions[id][0];document.getElementById('selectedText').textContent=descriptions[id][1];selectable.forEach(m=>{const is=m.userData.part===id;m.material.emissive=new THREE.Color(is?0x5b3100:0x000000);m.material.emissiveIntensity=is ? 0.75 : 0});}
 document.querySelectorAll('.part-btn').forEach(b=>b.addEventListener('click',()=>selectPart(b.dataset.part)));
 document.getElementById('exteriorBtn').addEventListener('click',()=>{setExploded(false);setMode('exterior')});
 document.getElementById('cutawayBtn').addEventListener('click',()=>setMode('cutaway'));
