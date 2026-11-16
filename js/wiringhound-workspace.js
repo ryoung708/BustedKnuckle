@@ -1,6 +1,6 @@
 import { createCaseRecord } from "./case-schema.js";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-import { recommendNextStep } from "./wiringhound-decision-engine.js";
+import { analyzeDiagnosticCase } from "./diagnostic-brain.js";
 
 const SUPABASE_URL = "https://wpxvaqmzxhxlrutklypm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_8Dhvi0M8P31FLB9kH5-RiA_5qyq9A0O";
@@ -69,16 +69,18 @@ function currentEntry(){if(!active)return {};return active.entries[steps[stepInd
 function readStep(){if(!active)return;const s=steps[stepIndex],e=currentEntry();e.choice=$("observation").value;e.measurements={condition:$("condition").value,testPoints:$("testPoints").value.trim(),actual:$("actualReadings").value.trim()};e.notes=$("stepNotes").value.trim();e.faultCodes=Array.isArray(e.faultCodes)?e.faultCodes:[];e.evidence=Array.isArray(e.evidence)?e.evidence:[];e.updatedAt=new Date().toISOString();e.completed=!!e.choice;active.currentStep=stepIndex;updateCase()}
 function stepStatus(s){const e=active?.entries?.[s.id];return !!(e&&(e.completed||e.choice))}
 function decisionMarkup(){
- const d=recommendNextStep(active,steps);if(!d)return "";
+ const brain=analyzeDiagnosticCase(active,steps);
+ const d=brain.recommendation;if(!d)return "";
  const target=steps.findIndex(x=>x.id===d.stepId),same=target===stepIndex;
  const label=d.state==="hold"?"HOLD / CLARIFY":same?"REPEAT / CLARIFY THIS TEST":"GO TO RECOMMENDED TEST";
  const current=active?.entries?.[steps[stepIndex]?.id]||{},m=current.measurements||{};
  const hasMeasurements=!!(String(m.condition||"").trim()||String(m.testPoints||"").trim()||String(m.actual||"").trim()||String(current.notes||"").trim());
  const waitingForObservation=hasMeasurements&&!String(current.choice||"").trim();
- const heading=waitingForObservation?"MEASUREMENTS CAPTURED · OBSERVATION NEEDED":d.state==="hold"?"EVIDENCE HOLD":d.state==="review"?"REVIEW":"NEXT BRANCH";
- const why=waitingForObservation?"Your test conditions, test points or measurements have been saved. The decision engine does not infer the result from free-text readings. Select the matching observed result below, or leave it blank and continue with this stage marked open.":d.reason;
- const action=waitingForObservation?"Choose the observed result that matches what you actually measured. If none fits, leave it blank and add a note; do not guess.":d.action;
- return '<section id="decisionPanel" class="similar decision-engine"><h3>IRONKNUCKLE DECISION ENGINE · '+esc(heading)+'</h3><p><b>Why:</b> '+esc(why)+'</p><p><b>Recommended action:</b> '+esc(action)+'</p>'+(target>=0?'<button class="btn primary" id="followRecommendation">'+label+(same?"":" · "+esc(steps[target].title))+'</button>':"")+'</section>';
+ const heading=waitingForObservation?"MEASUREMENTS CAPTURED · OBSERVATION NEEDED":brain.status==="evidence-needed"?"EVIDENCE HOLD":brain.status==="review-required"?"REVIEW REQUIRED":"NEXT BRANCH";
+ const why=waitingForObservation?"Your test conditions, test points or measurements have been saved. The brain does not infer a result from free-text readings. Select the matching observed result below, or leave it blank and add a note.":d.reason;
+ const action=waitingForObservation?"Choose the observed result that matches what you actually measured. If none fits, keep the stage open; do not guess.":d.action;
+ const missing=brain.vehicleContext.missing.length?"<p><b>Vehicle context:</b> Add "+esc(brain.vehicleContext.missing.join(", "))+" when known so future guidance can be more specific.</p>":"";
+ return '<section id="decisionPanel" class="similar decision-engine"><h3>IRONKNUCKLE DIAGNOSTIC BRAIN · '+esc(heading)+'</h3><p><b>Recommended next test:</b> '+esc(d.stepTitle)+'</p><p><b>Why:</b> '+esc(why)+'</p><p><b>What to do:</b> '+esc(action)+'</p><p><b>Evidence tracked:</b> '+brain.evidence.stagesWithObservations+' observation(s) · '+brain.evidence.stagesWithMeasurements+' stage(s) with measurements · '+brain.evidence.faultCodeCount+' fault code(s)</p>'+missing+'<p class="notice"><b>Safety boundary:</b> '+esc(brain.caution)+'</p><p class="notice">'+esc(brain.limitations[0])+' '+esc(brain.limitations[1])+'</p>'+(target>=0?'<button class="btn primary" id="followRecommendation">'+label+(same?"":" · "+esc(d.stepTitle))+'</button>':"")+'</section>';
 }
 function renderWorkspace(){if(!active){$("workspace").innerHTML='<div class="empty">No active WiringHound case.<br>Start a new diagnostic hunt or open a saved case from the library.</div>';return}
 const s=steps[stepIndex],e=active.entries[s.id]||{},m=e.measurements||{},done=steps.filter(stepStatus).length;
