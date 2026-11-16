@@ -9,6 +9,7 @@
     "test:decision": "node scripts/test-wiringhound-decision-engine.mjs",
     "test:training": "node scripts/test-training-regressions.mjs",
     "test:pages": "node scripts/test-page-integrity.mjs",
-    "test": "npm run test:diagnostics && npm run test:electrical && npm run test:decision && npm run test:training && npm run test:pages"
+    "test": "npm run test:diagnostics && npm run test:electrical && npm run test:decision && npm run test:training && npm run test:pages && npm run test:profiles",
+    "test:profiles": "node scripts/test-learning-profiles.mjs"
   }
 }
