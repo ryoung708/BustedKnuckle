@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090b0e"><title>Mack mDRIVE HD 13-Speed DD | IronKnuckle</title>
+<style>
+:root{color-scheme:dark;--bg:#090b0e;--panel:#11171d;--raised:#1a232c;--line:#354250;--amber:#ff9f1c;--text:#f1f4f7;--muted:#a2afbc;--green:#70c69a;--blue:#69b7e8}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#ff9f1c13,transparent 42%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}.wrap{width:min(1320px,100%);margin:auto;padding:15px 18px 44px}.top{display:flex;justify-content:space-between;gap:12px;padding:8px 0 17px;border-bottom:1px solid var(--line)}.brand{font-size:13px;font-weight:950;letter-spacing:.15em}.brand span,.eyebrow{color:var(--amber)}a{color:inherit}.back{font-size:12px;color:var(--muted);text-decoration:none}.hero{padding:25px 0 18px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.19em;text-transform:uppercase}.hero h1{font-size:clamp(29px,5vw,44px);line-height:1.04;margin:8px 0}.hero p{max-width:920px;color:var(--muted);line-height:1.6;margin:0;font-size:13px}.model{border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line)}.bar h2{font-size:15px;margin:0}.bar small{color:var(--muted)}.controls{display:flex;flex-wrap:wrap;gap:7px;padding:10px 13px;border-bottom:1px solid var(--line)}button{font:inherit}.control{padding:9px 12px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--text);font-size:11px;font-weight:850;cursor:pointer}.control.active,.control:hover{border-color:var(--amber);color:var(--amber)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 285px;min-height:610px}.stage{position:relative;min-width:0;background:radial-gradient(ellipse at 50% 48%,#263d4b 0%,#101c26 64%,#080e14 100%)}canvas{width:100%;height:610px;display:block;touch-action:none}.hint{position:absolute;left:13px;bottom:12px;padding:8px 10px;border:1px solid #ffffff20;border-radius:7px;background:#080d11c9;color:#b9c9d2;font-size:10px;pointer-events:none}.side{padding:15px;border-left:1px solid var(--line);background:#0e141a}.side h3{margin:0 0 8px;font-size:13px}.side p{font-size:12px;line-height:1.55;color:var(--muted);margin:0 0 12px}.part-list{display:grid;gap:6px}.part{width:100%;text-align:left;padding:10px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--text);cursor:pointer}.part b{display:block;font-size:11px}.part small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.4}.part.active{border-color:var(--amber);background:#ff9f1c12}.readout{margin-top:13px;padding:12px;border-left:3px solid var(--green);border-radius:5px;background:#70c69a12}.readout b{font-size:12px}.readout p{margin:5px 0 0}.readout.warn{border-color:var(--amber);background:#ff9f1c12}.notes{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-top:14px}.note{padding:15px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}.note h3{font-size:14px;margin:0 0 8px}.note p,.note li{color:var(--muted);font-size:12px;line-height:1.6}.note ul{padding-left:18px;margin:7px 0}.status{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid #a76a28;border-radius:5px;color:#ffca7a;font-size:9px;font-weight:900;letter-spacing:.08em}.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:10px}.legend span{display:flex;align-items:center;gap:5px}.swatch{width:9px;height:9px;border-radius:50%;background:#aab8c0}.swatch.blue{background:#69b7e8}.swatch.amber{background:#ff9f1c}@media(max-width:850px){.layout{grid-template-columns:1fr}.side{border-left:0;border-top:1px solid var(--line)}canvas{height:470px}.notes{grid-template-columns:1fr}.part-list{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.wrap{padding:12px}.bar{align-items:flex-start;flex-direction:column}canvas{height:410px}.part-list{grid-template-columns:1fr 1fr}}
+</style><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js"}}</script></head>
+<body><div class="wrap">
+<header class="top"><div class="brand">IRON<span>KNUCKLE</span> / DRIVETRAIN LAB</div><a class="back" href="./learning.html">← Back to Learning Center</a></header>
+<section class="hero"><div class="eyebrow">2022 reference year • Mack mDRIVE HD • Direct Drive</div><h1>mDRIVE HD 13-speed DD</h1><p>First-stage exterior blockout. Explore the transmission envelope, engine-side interface, output connection and provisional external mounting / component zones. The geometry is intentionally modular while the exact service model and serial range remain unconfirmed.</p></section>
+<section class="model"><div class="bar"><h2>Transmission assembly • exterior foundation</h2><small id="viewLabel">EXTERIOR VIEW</small></div>
+<div class="controls"><button class="control active" id="extBtn">Exterior</button><button class="control" id="cutBtn">Cutaway</button><button class="control" id="explodeBtn">Exploded</button><button class="control" id="resetBtn">Reset camera</button><button class="control" id="zoomInBtn">＋ Zoom</button><button class="control" id="zoomOutBtn">－ Zoom</button></div>
+<div class="layout"><div class="stage"><canvas id="stage" aria-label="Interactive provisional three-dimensional Mack mDRIVE HD transmission exterior model"></canvas><div class="hint">Drag to orbit · Pinch / scroll to zoom · Tap a component to inspect</div></div>
+<aside class="side"><h3>Assembly explorer</h3><p>Select a highlighted assembly or choose it below.</p><div class="part-list" id="parts">
+<button class="part active" data-part="bell"><b>Engine-side interface</b><small>Bellhousing envelope and input axis</small></button>
+<button class="part" data-part="case"><b>Main transmission case</b><small>Primary structural housing blockout</small></button>
+<button class="part" data-part="rear"><b>Rear housing zone</b><small>Provisional rear section envelope</small></button>
+<button class="part" data-part="input"><b>Input shaft</b><small>Input axis and visible spline representation</small></button>
+<button class="part" data-part="output"><b>Output shaft & yoke</b><small>Driveline connection and yoke geometry</small></button>
+<button class="part" data-part="mounts"><b>Mounting interfaces</b><small>Illustrative mounting pads and bosses</small></button>
+<button class="part" data-part="external"><b>External component zones</b><small>Unverified placeholders; not OEM placement</small></button></div>
+<div class="readout"><b id="partTitle">Engine-side interface</b><p id="partText">The engine-side envelope establishes the input axis and the front boundary for later clutch and transmission packaging.</p></div>
+<div class="readout warn"><b>Reference status</b><p>2022 model-year target. Exact service designation, generation and serial range are still unknown. All geometry on this first pass is a configurable blockout, not a certified OEM casting.</p></div>
+<div class="legend"><span><i class="swatch"></i> Housing / structure</span><span><i class="swatch blue"></i> Shaft interfaces</span><span><i class="swatch amber"></i> Provisional zones</span></div>
+</aside></div></section>
+<section class="notes"><article class="note"><h3>What this first build establishes</h3><ul><li>Separate bellhousing, main-case and rear-housing assemblies.</li><li>Input and output axes, visible input splines and a recognizable output yoke.</li><li>Independent mounting features and external placeholder groups.</li><li>Stable component IDs so later geometry and fault states can be swapped without rebuilding the whole scene.</li></ul></article><article class="note"><h3>Accuracy boundary</h3><p>This is not a dimensionally accurate 2022 OEM housing. Do not infer bolt patterns, shaft lengths, actuator locations or internal topology from this blockout. We will replace each provisional assembly as evidence becomes available.</p></article></section>
+</div>
+<script type="module">
+import * as THREE from 'three';
+const canvas=document.getElementById('stage'),scene=new THREE.Scene();scene.background=new THREE.Color(0x101c26);
+const camera=new THREE.PerspectiveCamera(36,1,.1,100);let theta=.76,phi=1.08,radius=16,drag=false,lastX=0,lastY=0,pointerMoved=false,mode='exterior',selected='bell';
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+scene.add(new THREE.HemisphereLight(0xd8e8f0,0x18212a,2.05));const key=new THREE.DirectionalLight(0xffffff,2.5);key.position.set(7,10,8);key.castShadow=true;scene.add(key);const rim=new THREE.DirectionalLight(0x69b7e8,1.25);rim.position.set(-7,4,-6);scene.add(rim);
+const root=new THREE.Group();scene.add(root);
+const material=(color,metalness=.65,roughness=.34,transparent=false,opacity=1)=>new THREE.MeshStandardMaterial({color,metalness,roughness,transparent,opacity,side:transparent?THREE.DoubleSide:THREE.FrontSide});
+const mats={case:material(0x71838c,.72,.36),edge:material(0x9cabb2,.78,.3),dark:material(0x293943,.55,.42),steel:material(0x9eafb8,.88,.23),shaft:material(0x69b7e8,.82,.22),amber:material(0xd38b32,.72,.3),rubber:material(0x202a30,.1,.8)};
+const groups={bell:new THREE.Group(),case:new THREE.Group(),rear:new THREE.Group(),input:new THREE.Group(),output:new THREE.Group(),mounts:new THREE.Group(),external:new THREE.Group()};
+Object.entries(groups).forEach(([id,g])=>{g.userData.componentId=id;root.add(g)});
+const pickables=[];
+function addMesh(group,geometry,mat,pos,rot,id,opts={}){const mesh=new THREE.Mesh(geometry,mat.clone());mesh.position.set(...pos);if(rot)mesh.rotation.set(...rot);mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.componentId=id;mesh.userData.basePosition=mesh.position.clone();if(opts.name)mesh.userData.label=opts.name;group.add(mesh);if(opts.pick!==false)pickables.push(mesh);return mesh}
+function box(g,size,pos,mat,id,rot=null,name){return addMesh(g,new THREE.BoxGeometry(...size),mat,pos,rot,id,{name})}
+function cylinder(g,r1,r2,len,pos,mat,id,axis='x',name){const rot=axis==='x'?[0,0,Math.PI/2]:axis==='z'?[Math.PI/2,0,0]:null;return addMesh(g,new THREE.CylinderGeometry(r1,r2,len,48,1,false),mat,pos,rot,id,{name})}
+function torus(g,r,t,pos,mat,id,axis='x'){const rot=axis==='x'?[0,Math.PI/2,0]:axis==='y'?[0,0,0]:[Math.PI/2,0,0];return addMesh(g,new THREE.TorusGeometry(r,t,12,64),mat,pos,rot,id)}
+function rib(g,x,y,z,w,h,d,id){box(g,[w,h,d],[x,y,z],mats.edge,id,[0,0,0])}
+// Bellhousing: deliberately generic envelope, not a claimed casting profile.
+cylinder(groups.bell,1.68,1.82,.72,[-3.05,0,0],mats.case,'bell','x','Bellhousing outer flange');
+cylinder(groups.bell,1.47,1.62,.74,[-3.12,0,0],mats.dark,'bell','x','Bellhousing recess');
+torus(groups.bell,1.70,.075,[-2.68,0,0],mats.edge,'bell');
+for(let i=0;i<12;i++){const a=i*Math.PI/6;const y=Math.cos(a)*1.68,z=Math.sin(a)*1.68;box(groups.bell,[.25,.22,.22],[-2.66,y,z],mats.edge,'bell',[a,0,0],'Bellhousing flange boss')}
+cylinder(groups.bell,.43,.43,.28,[-2.48,0,0],mats.dark,'bell','x','Input bearing bore');
+for(let i=0;i<8;i++){const a=i*Math.PI/4; cylinder(groups.bell,.075,.075,.12,[-2.64,Math.cos(a)*1.51,Math.sin(a)*1.51],mats.amber,'bell','x','Illustrative fastener head')}
+// Main case as layered rounded structural block with ribs, bosses and service-cover surfaces.
+box(groups.case,[5.35,2.62,2.48],[.05,0,0],mats.case,'case',null,'Main case blockout');
+box(groups.case,[4.9,2.38,2.34],[.05,.03,0],mats.dark,'case',null,'Side casting recess');
+box(groups.case,[4.45,2.16,2.18],[.10,.06,0],mats.case,'case',null,'Main case shell');
+for(let i=0;i<7;i++){const x=-2.0+i*.68;box(groups.case,[.12,2.52,2.38],[x,0,0],mats.edge,'case',null,'Housing reinforcement rib')}
+box(groups.case,[2.3,.14,2.42],[.05,1.31,0],mats.edge,'case',null,'Upper flange rail');
+box(groups.case,[2.3,.14,2.42],[.05,-1.31,0],mats.edge,'case',null,'Lower flange rail');
+for(const z of [-1,1])for(const y of [-.85,.85])cylinder(groups.case,.18,.18,.16,[.1,y,z*1.23],mats.dark,'case','z','Casting boss');
+for(let i=0;i<3;i++){const x=-1.25+i*1.15; cylinder(groups.case,.46,.46,.12,[x,.0,1.25],mats.dark,'case','z','Provisional side cover seat');torus(groups.case,.40,.045,[x,0,1.33],mats.edge,'case','z')}
+// Rear housing zone; separate so it can be replaced with confirmed range/output housing.
+box(groups.rear,[1.85,2.05,2.05],[3.42,0,0],mats.case,'rear',null,'Rear housing blockout');
+box(groups.rear,[1.62,1.80,1.84],[3.48,.02,0],mats.dark,'rear',null,'Rear housing inset');
+for(let i=0;i<4;i++){const x=2.82+i*.38;box(groups.rear,[.10,1.96,1.94],[x,0,0],mats.edge,'rear',null,'Rear housing rib')}
+cylinder(groups.rear,.58,.58,.34,[4.38,0,0],mats.dark,'rear','x','Output bearing retainer');
+torus(groups.rear,.54,.07,[4.58,0,0],mats.edge,'rear');
+// Input shaft axis and splines (representational, not dimensioned).
+cylinder(groups.input,.24,.24,2.45,[-4.30,0,0],mats.shaft,'input','x','Input shaft');
+cylinder(groups.input,.29,.29,.35,[-3.12,0,0],mats.steel,'input','x','Input bearing journal');
+for(let i=0;i<16;i++){const a=i*Math.PI/8;box(groups.input,[.72,.055,.055],[-5.22,Math.cos(a)*.245,Math.sin(a)*.245],mats.steel,'input',[a,0,0],'Input spline tooth')}
+cylinder(groups.input,.30,.30,.15,[-5.72,0,0],mats.dark,'input','x','Input shaft tip');
+// Output shaft and recognizable yoke; yoke fork arms aligned on vertical plane.
+cylinder(groups.output,.23,.23,1.22,[4.78,0,0],mats.shaft,'output','x','Output shaft');
+cylinder(groups.output,.31,.31,.28,[5.42,0,0],mats.steel,'output','x','Output spline land');
+for(let i=0;i<24;i++){const a=i*Math.PI/12;box(groups.output,[.48,.035,.035],[5.52,Math.cos(a)*.30,Math.sin(a)*.30],mats.steel,'output',[a,0,0],'Output spline tooth')}
+cylinder(groups.output,.38,.38,.32,[5.92,0,0],mats.dark,'output','x','Yoke hub');
+const yoke=new THREE.Group();yoke.position.set(6.12,0,0);yoke.userData.componentId='output';groups.output.add(yoke);
+box(yoke,[.24,.98,.22],[0,.55,0],mats.steel,'output',null,'Yoke upper ear');box(yoke,[.24,.98,.22],[0,-.55,0],mats.steel,'output',null,'Yoke lower ear');box(yoke,[.32,.18,.64],[0,0,0],mats.steel,'output',null,'Yoke bridge');cylinder(yoke,.12,.12,.72,[0,.55,0],mats.dark,'output','z','Upper U-joint cap seat');cylinder(yoke,.12,.12,.72,[0,-.55,0],mats.dark,'output','z','Lower U-joint cap seat');
+// Illustrative mounting pads, kept independent pending bolt-pattern confirmation.
+for(const x of [-1.55,1.85])for(const y of [-1.34,1.34]){box(groups.mounts,[.72,.20,.78],[x,y,0],mats.edge,'mounts',null,'Illustrative mounting pad');cylinder(groups.mounts,.16,.16,.12,[x,y*1.04,0],mats.dark,'mounts','y','Illustrative mount boss')}
+// External placeholders are amber and intentionally generic; no asserted OEM locations.
+const zoneA=box(groups.external,[.72,.50,.58],[1.55,1.58,.15],mats.amber,'external',null,'Unverified external component zone A');
+const zoneB=box(groups.external,[.56,.40,.46],[2.55,1.48,-.45],mats.amber,'external',null,'Unverified external component zone B');
+const zoneC=cylinder(groups.external,.18,.18,.72,[2.0,1.78,-.75],mats.amber,'external','z','Unverified external connection placeholder');
+const labelGroup=new THREE.Group();root.add(labelGroup);
+function makeLabel(text,pos){const c=document.createElement('canvas');c.width=512;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 30px system-ui';ctx.textAlign='center';ctx.fillText(text,256,60);const tex=new THREE.CanvasTexture(c),sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sprite.position.set(...pos);sprite.scale.set(2.4,.45,1);labelGroup.add(sprite);return sprite}
+const labels={bell:makeLabel('ENGINE SIDE',[-3.2,2.1,0]),case:makeLabel('MAIN CASE',[.0,2.0,0]),rear:makeLabel('REAR HOUSING',[3.5,1.85,0]),input:makeLabel('INPUT SHAFT',[-5.15,-.65,.15]),output:makeLabel('OUTPUT / YOKE',[5.8,-.9,.15]),mounts:makeLabel('MOUNTING ZONES',[.0,-1.9,0]),external:makeLabel('UNVERIFIED ZONES',[2.1,2.2,-.7])};
+const descriptions={
+ bell:['Engine-side interface','Generic bellhousing envelope and input-axis reference. Its casting outline, fasteners and mating dimensions remain provisional.'],
+ case:['Main transmission case','The primary structural case blockout. Ribs, cover seats and bosses are visual placeholders until matched to the 2022 service model.'],
+ rear:['Rear housing zone','A separate rear assembly placeholder. Its exact length, casting and internal range/output layout have not been confirmed.'],
+ input:['Input shaft','Shows the engine-side input axis and a visible spline representation. Dimensions and spline specification are illustrative only.'],
+ output:['Output shaft & yoke','Shows the output axis, spline land and a recognizable driveline yoke shape. No OEM dimensions are implied.'],
+ mounts:['Mounting interfaces','Independent mounting pads make it possible to revise locations and bolt patterns without reshaping the main case.'],
+ external:['External component zones','Amber shapes reserve space for future verified external hardware. They do not represent confirmed Mack component locations.']
+};
+function selectPart(id){selected=id;document.querySelectorAll('.part').forEach(b=>b.classList.toggle('active',b.dataset.part===id));document.getElementById('partTitle').textContent=descriptions[id][0];document.getElementById('partText').textContent=descriptions[id][1];pickables.forEach(o=>{const on=o.userData.componentId===id;o.material.emissive.setHex(on?0x3c2308:0x000000);o.material.emissiveIntensity=on?.5:0;});}
+document.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>selectPart(b.dataset.part)));
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(canvas);resize();
+function setCamera(){camera.position.set(radius*Math.sin(phi)*Math.cos(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.sin(theta));camera.lookAt(0,0,0)}
+function setMode(next){mode=next;document.getElementById('viewLabel').textContent=next.toUpperCase()+' VIEW';['extBtn','cutBtn','explodeBtn'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',['exterior','cutaway','exploded'][i]===next));
+ const exterior=next==='exterior',cutaway=next==='cutaway',exploded=next==='exploded';
+ groups.bell.visible=true;groups.case.visible=true;groups.rear.visible=true;groups.input.visible=true;groups.output.visible=true;groups.mounts.visible=true;groups.external.visible=true;labelGroup.visible=exterior;
+ const shellMat=groups.case.children.filter(o=>o.isMesh);
+ shellMat.forEach(o=>{o.material.transparent=cutaway;o.material.opacity=cutaway?.20:1;o.material.depthWrite=!cutaway;o.material.side=cutaway?THREE.DoubleSide:THREE.FrontSide});
+ groups.bell.children.forEach(o=>{o.material.transparent=cutaway;o.material.opacity=cutaway?.28:1;o.material.depthWrite=!cutaway});
+ groups.rear.children.forEach(o=>{o.material.transparent=cutaway;o.material.opacity=cutaway?.22:1;o.material.depthWrite=!cutaway});
+ groups.external.visible=exterior||exploded;groups.mounts.visible=exterior||exploded;
+ const offsets={bell:-.8,case:0,rear:1.0,input:-1.1,output:1.15,mounts:0,external:1.25};
+ Object.entries(groups).forEach(([id,g])=>{g.position.set(exploded?offsets[id]:0,0,0)});
+ if(cutaway){groups.external.visible=false;groups.mounts.visible=false;labelGroup.visible=false;}
+}
+document.getElementById('extBtn').addEventListener('click',()=>setMode('exterior'));document.getElementById('cutBtn').addEventListener('click',()=>setMode('cutaway'));document.getElementById('explodeBtn').addEventListener('click',()=>setMode('exploded'));
+document.getElementById('resetBtn').addEventListener('click',()=>{theta=.76;phi=1.08;radius=16;setCamera()});
+document.getElementById('zoomInBtn').addEventListener('click',()=>{radius=Math.max(9,radius-1);setCamera()});document.getElementById('zoomOutBtn').addEventListener('click',()=>{radius=Math.min(25,radius+1);setCamera()});
+canvas.addEventListener('pointerdown',e=>{drag=true;pointerMoved=false;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.abs(dx)+Math.abs(dy)>3)pointerMoved=true;theta-=dx*.008;phi=Math.max(.25,Math.min(2.85,phi+dy*.008));lastX=e.clientX;lastY=e.clientY;setCamera()});
+canvas.addEventListener('pointerup',e=>{drag=false;if(pointerMoved)return;const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(pickables,true)[0];if(hit&&hit.object.userData.componentId)selectPart(hit.object.userData.componentId)});
+canvas.addEventListener('pointercancel',()=>drag=false);canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(9,Math.min(25,radius+e.deltaY*.012));setCamera()},{passive:false});
+setCamera();setMode('exterior');selectPart('bell');
+function animate(){requestAnimationFrame(animate);renderer.render(scene,camera)}animate();
+</script></body></html>
