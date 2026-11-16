@@ -27,7 +27,7 @@
 <script type="module">
 (async()=>{
  const status=document.getElementById('rendererStatus');
- const showError=(title,detail)=>{status.style.display='block';status.innerHTML='<b>'+title+'</b><span>'+String(detail||'Unknown rendering error')+'</span>';};
+ const showError=(title,detail)=>{status.replaceChildren();const heading=document.createElement('b');heading.textContent=title;const message=document.createElement('span');message.textContent=String(detail||'Unknown rendering error');status.append(heading,message);status.style.display='block';};
  let THREE;
  try{
   THREE=await import('https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js');
