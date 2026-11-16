@@ -8,5 +8,5 @@ assert.doesNotMatch(home,/import\s+\{[^}]*globalFaultLibrary[^}]*\}\s+from\s+['"
 assert.doesNotMatch(home,/id="faultListContainer"/);
 assert.match(standards,/OEM-verified/);
 assert.match(standards,/A suspected cause is not a confirmed cause/);
-assert.match(standards,/Do not upload employer-confidential material/);
+assert.match(standards,/Never upload employer-confidential material/);
 console.log("Technical content safety gate tests passed.");
