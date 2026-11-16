@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
+import { createCaseRecord } from "./case-schema.js";
 
 const SUPABASE_URL = "https://wpxvaqmzxhxlrutklypm.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8Dhvi0M8P31FLB9kH5-RiA_5qyq9A0O";
@@ -103,7 +104,7 @@ async function syncLocalCases() {
         owner_id: user.id,
         title: titleFor(raw),
         status: ["draft","submitted","in_review","reviewed","archived"].includes(raw.status) ? raw.status : "submitted",
-        raw_case: raw,
+        raw_case: createCaseRecord(raw, "diagnostic_command_center"),
         updated_at: new Date().toISOString()
       };
       let result;
