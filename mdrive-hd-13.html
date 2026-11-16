@@ -36,6 +36,7 @@
   return;
  }
  try{
+phase='scene and WebGL renderer setup';
 const canvas=document.getElementById('stage'),scene=new THREE.Scene();scene.background=new THREE.Color(0x101c26);
 const camera=new THREE.PerspectiveCamera(36,1,.1,100);let theta=.76,phi=1.08,radius=16,drag=false,lastX=0,lastY=0,pointerMoved=false,mode='exterior',selected='bell';
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -43,6 +44,7 @@ scene.add(new THREE.HemisphereLight(0xd8e8f0,0x18212a,2.05));const key=new THREE
 const root=new THREE.Group();scene.add(root);
 const material=(color,metalness=.65,roughness=.34,transparent=false,opacity=1)=>new THREE.MeshStandardMaterial({color,metalness,roughness,transparent,opacity,side:transparent?THREE.DoubleSide:THREE.FrontSide});
 const mats={case:material(0x465159,.78,.38),edge:material(0xaab5bb,.82,.28),dark:material(0x202a30,.62,.42),steel:material(0xb7c1c6,.9,.22),shaft:material(0x69b7e8,.82,.22),amber:material(0xd38b32,.72,.3),rubber:material(0x202a30,.1,.8)};
+phase='assembly geometry construction';
 const groups={bell:new THREE.Group(),case:new THREE.Group(),rear:new THREE.Group(),input:new THREE.Group(),output:new THREE.Group(),mounts:new THREE.Group(),external:new THREE.Group()};
 Object.entries(groups).forEach(([id,g])=>{g.userData.componentId=id;root.add(g)});
 const pickables=[];
@@ -146,6 +148,7 @@ const zoneA=box(groups.external,[.48,.28,.34],[2.12,1.20,1.12],mats.edge,'extern
 const zoneB=box(groups.external,[.36,.24,.28],[2.62,.92,1.10],mats.steel,'external',null,'Provisional side connector block');
 cylinder(groups.external,.10,.10,.55,[2.38,1.10,1.28],mats.dark,'external','z','Provisional harness entry');
 
+phase='3D labels and sprites';
 const labelGroup=new THREE.Group();root.add(labelGroup);
 function makeLabel(text,pos){const c=document.createElement('canvas');c.width=512;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 30px system-ui';ctx.textAlign='center';ctx.fillText(text,256,60);const tex=new THREE.CanvasTexture(c),sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sprite.position.set(...pos);sprite.scale.set(2.4,.45,1);labelGroup.add(sprite);return sprite}
 const labels={bell:makeLabel('ENGINE SIDE',[-3.2,2.1,0]),case:makeLabel('RIBBED MAIN CASE',[.0,2.0,0]),rear:makeLabel('REAR HOUSING',[3.5,1.85,0]),input:makeLabel('INPUT SHAFT',[-5.15,-.65,.15]),output:makeLabel('OUTPUT / YOKE',[5.8,-.9,.15]),mounts:makeLabel('MOUNTING ZONES',[.0,-1.9,0]),external:makeLabel('CONNECTOR ZONES',[2.2,1.8,1.0])};
@@ -160,6 +163,7 @@ const descriptions={
 };
 function selectPart(id){selected=id;document.querySelectorAll('.part').forEach(b=>b.classList.toggle('active',b.dataset.part===id));document.getElementById('partTitle').textContent=descriptions[id][0];document.getElementById('partText').textContent=descriptions[id][1];pickables.forEach(o=>{const on=o.userData.componentId===id;o.material.emissive.setHex(on?0x3c2308:0x000000);o.material.emissiveIntensity=on?.5:0;});}
 document.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>selectPart(b.dataset.part)));
+phase='camera, controls and resize setup';
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
 function resize(){const w=Math.max(1,canvas.clientWidth),h=Math.max(1,canvas.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 new ResizeObserver(resize).observe(canvas);resize();
@@ -183,8 +187,10 @@ canvas.addEventListener('pointerdown',e=>{drag=true;pointerMoved=false;lastX=e.c
 canvas.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.abs(dx)+Math.abs(dy)>3)pointerMoved=true;theta-=dx*.008;phi=Math.max(.25,Math.min(2.85,phi+dy*.008));lastX=e.clientX;lastY=e.clientY;setCamera()});
 canvas.addEventListener('pointerup',e=>{drag=false;if(pointerMoved)return;const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(pickables,true)[0];if(hit&&hit.object.userData.componentId)selectPart(hit.object.userData.componentId)});
 canvas.addEventListener('pointercancel',()=>drag=false);canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(9,Math.min(25,radius+e.deltaY*.012));setCamera()},{passive:false});
+phase='first scene render';
 setCamera();setMode('exterior');selectPart('bell');
-function animate(){requestAnimationFrame(animate);renderer.render(scene,camera)}animate();
+function animate(){requestAnimationFrame(animate);try{renderer.render(scene,camera)}catch(error){showError('3D render failed during '+phase,(error&&error.stack)||error&&error.message);console.error('IronKnuckle mDRIVE render failed:',error);}}
+animate();
 
  window.__IK_MDRIVE_READY=true;
  status.style.display='none';
