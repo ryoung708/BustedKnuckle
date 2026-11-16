@@ -32,7 +32,7 @@ const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixe
 scene.add(new THREE.HemisphereLight(0xd8e8f0,0x18212a,2.05));const key=new THREE.DirectionalLight(0xffffff,2.5);key.position.set(7,10,8);key.castShadow=true;scene.add(key);const rim=new THREE.DirectionalLight(0x69b7e8,1.25);rim.position.set(-7,4,-6);scene.add(rim);
 const root=new THREE.Group();scene.add(root);
 const material=(color,metalness=.65,roughness=.34,transparent=false,opacity=1)=>new THREE.MeshStandardMaterial({color,metalness,roughness,transparent,opacity,side:transparent?THREE.DoubleSide:THREE.FrontSide});
-const mats={case:material(0x71838c,.72,.36),edge:material(0x9cabb2,.78,.3),dark:material(0x293943,.55,.42),steel:material(0x9eafb8,.88,.23),shaft:material(0x69b7e8,.82,.22),amber:material(0xd38b32,.72,.3),rubber:material(0x202a30,.1,.8)};
+const mats={case:material(0x465159,.78,.38),edge:material(0xaab5bb,.82,.28),dark:material(0x202a30,.62,.42),steel:material(0xb7c1c6,.9,.22),shaft:material(0x69b7e8,.82,.22),amber:material(0xd38b32,.72,.3),rubber:material(0x202a30,.1,.8)};
 const groups={bell:new THREE.Group(),case:new THREE.Group(),rear:new THREE.Group(),input:new THREE.Group(),output:new THREE.Group(),mounts:new THREE.Group(),external:new THREE.Group()};
 Object.entries(groups).forEach(([id,g])=>{g.userData.componentId=id;root.add(g)});
 const pickables=[];
@@ -48,19 +48,38 @@ torus(groups.bell,1.70,.075,[-2.68,0,0],mats.edge,'bell');
 for(let i=0;i<12;i++){const a=i*Math.PI/6;const y=Math.cos(a)*1.68,z=Math.sin(a)*1.68;box(groups.bell,[.25,.22,.22],[-2.66,y,z],mats.edge,'bell',[a,0,0],'Bellhousing flange boss')}
 cylinder(groups.bell,.43,.43,.28,[-2.48,0,0],mats.dark,'bell','x','Input bearing bore');
 for(let i=0;i<8;i++){const a=i*Math.PI/4; cylinder(groups.bell,.075,.075,.12,[-2.64,Math.cos(a)*1.51,Math.sin(a)*1.51],mats.amber,'bell','x','Illustrative fastener head')}
-// Main case as layered rounded structural block with ribs, bosses and service-cover surfaces.
-box(groups.case,[5.35,2.62,2.48],[.05,0,0],mats.case,'case',null,'Main case blockout');
-box(groups.case,[4.9,2.38,2.34],[.05,.03,0],mats.dark,'case',null,'Side casting recess');
-box(groups.case,[4.45,2.16,2.18],[.10,.06,0],mats.case,'case',null,'Main case shell');
-for(let i=0;i<7;i++){const x=-2.0+i*.68;box(groups.case,[.12,2.52,2.38],[x,0,0],mats.edge,'case',null,'Housing reinforcement rib')}
-box(groups.case,[2.3,.14,2.42],[.05,1.31,0],mats.edge,'case',null,'Upper flange rail');
-box(groups.case,[2.3,.14,2.42],[.05,-1.31,0],mats.edge,'case',null,'Lower flange rail');
-for(const z of [-1,1])for(const y of [-.85,.85])cylinder(groups.case,.18,.18,.16,[.1,y,z*1.23],mats.dark,'case','z','Casting boss');
-for(let i=0;i<3;i++){const x=-1.25+i*1.15; cylinder(groups.case,.46,.46,.12,[x,.0,1.25],mats.dark,'case','z','Provisional side cover seat');torus(groups.case,.40,.045,[x,0,1.33],mats.edge,'case','z')}
-// Rear housing zone; separate so it can be replaced with confirmed range/output housing.
-box(groups.rear,[1.85,2.05,2.05],[3.42,0,0],mats.case,'rear',null,'Rear housing blockout');
-box(groups.rear,[1.62,1.80,1.84],[3.48,.02,0],mats.dark,'rear',null,'Rear housing inset');
-for(let i=0;i<4;i++){const x=2.82+i*.38;box(groups.rear,[.10,1.96,1.94],[x,0,0],mats.edge,'rear',null,'Rear housing rib')}
+// Main case: contoured cast envelope replaces the stack of rectangular blocks.
+// Profile is an illustrative silhouette only; it is not a measured Mack casting.
+const caseProfile=new THREE.Shape();
+caseProfile.moveTo(-2.55,-.78);caseProfile.lineTo(-2.38,-1.02);caseProfile.lineTo(-1.92,-1.16);
+caseProfile.lineTo(1.72,-1.16);caseProfile.lineTo(2.28,-.92);caseProfile.lineTo(2.55,-.62);
+caseProfile.lineTo(2.55,.72);caseProfile.lineTo(2.22,1.02);caseProfile.lineTo(1.70,1.14);
+caseProfile.lineTo(-1.88,1.14);caseProfile.lineTo(-2.35,.98);caseProfile.lineTo(-2.55,.72);caseProfile.close();
+const caseGeo=new THREE.ExtrudeGeometry(caseProfile,{depth:2.28,steps:1,bevelEnabled:true,bevelSegments:3,bevelSize:.10,bevelThickness:.10,curveSegments:8});
+caseGeo.translate(0,0,-1.14);
+addMesh(groups.case,caseGeo,mats.case,[0,0,0],null,'case',{name:'Contoured main casting'});
+// Raised side cover follows the casting silhouette and gives the case a real stepped profile.
+const sideProfile=new THREE.Shape();
+sideProfile.moveTo(-2.12,-.62);sideProfile.lineTo(-1.82,-.88);sideProfile.lineTo(1.55,-.88);
+sideProfile.lineTo(2.18,-.48);sideProfile.lineTo(2.18,.48);sideProfile.lineTo(1.62,.82);
+sideProfile.lineTo(-1.72,.82);sideProfile.lineTo(-2.12,.58);sideProfile.close();
+const sideGeo=new THREE.ExtrudeGeometry(sideProfile,{depth:.13,steps:1,bevelEnabled:true,bevelSegments:2,bevelSize:.045,bevelThickness:.045});
+sideGeo.translate(0,0,1.12);
+addMesh(groups.case,sideGeo,mats.dark,[0,0,0],null,'case',{name:'Raised side casting panel'});
+// Cast ribs are fewer, tapered in length and angled instead of evenly spaced rectangular bars.
+for(let i=0;i<5;i++){const x=-1.62+i*.78;const ribMesh=box(groups.case,[.10,1.58-(Math.abs(i-2)*.12),.10],[x,-.02,1.29],mats.edge,'case',[0,0,(i%2===0?.16:-.16)],'Angled casting reinforcement');}
+for(const x of [-1.88,1.88])for(const y of [-.72,.72]){
+ cylinder(groups.case,.15,.15,.12,[x,y,1.28],mats.edge,'case','z','Raised casting fastener boss');
+ cylinder(groups.case,.065,.065,.13,[x,y,1.36],mats.dark,'case','z','Fastener recess');
+}
+// Three recessed service-cover details are retained as visual landmarks, but reduced and integrated.
+for(let i=0;i<3;i++){const x=-1.15+i*1.12;cylinder(groups.case,.31,.31,.075,[x,.02,1.24],mats.dark,'case','z','Provisional side cover recess');torus(groups.case,.275,.035,[x,.02,1.31],mats.edge,'case','z');}
+// Rear housing: stepped, softened transition into the output-bearing retainer.
+const rearGeo=new THREE.BoxGeometry(1.92,1.88,1.92,3,3,3);
+rearGeo.translate(3.38,0,0);
+addMesh(groups.rear,rearGeo,mats.case,[0,0,0],null,'rear',{name:'Rear housing envelope'});
+box(groups.rear,[1.42,1.52,1.78],[3.48,.02,0],mats.dark,'rear',null,'Rear housing inset panel');
+for(let i=0;i<3;i++){const x=2.82+i*.48;box(groups.rear,[.075,1.66,1.78],[x,0,0],mats.edge,'rear',[0,0,(i-1)*.045],'Rear housing cast rib')}
 cylinder(groups.rear,.58,.58,.34,[4.38,0,0],mats.dark,'rear','x','Output bearing retainer');
 torus(groups.rear,.54,.07,[4.58,0,0],mats.edge,'rear');
 // Input shaft axis and splines (representational, not dimensioned).
