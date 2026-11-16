@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+const home=await readFile(new URL("../index.html",import.meta.url),"utf8");
+const standards=await readFile(new URL("../docs/TECHNICAL-CONTENT-STANDARD.md",import.meta.url),"utf8");
+assert.match(home,/Legacy fault lookup paused/);
+assert.match(home,/unverified recommendations are not presented as repair guidance/i);
+assert.doesNotMatch(home,/import\s+\{[^}]*globalFaultLibrary[^}]*\}\s+from\s+['"]\.\/js\/database\.js['"]/);
+assert.doesNotMatch(home,/id="faultListContainer"/);
+assert.match(standards,/OEM-verified/);
+assert.match(standards,/A suspected cause is not a confirmed cause/);
+assert.match(standards,/Do not upload employer-confidential material/);
+console.log("Technical content safety gate tests passed.");
