@@ -372,6 +372,22 @@
 </head><body><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./index.html">← Back to workspace</a></header>
 <section class="hero"><div class="eyebrow">Technician learning • visual first</div><h1 id="learningHeroTitle">See the circuit.<br>Understand the test.</h1><p id="learningHeroIntro">Short, practical lessons for the bay. Pick a topic, study the diagram, then check your understanding. No textbook required.</p></section>
+<section class="profile-selector" id="modelProfileSelector" aria-labelledby="profileHeading">
+ <div><div class="eyebrow">Application-specific learning</div><h2 id="profileHeading">Choose the exact platform</h2><p>Select the closest engine, emissions family or transmission. The profile tells you what the lesson represents and what still requires OEM confirmation.</p></div>
+ <label for="learningProfileSelect">Vehicle / system profile
+  <select id="learningProfileSelect" aria-label="Select model-specific learning profile"></select>
+ </label>
+ <div class="profile-status" id="learningProfileStatus" aria-live="polite"></div>
+</section>
+<style>
+.profile-selector{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(220px,.8fr);gap:12px;align-items:end;margin:0 0 16px;padding:16px;border:1px solid #8a5a2b;border-radius:11px;background:linear-gradient(120deg,#201a13,#11171d)}
+.profile-selector h2{font-size:17px;margin:5px 0}.profile-selector p{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
+.profile-selector label{display:block;color:var(--muted);font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+.profile-selector select{display:block;width:100%;margin-top:6px;padding:11px;background:var(--raised);border:1px solid var(--line);border-radius:7px;color:var(--text)}
+.profile-status{grid-column:1/-1;padding:12px;border:1px solid var(--line);border-radius:8px;background:#0b1117;color:var(--muted);font-size:12px;line-height:1.55}
+.profile-status strong{color:#ffbd63}.profile-status .profile-warning{display:block;margin-top:5px;color:#ffcf8c}
+@media(max-width:720px){.profile-selector{grid-template-columns:1fr}}
+</style>
 <section class="learning-path" aria-label="IronKnuckle lesson method"><div class="path-step"><b>01 Understand</b><span>How the selected system works</span></div><div class="path-step"><b>02 Set up</b><span>Tools, safety and test conditions</span></div><div class="path-step"><b>03 Test</b><span>Where and how to measure</span></div><div class="path-step"><b>04 Interpret</b><span>What the evidence supports</span></div><div class="path-step"><b>05 Verify</b><span>Confirm the fault and repair</span></div></section>
 
 <nav class="system-nav" aria-label="Learning systems">
@@ -1496,4 +1512,27 @@ window.initIronKnuckleDifferential3D=initDifferential3D;
 const observer=new MutationObserver(()=>{if($("diff3dStage")&&!$("diff3dStage").dataset.ready)initDifferential3D();});observer.observe(document.body,{childList:true,subtree:true});
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{if($("diff3dStage"))initDifferential3D();});else if($("diff3dStage"))initDifferential3D();
 })();
+</script><script type="module">
+import { learningProfiles } from "./js/learning-profiles.js";
+const picker=document.getElementById("learningProfileSelect");
+const status=document.getElementById("learningProfileStatus");
+const tabs=[...document.querySelectorAll("[data-system]")];
+const launchLinks={ "mack-mdrive-hd-13-2022":{label:"Open the Mack mDRIVE HD 13-speed model",href:"./mdrive-hd-13.html"},"eaton-fuller-18-2022":{label:"Open the Eaton Fuller 18-speed learning model",href:"./transmission.html"} };
+let activeSystem="electrical";
+function renderProfiles(){
+ const items=learningProfiles.filter(p=>p.system===activeSystem);
+ picker.innerHTML="";
+ if(!items.length){status.textContent="No model-specific profile is available for this topic yet. The lesson remains a general concept.";picker.disabled=true;return;}
+ picker.disabled=false;
+ items.forEach((p,i)=>{const option=document.createElement("option");option.value=p.id;option.textContent=[p.year,p.make,p.model,p.variant].filter(Boolean).join(" · ");picker.appendChild(option);});
+ picker.value=items[0].id;renderStatus();
+}
+function renderStatus(){
+ const p=learningProfiles.find(x=>x.id===picker.value);if(!p)return;
+ const link=launchLinks[p.id];
+ status.innerHTML="<strong>"+p.make+" · "+p.model+" · "+p.year+"</strong><br><b>Configuration:</b> "+p.variant+"<br><b>Learning scope:</b> "+p.scope+"<br><b>Accuracy status:</b> "+p.accuracy+'<span class="profile-warning"><b>Limitations:</b> '+p.limitations+"</span>"+(link?'<p style="margin:9px 0 0"><a class="action" href="'+link.href+'">'+link.label+" →</a></p>":"");
+}
+picker.addEventListener("change",renderStatus);
+tabs.forEach(tab=>tab.addEventListener("click",()=>{activeSystem=tab.dataset.system;renderProfiles();}));
+renderProfiles();
 </script></body></html>

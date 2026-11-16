@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import { createCaseRecord } from "../js/case-schema.js";
+const raw={id:"case-1",createdAt:"2026-11-16T10:00:00Z",vehicle:{year:"2022",make:"Mack",model:"Anthem",engine:"MP8"},complaint:"Intermittent J1939 dropout",workflowId:"j1939_network",status:"completed",verification:"verified",rootCause:"Chafed CAN harness",repairPerformed:"Harness repaired",entries:{baseline:{choice:"Multiple modules offline",evidence:[{name:"photo.jpg"}]}}};
+const wh=createCaseRecord(raw,"wiringhound");
+assert.equal(wh.caseEnvelope.schema,"ironknuckle.case");
+assert.equal(wh.caseEnvelope.sourceApp,"wiringhound");
+assert.equal(wh.caseEnvelope.vehicle.engine,"MP8");
+assert.equal(wh.caseEnvelope.entryCount,1);
+assert.equal(wh.caseEnvelope.evidenceCount,1);
+assert.equal(wh.caseEnvelope.reviewState,"candidate_for_review");
+assert.equal(wh.entries,raw.entries,"Original workspace payload remains intact");
+const dcc=createCaseRecord({...raw,verification:"unconfirmed"},"diagnostic_command_center");
+assert.equal(dcc.caseEnvelope.sourceApp,"diagnostic_command_center");
+assert.equal(dcc.caseEnvelope.reviewState,"unreviewed");
+assert.throws(()=>createCaseRecord({}, "wiringhound"),/id is required/);
+console.log("Shared case schema tests passed.");
