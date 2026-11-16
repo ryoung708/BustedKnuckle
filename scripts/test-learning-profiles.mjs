@@ -6,7 +6,7 @@ assert.ok(learningProfiles.length>=8);
 for(const p of learningProfiles){
  for(const field of ["id","system","make","model","year","variant","status","accuracy","scope","limitations"])assert.ok(p[field],p.id+" missing "+field);
 }
-assert.equal(getLearningProfile("mack-mdrive-hd-ato2612f-12").model,"mDRIVE HD");
+assert.equal(getLearningProfile("mack-mdrive-hd-ato2612f-12").model,"mDRIVE HD ATO2612F");
 assert.match(getLearningProfile("mack-mdrive-hd-ato2612f-12").accuracy,/visual blockout/i);
 assert.match(getLearningProfile("mack-mdrive-hd-ato2612f-12").variant,/12-speed HD/);
 assert.match(getLearningProfile("mack-mdrive-hd-ato2612f-12").variant,/60150840/);
