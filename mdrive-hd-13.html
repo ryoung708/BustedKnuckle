@@ -28,7 +28,7 @@
 (async()=>{
  const status=document.getElementById('rendererStatus');
  const showError=(title,detail)=>{status.replaceChildren();const heading=document.createElement('b');heading.textContent=title;const message=document.createElement('span');message.textContent=String(detail||'Unknown rendering error');status.append(heading,message);status.style.display='block';};
- let THREE;
+ let THREE,phase='Three.js initialization';
  try{
   THREE=await import('https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js');
  }catch(error){
@@ -190,7 +190,7 @@ function animate(){requestAnimationFrame(animate);renderer.render(scene,camera)}
  status.style.display='none';
  }catch(error){
   console.error('IronKnuckle mDRIVE renderer failed:',error);
-  showError('3D renderer failed to start',error&&error.message);
+  showError('3D renderer failed during '+phase,(error&&error.stack)||error&&error.message);
  }
 })();
 </script></body></html>
