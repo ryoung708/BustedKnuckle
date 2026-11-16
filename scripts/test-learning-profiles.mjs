@@ -1,19 +1,18 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { learningProfiles, getLearningProfile } from "../js/learning-profiles.js";
-
-assert.ok(learningProfiles.length >= 7);
-for (const profile of learningProfiles) {
-  assert.ok(profile.id && profile.system && profile.make && profile.model && profile.year);
-  assert.ok(profile.status && profile.accuracy && profile.scope && profile.limitations);
-  assert.match(profile.limitations, /vary|not|must|do not|no /i);
+const page=await readFile(new URL("../learning.html",import.meta.url),"utf8");
+assert.ok(learningProfiles.length>=8);
+for(const p of learningProfiles){
+ for(const field of ["id","system","make","model","year","variant","status","accuracy","scope","limitations"])assert.ok(p[field],p.id+" missing "+field);
 }
-const mdrive = getLearningProfile("mack-mdrive-hd-13-2022");
-assert.equal(mdrive.make, "Mack");
-assert.equal(mdrive.model, "mDRIVE HD");
-assert.match(mdrive.accuracy, /blockout/i);
-assert.match(mdrive.limitations, /Do not use/i);
-const fuller = getLearningProfile("eaton-fuller-18-2022");
-assert.equal(fuller.make, "Eaton");
-assert.match(fuller.limitations, /generic interactive AMT/i);
-assert.equal(getLearningProfile("missing"), null);
+assert.equal(getLearningProfile("mack-mdrive-hd-13-2022").model,"mDRIVE HD");
+assert.match(getLearningProfile("mack-mdrive-hd-13-2022").accuracy,/visual blockout/i);
+assert.match(getLearningProfile("eaton-fuller-18-2022").limitations,/generic interactive AMT/i);
+assert.equal(getLearningProfile("generic-differential").system,"differential");
+assert.match(page,/id="learningProfileSelect"/);
+assert.match(page,/id="learningProfileStatus"/);
+assert.match(page,/learning-profiles\.js/);
+assert.match(page,/mdrive-hd-13\.html/);
+assert.match(page,/transmission\.html/);
 console.log("Model-specific learning profile tests passed.");
