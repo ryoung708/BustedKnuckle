@@ -105,7 +105,7 @@ cylinder(groups.case,.30,.30,.20,[1.72,-.86,1.48],mats.dark,'case','y','Actuator
 cylinder(groups.case,.10,.10,.45,[1.72,.98,1.48],mats.edge,'case','y','Actuator stem');
 for(const y of [-.52,.30]){cylinder(groups.case,.40,.40,.08,[1.72,y,1.48],mats.edge,'case','y','Actuator collar');}
 // Small hard lines are routed across the module face as visual detail, not functional plumbing claims.
-function sideLine(points,r=.035){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));const geo=new THREE.TubeGeometry(curve,r,24,false);addMesh(groups.case,geo,mats.edge,[0,0,0],null,'case',{name:'External control line'});}
+function sideLine(points,r=.035){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));const geo=new THREE.TubeGeometry(curve,24,r,8,false);addMesh(groups.case,geo,mats.edge,[0,0,0],null,'case',{name:'External control line'});}
 sideLine([[1.15,.72,1.66],[1.36,.62,1.68],[1.38,.20,1.68],[1.58,.08,1.68]]);
 sideLine([[1.15,-.72,1.66],[1.38,-.62,1.68],[1.38,-.28,1.68],[1.58,-.18,1.68]]);
 
