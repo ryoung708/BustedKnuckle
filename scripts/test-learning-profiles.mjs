@@ -15,6 +15,6 @@ assert.equal(getLearningProfile("generic-differential").system,"differential");
 assert.match(page,/id="learningProfileSelect"/);
 assert.match(page,/id="learningProfileStatus"/);
 assert.match(page,/learning-profiles\.js/);
-assert.match(page,/mdrive-hd-13\.html/);
+assert.match(page,/mdrive-ato2612f-12\.html/);
 assert.match(page,/transmission\.html/);
 console.log("Model-specific learning profile tests passed.");
