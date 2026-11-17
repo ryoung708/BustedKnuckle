@@ -97,7 +97,7 @@ function tokens(text) {
 function caseFaultCodes(record = {}) {
   return (record.entries ? Object.values(record.entries) : [])
     .flatMap(entry => Array.isArray(entry?.faultCodes) ? entry.faultCodes : [])
-    .map(f => lower(f.code).replace(/\\s+/g, ""))
+    .map(f => lower(f.code).replace(/\s+/g, ""))
     .filter(Boolean);
 }
 function caseSymptomText(record = {}) {
