@@ -95,7 +95,7 @@ function makeDiamondWebPanel(z,flip,label){
  panel.lineTo(2.38,.68);panel.lineTo(2.16,.96);panel.lineTo(1.78,1.10);
  panel.lineTo(-1.92,1.10);panel.lineTo(-2.22,.98);panel.lineTo(-2.38,.72);panel.closePath();
  // Repeated diamond apertures leave substantial diagonal cast webs between cells.
- const cols=7, rows=4, dx=.60, dy=.49, holeW=.535, holeH=.425;
+ const cols=7, rows=4, dx=.60, dy=.49, holeW=.565, holeH=.455;
  for(let row=0;row<rows;row++){
   for(let col=0;col<cols;col++){
    const cx=-1.80+col*dx+(row%2)*.04;
@@ -109,7 +109,7 @@ function makeDiamondWebPanel(z,flip,label){
    panel.holes.push(hole);
   }
  }
- const geo=new THREE.ExtrudeGeometry(panel,{depth:.13,steps:1,bevelEnabled:true,bevelSegments:1,bevelSize:.025,bevelThickness:.025,curveSegments:1});
+ const geo=new THREE.ExtrudeGeometry(panel,{depth:.11,steps:1,bevelEnabled:true,bevelSegments:1,bevelSize:.012,bevelThickness:.012,curveSegments:1});
  const castMat=material(0x626b6e,.88,.78);
  const mesh=new THREE.Mesh(geo,castMat);
  mesh.position.set(0,0,flip?z-.13:z);
