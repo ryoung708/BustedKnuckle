@@ -155,6 +155,21 @@ for(const y of [-.52,.30]){cylinder(groups.case,.40,.40,.08,[1.72,y,1.48],mats.e
 function sideLine(points,r=.035){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));const geo=new THREE.TubeGeometry(curve,24,r,8,false);addMesh(groups.case,geo,mats.edge,[0,0,0],null,'case',{name:'External control line'});}
 sideLine([[1.15,.72,1.66],[1.36,.62,1.68],[1.38,.20,1.68],[1.58,.08,1.68]]);
 sideLine([[1.15,-.72,1.66],[1.38,-.62,1.68],[1.38,-.28,1.68],[1.58,-.18,1.68]]);
+// Dedicated TECU-to-CCV connections: a protected electrical harness and a separate pneumatic supply line.
+// Routed down the passenger-side face with serviceable bends; visual routing only until OEM routing is confirmed.
+function routedLine(points,r,mat,label){
+ const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));
+ const geo=new THREE.TubeGeometry(curve,48,r,10,false);
+ return addMesh(groups.case,geo,mat,[0,0,0],null,'case',{name:label});
+}
+// Electrical harness exits the TECU connector bank, follows the case shoulder, then plugs into the CCV.
+routedLine([[.58,1.72,-.64],[.48,1.48,-.94],[.36,1.10,-1.25],[.12,.66,-1.43],[-.30,.18,-1.48],[-.60,-.18,-1.52],[-.78,-.43,-1.66]],.055,mats.rubber,'TECU-to-CCV electrical harness');
+routedLine([[.58,1.72,-.64],[.48,1.48,-.94],[.36,1.10,-1.25],[.12,.66,-1.43],[-.30,.18,-1.48],[-.60,-.18,-1.52],[-.78,-.43,-1.66]],.018,mats.dark,'Harness protective outer tracer');
+// Pneumatic control/supply line descends separately from the upper control-housing area to a CCV air port.
+routedLine([[.18,1.30,-.78],[.08,1.02,-1.12],[-.12,.62,-1.48],[-.48,.18,-1.72],[-.92,-.12,-1.86],[-1.30,-.32,-1.96],[-1.58,-.48,-1.96]],.052,mats.amber,'TECU control-housing-to-CCV pneumatic air line');
+cylinder(groups.case,.085,.085,.16,[-1.58,-.48,-1.91],mats.edge,'case','z','Pneumatic line CCV end fitting');
+cylinder(groups.case,.065,.065,.14,[-.78,-.43,-1.60],mats.edge,'case','z','CCV electrical harness strain-relief');
+
 
 // Rebuilt rear housing: tapered, rounded cast tail with one centered output-bearing boss.
 // The previous stepped rectangular block and paired circular faces did not match the supplied unit photos.
