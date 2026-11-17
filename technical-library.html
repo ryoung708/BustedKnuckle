@@ -216,10 +216,27 @@ async function signIn(){
  const {error}=await client.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:location.href.split("#")[0].split("?")[0]}});
  setStatus("authStatus",error?error.message:"Check your email for the sign-in link, then return to this page. New account creation is disabled.",error?"bad":"good");$("signIn").disabled=false;
 }
+// Register the listener immediately so a magic-link redirect cannot be missed.
+client.auth.onAuthStateChange((event,sessionNow)=>{
+ user=sessionNow?.user||null;
+ if(user){
+   showSignedIn();
+   // Do not call Supabase APIs inside onAuthStateChange; defer database work
+   // until the auth callback has returned to avoid an auth-lock deadlock.
+   if(event==="SIGNED_IN"||event==="TOKEN_REFRESHED"){
+     window.setTimeout(()=>loadDocuments().catch(error=>setStatus("listStatus","Could not load documents: "+(error.message||String(error)),"bad")),0);
+   }
+ }else if(event==="INITIAL_SESSION"||event==="SIGNED_OUT"){
+   showSignedOut();
+ }
+});
 async function init(){
- const {data:{session}}=await client.auth.getSession();user=session?.user||null;
- if(user){showSignedIn();await loadDocuments();}else showSignedOut();
- client.auth.onAuthStateChange((_event,sessionNow)=>{user=sessionNow?.user||null;if(user){showSignedIn();loadDocuments();}else showSignedOut();});
+ setStatus("authStatus","Checking your secure sign-in session…");
+ const {data:{session},error}=await client.auth.getSession();
+ if(error)throw error;
+ user=session?.user||null;
+ if(user){showSignedIn();await loadDocuments();}
+ else showSignedOut();
 }
 $("signIn").addEventListener("click",signIn);
 $("uploadForm").addEventListener("submit",uploadDocument);
