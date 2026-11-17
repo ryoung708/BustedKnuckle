@@ -109,6 +109,55 @@ function renderDocuments(){
  box.querySelectorAll("[data-download]").forEach(button=>button.addEventListener("click",()=>downloadDocument(button.dataset.download)));
  box.querySelectorAll("[data-delete]").forEach(button=>button.addEventListener("click",()=>deleteDocument(button.dataset.delete)));
 }
+
+async function extractFileText(file){
+ const type=file.type||"";
+ if(type==="application/pdf"||file.name?.toLowerCase().endsWith(".pdf")){
+   const pdfjs=await import("https://esm.sh/pdfjs-dist@4.10.38/build/pdf.mjs");
+   pdfjs.GlobalWorkerOptions.workerSrc="https://esm.sh/pdfjs-dist@4.10.38/build/pdf.worker.mjs";
+   const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;
+   const pages=[];let total=0;
+   for(let pageNo=1;pageNo<=pdf.numPages;pageNo++){
+     const page=await pdf.getPage(pageNo),content=await page.getTextContent();
+     const line=content.items.map(item=>item.str||"").join(" ").replace(/\s+/g," ").trim();
+     if(line)pages.push("[Page "+pageNo+"]\n"+line);
+     total+=line.length;
+     if(total>=MAX_EXTRACT_CHARS)break;
+   }
+   const extracted=pages.join("\n\n").slice(0,MAX_EXTRACT_CHARS);
+   if(!extracted.trim())return {text:null,status:"unsupported",pageCount:pdf.numPages,error:"No selectable text found. This may be a scanned/image-only PDF; OCR is not included yet."};
+   return {text:extracted,status:"extracted",pageCount:pdf.numPages,error:total>MAX_EXTRACT_CHARS?"Text was capped at 1.5 million characters.":null};
+ }
+ if(type==="text/plain"||type==="text/csv"||type==="application/json"||/\.(txt|csv|json)$/i.test(file.name||"")){
+   return {text:(await file.text()).slice(0,MAX_EXTRACT_CHARS),status:"extracted",pageCount:null,error:null};
+ }
+ return {text:null,status:"unsupported",pageCount:null,error:"Text extraction currently supports PDF, TXT, CSV and JSON. Image OCR is not included."};
+}
+function readExtractedText(id){
+ const row=documents.find(item=>item.id===id);if(!row)return;
+ $("readerTitle").textContent=row.title+" — extracted text";
+ $("readerContent").textContent=row.extracted_text||row.extraction_error||"No extracted text is saved yet. Choose Extract / re-extract.";
+ $("readerPanel").classList.remove("hidden");
+ $("readerPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function runExtraction(id){
+ const row=documents.find(item=>item.id===id);if(!row)return;
+ setStatus("listStatus","Downloading the private original and extracting text in this browser…");
+ const {data:blob,error}=await client.storage.from(BUCKET).download(row.storage_path);
+ if(error){setStatus("listStatus","Could not retrieve original: "+error.message,"bad");return;}
+ try{
+   const result=await extractFileText(new File([blob],row.original_name,{type:row.mime_type}));
+   const {error:updateError}=await client.from("technical_documents").update({extracted_text:result.text,extraction_status:result.status,extraction_page_count:result.pageCount,extracted_at:new Date().toISOString(),extraction_error:result.error}).eq("id",id);
+   if(updateError)throw updateError;
+   await loadDocuments();
+   setStatus("listStatus",result.status==="extracted"?"Text extracted and saved privately. Search can now find words inside this document.":(result.error||"This file type is not supported yet."),result.status==="extracted"?"good":"bad");
+ }catch(error){
+   const message=error.message||String(error);
+   await client.from("technical_documents").update({extraction_status:"failed",extraction_error:message,extracted_at:new Date().toISOString()}).eq("id",id);
+   await loadDocuments();setStatus("listStatus","Text extraction failed: "+message,"bad");
+ }
+}
+
 async function loadDocuments(){
  if(!user)return;
  setStatus("listStatus","Loading your private document collection…");
@@ -153,10 +202,12 @@ async function uploadDocument(event){
  const {error:uploadError}=await client.storage.from(BUCKET).upload(path,file,{contentType:file.type,upsert:false});
  if(uploadError){setStatus("uploadStatus","Upload failed: "+uploadError.message,"bad");button.disabled=false;button.textContent="Upload to Technical Library";return;}
  const tags=$("tags").value.split(",").map(value=>value.trim()).filter(Boolean).slice(0,30);
- const payload={owner_id:user.id,title,category:$("category").value,source_type:$("sourceType").value,manufacturer:$("manufacturer").value.trim()||null,model:$("model").value.trim()||null,model_year:$("modelYear").value.trim()||null,system:$("system").value.trim()||null,source_reference:$("sourceReference").value.trim()||null,revision:$("revision").value.trim()||null,tags,notes:$("notes").value.trim()||null,storage_path:path,original_name:file.name,mime_type:file.type,size_bytes:file.size};
+ let extraction={text:null,status:"pending",pageCount:null,error:null};
+ try{extraction=await extractFileText(file);}catch(error){extraction={text:null,status:"failed",pageCount:null,error:error.message||String(error)};}
+ const payload={owner_id:user.id,title,category:$("category").value,source_type:$("sourceType").value,manufacturer:$("manufacturer").value.trim()||null,model:$("model").value.trim()||null,model_year:$("modelYear").value.trim()||null,system:$("system").value.trim()||null,source_reference:$("sourceReference").value.trim()||null,revision:$("revision").value.trim()||null,tags,notes:$("notes").value.trim()||null,storage_path:path,original_name:file.name,mime_type:file.type,size_bytes:file.size,extracted_text:extraction.text,extraction_status:extraction.status,extraction_page_count:extraction.pageCount,extracted_at:new Date().toISOString(),extraction_error:extraction.error};
  const {error:recordError}=await client.from("technical_documents").insert(payload);
  if(recordError){await client.storage.from(BUCKET).remove([path]);setStatus("uploadStatus","Document record could not be saved; the uploaded file was rolled back: "+recordError.message,"bad");button.disabled=false;button.textContent="Upload to Technical Library";return;}
- $("uploadForm").reset();await loadDocuments();setStatus("uploadStatus","Document uploaded successfully. The original is stored privately and its source details are searchable. Text extraction/indexing is a separate next step.","good");
+ $("uploadForm").reset();await loadDocuments();setStatus("uploadStatus","Document uploaded. The original remains private; extraction status is shown on its document card.","good");
  button.disabled=false;button.textContent="Upload to Technical Library";
 }
 async function signIn(){
@@ -176,6 +227,7 @@ $("refresh").addEventListener("click",loadDocuments);
 $("signOut").addEventListener("click",async()=>{const {error}=await client.auth.signOut();if(error)setStatus("listStatus",error.message,"bad");});
 $("search").addEventListener("input",renderDocuments);
 $("filterCategory").addEventListener("change",renderDocuments);
+$("closeReader").addEventListener("click",()=>$("readerPanel").classList.add("hidden"));
 init().catch(error=>setStatus("authStatus",error.message||String(error),"bad"));
 </script>
 </body>
