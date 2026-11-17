@@ -85,13 +85,35 @@ const caseGeo=new THREE.ExtrudeGeometry(caseProfile,{depth:2.35,steps:1,bevelEna
 caseGeo.translate(0,0,-1.175);
 addMesh(groups.case,caseGeo,mats.dark,[0,0,0],null,'case',{name:'Dark cast main housing with passenger-side diamond lattice'});
 // Integrated upper control housing: shift-fork mechanism is represented as part of this assembly.
-box(groups.case,[3.55,.22,1.86],[-.05,1.24,0],mats.edge,'case',null,'Upper shift-control housing casting');
-box(groups.case,[3.30,.13,1.62],[-.05,1.40,0],mats.case,'case',null,'Upper control housing cover');
+box(groups.case,[3.55,.22,1.86],[-.05,1.24,0],mats.edge,'case',null,'Ribbed upper mDRIVE shift-control housing casting');
+box(groups.case,[3.30,.13,1.62],[-.05,1.40,0],mats.case,'case',null,'Upper mDRIVE control housing cover');
 for(let i=0;i<14;i++){const x=-1.65+(i%7)*.53,z=i<7?-.70:.70;cylinder(groups.case,.052,.052,.10,[x,1.49,z],mats.steel,'case','y','Upper control housing fastener');}
-// TECU mounted on top of the control housing; connector blocks are separate selectable details.
-box(groups.case,[1.02,.30,.72],[.92,1.64,-.10],mats.steel,'case',null,'TECU electronic control unit');
-box(groups.case,[.84,.12,.56],[.92,1.83,-.10],mats.dark,'case',null,'TECU cover');
-for(let i=0;i<3;i++){box(groups.case,[.18,.13,.22],[.58+i*.34,1.72,-.51],mats.edge,'case',null,'TECU electrical connector');for(let pin=0;pin<4;pin++)box(groups.case,[.035,.035,.08],[.52+i*.34+pin*.04,1.72,-.64],mats.steel,'case',null,'TECU connector terminal');}
+// Ribbed TECU enclosure and front-passenger-side connector layout.
+// The TECU is mounted as part of the mDRIVE top control assembly, not as a smooth generic box.
+box(groups.case,[1.10,.42,.78],[-.18,1.68,-.30],mats.steel,'case',null,'Ribbed TECU electronic control housing');
+box(groups.case,[.92,.12,.62],[-.18,1.93,-.30],mats.dark,'case',null,'TECU upper cover');
+for(let i=0;i<7;i++){
+ const x=-.66+i*.16;
+ box(groups.case,[.075,.18,.82],[x,1.69,-.30],mats.edge,'case',null,'TECU longitudinal cast cooling rib');
+}
+for(let i=0;i<4;i++){
+ const z=-.62+i*.20;
+ box(groups.case,[1.02,.13,.065],[-.18,1.49,z],mats.edge,'case',null,'TECU lower housing rib');
+}
+// Rectangular control body on the front passenger corner of the upper control housing.
+box(groups.case,[.76,.48,.66],[-1.36,1.52,-.73],mats.case,'case',null,'Front passenger-side rectangular mDRIVE control body');
+box(groups.case,[.62,.10,.52],[-1.36,1.81,-.73],mats.edge,'case',null,'Front passenger-side control body cover');
+for(let i=0;i<4;i++){
+ const z=-.94+i*.14;
+ box(groups.case,[.08,.12,.075],[-1.36,1.87,z],mats.steel,'case',null,'Front control body cover fastener');
+}
+// Main TECU harness connector is at the FRONT PASSENGER SIDE of the top control housing.
+box(groups.case,[.28,.22,.34],[-1.78,1.58,-.73],mats.dark,'case',null,'Front passenger-side TECU harness connector');
+box(groups.case,[.10,.16,.27],[-1.96,1.58,-.73],mats.edge,'case',null,'TECU harness connector locking collar');
+for(let pin=0;pin<6;pin++){
+ const z=-.84+pin*.044;
+ box(groups.case,[.06,.045,.025],[-2.02,1.55,z],mats.steel,'case',null,'TECU connector terminal');
+}
 // Representative selector rails and shift-fork bodies integrated with the control-housing assembly.
 // Exact fork count, geometry and placement require ATO2612F service-reference confirmation.
 for(let i=0;i<3;i++){const x=-1.12+i*.78;cylinder(groups.case,.065,.065,2.05,[x,1.57,0],mats.steel,'case','z','Shift-fork selector rail');box(groups.case,[.22,.20,.94],[x,1.47,0],mats.edge,'case',null,'Shift-fork body integrated with control housing');box(groups.case,[.13,.18,.50],[x-.20,1.46,0],mats.steel,'case',null,'Shift-fork left tine');box(groups.case,[.13,.18,.50],[x+.20,1.46,0],mats.steel,'case',null,'Shift-fork right tine');}
@@ -162,11 +184,12 @@ function routedLine(points,r,mat,label){
  const geo=new THREE.TubeGeometry(curve,48,r,10,false);
  return addMesh(groups.case,geo,mat,[0,0,0],null,'case',{name:label});
 }
-// Electrical harness exits the TECU connector bank, follows the case shoulder, then plugs into the CCV.
-routedLine([[.58,1.72,-.64],[.48,1.48,-.94],[.36,1.10,-1.25],[.12,.66,-1.43],[-.30,.18,-1.48],[-.60,-.18,-1.52],[-.78,-.43,-1.66]],.055,mats.rubber,'TECU-to-CCV electrical harness');
-routedLine([[.58,1.72,-.64],[.48,1.48,-.94],[.36,1.10,-1.25],[.12,.66,-1.43],[-.30,.18,-1.48],[-.60,-.18,-1.52],[-.78,-.43,-1.66]],.018,mats.dark,'Harness protective outer tracer');
-// Pneumatic control/supply line descends separately from the upper control-housing area to a CCV air port.
-routedLine([[.18,1.30,-.78],[.08,1.02,-1.12],[-.12,.62,-1.48],[-.48,.18,-1.72],[-.92,-.12,-1.86],[-1.30,-.32,-1.96],[-1.58,-.48,-1.96]],.052,mats.amber,'TECU control-housing-to-CCV pneumatic air line');
+// Electrical harness exits the front passenger-side TECU connector, follows the case shoulder,
+// then drops to the CCV connector. Separate from the pneumatic line.
+routedLine([[-2.02,1.58,-.73],[-1.98,1.38,-.98],[-1.90,1.08,-1.22],[-1.72,.70,-1.45],[-1.42,.20,-1.54],[-1.02,-.20,-1.60],[-.78,-.43,-1.66]],.055,mats.rubber,'Front passenger-side TECU-to-CCV electrical harness');
+routedLine([[-2.02,1.58,-.73],[-1.98,1.38,-.98],[-1.90,1.08,-1.22],[-1.72,.70,-1.45],[-1.42,.20,-1.54],[-1.02,-.20,-1.60],[-.78,-.43,-1.66]],.018,mats.dark,'TECU harness protective tracer');
+// Pneumatic line leaves the adjacent front passenger-side control body and routes independently to a CCV air port.
+routedLine([[-1.48,1.48,-.94],[-1.58,1.18,-1.20],[-1.62,.82,-1.48],[-1.55,.40,-1.72],[-1.46,.02,-1.88],[-1.58,-.30,-1.96],[-1.58,-.48,-1.96]],.052,mats.amber,'Front passenger-side control-body-to-CCV pneumatic air line');
 cylinder(groups.case,.085,.085,.16,[-1.58,-.48,-1.91],mats.edge,'case','z','Pneumatic line CCV end fitting');
 cylinder(groups.case,.065,.065,.14,[-.78,-.43,-1.60],mats.edge,'case','z','CCV electrical harness strain-relief');
 
