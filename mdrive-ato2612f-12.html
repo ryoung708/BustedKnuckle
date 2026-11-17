@@ -84,29 +84,31 @@ box(groups.case,[3.55,.16,1.78],[-.05,1.24,0],mats.edge,'case',null,'Upper trans
 box(groups.case,[3.28,.10,1.56],[-.05,1.34,0],mats.case,'case',null,'Upper cover inset');
 for(let i=0;i<12;i++){const x=-1.62+(i%6)*.63,z=i<6?-.72:.72;
 cylinder(groups.case,.055,.055,.09,[x,1.42,z],mats.steel,'case','y','Upper cover bolt');}
-// Passenger-side structural lattice, based on the supplied ATO2612F photographs.
-// Diagonal cast webs form repeated open diamond cells across the broad side wall.
-// The dark casting remains visible through the openings; this is a visual reconstruction,
-// not a measured OEM casting or a claim about hidden internal wall thickness.
-for(let row=0;row<4;row++){
- const y0=-.86+row*.48;
- for(let col=0;col<7;col++){
-  const x0=-2.22+col*.62;
-  const x1=x0+.62,y1=y0+.48;
-  if(x1<=2.30&&y1<=1.05){
-   const dx=x1-x0,dy=y1-y0,len=Math.hypot(dx,dy),angle=Math.atan2(dy,dx);
-   box(groups.case,[len,.105,.14],[(x0+x1)/2,(y0+y1)/2,1.315],mats.edge,'case',[0,0,angle],'Passenger-side diagonal lattice web');
-  }
-  const y2=y0-.48;
-  if(x1<=2.30&&y2>=-1.05){
-   const dx=x1-x0,dy=y2-y0,len=Math.hypot(dx,dy),angle=Math.atan2(dy,dx);
-   box(groups.case,[len,.105,.14],[(x0+x1)/2,(y0+y2)/2,1.315],mats.edge,'case',[0,0,angle], 'Passenger-side diagonal lattice web');
+// Passenger-side structural lattice, repositioned to the opposite broad face after visual review.
+// The supplied ATO2612F photos show a large open diamond-web casting across this side.
+// Main housing length axis is X, height axis is Y; passenger-side outer face is Z=-1.315.
+const latticeFaceZ=-1.315;
+const latticeX0=-2.22, latticeX1=2.22, latticeY0=-1.02, latticeY1=1.02;
+const latticePitchX=.62, latticePitchY=.48;
+for(let row=0;row<5;row++){
+ const y0=latticeY0+row*latticePitchY;
+ for(let col=0;col<8;col++){
+  const x0=latticeX0+col*latticePitchX;
+  const x1=x0+latticePitchX;
+  if(x1<=latticeX1+.001){
+   const yUp=y0+latticePitchY, yDown=y0-latticePitchY;
+   for(const [ya,yb] of [[y0,yUp],[y0,yDown]]){
+    if(ya>=latticeY0-.001&&ya<=latticeY1+.001&&yb>=latticeY0-.001&&yb<=latticeY1+.001){
+     const dx=x1-x0,dy=yb-ya,len=Math.hypot(dx,dy),angle=Math.atan2(dy,dx);
+     box(groups.case,[len,.145,.19],[(x0+x1)/2,(ya+yb)/2,latticeFaceZ],mats.edge,'case',[0,0,angle],'Passenger-side cast diamond lattice web');
+    }
+   }
   }
  }
 }
-// Perimeter rails tie the lattice into the main casting and preserve the housing silhouette.
-for(const y of [-1.02,1.02]) box(groups.case,[4.55,.16,.17],[0,y,1.30],mats.case,'case',null,'Lattice perimeter rail');
-for(const x of [-2.27,2.27]) box(groups.case,[.16,2.02,.17],[x,0,1.30],mats.case,'case',null,'Lattice perimeter rail');
+// Raised perimeter rails define the cast panel boundary, matching the photographed structural web.
+for(const y of [latticeY0,latticeY1]) box(groups.case,[4.52,.19,.20],[0,y,latticeFaceZ],mats.edge,'case',null,'Passenger-side lattice perimeter rail');
+for(const x of [latticeX0,latticeX1]) box(groups.case,[.19,2.04,.20],[x,0,latticeFaceZ],mats.edge,'case',null,'Passenger-side lattice perimeter rail');
 // Near-side rectangular module and the prominent vertical actuator seen in the reference.
 box(groups.case,[1.02,1.82,.22],[.48,-.02,1.39],mats.steel,'case',null,'Side-mounted rectangular control module');
 box(groups.case,[.88,1.66,.09],[.48,-.02,1.52],mats.dark,'case',null,'Control module face');
