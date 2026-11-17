@@ -17,7 +17,11 @@
 <button class="part" data-part="input"><b>Input shaft</b><small>Input axis and visible spline representation</small></button>
 <button class="part" data-part="output"><b>Output shaft & yoke</b><small>Driveline connection and yoke geometry</small></button>
 <button class="part" data-part="mounts"><b>Mounting interfaces</b><small>Illustrative mounting pads and bosses</small></button>
-<button class="part" data-part="external"><b>External component zones</b><small>Unverified placeholders; not OEM placement</small></button></div>
+<button class="part" data-part="external"><b>External component zones</b><small>Unverified placeholders; not OEM placement</small></button>
+<button class="part" data-part="gcu"><b>GCU / shift controls</b><small>TECU, valve block and four pneumatic actuators</small></button>
+<button class="part" data-part="clutch"><b>Clutch / countershaft brake</b><small>Clutch housing and multi-disc brake blockout</small></button>
+<button class="part" data-part="oil"><b>Oil filter / cooler</b><small>Left-side filter and cooler assembly</small></button>
+<button class="part" data-part="internals"><b>Internal geartrain</b><small>Illustrative shafts and gear positions</small></button></div>
 <div class="readout"><b id="partTitle">Engine-side interface</b><p id="partText">The engine-side envelope establishes the input axis and the front boundary for later clutch and transmission packaging.</p></div>
 <div class="readout warn"><b>Reference status</b><p>Tag identification: ATO2612F · service part 60150840 · service category 6 · COMP ID 77049406 · serial 0710898626. Model year is not established by this tag. The identification is for the 12-speed HD configuration; do not add a crawler gear or assume 13-speed internals. All geometry on this first pass remains a visual blockout, not a certified OEM casting.</p></div>
 <div class="legend"><span><i class="swatch"></i> Housing / structure</span><span><i class="swatch blue"></i> Shaft interfaces</span><span><i class="swatch amber"></i> Provisional zones</span></div>
@@ -45,7 +49,7 @@ const root=new THREE.Group();scene.add(root);
 const material=(color,metalness=.65,roughness=.34,transparent=false,opacity=1)=>new THREE.MeshStandardMaterial({color,metalness,roughness,transparent,opacity,side:transparent?THREE.DoubleSide:THREE.FrontSide});
 const mats={case:material(0x465159,.78,.38),edge:material(0xaab5bb,.82,.28),dark:material(0x202a30,.62,.42),steel:material(0xb7c1c6,.9,.22),shaft:material(0x69b7e8,.82,.22),amber:material(0xd38b32,.72,.3),rubber:material(0x202a30,.1,.8)};
 phase='assembly geometry construction';
-const groups={bell:new THREE.Group(),case:new THREE.Group(),rear:new THREE.Group(),input:new THREE.Group(),output:new THREE.Group(),mounts:new THREE.Group(),external:new THREE.Group()};
+const groups={bell:new THREE.Group(),case:new THREE.Group(),rear:new THREE.Group(),input:new THREE.Group(),output:new THREE.Group(),mounts:new THREE.Group(),external:new THREE.Group(),gcu:new THREE.Group(),clutch:new THREE.Group(),oil:new THREE.Group(),internals:new THREE.Group()};
 Object.entries(groups).forEach(([id,g])=>{g.userData.componentId=id;root.add(g)});
 const pickables=[];
 function addMesh(group,geometry,mat,pos,rot,id,opts={}){const mesh=new THREE.Mesh(geometry,mat.clone());mesh.position.set(...pos);if(rot)mesh.rotation.set(...rot);mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.componentId=id;mesh.userData.basePosition=mesh.position.clone();if(opts.name)mesh.userData.label=opts.name;group.add(mesh);if(opts.pick!==false)pickables.push(mesh);return mesh}
@@ -246,10 +250,93 @@ const zoneA=box(groups.external,[.48,.28,.34],[2.12,1.20,1.12],mats.edge,'extern
 const zoneB=box(groups.external,[.36,.24,.28],[2.62,.92,1.10],mats.steel,'external',null,'Provisional side connector block');
 cylinder(groups.external,.10,.10,.55,[2.38,1.10,1.28],mats.dark,'external','z','Provisional harness entry');
 
+// Manual-informed Generation F assemblies. Geometry is independently authored for training;
+// it is not traced from proprietary illustrations and is not a dimensionally validated OEM model.
+box(groups.gcu,[1.46,.38,.88],[.92,1.66,.30],mats.dark,'gcu',null,'GCU common solenoid valve block');
+box(groups.gcu,[1.32,.10,.76],[.92,1.89,.30],mats.edge,'gcu',null,'Solenoid valve block cover');
+for(let i=0;i<8;i++){
+ const x=.36+(i%4)*.37,z=(i<4?-.02:.62);
+ cylinder(groups.gcu,.075,.075,.18,[x,1.70,z],mats.steel,'gcu','y','GCU solenoid valve coil');
+ cylinder(groups.gcu,.045,.045,.10,[x,1.83,z],mats.dark,'gcu','y','Solenoid electrical cap');
+}
+// Four pneumatic shift actuators: split, 3rd/2nd, 1st/reverse and range.
+const actuatorSpecs=[
+ {x:-1.02,z:.12,label:'Split-gear shift actuator'},
+ {x:-.28,z:.12,label:'Third / second basic-gear shift actuator'},
+ {x:.48,z:.12,label:'First / reverse shift actuator'},
+ {x:1.22,z:.12,label:'Range-gear shift actuator'}
+];
+actuatorSpecs.forEach(a=>{
+ cylinder(groups.gcu,.22,.22,.40,[a.x,1.88,a.z],mats.edge,'gcu','y',a.label+' cylinder');
+ cylinder(groups.gcu,.17,.17,.16,[a.x,2.12,a.z],mats.dark,'gcu','y',a.label+' cap');
+ cylinder(groups.gcu,.075,.075,.26,[a.x,2.30,a.z],mats.steel,'gcu','y',a.label+' piston rod');
+ box(groups.gcu,[.34,.08,.28],[a.x,1.64,a.z],mats.case,'gcu',null,a.label+' mounting foot');
+ cylinder(groups.gcu,.055,.055,.12,[a.x-.12,1.98,a.z-.16],mats.amber,'gcu','z',a.label+' pneumatic port');
+});
+
+// Countershaft brake: removable housing, piston and alternating multi-disc stack at front countershaft end.
+cylinder(groups.clutch,.48,.48,.42,[-2.20,-.66,1.36],mats.dark,'clutch','x','Countershaft brake housing');
+cylinder(groups.clutch,.39,.39,.10,[-1.94,-.66,1.36],mats.edge,'clutch','x','Countershaft brake front cover');
+cylinder(groups.clutch,.28,.28,.18,[-1.82,-.66,1.36],mats.steel,'clutch','x','Countershaft brake piston');
+for(let i=0;i<7;i++){
+ const x=-2.38+i*.075;
+ torus(groups.clutch,.32,.035,[x,-.66,1.36],i%2?mats.edge:mats.dark,'clutch','x');
+}
+for(let i=0;i<4;i++){
+ const a=i*Math.PI/2;
+ cylinder(groups.clutch,.065,.065,.10,[-1.91,-.66+Math.cos(a)*.39,1.36+Math.sin(a)*.39],mats.steel,'clutch','x','Countershaft brake cover fastener');
+}
+// Clutch cylinder (CCA) and CVU blockout; the passenger-side CCV shown earlier is retained.
+box(groups.clutch,[.72,.46,.56],[-2.55,-.88,-1.30],mats.case,'clutch',null,'Clutch cylinder CCA housing blockout');
+cylinder(groups.clutch,.18,.18,.42,[-2.55,-.88,-1.60],mats.edge,'clutch','z','Clutch cylinder pneumatic connection');
+box(groups.clutch,[.52,.34,.42],[-2.06,-.90,-1.30],mats.dark,'clutch',null,'CVU clutch valve unit blockout');
+cylinder(groups.clutch,.075,.075,.18,[-2.06,-.90,-1.54],mats.amber,'clutch','z','CVU air connection');
+
+// Oil filter housing on the left side (z-positive in this scene), with full-flow filter and oil cooler.
+box(groups.oil,[1.26,.74,.54],[.72,-.52,1.40],mats.case,'oil',null,'Left-side oil filter housing');
+box(groups.oil,[1.12,.58,.12],[.72,-.52,1.72],mats.edge,'oil',null,'Oil filter housing cover');
+cylinder(groups.oil,.29,.29,.68,[.38,-1.12,1.48],mats.dark,'oil','y','Full-flow oil filter canister');
+cylinder(groups.oil,.33,.33,.12,[.38,-.77,1.48],mats.edge,'oil','y','Oil filter retaining cap');
+cylinder(groups.oil,.075,.075,.16,[.38,-1.48,1.48],mats.steel,'oil','y','Oil filter drain / service plug');
+box(groups.oil,[.92,.48,.28],[1.30,-.38,1.62],mats.dark,'oil',null,'Transmission oil cooler core');
+for(let i=0;i<10;i++)box(groups.oil,[.045,.44,.34],[.88+i*.09,-.38,1.79],mats.edge,'oil',null,'Oil cooler cooling fin');
+cylinder(groups.oil,.09,.09,.36,[1.04,-.10,1.60],mats.amber,'oil','y','Oil cooler oil passage connection');
+cylinder(groups.oil,.09,.09,.36,[1.55,-.10,1.60],mats.amber,'oil','y','Oil cooler return passage connection');
+
+// Internal cutaway architecture. Shaft/gear positions are schematic; no tooth counts or dimensions asserted.
+function internalGear(x,y,z,r,width,label){
+ cylinder(groups.internals,r,r,width,[x,y,z],mats.edge,'internals','x',label);
+ torus(groups.internals,r*.82,.045,[x-width*.48,y,z],mats.steel,'internals','x');
+ torus(groups.internals,r*.82,.045,[x+width*.48,y,z],mats.steel,'internals','x');
+}
+cylinder(groups.internals,.14,.14,4.55,[-.10,.70,-.02],mats.shaft,'internals','x','Input shaft internal representation');
+cylinder(groups.internals,.17,.17,4.80,[.05,.12,-.02],mats.shaft,'internals','x','Main shaft internal representation');
+cylinder(groups.internals,.15,.15,4.20,[.02,-.52,.52],mats.shaft,'internals','x','Countershaft internal representation');
+cylinder(groups.internals,.12,.12,3.50,[.10,-.68,-.55],mats.shaft,'internals','x','Reverse shaft internal representation');
+internalGear(-1.35,.70,-.02,.42,.34,'Input split gear representation');
+internalGear(-.72,.12,-.02,.54,.42,'Main shaft third gear representation');
+internalGear(.05,.12,-.02,.46,.38,'Main shaft second gear representation');
+internalGear(.82,.12,-.02,.39,.34,'Main shaft first gear representation');
+internalGear(1.48,.12,-.02,.43,.30,'Main shaft reverse gear representation');
+internalGear(-1.28,-.52,.52,.48,.34,'Countershaft fixed gear representation');
+internalGear(-.42,-.52,.52,.44,.32,'Countershaft fixed gear representation');
+internalGear(.48,-.52,.52,.40,.32,'Countershaft fixed gear representation');
+internalGear(1.30,-.52,.52,.35,.28,'Countershaft fixed gear representation');
+internalGear(.45,-.68,-.55,.30,.28,'Reverse idler gear representation');
+// Rear range planetary representation: main-shaft sun, three planet positions and ring.
+cylinder(groups.internals,.34,.34,.28,[2.12,.12,-.02],mats.amber,'internals','x','Range gear sun wheel representation');
+torus(groups.internals,.78,.075,[2.34,.12,-.02],mats.edge,'internals','x');
+for(let i=0;i<3;i++){
+ const a=i*Math.PI*2/3;
+ cylinder(groups.internals,.18,.18,.24,[2.35,.12+Math.cos(a)*.53,-.02+Math.sin(a)*.53],mats.steel,'internals','x','Range planetary gear representation');
+}
+cylinder(groups.internals,.10,.10,.42,[2.62,.12,-.02],mats.shaft,'internals','x','Output shaft internal continuation');
+
+
 phase='3D labels and sprites';
 const labelGroup=new THREE.Group();root.add(labelGroup);
 function makeLabel(text,pos){const c=document.createElement('canvas');c.width=512;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 30px system-ui';ctx.textAlign='center';ctx.fillText(text,256,60);const tex=new THREE.CanvasTexture(c),sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sprite.position.set(...pos);sprite.scale.set(2.4,.45,1);labelGroup.add(sprite);return sprite}
-const labels={bell:makeLabel('ENGINE SIDE',[-3.2,2.1,0]),case:makeLabel('DIAMOND-WEB MAIN CASE',[.0,2.0,0]),rear:makeLabel('REAR HOUSING',[3.5,1.85,0]),input:makeLabel('INPUT SHAFT',[-5.15,-.65,.15]),output:makeLabel('OUTPUT / YOKE',[5.8,-.9,.15]),mounts:makeLabel('MOUNTING ZONES',[.0,-1.9,0]),external:makeLabel('CONNECTOR ZONES',[2.2,1.8,1.0])};
+const labels={bell:makeLabel('ENGINE SIDE',[-3.2,2.1,0]),case:makeLabel('DIAMOND-WEB MAIN CASE',[.0,2.0,0]),rear:makeLabel('REAR HOUSING',[3.5,1.85,0]),input:makeLabel('INPUT SHAFT',[-5.15,-.65,.15]),output:makeLabel('OUTPUT / YOKE',[5.8,-.9,.15]),mounts:makeLabel('MOUNTING ZONES',[.0,-1.9,0]),external:makeLabel('CONNECTOR ZONES',[2.2,1.8,1.0]),gcu:makeLabel('GCU / SHIFT CONTROLS',[.8,2.75,.3]),clutch:makeLabel('CLUTCH / BRAKE',[-2.2,-1.55,1.5]),oil:makeLabel('OIL FILTER / COOLER',[.8,-1.7,1.6]),internals:makeLabel('INTERNAL GEARTRAIN',[0,2.8,-.2])};
 const descriptions={
  bell:['Engine-side interface','Generic bellhousing envelope and input-axis reference. Its casting outline, fasteners and mating dimensions remain provisional.'],
  case:['Main transmission case','Dark cast main housing with open diamond lattice webs, upper bolted cover and side-mounted hardware. Casting details remain visually reconstructed. External details remain illustrative.'],
@@ -257,7 +344,11 @@ const descriptions={
  input:['Input shaft','Shows the engine-side input axis and a visible spline representation. Dimensions and spline specification are illustrative only.'],
  output:['Output shaft & yoke','Shows the output axis, spline land and a recognizable driveline yoke shape. No OEM dimensions are implied.'],
  mounts:['Mounting interfaces','Independent mounting pads make it possible to revise locations and bolt patterns without reshaping the main case.'],
- external:['External component zones','Amber shapes reserve space for future verified external hardware. They do not represent confirmed Mack component locations.']
+ external:['External component zones','Amber shapes reserve space for future verified external hardware. They do not represent confirmed Mack component locations.'],
+ gcu:['GCU / shift controls','The manual describes a TECU, common solenoid valve block, sensors and four pneumatic actuators for split, basic and range shifting. Added geometry is an educational layout blockout, not a measured OEM assembly.'],
+ clutch:['Clutch / countershaft brake','The clutch housing contains the clutch cylinder, CVU, air/oil passages and countershaft brake. The brake is shown as a spring/piston multi-disc assembly at the front countershaft extension. Exact shape and position remain illustrative.'],
+ oil:['Oil filter / cooler','The manual places the oil filter housing on the left side and identifies a full-flow filter and oil cooler. The canister, cooler core and connections are visual placeholders, not measured parts.'],
+ internals:['Internal geartrain','The manual identifies input, main, counter, reverse and output shafts; split/basic/reverse gears; engaging sleeves; and a planetary range gear. The cutaway shows general relationships only, not tooth counts, dimensions or validated gear mesh.']
 };
 function selectPart(id){selected=id;document.querySelectorAll('.part').forEach(b=>b.classList.toggle('active',b.dataset.part===id));document.getElementById('partTitle').textContent=descriptions[id][0];document.getElementById('partText').textContent=descriptions[id][1];pickables.forEach(o=>{const on=o.userData.componentId===id;o.material.emissive.setHex(on?0x3c2308:0x000000);o.material.emissiveIntensity=on?.5:0;});}
 document.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>selectPart(b.dataset.part)));
@@ -274,9 +365,11 @@ function setMode(next){mode=next;document.getElementById('viewLabel').textConten
  groups.bell.children.forEach(o=>{o.material.transparent=cutaway;o.material.opacity=cutaway?.28:1;o.material.depthWrite=!cutaway});
  groups.rear.children.forEach(o=>{o.material.transparent=cutaway;o.material.opacity=cutaway?.22:1;o.material.depthWrite=!cutaway});
  groups.external.visible=exterior||exploded;groups.mounts.visible=exterior||exploded;
- const offsets={bell:-.8,case:0,rear:1.0,input:-1.1,output:1.15,mounts:0,external:1.25};
+ groups.gcu.visible=exterior||exploded;groups.clutch.visible=exterior||exploded;groups.oil.visible=exterior||exploded;
+ groups.internals.visible=cutaway||exploded;
+ const offsets={bell:-.8,case:0,rear:1.0,input:-1.1,output:1.15,mounts:0,external:1.25,gcu:.45,clutch:-.65,oil:.65,internals:0};
  Object.entries(groups).forEach(([id,g])=>{g.position.set(exploded?offsets[id]:0,0,0)});
- if(cutaway){groups.external.visible=false;groups.mounts.visible=false;labelGroup.visible=false;}
+ if(cutaway){groups.external.visible=false;groups.mounts.visible=false;groups.gcu.visible=true;groups.clutch.visible=true;groups.oil.visible=true;groups.internals.visible=true;labelGroup.visible=false;}
 }
 document.getElementById('extBtn').addEventListener('click',()=>setMode('exterior'));document.getElementById('cutBtn').addEventListener('click',()=>setMode('cutaway'));document.getElementById('explodeBtn').addEventListener('click',()=>setMode('exploded'));
 document.getElementById('resetBtn').addEventListener('click',()=>{theta=.76;phi=1.08;radius=16;setCamera()});
