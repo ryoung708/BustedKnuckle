@@ -73,7 +73,7 @@ function renderWork(){
  const recorded=flow.steps.filter(s=>active.entries[s.id]?.choice).length;
  const progress=Math.round(recorded/flow.steps.length*100);
  const existingMeasurements=entry.measurements||{};
- const measurementText=typeof existingMeasurements==="string"?existingMeasurements:(existingMeasurements.actual||existingMeasurements.raw||JSON.stringify(existingMeasurements,null,2)==="{}"?"":JSON.stringify(existingMeasurements,null,2));
+ const measurementText=typeof existingMeasurements==="string"?existingMeasurements:(existingMeasurements.actual||existingMeasurements.raw||(Object.keys(existingMeasurements).length?JSON.stringify(existingMeasurements,null,2):""));
  $("work").innerHTML=
  '<section class="case-summary"><div class="case-summary-top"><strong>ACTIVE INVESTIGATION</strong><span class="status">'+safe((active.status||"in-progress").replaceAll("-"," ").toUpperCase())+'</span></div><div class="case-meta">'+safe(vehicle)+' · '+safe(flow.title)+'</div><div class="case-complaint"><b>Complaint:</b> '+safe(active.complaint||"Not recorded")+'</div><div class="case-progress-label"><span>'+recorded+' of '+flow.steps.length+' stages recorded</span><span>'+progress+'%</span></div><div class="progress" style="margin:6px 0 0"><i style="width:'+progress+'%"></i></div></section>'+
  '<div class="stephead"><div><div class="eyebrow">'+safe(flow.category)+'</div><div class="step-status '+(entry.choice?"":"pending")+'">'+(entry.choice?"RESULT RECORDED":"CURRENT TEST · ACTION REQUIRED")+'</div></div><span class="counter">STEP '+(stepIndex+1)+' / '+flow.steps.length+'</span></div>'+
