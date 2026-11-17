@@ -80,6 +80,11 @@ input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color
     <div id="listStatus" class="status" role="status">Your library is private. Only documents owned by this signed-in account are listed.</div>
   </section>
 
+
+  <section id="readerPanel" class="panel hidden">
+    <div class="panel-head"><div class="panel-title" id="readerTitle">Extracted document text</div><button class="btn" id="closeReader">Close text</button></div>
+    <pre id="readerContent" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:620px;overflow:auto;background:#080a0d;border:1px solid var(--line);border-radius:8px;padding:14px;color:#d9e0e8;font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace"></pre>
+  </section>
   <section id="visualViewer" class="panel visual-viewer hidden">
     <div class="panel-head"><div><div class="panel-title">PDF page viewer</div><div id="viewerDocumentTitle" class="muted">Private document</div></div><button class="btn" id="closeVisualViewer">Close viewer</button></div>
     <div class="viewer-toolbar">
