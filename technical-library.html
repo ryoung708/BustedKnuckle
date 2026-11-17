@@ -24,6 +24,9 @@ input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color
 .status{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;color:var(--muted);font-size:11px;line-height:1.5}.status.good{color:#a5e4bf;border-color:#47795c;background:#70c69a10}.status.bad{color:#ffaaaa;border-color:#8e4545;background:#ff777710}
 .auth{max-width:520px}.hidden{display:none!important}.toolbar{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:10px;margin:12px 0 14px}
 .doc-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.doc{min-width:0;background:var(--raised);border:1px solid var(--line);border-radius:9px;padding:14px}.doc-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.doc-title{font-size:14px;font-weight:900;overflow-wrap:anywhere}.pill{flex:none;border:1px solid #ff9f1c55;border-radius:99px;padding:4px 7px;color:#ffbd69;font-size:9px;font-weight:850;text-transform:uppercase}.doc-meta{color:var(--muted);font-size:11px;line-height:1.6;margin:8px 0}.doc-note{color:#c7d0da;font-size:11px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.doc-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.empty{border:1px dashed #465363;border-radius:9px;padding:24px;text-align:center;color:var(--muted);font-size:12px;grid-column:1/-1}
+
+.visual-viewer{margin-top:16px}.viewer-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}.viewer-toolbar .spacer{flex:1}.viewer-stage{background:#080a0d;border:1px solid var(--line);border-radius:9px;padding:12px;min-height:260px;display:flex;justify-content:center;align-items:flex-start;overflow:auto}.viewer-stage canvas{display:block;max-width:100%;height:auto;box-shadow:0 8px 28px #0008;background:#fff}.viewer-note{color:var(--muted);font-size:11px;line-height:1.5;margin-top:9px}
+
 @media(max-width:700px){.wrap{padding:13px 12px 35px}.grid,.doc-list{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.panel{padding:14px}header{align-items:flex-start}.brand img{width:46px;height:46px}}
 </style>
 </head>
@@ -76,6 +79,17 @@ input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color
     <div id="documentList" class="doc-list"><div class="empty">Loading your private documents…</div></div>
     <div id="listStatus" class="status" role="status">Your library is private. Only documents owned by this signed-in account are listed.</div>
   </section>
+
+  <section id="visualViewer" class="panel visual-viewer hidden">
+    <div class="panel-head"><div><div class="panel-title">PDF page viewer</div><div id="viewerDocumentTitle" class="muted">Private document</div></div><button class="btn" id="closeVisualViewer">Close viewer</button></div>
+    <div class="viewer-toolbar">
+      <button class="btn" id="viewerPrev">← Previous</button><span id="viewerPageLabel" class="muted">Page 1 of 1</span><button class="btn" id="viewerNext">Next →</button>
+      <span class="spacer"></span><button class="btn" id="viewerZoomOut">−</button><span id="viewerZoomLabel" class="muted">150%</span><button class="btn" id="viewerZoomIn">+</button><button class="btn primary" id="viewerExport">Save page image (PNG)</button>
+    </div>
+    <div class="viewer-stage"><canvas id="viewerCanvas" aria-label="Rendered PDF page"></canvas></div>
+    <p class="viewer-note">Pages are rendered in your signed-in browser from the private original. Nothing is published or sent to an AI service. Use “Save page image” to export a page you are authorized to share for review.</p>
+    <div id="viewerStatus" class="status" role="status">Select a PDF to view its pages.</div>
+  </section>
 </div>
 </div>
 <script type="module">
@@ -104,8 +118,9 @@ function renderDocuments(){
  $("docCount").textContent=documents.length+" document"+(documents.length===1?"":"s");
  const box=$("documentList");
  if(!rows.length){box.innerHTML='<div class="empty">'+(documents.length?'No documents match this search.':'Your Technical Library is empty. Upload your first service document above.')+'</div>';return;}
- box.innerHTML=rows.map(row=>'<article class="doc"><div class="doc-top"><div class="doc-title">'+esc(row.title)+'</div><span class="pill">'+esc(categories[row.category]||"Other")+'</span></div><div class="doc-meta">'+esc([row.manufacturer,row.model,row.model_year,row.system].filter(Boolean).join(" · ")||"No equipment details added")+'<br>'+esc(sourceLabels[row.source_type]||"Other")+(row.source_reference?' · '+esc(row.source_reference):'')+(row.revision?' · '+esc(row.revision):'')+'<br>'+esc(row.original_name)+' · '+sizeLabel(Number(row.size_bytes)||0)+' · '+new Date(row.created_at).toLocaleDateString()+(row.tags?.length?'<br>Tags: '+esc(row.tags.join(", ")):'')+'<br>Text extraction: '+esc(row.extraction_status||"pending")+(row.extraction_page_count?' · '+row.extraction_page_count+' pages':'')+'</div>'+(row.notes?'<div class="doc-note">'+esc(row.notes)+'</div>':'')+'<div class="doc-actions"><button class="btn primary" data-preview="'+esc(row.id)+'">Open original</button><button class="btn" data-read="'+esc(row.id)+'">Read extracted text</button><button class="btn" data-extract="'+esc(row.id)+'">Extract / re-extract</button><button class="btn" data-download="'+esc(row.id)+'">Download</button><button class="btn danger" data-delete="'+esc(row.id)+'">Delete</button></div></article>').join("");
+ box.innerHTML=rows.map(row=>'<article class="doc"><div class="doc-top"><div class="doc-title">'+esc(row.title)+'</div><span class="pill">'+esc(categories[row.category]||"Other")+'</span></div><div class="doc-meta">'+esc([row.manufacturer,row.model,row.model_year,row.system].filter(Boolean).join(" · ")||"No equipment details added")+'<br>'+esc(sourceLabels[row.source_type]||"Other")+(row.source_reference?' · '+esc(row.source_reference):'')+(row.revision?' · '+esc(row.revision):'')+'<br>'+esc(row.original_name)+' · '+sizeLabel(Number(row.size_bytes)||0)+' · '+new Date(row.created_at).toLocaleDateString()+(row.tags?.length?'<br>Tags: '+esc(row.tags.join(", ")):'')+'<br>Text extraction: '+esc(row.extraction_status||"pending")+(row.extraction_page_count?' · '+row.extraction_page_count+' pages':'')+'</div>'+(row.notes?'<div class="doc-note">'+esc(row.notes)+'</div>':'')+'<div class="doc-actions"><button class="btn primary" data-preview="'+esc(row.id)+'">Open original</button>"+(row.mime_type==="application/pdf"?'<button class="btn" data-visual="'+esc(row.id)+'">View pages</button>':'')+"<button class="btn" data-read="'+esc(row.id)+'">Read extracted text</button><button class="btn" data-extract="'+esc(row.id)+'">Extract / re-extract</button><button class="btn" data-download="'+esc(row.id)+'">Download</button><button class="btn danger" data-delete="'+esc(row.id)+'">Delete</button></div></article>').join("");
  box.querySelectorAll("[data-preview]").forEach(button=>button.addEventListener("click",()=>openDocument(button.dataset.preview)));
+ box.querySelectorAll("[data-visual]").forEach(button=>button.addEventListener("click",()=>openVisualViewer(button.dataset.visual)));
  box.querySelectorAll("[data-read]").forEach(button=>button.addEventListener("click",()=>readExtractedText(button.dataset.read)));
  box.querySelectorAll("[data-extract]").forEach(button=>button.addEventListener("click",()=>runExtraction(button.dataset.extract)));
  box.querySelectorAll("[data-download]").forEach(button=>button.addEventListener("click",()=>downloadDocument(button.dataset.download)));
@@ -158,6 +173,43 @@ async function runExtraction(id){
    await client.from("technical_documents").update({extraction_status:"failed",extraction_error:message,extracted_at:new Date().toISOString()}).eq("id",id);
    await loadDocuments();setStatus("listStatus","Text extraction failed: "+message,"bad");
  }
+}
+
+
+let viewerPdf=null,viewerDocument=null,viewerPage=1,viewerScale=1.5,viewerRenderTask=null,viewerRenderToken=0,pdfjsModulePromise=null;
+async function getPdfJs(){
+ if(!pdfjsModulePromise)pdfjsModulePromise=import("https://esm.sh/pdfjs-dist@4.10.38/build/pdf.mjs").then(pdfjs=>{pdfjs.GlobalWorkerOptions.workerSrc="https://esm.sh/pdfjs-dist@4.10.38/build/pdf.worker.mjs";return pdfjs;});
+ return pdfjsModulePromise;
+}
+async function openVisualViewer(id){
+ const row=documents.find(item=>item.id===id);if(!row)return;
+ if(row.mime_type!=="application/pdf"){setStatus("listStatus","Visual page viewing currently supports PDF documents.","bad");return;}
+ setStatus("listStatus","Opening private PDF for page viewing…");
+ try{
+  const {data:blob,error}=await client.storage.from(BUCKET).download(row.storage_path);if(error)throw error;
+  const pdfjs=await getPdfJs();viewerPdf=await pdfjs.getDocument({data:new Uint8Array(await blob.arrayBuffer())}).promise;
+  viewerDocument=row;viewerPage=1;viewerScale=1.5;$("viewerDocumentTitle").textContent=row.title+" · "+row.original_name;
+  $("visualViewer").classList.remove("hidden");await renderVisualPage();$("visualViewer").scrollIntoView({behavior:"smooth",block:"start"});
+  setStatus("listStatus","Private PDF opened. Use the page controls to inspect its illustrations.","good");
+ }catch(error){setStatus("listStatus","Could not open PDF pages: "+(error.message||String(error)),"bad");}
+}
+async function renderVisualPage(){
+ if(!viewerPdf)return;const token=++viewerRenderToken;
+ if(viewerRenderTask){try{viewerRenderTask.cancel();}catch{}viewerRenderTask=null;}
+ const page=await viewerPdf.getPage(viewerPage);if(token!==viewerRenderToken)return;
+ const viewport=page.getViewport({scale:viewerScale}),canvas=$("viewerCanvas"),context=canvas.getContext("2d"),dpr=Math.min(window.devicePixelRatio||1,2);
+ canvas.width=Math.floor(viewport.width*dpr);canvas.height=Math.floor(viewport.height*dpr);canvas.style.width=viewport.width+"px";canvas.style.height=viewport.height+"px";context.setTransform(dpr,0,0,dpr,0,0);
+ $("viewerPageLabel").textContent="Page "+viewerPage+" of "+viewerPdf.numPages;$("viewerZoomLabel").textContent=Math.round(viewerScale*100)+"%";
+ $("viewerPrev").disabled=viewerPage<=1;$("viewerNext").disabled=viewerPage>=viewerPdf.numPages;setStatus("viewerStatus","Rendering page "+viewerPage+"…");
+ try{viewerRenderTask=page.render({canvasContext:context,viewport});await viewerRenderTask.promise;if(token===viewerRenderToken)setStatus("viewerStatus","Page ready. Save this page as a PNG if you are authorized to share it for review.","good");}
+ catch(error){if(error?.name!=="RenderingCancelledException")setStatus("viewerStatus","Page render failed: "+(error.message||String(error)),"bad");}
+}
+function exportVisualPage(){
+ const canvas=$("viewerCanvas");if(!viewerPdf||!viewerDocument||!canvas.width)return;
+ canvas.toBlob(blob=>{if(!blob){setStatus("viewerStatus","Could not create page image.","bad");return;}
+ const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=safeFileName(viewerDocument.title)+"-page-"+viewerPage+".png";
+ document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+ setStatus("viewerStatus","Page image saved. Attach it here only if your authorization permits sharing it with an external AI service.","good");},"image/png");
 }
 
 async function loadDocuments(){
@@ -240,6 +292,14 @@ async function init(){
  if(user){showSignedIn();await loadDocuments();}
  else showSignedOut();
 }
+
+$("closeVisualViewer").addEventListener("click",()=>{$("visualViewer").classList.add("hidden");if(viewerRenderTask){try{viewerRenderTask.cancel();}catch{}}viewerPdf=null;viewerDocument=null;});
+$("viewerPrev").addEventListener("click",()=>{if(viewerPage>1){viewerPage--;renderVisualPage();}});
+$("viewerNext").addEventListener("click",()=>{if(viewerPdf&&viewerPage<viewerPdf.numPages){viewerPage++;renderVisualPage();}});
+$("viewerZoomOut").addEventListener("click",()=>{viewerScale=Math.max(.6,viewerScale-.2);renderVisualPage();});
+$("viewerZoomIn").addEventListener("click",()=>{viewerScale=Math.min(3,viewerScale+.2);renderVisualPage();});
+$("viewerExport").addEventListener("click",exportVisualPage);
+
 $("signIn").addEventListener("click",signIn);
 $("uploadForm").addEventListener("submit",uploadDocument);
 $("refresh").addEventListener("click",loadDocuments);
