@@ -83,6 +83,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 const SUPABASE_URL = "https://wpxvaqmzxhxlrutklypm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_8Dhvi0M8P31FLB9kH5-RiA_5qyq9A0O";
 const BUCKET = "ironknuckle-technical-library";
+// Keep extracted reference text bounded to avoid oversized browser/database writes.
+const MAX_EXTRACT_CHARS = 1_500_000;
 const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 let user = null;
@@ -95,7 +97,7 @@ function sizeLabel(bytes){if(bytes<1024*1024)return Math.max(1,Math.round(bytes/
 function safeFileName(name){return name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-120)||"document";}
 function showSignedIn(){ $("authPanel").classList.add("hidden"); $("libraryApp").classList.remove("hidden"); $("accountLabel").textContent=user.email||"Signed in"; }
 function showSignedOut(){ $("authPanel").classList.remove("hidden"); $("libraryApp").classList.add("hidden"); documents=[]; }
-function matches(row,query,category){const hay=[row.title,row.original_name,row.manufacturer,row.model,row.model_year,row.system,row.source_reference,row.revision,row.notes,(row.tags||[]).join(" "),sourceLabels[row.source_type],categories[row.category]].join(" ").toLowerCase();return (!query||hay.includes(query))&&(!category||row.category===category);}
+function matches(row,query,category){const hay=[row.title,row.original_name,row.manufacturer,row.model,row.model_year,row.system,row.source_reference,row.revision,row.notes,row.extracted_text,(row.tags||[]).join(" "),sourceLabels[row.source_type],categories[row.category]].join(" ").toLowerCase();return (!query||hay.includes(query))&&(!category||row.category===category);}
 function renderDocuments(){
  const query=$("search").value.trim().toLowerCase(), category=$("filterCategory").value;
  const rows=documents.filter(row=>matches(row,query,category));
