@@ -55,9 +55,14 @@ function torus(g,r,t,pos,mat,id,axis='x'){const rot=axis==='x'?[0,Math.PI/2,0]:a
 function rib(g,x,y,z,w,h,d,id){box(g,[w,h,d],[x,y,z],mats.edge,id,[0,0,0])}
 // Bellhousing silhouette guided by the supplied Mack mDRIVE reference image.
 // Deep circular engine flange transitions into a tapered bell and ribbed rear neck.
-const bellCone=new THREE.CylinderGeometry(1.02,1.68,1.78,72,1,false);
+const bellCone=new THREE.CylinderGeometry(1.02,1.72,2.05,72,1,false);
 bellCone.rotateZ(Math.PI/2);
-addMesh(groups.bell,bellCone,mats.steel,[-2.86,0,0],null,'bell',{name:'Flared bellhousing shell'});
+addMesh(groups.bell,bellCone,mats.steel,[-2.88,0,0],null,'bell',{name:'Deep tapered cast bellhousing shell'});
+// Stepped outer casting shoulder and raised engine flange add depth and a stronger transition.
+cylinder(groups.bell,1.73,1.73,.24,[-3.92,0,0],mats.edge,'bell','x','Bellhousing outer flange shoulder');
+cylinder(groups.bell,1.61,1.61,.20,[-3.75,0,0],mats.steel,'bell','x','Bellhousing cast transition ring');
+torus(groups.bell,1.52,.095,[-3.62,0,0],mats.edge,'bell');
+for(let i=0;i<12;i++){const a=i*Math.PI/6;const boss=new THREE.Mesh(new THREE.CapsuleGeometry(.105,.30,4,8),mats.edge.clone());boss.position.set(-2.92,Math.cos(a)*1.46,Math.sin(a)*1.46);boss.rotation.x=a;boss.rotation.z=Math.PI/2;boss.userData.componentId='bell';boss.userData.label='Bellhousing cast reinforcement boss';boss.castShadow=true;groups.bell.add(boss);pickables.push(boss);}
 cylinder(groups.bell,1.70,1.70,.18,[-3.78,0,0],mats.steel,'bell','x','Heavy circular bellhousing flange');
 torus(groups.bell,1.66,.075,[-3.88,0,0],mats.edge,'bell');
 cylinder(groups.bell,1.42,1.42,.035,[-3.895,0,0],mats.dark,'bell','x','Recessed bellhousing opening');
@@ -79,11 +84,22 @@ caseProfile.lineTo(-1.95,1.18);caseProfile.lineTo(-2.34,1.02);caseProfile.lineTo
 const caseGeo=new THREE.ExtrudeGeometry(caseProfile,{depth:2.35,steps:1,bevelEnabled:true,bevelSegments:4,bevelSize:.13,bevelThickness:.12,curveSegments:10});
 caseGeo.translate(0,0,-1.175);
 addMesh(groups.case,caseGeo,mats.dark,[0,0,0],null,'case',{name:'Dark cast main housing with passenger-side diamond lattice'});
-// Broad upper control/gearcase cover with a raised rim and perimeter fasteners.
-box(groups.case,[3.55,.16,1.78],[-.05,1.24,0],mats.edge,'case',null,'Upper transmission cover');
-box(groups.case,[3.28,.10,1.56],[-.05,1.34,0],mats.case,'case',null,'Upper cover inset');
-for(let i=0;i<12;i++){const x=-1.62+(i%6)*.63,z=i<6?-.72:.72;
-cylinder(groups.case,.055,.055,.09,[x,1.42,z],mats.steel,'case','y','Upper cover bolt');}
+// Integrated upper control housing: shift-fork mechanism is represented as part of this assembly.
+box(groups.case,[3.55,.22,1.86],[-.05,1.24,0],mats.edge,'case',null,'Upper shift-control housing casting');
+box(groups.case,[3.30,.13,1.62],[-.05,1.40,0],mats.case,'case',null,'Upper control housing cover');
+for(let i=0;i<14;i++){const x=-1.65+(i%7)*.53,z=i<7?-.70:.70;cylinder(groups.case,.052,.052,.10,[x,1.49,z],mats.steel,'case','y','Upper control housing fastener');}
+// TECU mounted on top of the control housing; connector blocks are separate selectable details.
+box(groups.case,[1.02,.30,.72],[.92,1.64,-.10],mats.steel,'case',null,'TECU electronic control unit');
+box(groups.case,[.84,.12,.56],[.92,1.83,-.10],mats.dark,'case',null,'TECU cover');
+for(let i=0;i<3;i++){box(groups.case,[.18,.13,.22],[.58+i*.34,1.72,-.51],mats.edge,'case',null,'TECU electrical connector');for(let pin=0;pin<4;pin++)box(groups.case,[.035,.035,.08],[.52+i*.34+pin*.04,1.72,-.64],mats.steel,'case',null,'TECU connector terminal');}
+// Representative selector rails and shift-fork bodies integrated with the control-housing assembly.
+// Exact fork count, geometry and placement require ATO2612F service-reference confirmation.
+for(let i=0;i<3;i++){const x=-1.12+i*.78;cylinder(groups.case,.065,.065,2.05,[x,1.57,0],mats.steel,'case','z','Shift-fork selector rail');box(groups.case,[.22,.20,.94],[x,1.47,0],mats.edge,'case',null,'Shift-fork body integrated with control housing');box(groups.case,[.13,.18,.50],[x-.20,1.46,0],mats.steel,'case',null,'Shift-fork left tine');box(groups.case,[.13,.18,.50],[x+.20,1.46,0],mats.steel,'case',null,'Shift-fork right tine');}
+// Passenger-side CCV/breather canister, cap and hose port.
+cylinder(groups.case,.25,.25,.88,[-1.30,-.48,-1.48],mats.dark,'case','y','Passenger-side CCV canister');
+cylinder(groups.case,.29,.29,.14,[-1.30,-.02,-1.48],mats.edge,'case','y','CCV upper cap');
+cylinder(groups.case,.11,.11,.18,[-1.30,-.56,-1.48],mats.steel,'case','y','CCV lower fitting');
+cylinder(groups.case,.075,.075,.24,[-1.30,-.08,-1.48],mats.steel,'case','z','CCV hose port');
 // Rebuilt cast-lattice side panels for BOTH broad faces of the ATO2612F main case.
 // The earlier bar-only lattice was misplaced and disappeared from the opposite side.
 // These are continuous cast panels with true diamond-shaped openings, not crossed surface bars.
