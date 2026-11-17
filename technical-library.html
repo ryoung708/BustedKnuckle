@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b0e">
+<title>IronKnuckle | Technical Library</title>
+<style>
+:root{color-scheme:dark;--bg:#090b0e;--panel:#11151a;--raised:#191f27;--line:#303b48;--amber:#ff9f1c;--text:#f1f4f7;--muted:#9aa7b5;--green:#70c69a;--red:#ff7777}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -18%,rgba(255,159,28,.09),transparent 38%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}.wrap{width:min(1180px,100%);margin:auto;padding:22px 22px 50px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:17px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.brand{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--text);font-weight:900;letter-spacing:.08em}.brand img{width:58px;height:58px;object-fit:contain}.brand small{display:block;color:var(--amber);font-size:10px;letter-spacing:.16em;margin-top:4px}
+.back{color:var(--amber);text-decoration:none;font-size:12px;font-weight:850;border:1px solid #ff9f1c66;border-radius:7px;padding:10px 13px}
+.eyebrow{color:var(--amber);font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
+h1{font-size:clamp(25px,4vw,38px);margin:6px 0 7px;letter-spacing:-.035em}.intro{color:var(--muted);font-size:13px;line-height:1.6;max-width:760px;margin:0 0 20px}
+.panel{background:linear-gradient(180deg,#ffffff05,transparent),var(--panel);border:1px solid var(--line);border-radius:12px;padding:19px;margin-bottom:16px;box-shadow:0 14px 38px #0003}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.panel-title{font-size:13px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}.muted{color:var(--muted);font-size:11px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{min-width:0}.field.full{grid-column:1/-1}label{display:block;color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;margin:0 0 7px}
+input,select,textarea{width:100%;min-height:44px;padding:11px 12px;background:#0b0f13;color:var(--text);border:1px solid #465363;border-radius:7px;outline:none}textarea{min-height:82px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px #ff9f1c18}
+input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color:#8491a0;line-height:1.5;margin:6px 0 0}
+.actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:14px}
+.btn{border:1px solid #526071;border-radius:7px;background:var(--raised);color:var(--text);padding:10px 13px;font-size:11px;font-weight:850;cursor:pointer}.btn.primary{background:#ff9f1c1c;border-color:#ff9f1c99;color:#ffbd69}.btn.danger{border-color:#8e4545;color:#ff9b9b}.btn:disabled{opacity:.55;cursor:wait}
+.status{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;color:var(--muted);font-size:11px;line-height:1.5}.status.good{color:#a5e4bf;border-color:#47795c;background:#70c69a10}.status.bad{color:#ffaaaa;border-color:#8e4545;background:#ff777710}
+.auth{max-width:520px}.hidden{display:none!important}.toolbar{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:10px;margin:12px 0 14px}
+.doc-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.doc{min-width:0;background:var(--raised);border:1px solid var(--line);border-radius:9px;padding:14px}.doc-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.doc-title{font-size:14px;font-weight:900;overflow-wrap:anywhere}.pill{flex:none;border:1px solid #ff9f1c55;border-radius:99px;padding:4px 7px;color:#ffbd69;font-size:9px;font-weight:850;text-transform:uppercase}.doc-meta{color:var(--muted);font-size:11px;line-height:1.6;margin:8px 0}.doc-note{color:#c7d0da;font-size:11px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.doc-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.empty{border:1px dashed #465363;border-radius:9px;padding:24px;text-align:center;color:var(--muted);font-size:12px;grid-column:1/-1}
+@media(max-width:700px){.wrap{padding:13px 12px 35px}.grid,.doc-list{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.panel{padding:14px}header{align-items:flex-start}.brand img{width:46px;height:46px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="brand" href="./index.html"><img src="./logo.png" alt=""><span>IRONKNUCKLE<small>TECHNICAL LIBRARY</small></span></a>
+  <a class="back" href="./index.html">← MAIN WORKSPACE</a>
+</header>
+<div class="eyebrow">Source-backed technical knowledge</div>
+<h1>Technical Library</h1>
+<p class="intro">Store service manuals, wiring diagrams, technical bulletins and training references in one private, searchable library. Each document keeps its source details so future diagnostic guidance can be traced back to the original material.</p>
+
+<section id="authPanel" class="panel auth">
+  <div class="panel-head"><div class="panel-title">Secure sign-in required</div><span class="muted">PRIVATE LIBRARY</span></div>
+  <p class="muted">Use the same authorized IronKnuckle email account you use for the Case Vault. We'll send a one-time sign-in link. New account creation is disabled.</p>
+  <div class="field"><label for="email">Account email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
+  <div class="actions"><button class="btn primary" id="signIn">Send secure sign-in link</button></div>
+  <div id="authStatus" class="status" role="status">Sign in to upload and view your private technical documents.</div>
+</section>
+
+<div id="libraryApp" class="hidden">
+  <section class="panel">
+    <div class="panel-head"><div class="panel-title">Add a technical document</div><span id="accountLabel" class="muted"></span></div>
+    <form id="uploadForm">
+      <div class="grid">
+        <div class="field full"><label for="docTitle">Document title *</label><input id="docTitle" required maxlength="180" placeholder="Example: mDRIVE ATO2612F Service Manual"></div>
+        <div class="field"><label for="category">Document category *</label><select id="category" required>
+          <option value="service_manual">Service manual</option><option value="wiring_diagram">Wiring diagram</option><option value="technical_bulletin">Technical bulletin</option><option value="troubleshooting_guide">Troubleshooting guide</option><option value="specification">Specification</option><option value="training_reference">Training reference</option><option value="other">Other</option>
+        </select></div>
+        <div class="field"><label for="sourceType">Source classification</label><select id="sourceType"><option value="oem_service_info">OEM service information</option><option value="oem_bulletin">OEM technical bulletin</option><option value="training_reference">Training reference</option><option value="other">Other / not confirmed</option></select></div>
+        <div class="field"><label for="manufacturer">Manufacturer</label><input id="manufacturer" placeholder="Mack"></div>
+        <div class="field"><label for="model">Model / product</label><input id="model" placeholder="mDRIVE ATO2612F"></div>
+        <div class="field"><label for="modelYear">Model year / range</label><input id="modelYear" placeholder="2022 or 2020–2024"></div>
+        <div class="field"><label for="system">System / component</label><input id="system" placeholder="Transmission / TECU / clutch control"></div>
+        <div class="field"><label for="sourceReference">Document number / source reference</label><input id="sourceReference" placeholder="Publication or bulletin number"></div>
+        <div class="field"><label for="revision">Revision / publication date</label><input id="revision" placeholder="Revision, date or edition"></div>
+        <div class="field full"><label for="tags">Search tags</label><input id="tags" placeholder="AMT, shifting, clutch, fault codes (comma separated)"></div>
+        <div class="field full"><label for="notes">Notes / applicability details</label><textarea id="notes" placeholder="Record model coverage, engine/transmission variants, cautions or anything needed to identify the right document."></textarea></div>
+        <div class="field full"><label for="documentFile">Choose document file *</label><input id="documentFile" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.json,.csv,application/pdf,image/jpeg,image/png,image/webp,text/plain,application/json,text/csv" required><p class="help">Private upload · PDF, JPG, PNG, WebP, TXT, JSON or CSV · Maximum 50 MB per file.</p></div>
+      </div>
+      <div class="actions"><button class="btn primary" id="uploadButton" type="submit">Upload to Technical Library</button><button class="btn" type="reset">Clear form</button></div>
+    </form>
+    <div id="uploadStatus" class="status" role="status">Documents are private to the signed-in account. Uploading stores the original file; it does not automatically extract or index PDF text yet.</div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><div class="panel-title">Your document collection</div><div class="actions" style="margin:0"><span id="docCount" class="muted">0 documents</span><button class="btn" id="refresh">Refresh</button><button class="btn" id="signOut">Sign out</button></div></div>
+    <div class="toolbar"><input id="search" type="search" placeholder="Search title, make, model, system, tags or notes…"><select id="filterCategory"><option value="">All document types</option><option value="service_manual">Service manuals</option><option value="wiring_diagram">Wiring diagrams</option><option value="technical_bulletin">Technical bulletins</option><option value="troubleshooting_guide">Troubleshooting guides</option><option value="specification">Specifications</option><option value="training_reference">Training references</option><option value="other">Other</option></select></div>
+    <div id="documentList" class="doc-list"><div class="empty">Loading your private documents…</div></div>
+    <div id="listStatus" class="status" role="status">Your library is private. Only documents owned by this signed-in account are listed.</div>
+  </section>
+</div>
+</div>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
+const SUPABASE_URL = "https://wpxvaqmzxhxlrutklypm.supabase.co";
+const SUPABASE_KEY = "sb_publishable_8Dhvi0M8P31FLB9kH5-RiA_5qyq9A0O";
+const BUCKET = "ironknuckle-technical-library";
+const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+let user = null;
+let documents = [];
+const categories = {service_manual:"Service manual",wiring_diagram:"Wiring diagram",technical_bulletin:"Technical bulletin",troubleshooting_guide:"Troubleshooting guide",specification:"Specification",training_reference:"Training reference",other:"Other"};
+const sourceLabels = {oem_service_info:"OEM service information",oem_bulletin:"OEM technical bulletin",training_reference:"Training reference",other:"Other / not confirmed"};
+function esc(value){return String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function setStatus(id,message,type=""){const el=$(id);el.textContent=message;el.className="status"+(type?" "+type:"");}
+function sizeLabel(bytes){if(bytes<1024*1024)return Math.max(1,Math.round(bytes/1024))+" KB";return (bytes/(1024*1024)).toFixed(1)+" MB";}
+function safeFileName(name){return name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-120)||"document";}
+function showSignedIn(){ $("authPanel").classList.add("hidden"); $("libraryApp").classList.remove("hidden"); $("accountLabel").textContent=user.email||"Signed in"; }
+function showSignedOut(){ $("authPanel").classList.remove("hidden"); $("libraryApp").classList.add("hidden"); documents=[]; }
+function matches(row,query,category){const hay=[row.title,row.original_name,row.manufacturer,row.model,row.model_year,row.system,row.source_reference,row.revision,row.notes,(row.tags||[]).join(" "),sourceLabels[row.source_type],categories[row.category]].join(" ").toLowerCase();return (!query||hay.includes(query))&&(!category||row.category===category);}
+function renderDocuments(){
+ const query=$("search").value.trim().toLowerCase(), category=$("filterCategory").value;
+ const rows=documents.filter(row=>matches(row,query,category));
+ $("docCount").textContent=documents.length+" document"+(documents.length===1?"":"s");
+ const box=$("documentList");
+ if(!rows.length){box.innerHTML='<div class="empty">'+(documents.length?'No documents match this search.':'Your Technical Library is empty. Upload your first service document above.')+'</div>';return;}
+ box.innerHTML=rows.map(row=>'<article class="doc"><div class="doc-top"><div class="doc-title">'+esc(row.title)+'</div><span class="pill">'+esc(categories[row.category]||"Other")+'</span></div><div class="doc-meta">'+esc([row.manufacturer,row.model,row.model_year,row.system].filter(Boolean).join(" · ")||"No equipment details added")+'<br>'+esc(sourceLabels[row.source_type]||"Other")+(row.source_reference?' · '+esc(row.source_reference):'')+(row.revision?' · '+esc(row.revision):'')+'<br>'+esc(row.original_name)+' · '+sizeLabel(Number(row.size_bytes)||0)+' · '+new Date(row.created_at).toLocaleDateString()+(row.tags?.length?'<br>Tags: '+esc(row.tags.join(", ")):'')+'</div>'+(row.notes?'<div class="doc-note">'+esc(row.notes)+'</div>':'')+'<div class="doc-actions"><button class="btn primary" data-preview="'+esc(row.id)+'">Open / preview</button><button class="btn" data-download="'+esc(row.id)+'">Download</button><button class="btn danger" data-delete="'+esc(row.id)+'">Delete</button></div></article>').join("");
+ box.querySelectorAll("[data-preview]").forEach(button=>button.addEventListener("click",()=>openDocument(button.dataset.preview)));
+ box.querySelectorAll("[data-download]").forEach(button=>button.addEventListener("click",()=>downloadDocument(button.dataset.download)));
+ box.querySelectorAll("[data-delete]").forEach(button=>button.addEventListener("click",()=>deleteDocument(button.dataset.delete)));
+}
+async function loadDocuments(){
+ if(!user)return;
+ setStatus("listStatus","Loading your private document collection…");
+ const {data,error}=await client.from("technical_documents").select("*").order("created_at",{ascending:false});
+ if(error){setStatus("listStatus","Could not load documents: "+error.message,"bad");return;}
+ documents=data||[];renderDocuments();
+ setStatus("listStatus",documents.length+" private document(s) loaded. Files are stored in a private bucket.","good");
+}
+async function openDocument(id){
+ const row=documents.find(item=>item.id===id);if(!row)return;
+ const {data,error}=await client.storage.from(BUCKET).createSignedUrl(row.storage_path,300);
+ if(error){setStatus("listStatus","Preview failed: "+error.message,"bad");return;}
+ const link=document.createElement("a");link.href=data.signedUrl;link.target="_blank";link.rel="noopener";document.body.appendChild(link);link.click();link.remove();
+}
+async function downloadDocument(id){
+ const row=documents.find(item=>item.id===id);if(!row)return;
+ setStatus("listStatus","Preparing secure download…");
+ const {data,error}=await client.storage.from(BUCKET).download(row.storage_path);
+ if(error){setStatus("listStatus","Download failed: "+error.message,"bad");return;}
+ const url=URL.createObjectURL(data),link=document.createElement("a");link.href=url;link.download=row.original_name;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ setStatus("listStatus","Download ready: "+row.original_name,"good");
+}
+async function deleteDocument(id){
+ const row=documents.find(item=>item.id===id);if(!row||!confirm("Permanently delete "+row.original_name+" from your Technical Library?"))return;
+ setStatus("listStatus","Deleting document…");
+ const {error:storageError}=await client.storage.from(BUCKET).remove([row.storage_path]);
+ if(storageError){setStatus("listStatus","File could not be deleted: "+storageError.message,"bad");return;}
+ const {error:rowError}=await client.from("technical_documents").delete().eq("id",id);
+ if(rowError){setStatus("listStatus","File was removed but its record could not be deleted: "+rowError.message,"bad");return;}
+ documents=documents.filter(item=>item.id!==id);renderDocuments();setStatus("listStatus","Document deleted from your private library.","good");
+}
+async function uploadDocument(event){
+ event.preventDefault();if(!user){setStatus("uploadStatus","Sign in before uploading.","bad");return;}
+ const file=$("documentFile").files?.[0];if(!file){setStatus("uploadStatus","Choose a document first.","bad");return;}
+ if(file.size>50*1024*1024){setStatus("uploadStatus","This file exceeds the 50 MB limit.","bad");return;}
+ const allowed=["application/pdf","image/jpeg","image/png","image/webp","text/plain","application/json","text/csv"];
+ if(!allowed.includes(file.type)){setStatus("uploadStatus","Unsupported file type. Use PDF, JPG, PNG, WebP, TXT, JSON or CSV.","bad");return;}
+ const title=$("docTitle").value.trim();if(!title){setStatus("uploadStatus","Enter a document title.","bad");return;}
+ const path=user.id+"/documents/"+crypto.randomUUID()+"-"+safeFileName(file.name);
+ const button=$("uploadButton");button.disabled=true;button.textContent="Uploading…";
+ setStatus("uploadStatus","Uploading original file to private storage… please keep this page open.");
+ const {error:uploadError}=await client.storage.from(BUCKET).upload(path,file,{contentType:file.type,upsert:false});
+ if(uploadError){setStatus("uploadStatus","Upload failed: "+uploadError.message,"bad");button.disabled=false;button.textContent="Upload to Technical Library";return;}
+ const tags=$("tags").value.split(",").map(value=>value.trim()).filter(Boolean).slice(0,30);
+ const payload={owner_id:user.id,title,category:$("category").value,source_type:$("sourceType").value,manufacturer:$("manufacturer").value.trim()||null,model:$("model").value.trim()||null,model_year:$("modelYear").value.trim()||null,system:$("system").value.trim()||null,source_reference:$("sourceReference").value.trim()||null,revision:$("revision").value.trim()||null,tags,notes:$("notes").value.trim()||null,storage_path:path,original_name:file.name,mime_type:file.type,size_bytes:file.size};
+ const {error:recordError}=await client.from("technical_documents").insert(payload);
+ if(recordError){await client.storage.from(BUCKET).remove([path]);setStatus("uploadStatus","Document record could not be saved; the uploaded file was rolled back: "+recordError.message,"bad");button.disabled=false;button.textContent="Upload to Technical Library";return;}
+ $("uploadForm").reset();await loadDocuments();setStatus("uploadStatus","Document uploaded successfully. The original is stored privately and its source details are searchable. Text extraction/indexing is a separate next step.","good");
+ button.disabled=false;button.textContent="Upload to Technical Library";
+}
+async function signIn(){
+ const email=$("email").value.trim();if(!email){setStatus("authStatus","Enter your authorized account email.","bad");return;}
+ $("signIn").disabled=true;setStatus("authStatus","Sending secure one-time sign-in link…");
+ const {error}=await client.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:location.href.split("#")[0].split("?")[0]}});
+ setStatus("authStatus",error?error.message:"Check your email for the sign-in link, then return to this page. New account creation is disabled.",error?"bad":"good");$("signIn").disabled=false;
+}
+async function init(){
+ const {data:{session}}=await client.auth.getSession();user=session?.user||null;
+ if(user){showSignedIn();await loadDocuments();}else showSignedOut();
+ client.auth.onAuthStateChange((_event,sessionNow)=>{user=sessionNow?.user||null;if(user){showSignedIn();loadDocuments();}else showSignedOut();});
+}
+$("signIn").addEventListener("click",signIn);
+$("uploadForm").addEventListener("submit",uploadDocument);
+$("refresh").addEventListener("click",loadDocuments);
+$("signOut").addEventListener("click",async()=>{const {error}=await client.auth.signOut();if(error)setStatus("listStatus",error.message,"bad");});
+$("search").addEventListener("input",renderDocuments);
+$("filterCategory").addEventListener("change",renderDocuments);
+init().catch(error=>setStatus("authStatus",error.message||String(error),"bad"));
+</script>
+</body>
+</html>
