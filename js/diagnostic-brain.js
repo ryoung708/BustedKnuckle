@@ -94,39 +94,65 @@ function crossSystemSignals(record, system) {
 function tokens(text) {
   return [...new Set(lower(text).split(/[^a-z0-9]+/).filter(t => t.length > 3 && !stopWords.has(t)))];
 }
+function caseFaultCodes(record = {}) {
+  return (record.entries ? Object.values(record.entries) : [])
+    .flatMap(entry => Array.isArray(entry?.faultCodes) ? entry.faultCodes : [])
+    .map(f => lower(f.code).replace(/\\s+/g, ""))
+    .filter(Boolean);
+}
+function caseSymptomText(record = {}) {
+  return [record.complaint, powertrainWorkflows[record.workflowId]?.title]
+    .map(clean).filter(Boolean).join(" ");
+}
 function verifiedCaseMatches(current, candidates = []) {
-  const currentText = textForCase(current);
-  const currentTokens = tokens(currentText);
-  const currentCodes = new Set((current.entries ? Object.values(current.entries) : [])
-    .flatMap(e => Array.isArray(e?.faultCodes) ? e.faultCodes : [])
-    .map(f => lower(f.code)).filter(Boolean));
+  const currentSystem = getSystem(current);
+  const currentCodes = new Set(caseFaultCodes(current));
+  const currentTokens = tokens(caseSymptomText(current));
   const currentVehicle = current.vehicle || {};
   return candidates.filter(candidate => candidate && candidate.id !== current.id &&
-      candidate.verification === "verified" && populated(candidate.rootCause) && populated(candidate.repairPerformed))
+      candidate.verification === "verified" && populated(candidate.rootCause) &&
+      populated(candidate.repairPerformed))
     .map(candidate => {
-      const candidateText = textForCase(candidate);
-      const candidateTokens = tokens(candidateText);
-      const overlap = currentTokens.filter(token => candidateTokens.includes(token));
-      const candidateCodes = (candidate.entries ? Object.values(candidate.entries) : [])
-        .flatMap(e => Array.isArray(e?.faultCodes) ? e.faultCodes : [])
-        .map(f => lower(f.code)).filter(Boolean);
+      const candidateSystem = getSystem(candidate);
+      if (candidateSystem !== currentSystem) return null;
+      const candidateCodes = caseFaultCodes(candidate);
       const matchingCodes = [...currentCodes].filter(code => candidateCodes.includes(code));
+      const candidateTokens = tokens(caseSymptomText(candidate));
+      const overlap = currentTokens.filter(token => candidateTokens.includes(token));
       const vehicle = candidate.vehicle || {};
       const sameMake = populated(currentVehicle.make) && lower(currentVehicle.make) === lower(vehicle.make);
       const sameModel = populated(currentVehicle.model) && lower(currentVehicle.model) === lower(vehicle.model);
       const sameEngine = populated(currentVehicle.engine) && lower(currentVehicle.engine) === lower(vehicle.engine);
-      const sameSystem = getSystem(current) === getSystem(candidate);
-      const score = matchingCodes.length * 8 + overlap.length + (sameMake ? 2 : 0) + (sameModel ? 3 : 0) + (sameEngine ? 3 : 0) + (sameSystem ? 1 : 0);
+      const sameWorkflow = populated(current.workflowId) && current.workflowId === candidate.workflowId;
+      const sameVehicleFamily = sameMake && sameModel;
+      const exactFaultMatch = matchingCodes.length > 0;
+      const symptomMatch = overlap.length >= 3 && sameWorkflow &&
+        (sameEngine || sameVehicleFamily || overlap.length >= 5);
+      if (!exactFaultMatch && !symptomMatch) return null;
+      const matchReason = exactFaultMatch
+        ? "Exact fault code match (" + matchingCodes.join(", ") + ") in the same diagnostic system."
+        : "Same diagnostic workflow with " + overlap.length + " shared symptom terms" +
+          ((sameEngine || sameVehicleFamily) ? " and matching vehicle/engine context." : ".");
+      const score = (exactFaultMatch ? 100 : 0) + overlap.length +
+        (sameMake ? 2 : 0) + (sameModel ? 3 : 0) + (sameEngine ? 4 : 0);
       return {
-        id:candidate.id,title:[vehicle.year,vehicle.make,vehicle.model,vehicle.engine].filter(Boolean).join(" ") || clean(candidate.complaint).slice(0,80) || "Verified case",
-        rootCause:clean(candidate.rootCause),repairPerformed:clean(candidate.repairPerformed),
-        matchingCodes,sharedTerms:overlap.slice(0,6),sameVehicleFamily:sameMake && sameModel,
-        sameEngine,sameSystem,score,
-        sourceSystem:getSystem(candidate),
+        id:candidate.id,
+        title:[vehicle.year,vehicle.make,vehicle.model,vehicle.engine].filter(Boolean).join(" ") ||
+          clean(candidate.complaint).slice(0,80) || "Verified case",
+        rootCause:clean(candidate.rootCause),
+        repairPerformed:clean(candidate.repairPerformed),
+        matchingCodes,
+        sharedTerms:overlap.slice(0,6),
+        sameVehicleFamily,
+        sameEngine,
+        sameSystem:true,
+        matchReason,
+        score,
+        sourceSystem:candidateSystem,
         caveat:"Reference only. Confirm exact configuration, test conditions and physical evidence; a prior repair is not proof of the current cause."
       };
     })
-    .filter(match => match.score >= 4)
+    .filter(Boolean)
     .sort((a,b) => b.score-a.score)
     .slice(0,3);
 }
