@@ -95,7 +95,7 @@ function makeDiamondWebPanel(z,flip,label){
  panel.lineTo(2.38,.68);panel.lineTo(2.16,.96);panel.lineTo(1.78,1.10);
  panel.lineTo(-1.92,1.10);panel.lineTo(-2.22,.98);panel.lineTo(-2.38,.72);panel.closePath();
  // Repeated diamond apertures leave substantial diagonal cast webs between cells.
- const cols=7, rows=4, dx=.60, dy=.49, holeW=.43, holeH=.34;
+ const cols=7, rows=4, dx=.60, dy=.49, holeW=.535, holeH=.425;
  for(let row=0;row<rows;row++){
   for(let col=0;col<cols;col++){
    const cx=-1.80+col*dx+(row%2)*.04;
@@ -110,7 +110,7 @@ function makeDiamondWebPanel(z,flip,label){
   }
  }
  const geo=new THREE.ExtrudeGeometry(panel,{depth:.13,steps:1,bevelEnabled:true,bevelSegments:1,bevelSize:.025,bevelThickness:.025,curveSegments:1});
- const castMat=material(0x727a7d,.82,.72);
+ const castMat=material(0x626b6e,.88,.78);
  const mesh=new THREE.Mesh(geo,castMat);
  mesh.position.set(0,0,flip?z-.13:z);
  if(flip) mesh.rotation.y=Math.PI;
@@ -136,26 +136,30 @@ function sideLine(points,r=.035){const curve=new THREE.CatmullRomCurve3(points.m
 sideLine([[1.15,.72,1.66],[1.36,.62,1.68],[1.38,.20,1.68],[1.58,.08,1.68]]);
 sideLine([[1.15,-.72,1.66],[1.38,-.62,1.68],[1.38,-.28,1.68],[1.58,-.18,1.68]]);
 
-// Rear casting is assembled from overlapping stepped sections rather than a plain rectangular box.
+// Rebuilt rear housing: tapered, rounded cast tail with one centered output-bearing boss.
+// The previous stepped rectangular block and paired circular faces did not match the supplied unit photos.
+// Photo-based silhouette reconstruction only; exact casting dimensions and hidden features remain unverified.
 const rearShape=new THREE.Shape();
-rearShape.moveTo(2.35,-.86);rearShape.lineTo(2.55,-1.08);rearShape.lineTo(3.82,-1.02);
-rearShape.lineTo(4.18,-.72);rearShape.lineTo(4.22,.68);rearShape.lineTo(3.88,1.02);
-rearShape.lineTo(2.62,1.08);rearShape.lineTo(2.35,.82);rearShape.closePath();
-const rearGeo=new THREE.ExtrudeGeometry(rearShape,{depth:2.08,bevelEnabled:true,bevelSegments:4,bevelSize:.12,bevelThickness:.12});
-rearGeo.translate(0,0,-1.04);
-addMesh(groups.rear,rearGeo,mats.dark,[0,0,0],null,'rear',{name:'Stepped rear transmission casting'});
-// Raised rear perimeter ribs and multiple round interface housings echo the reference silhouette.
-for(let i=0;i<5;i++){const x=2.62+i*.32;
-box(groups.rear,[.12,1.72,2.02],[x,0,1.08],mats.case,'rear',[0,0,(i-2)*.035],'Rear cast reinforcement rib');}
-for(const y of [.62,-.62]){
-cylinder(groups.rear,.62,.62,.32,[4.20,y,.10],mats.edge,'rear','x','Rear circular interface flange');
-cylinder(groups.rear,.43,.43,.36,[4.40,y,.10],mats.dark,'rear','x','Rear interface recess');
-torus(groups.rear,.55,.06,[4.42,y,.10],mats.steel,'rear');
-for(let i=0;i<8;i++){const a=i*Math.PI/4;cylinder(groups.rear,.045,.045,.10,[4.45,y+Math.cos(a)*.52,.10+Math.sin(a)*.52],mats.edge,'rear','x','Rear flange fastener');}
+rearShape.moveTo(2.18,-.82);rearShape.lineTo(2.38,-1.02);rearShape.lineTo(2.72,-1.12);
+rearShape.lineTo(3.58,-1.08);rearShape.quadraticCurveTo(4.08,-1.02,4.30,-.68);
+rearShape.lineTo(4.38,-.34);rearShape.lineTo(4.38,.34);rearShape.lineTo(4.30,.68);
+rearShape.quadraticCurveTo(4.08,1.02,3.58,1.08);rearShape.lineTo(2.72,1.12);
+rearShape.lineTo(2.38,1.02);rearShape.lineTo(2.18,.82);rearShape.closePath();
+const rearGeo=new THREE.ExtrudeGeometry(rearShape,{depth:2.02,bevelEnabled:true,bevelSegments:5,bevelSize:.16,bevelThickness:.14,curveSegments:12});
+rearGeo.translate(0,0,-1.01);
+addMesh(groups.rear,rearGeo,mats.case,[0,0,0],null,'rear',{name:'Rounded tapered rear transmission casting'});
+// Shallow raised cast ribs follow the rear housing shoulders.
+for(const z of [-.94,.94])for(let i=0;i<4;i++){
+ const x=2.72+i*.34;
+ box(groups.rear,[.12,1.62,.12],[x,0,z],mats.edge,'rear',[0,0,(i-1.5)*.025],'Rear housing cast reinforcement rib');
 }
-box(groups.rear,[.48,1.52,1.52],[3.98,.02,1.12],mats.case,'rear',null,'Rear output-side cast bridge');
-cylinder(groups.rear,.50,.50,.36,[4.50,0,0],mats.dark,'rear','x','Central output bearing retainer');
-torus(groups.rear,.48,.065,[4.70,0,0],mats.edge,'rear');
+// One centered rear output-bearing boss and circular retainer.
+cylinder(groups.rear,.91,.91,.20,[4.34,0,0],mats.edge,'rear','x','Rear output bearing flange');
+cylinder(groups.rear,.69,.69,.24,[4.48,0,0],mats.dark,'rear','x','Rear output bearing recess');
+torus(groups.rear,.78,.075,[4.51,0,0],mats.steel,'rear','x');
+for(let i=0;i<10;i++){const a=i*Math.PI/5,y=Math.cos(a)*.82,z=Math.sin(a)*.82;cylinder(groups.rear,.045,.045,.10,[4.49,y,z],mats.edge,'rear','x','Rear flange fastener');}
+cylinder(groups.rear,.49,.49,.34,[4.55,0,0],mats.dark,'rear','x','Central output bearing retainer');
+torus(groups.rear,.47,.055,[4.74,0,0],mats.edge,'rear','x');
 // Input shaft axis and splines (representational, not dimensioned).
 cylinder(groups.input,.24,.24,2.45,[-4.30,0,0],mats.shaft,'input','x','Input shaft');
 cylinder(groups.input,.29,.29,.35,[-3.12,0,0],mats.steel,'input','x','Input bearing journal');
