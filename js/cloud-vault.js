@@ -171,7 +171,7 @@ async function saveCase(raw) {
   saveQueues.set(raw.id, next);
   return next;
 }
-window.IronKnuckleCloud = { saveCase };
+window.IronKnuckleCloud = { saveCase, getCases: () => cloudRows.map(row => row.raw_case).filter(Boolean) };
 
 async function loadAttachments() {
   if (!selectedCloudCase || !user) return;
