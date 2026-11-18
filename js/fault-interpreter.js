@@ -16,7 +16,13 @@ function normalize(value) { return String(value || "").toUpperCase().replace(/[^
 export function parseFaultInput(raw) {
   const value = String(raw || "").trim().toUpperCase();
   if (!value) return null;
-  const p = value.match(/\bP[0-9A-F]{4}(?:[-_ ]?[0-9A-F]{2})?\b/);
+  const proprietary = value.match(/\b(PSID|PID)\s*[:#=-]?\s*(\d+)(?:\s*[/, ]+\s*(?:FMI\s*)?(\d{1,2}))?\b/i);
+  if (proprietary) return {
+    pCode:"", pSuffix:"", spn:null, fmi:proprietary[3] ? Number(proprietary[3]) : null,
+    sourceAddress:null, proprietaryType:proprietary[1].toUpperCase(),
+    proprietaryNumber:Number(proprietary[2])
+  };
+  const p = value.match(/\b[PU][0-9A-F]{4}(?:[-_ ]?[0-9A-F]{2})?\b/);
   const triple = value.match(/\b(\d{1,3})\s*[/, ]\s*(?:SPN\s*)?(\d{1,6})\s*[/, ]\s*(?:FMI\s*)?(\d{1,2})\b/i);
   const spnMatch = value.match(/SPN\s*[:#=-]?\s*(\d+)/i) || value.match(/\b(\d{1,6})\s*[,/ ]+\s*(?:FMI\s*)?(\d{1,2})\b/i);
   const fmiMatch = value.match(/FMI\s*[:#=-]?\s*(\d{1,2})/i);
@@ -25,17 +31,21 @@ export function parseFaultInput(raw) {
   const spn = triple ? Number(triple[2]) : (spnMatch ? Number(spnMatch[1]) : null);
   const fmi = triple ? Number(triple[3]) : (fmiMatch ? Number(fmiMatch[1]) : (spnMatch?.[2] ? Number(spnMatch[2]) : null));
   const sourceAddress = triple ? Number(triple[1]) : null;
-  return { pCode, pSuffix:suffix, spn:Number.isInteger(spn)?spn:null, fmi:Number.isInteger(fmi)?fmi:null, sourceAddress };
+  return { pCode, pSuffix:suffix, spn:Number.isInteger(spn)?spn:null, fmi:Number.isInteger(fmi)?fmi:null, sourceAddress, proprietaryType:"", proprietaryNumber:null };
 }
 
 function findOemRecord(raw, parsed) {
   const supplied = normalize(raw);
   const candidates = oemRecords.filter(record => {
-    const queryCode = parsed.pCode ? parsed.pCode + (parsed.pSuffix || "") : (parsed.spn !== null ? "SPN"+parsed.spn+(parsed.fmi !== null ? "FMI"+parsed.fmi : "") : "");
+    const queryCode = parsed.proprietaryType
+      ? parsed.proprietaryType + parsed.proprietaryNumber + (parsed.fmi !== null ? "FMI" + parsed.fmi : "")
+      : parsed.pCode ? parsed.pCode + (parsed.pSuffix || "")
+      : (parsed.spn !== null ? "SPN"+parsed.spn+(parsed.fmi !== null ? "FMI"+parsed.fmi : "") : "");
     const codeMatch = normalize(record.code) === normalize(queryCode);
     if (!codeMatch) return false;
     const manufacturer = normalize(record.manufacturer);
-    return !manufacturer || supplied.includes(manufacturer);
+    const manufacturerWasSpecified = oemRecords.some(item => item.manufacturer && supplied.includes(normalize(item.manufacturer)));
+    return !manufacturer || !manufacturerWasSpecified || supplied.includes(manufacturer);
   });
   return candidates.length === 1 ? {record:candidates[0]} : {ambiguous:candidates.length > 1, count:candidates.length};
 }
