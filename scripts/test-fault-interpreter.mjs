@@ -13,13 +13,13 @@ assert.match(knownSpn.detail, /Voltage is lower than expected/i);
 assert.match(knownSpn.source, /plain-language paraphrase/i);
 
 const generic = interpretFaultCode("SPN 999999 FMI 4");
-assert.equal(generic.status, "generic-only");
+assert.equal(generic.status, "generic-fmi-only");
 assert.match(generic.detail, /Voltage is lower than expected/i);
-assert.match(generic.caution, /SPN meaning must be confirmed/i);
+assert.match(generic.caution, /Confirm SPN assignment/i);
 assert.match(generic.source, /SAE J1939\/73/);
 
 const unknownFmi = interpretFaultCode("SPN 999999 FMI 22");
-assert.equal(unknownFmi.status, "generic-only");
+assert.equal(unknownFmi.status, "generic-fmi-only");
 assert.match(unknownFmi.detail, /No generic FMI explanation/i);
 
 const conditionExists = interpretFaultCode("SPN 999999 FMI 31");
