@@ -1,5 +1,12 @@
 import assert from "node:assert/strict";
-import { interpretFaultCode } from "../js/fault-interpreter.js";
+import { interpretFaultCode, searchFaultSuggestions } from "../js/fault-interpreter.js";
+
+const pSuggestions = searchFaultSuggestions("P", 8);
+assert.ok(pSuggestions.length > 0);
+assert.ok(pSuggestions.every(item => item.code.toUpperCase().startsWith("P")));
+const narrowSuggestions = searchFaultSuggestions("P205B", 8);
+assert.ok(narrowSuggestions.some(item => item.code === "P205B64"));
+assert.equal(searchFaultSuggestions("", 8).length, 0);
 
 const knownP = interpretFaultCode("P205B-64");
 assert.equal(knownP.status, "oem-documented");
