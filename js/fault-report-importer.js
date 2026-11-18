@@ -2,7 +2,8 @@ const PDFJS_URL="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.m
 const TESSERACT_URL="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js";
 const MAX_PDF_PAGES=25;
 function normalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
-function codeKey(item){return normalizeCode(item.code)+"|"+String(item.controller||"").trim().toUpperCase();}
+function codeKey(item){return normalizeCode(item.code);}
+function sameFault(left,right){const a=codeKey(left),b=codeKey(right);if(!a||a!==b)return false;const lc=String(left.controller||"").trim().toUpperCase(),rc=String(right.controller||"").trim().toUpperCase();return !lc||!rc||lc===rc;}
 export function parseFaultReportText(text){
  const lines=String(text||"").replace(/\r/g,"\n").split(/\n+/).map(line=>line.replace(/\s+/g," ").trim()).filter(Boolean);
  const found=new Map();
@@ -25,8 +26,8 @@ export function parseFaultReportText(text){
  return [...found.values()];
 }
 export function findFaultDuplicates(candidates,existing){
- const keys=new Set((existing||[]).map(codeKey)),duplicates=new Set();
- (candidates||[]).forEach((item,index)=>{const key=codeKey(item);if(keys.has(key))duplicates.add(index);else keys.add(key);});
+ const seen=[...(existing||[])],duplicates=new Set();
+ (candidates||[]).forEach((item,index)=>{if(seen.some(prior=>sameFault(item,prior)))duplicates.add(index);else seen.push(item);});
  return duplicates;
 }
 async function getTesseractWorker(onProgress){
