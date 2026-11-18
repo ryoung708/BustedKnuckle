@@ -5,7 +5,7 @@ const knownP = interpretFaultCode("P205B-64");
 assert.equal(knownP.status, "library-match");
 assert.match(knownP.description, /Reductant/i);
 assert.match(knownP.caution, /not a verified OEM definition/i);
-assert.match(knownP.source, /SAE J1939\/73/);
+assert.match(knownP.source, /not yet been independently verified/i);
 
 const knownSpn = interpretFaultCode("SPN 3515 FMI 4");
 assert.equal(knownSpn.status, "library-match");
