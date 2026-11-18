@@ -9,4 +9,6 @@ const duplicates=findFaultDuplicates([{code:"P2002",controller:"ECM"},{code:"SPN
 assert.deepEqual([...duplicates],[0]);
 const differentController=findFaultDuplicates([{code:"P2002",controller:"ACM"}],[{code:"P2002",controller:"ECM"}]);
 assert.equal(differentController.size,0);
+const unknownController=findFaultDuplicates([{code:"P2002",controller:""}],[{code:"P2002",controller:"ECM"}]);
+assert.deepEqual([...unknownController],[0]);
 console.log("FAULT REPORT IMPORTER TESTS PASSED");
