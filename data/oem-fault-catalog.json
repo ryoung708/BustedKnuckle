@@ -12,6 +12,19 @@
     "Eaton",
     "Bendix"
   ],
-  "records": [],
+  "records": [
+    {
+      "code": "P205B64",
+      "manufacturer": "Mack",
+      "controller": "Aftertreatment / engine control (verify reporting module by vehicle)",
+      "engine_family": "",
+      "description": "Reductant tank temperature sensor circuit range/performance — the reported tank-temperature value is implausible compared with other engine temperature readings.",
+      "vehicle_scope": "US17+ / OBD16 emissions and newer applications identified by the cited troubleshooting reference; confirm VIN, emissions generation, controller and calibration before applying.",
+      "confidence": "source-referenced",
+      "source_title": "Reductant Tank Temperature Sensor Troubleshooting Guide (UQLS), NHTSA manufacturer communication 10201715",
+      "source_url": "https://static.nhtsa.gov/odi/tsbs/2021/MC-10201715-0001.pdf",
+      "caution": "A stored inactive code alone does not establish a failed sensor. For an active/repeating code, use approved vehicle-specific diagnostics and verify connector condition, DEF quality and tank condition before condemning the combined DEF level/quality/temperature sensor. Do not treat this description as a complete repair procedure."
+    }
+  ],
   "submission_policy": "Do not promote technician submissions to trusted OEM definitions without review and a permitted source or repeatable verified case."
 }
