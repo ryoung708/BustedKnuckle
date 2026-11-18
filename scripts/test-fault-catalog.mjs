@@ -9,6 +9,19 @@ assert.equal(generic.codeType,"obd2");
 assert.match(generic.source,/APR2002/);
 assert.ok(generic.sourceUrl);
 
+const dpf = interpretFaultCode("P2002");
+assert.equal(dpf.status,"standardized-obd");
+assert.match(dpf.description,/Particulate filter/i);
+assert.match(dpf.source,/Appendix B/);
+
+const reductant = interpretFaultCode("P2037");
+assert.equal(reductant.status,"standardized-obd");
+assert.match(reductant.description,/Reductant/i);
+
+const egt = interpretFaultCode("P2080");
+assert.equal(egt.status,"standardized-obd");
+assert.match(egt.description,/Exhaust gas temperature/i);
+
 const egr = interpretFaultCode("P0401");
 assert.equal(egr.status,"standardized-obd");
 assert.match(egr.description,/EGR/i);
