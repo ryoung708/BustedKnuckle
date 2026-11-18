@@ -55,9 +55,19 @@ const unknownSpn = interpretFaultCode("SPN 999999 FMI 4");
 assert.equal(unknownSpn.status,"generic-fmi-only");
 assert.match(unknownSpn.detail,/Voltage is lower than expected/i);
 
-const prototype = interpretFaultCode("P205B-64");
-assert.equal(prototype.status,"prototype-unverified");
-assert.match(prototype.caution,/Unverified prototype/i);
+const oem = interpretFaultCode("P205B-64");
+assert.equal(oem.status,"oem-documented");
+assert.match(oem.description,/Reductant tank temperature/i);
+
+const imported = interpretFaultCode("P2452-13");
+assert.equal(imported.status,"oem-documented");
+assert.match(imported.description,/DPF pressure sensor A circuit open/i);
+assert.equal(imported.confidence,"case-derived-unverified");
+
+assert.equal(interpretFaultCode("PSID 14 FMI 3").status,"oem-documented");
+assert.equal(interpretFaultCode("PID 84 FMI 9").status,"oem-documented");
+assert.equal(interpretFaultCode("11/790/9").status,"oem-documented");
+assert.equal(interpretFaultCode("U0100-87").status,"oem-documented");
 
 const unknown = interpretFaultCode("P0000-00");
 assert.equal(unknown.status,"not-found");
