@@ -32,6 +32,8 @@ assert.match(caseSpn.description, /Wheel speed axle 1 right/i);
 const casePsid = interpretFaultCode("PSID 14 FMI 3");
 assert.equal(casePsid.status, "oem-documented");
 assert.match(casePsid.description, /Right-front turn signal/i);
+const compactPsid = interpretFaultCode("PSID14FMI3");
+assert.equal(compactPsid.status, "oem-documented");
 
 const casePid = interpretFaultCode("PID 84 FMI 9");
 assert.equal(casePid.status, "oem-documented");
