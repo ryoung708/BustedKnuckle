@@ -315,7 +315,6 @@ document.querySelectorAll("[data-remove-fault]").forEach(button=>button.onclick=
  if(editingFaultIndex!==null&&editingFaultIndex===Number(button.dataset.removeFault))editingFaultIndex=null;
  active.entries[step.id].faultCodes=list;saveCurrent();renderWork();
 });
-if(flow.faultGuidance&&$("returnToCase"))$("returnToCase").onclick=()=>{active.workflowId=active.returnWorkflowId||"check_engine_light";stepIndex=Math.max(0,Math.min(active.returnStepIndex||0,workflows[active.workflowId].steps.length-1));delete active.returnWorkflowId;delete active.returnStepIndex;saveCurrent();renderWork()};
 
  $("finishEarly").onclick=()=>{const measurements=parseMeasurements($("measurements").value);const choice=document.querySelector("input[name=choice]:checked")?.value||"";recordStep(active,stepIndex,{choice,measurements,notes:$("notes").value});if(!choice){active.entries[step.id].skipped=true;active.entries[step.id].skippedAt=new Date().toISOString()}active.finishedEarly=true;active.status="ready-for-review";active.conclusion="Technician finished before all suggested steps were needed.";saveCurrent();renderWork()};
 $("prev").onclick=()=>{stepIndex=Math.max(0,stepIndex-1);renderWork()};
