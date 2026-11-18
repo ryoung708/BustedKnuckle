@@ -24,7 +24,7 @@ assert.match(egt.description,/Exhaust gas temperature/i);
 
 const egr = interpretFaultCode("P0401");
 assert.equal(egr.status,"standardized-obd");
-assert.match(egr.description,/EGR/i);
+assert.match(egr.description,/Exhaust gas recirculation/i);
 
 const manufacturerCode = interpretFaultCode("P1496");
 assert.equal(manufacturerCode.status,"not-found");
