@@ -20,10 +20,109 @@ function json(data: unknown, status = 200) {
   });
 }
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[char]!);
+}
+
+function htmlReport(payload: {
+  product: string;
+  shareCreatedAt: string;
+  expiresAt: string;
+  case: Record<string, unknown>;
+  attachments: Array<Record<string, unknown>>;
+  instructions: string;
+}) {
+  const caseData = payload.case;
+  const raw = (caseData.raw_case && typeof caseData.raw_case === "object")
+    ? caseData.raw_case as Record<string, unknown>
+    : {};
+  const title = String(caseData.title || raw.title || "Diagnostic case");
+  const complaint = String(caseData.complaint || raw.complaint || "");
+  const evidence = payload.attachments.map((file, index) => {
+    const url = typeof file.url === "string" ? file.url : "";
+    const name = escapeHtml(file.name || "Evidence file " + (index + 1));
+    const type = String(file.mimeType || "");
+    const link = url
+      ? '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' + name + '</a>'
+      : '<span>' + name + ' — temporarily unavailable</span>';
+    const preview = url && type.startsWith("image/")
+      ? '<p><img src="' + escapeHtml(url) + '" alt="' + name + '" style="max-width:100%;height:auto;border:1px solid #bbb;border-radius:8px"></p>'
+      : url && type === "application/pdf"
+        ? '<p><a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">Open PDF evidence</a></p>'
+        : "";
+    return '<li><strong>' + name + '</strong><br><small>' +
+      escapeHtml(type || "File") + " · " +
+      escapeHtml(file.category || "Evidence") + " · " +
+      escapeHtml(file.sizeBytes || "Size unavailable") +
+      '</small><p>' + link + '</p>' + preview + '</li>';
+  }).join("");
+
+  const fields = [
+    ["Status", caseData.status],
+    ["Complaint", complaint],
+    ["Vehicle context", caseData.vehicle_context],
+    ["Fault codes", caseData.fault_codes],
+    ["Tests performed", caseData.tests_performed],
+    ["Confirmed root cause", caseData.confirmed_root_cause],
+    ["Repair performed", caseData.repair_performed],
+    ["Verification result", caseData.verification_result],
+    ["Verification notes", caseData.verification_notes],
+    ["Technician confidence", caseData.technician_confidence],
+  ].filter(([, value]) => value !== null && value !== undefined && value !== "");
+  const fieldMarkup = fields.map(([label, value]) =>
+    '<section><h2>' + escapeHtml(label) + '</h2><pre>' +
+    escapeHtml(typeof value === "string" ? value : JSON.stringify(value, null, 2)) +
+    '</pre></section>'
+  ).join("");
+  const jsonDump = escapeHtml(JSON.stringify(payload, null, 2));
+
+  const page = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>${escapeHtml(title)} · IronKnuckle Diagnostics</title>
+<style>
+:root{color-scheme:light}body{font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;max-width:900px;margin:0 auto;padding:20px;color:#20252b;background:#f5f6f7}
+header,section,.evidence,.raw{background:#fff;border:1px solid #d9dde1;border-radius:10px;padding:16px;margin:0 0 14px}
+h1{font-size:1.5rem;margin:0 0 8px}h2{font-size:1rem;margin:0 0 8px;color:#39434d}
+p{white-space:pre-wrap}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.5 ui-monospace,monospace;margin:0}
+a{color:#075eaa;overflow-wrap:anywhere}li{margin:0 0 18px}small,.muted{color:#59636e}
+summary{cursor:pointer;font-weight:600}img{max-height:700px;object-fit:contain}
+</style>
+</head>
+<body>
+<header><h1>IronKnuckle Diagnostics — Shared Case</h1>
+<p><strong>${escapeHtml(title)}</strong></p>
+<p class="muted">Read-only share · Expires ${escapeHtml(payload.expiresAt)} · ${payload.attachments.length} evidence file(s)</p>
+<p><strong>Technician complaint:</strong> ${escapeHtml(complaint || "Not recorded")}</p></header>
+${fieldMarkup}
+<section class="evidence"><h2>Attached evidence</h2>
+${evidence ? "<ol>" + evidence + "</ol>" : "<p>No evidence files are attached to this case.</p>"}
+<p class="muted">${escapeHtml(payload.instructions)}</p></section>
+<section class="raw"><details><summary>Complete case package (machine-readable JSON)</summary><pre>${jsonDump}</pre></details></section>
+</body></html>`;
+  return new Response(page, {
+    status: 200,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; img-src https:; frame-src https:; base-uri 'none'; form-action 'none'; object-src 'none'",
+      "X-Content-Type-Options": "nosniff",
+      "X-Robots-Tag": "noindex, nofollow, noarchive",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
+}
+
 function base64Url(bytes: Uint8Array) {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  return btoa(binary).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/g, "");
 }
 
 async function hashToken(token: string) {
@@ -46,7 +145,7 @@ Deno.serve(async (req: Request) => {
 
     if (req.method === "POST") {
       const authorization = req.headers.get("Authorization") ?? "";
-      const jwt = authorization.replace(/^Bearer\s+/i, "");
+      const jwt = authorization.replace(/^Bearer\\s+/i, "");
       if (!jwt || jwt === authorization) return json({ error: "Sign in to share a case." }, 401);
 
       const { data: authData, error: authError } = await admin.auth.getUser(jwt);
@@ -90,7 +189,7 @@ Deno.serve(async (req: Request) => {
 
       if (attachmentError) throw attachmentError;
 
-      const shareUrl = SUPABASE_URL + "/functions/v1/share-case?token=" + encodeURIComponent(token);
+      const shareUrl = SUPABASE_URL + "/functions/v1/share-case?token=" + encodeURIComponent(token) + "&format=html";
       return json({
         url: shareUrl,
         expiresAt,
@@ -99,7 +198,8 @@ Deno.serve(async (req: Request) => {
     }
 
     if (req.method === "GET") {
-      const token = new URL(req.url).searchParams.get("token") ?? "";
+      const requestUrl = new URL(req.url);
+      const token = requestUrl.searchParams.get("token") ?? "";
       if (!/^[A-Za-z0-9_-]{40,60}$/.test(token)) return json({ error: "This case-sharing link is invalid or incomplete." }, 400);
 
       const tokenHash = await hashToken(token);
@@ -149,14 +249,16 @@ Deno.serve(async (req: Request) => {
         });
       }
 
-      return json({
+      const payload = {
         product: "IronKnuckle Diagnostics",
         shareCreatedAt: share.created_at,
         expiresAt: share.expires_at,
         case: caseRow,
         attachments: evidence,
-        instructions: "Review the case data and, where relevant, retrieve the attached evidence using each attachment URL. These attachment URLs expire one hour after this package is opened.",
-      });
+        instructions: "Review the case data and retrieve attached evidence using each evidence link. Evidence links expire one hour after this page is opened.",
+      };
+      if (requestUrl.searchParams.get("format") === "html") return htmlReport(payload);
+      return json(payload);
     }
 
     return json({ error: "Method not allowed." }, 405);
