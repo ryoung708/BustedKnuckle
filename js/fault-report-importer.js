@@ -30,9 +30,15 @@ export function findFaultDuplicates(candidates,existing){
  (candidates||[]).forEach((item,index)=>{if(seen.some(prior=>sameFault(item,prior)))duplicates.add(index);else seen.push(item);});
  return duplicates;
 }
+export function resolveTesseractCreateWorker(module){
+ const candidates=[module?.createWorker,module?.default?.createWorker,module?.Tesseract?.createWorker,module?.default?.Tesseract?.createWorker];
+ return candidates.find(candidate=>typeof candidate==="function")||null;
+}
 async function getTesseractWorker(onProgress){
  const module=await import(TESSERACT_URL);
- return module.createWorker("eng",1,{logger:event=>{if(event.status==="recognizing text")onProgress?.("OCR reading report… "+Math.round((event.progress||0)*100)+"%");}});
+ const createWorker=resolveTesseractCreateWorker(module);
+ if(!createWorker)throw new Error("OCR library loaded, but its createWorker API was not found. Please refresh the page and try again.");
+ return createWorker("eng",1,{logger:event=>{if(event.status==="recognizing text")onProgress?.("OCR reading report… "+Math.round((event.progress||0)*100)+"%");}});
 }
 async function recognizeImage(file,onProgress){
  const worker=await getTesseractWorker(onProgress);
