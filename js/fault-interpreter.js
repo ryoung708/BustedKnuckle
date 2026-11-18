@@ -41,7 +41,10 @@ function findOemRecord(raw, parsed) {
       ? parsed.proprietaryType + parsed.proprietaryNumber + (parsed.fmi !== null ? "FMI" + parsed.fmi : "")
       : parsed.pCode ? parsed.pCode + (parsed.pSuffix || "")
       : (parsed.spn !== null ? "SPN"+parsed.spn+(parsed.fmi !== null ? "FMI"+parsed.fmi : "") : "");
-    const codeMatch = normalize(record.code) === normalize(queryCode);
+    const recordCode = normalize(record.code);
+    // Match both the interpreted token and the exact normalized input. This keeps compact OEM forms
+    // (for example P205B64) resolvable even if a parser normalization changes later.
+    const codeMatch = recordCode === normalize(queryCode) || recordCode === supplied;
     if (!codeMatch) return false;
     const manufacturer = normalize(record.manufacturer);
     const manufacturerWasSpecified = oemRecords.some(item => item.manufacturer && supplied.includes(normalize(item.manufacturer)));
@@ -70,6 +73,8 @@ function result(status,title,description,detail,source,caution,metadata={}) {
 export function interpretFaultCode(raw) {
   const parsed = parseFaultInput(raw);
   if (!parsed) return result("empty","Enter a fault code","Enter a generic OBD-II code, an SPN, or an SPN/FMI pair.","","","");
+  const partial = normalize(raw);
+  if (/^[PU][0-9A-F]{0,3}$/.test(partial)) return result("incomplete","Keep typing the fault code","This looks like the beginning of an OBD / OEM P-code, not a complete fault code yet.","Enter the full code before checking the catalog.","","");
   const fmiMeaning = parsed.fmi !== null ? (FMI_MEANINGS[String(parsed.fmi)] || "No generic FMI explanation is available in this reference.") : "";
   const oemMatch = findOemRecord(raw, parsed);
   if (oemMatch.ambiguous) return result("ambiguous-oem","Multiple OEM definitions match this code",
