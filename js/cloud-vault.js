@@ -228,7 +228,7 @@ async function loadAttachments() {
   if (error) { $("attachmentList").textContent = error.message; return; }
   const box = $("attachmentList");
   if (!data?.length) { box.innerHTML = '<p class="small">No evidence files attached yet.</p>'; return; }
-  box.innerHTML = data.map(file => '<article class="case-card"><b>' + esc(file.original_name) + '</b><p>' + esc(file.category) + ' · ' + Math.ceil((file.size_bytes || 0) / 1024) + ' KB</p><div class="case-actions"><button class="btn" data-view="' + esc(file.id) + '">View file</button><button class="btn" data-download="' + esc(file.id) + '">Download</button><button class="btn primary" data-share="' + esc(file.id) + '">Copy ChatGPT link</button></div></article>').join("");
+  box.innerHTML = data.map(file => '<article class="case-card"><b>' + esc(file.original_name) + '</b><p>' + esc(file.category) + ' · ' + Math.ceil((file.size_bytes || 0) / 1024) + ' KB</p><div class="case-actions"><button class="btn" data-view="' + esc(file.id) + '">View file</button><button class="btn" data-download="' + esc(file.id) + '">Download</button><button class="btn primary" data-share="' + esc(file.id) + '">Copy file link</button></div></article>').join("");
   box.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", async () => {
     const file = data.find(item => item.id === button.dataset.view);
     const { data: signed, error: viewError } = await client.storage.from(BUCKET).createSignedUrl(file.storage_path, 60);
@@ -255,9 +255,9 @@ async function loadAttachments() {
     try {
       if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
       await navigator.clipboard.writeText(shareUrl);
-      status("Temporary link copied. Paste it into your ChatGPT conversation. It expires in 24 hours.", "LINK COPIED");
+      status("Temporary file link copied. It expires in 24 hours.", "LINK COPIED");
     } catch {
-      window.prompt("Copy this temporary link and paste it into ChatGPT. It expires in 24 hours:", shareUrl);
+      window.prompt("Copy this temporary file link. It expires in 24 hours:", shareUrl);
       status("Temporary link created. It expires in 24 hours.", "LINK READY");
     }
   }));
