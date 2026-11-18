@@ -150,6 +150,25 @@ export function interpretFaultCode(raw) {
     "Code meanings depend on system, controller, manufacturer and vehicle configuration. Use approved service information.");
 }
 
+export function searchFaultSuggestions(raw, limit=8) {
+  const query=normalize(raw);
+  if (!query) return [];
+  const candidates=[];
+  const add=(code,description,source,confidence,manufacturer="")=>{
+    const normalized=normalize(code);
+    if (!normalized || !normalized.startsWith(query)) return;
+    candidates.push({code:String(code),description:String(description||"Description not yet available."),source:String(source||"IronKnuckle catalog"),confidence:String(confidence||"unverified"),manufacturer:String(manufacturer||"")});
+  };
+  // OEM and case-derived records are ranked first, followed by standardized OBD and public SPN data.
+  oemRecords.forEach(r=>add(r.code,r.description,r.source_title,r.confidence,r.manufacturer));
+  (obdReference.records||[]).forEach(r=>add(r.code,r.description,r.source_title,r.confidence,"Generic OBD-II"));
+  (j1939Reference.records||[]).forEach(r=>add("SPN "+r.spn,r.description,r.source_title,r.confidence,"J1939"));
+  Object.entries(legacyLibrary).forEach(([key,r])=>add(r.p_code||key,r.description,"Legacy IronKnuckle library","unverified"));
+  const unique=new Map();
+  candidates.forEach(item=>{const key=normalize(item.code);if(!unique.has(key))unique.set(key,item);});
+  return [...unique.values()].slice(0,Math.max(1,Math.min(12,Number(limit)||8)));
+}
+
 export function getFaultCatalogStats() {
   return {
     obd2:(obdReference.records||[]).length,
