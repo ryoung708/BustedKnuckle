@@ -16,10 +16,10 @@ function normalize(value) { return String(value || "").toUpperCase().replace(/[^
 export function parseFaultInput(raw) {
   const value = String(raw || "").trim().toUpperCase();
   if (!value) return null;
-  const p = value.match(/\\bP[0-9A-F]{4}(?:[-_ ]?[0-9A-F]{2})?\\b/);
-  const triple = value.match(/\\b(\\d{1,3})\\s*[/, ]\\s*(?:SPN\\s*)?(\\d{1,6})\\s*[/, ]\\s*(?:FMI\\s*)?(\\d{1,2})\\b/i);
-  const spnMatch = value.match(/SPN\\s*[:#=-]?\\s*(\\d+)/i) || value.match(/\\b(\\d{1,6})\\s*[,/ ]+\\s*(?:FMI\\s*)?(\\d{1,2})\\b/i);
-  const fmiMatch = value.match(/FMI\\s*[:#=-]?\\s*(\\d{1,2})/i);
+  const p = value.match(/\bP[0-9A-F]{4}(?:[-_ ]?[0-9A-F]{2})?\b/);
+  const triple = value.match(/\b(\d{1,3})\s*[/, ]\s*(?:SPN\s*)?(\d{1,6})\s*[/, ]\s*(?:FMI\s*)?(\d{1,2})\b/i);
+  const spnMatch = value.match(/SPN\s*[:#=-]?\s*(\d+)/i) || value.match(/\b(\d{1,6})\s*[,/ ]+\s*(?:FMI\s*)?(\d{1,2})\b/i);
+  const fmiMatch = value.match(/FMI\s*[:#=-]?\s*(\d{1,2})/i);
   const pCode = p ? p[0].replace(/[-_ ]/g, "") : "";
   const suffix = p && /[-_ ]/.test(p[0]) ? p[0].match(/[-_ ]([0-9A-F]{2})$/)?.[1] || "" : "";
   const spn = triple ? Number(triple[2]) : (spnMatch ? Number(spnMatch[1]) : null);
