@@ -12,9 +12,17 @@ assert.equal(knownSpn.status, "generic-fmi-only");
 assert.match(knownSpn.detail, /Voltage is lower than expected/i);
 assert.match(knownSpn.source, /plain-language paraphrase/i);
 
+const partialP = interpretFaultCode("P");
+assert.equal(partialP.status, "incomplete");
+assert.match(partialP.title, /Keep typing/i);
+
 const bareOem = interpretFaultCode("P205B64");
 assert.equal(bareOem.status, "oem-documented");
 assert.match(bareOem.description, /Reductant tank temperature/i);
+
+const compactCaseP = interpretFaultCode("P245213");
+assert.equal(compactCaseP.status, "oem-documented");
+assert.match(compactCaseP.description, /DPF pressure sensor A circuit open/i);
 
 const caseP = interpretFaultCode("P2452-13");
 assert.equal(caseP.status, "oem-documented");
