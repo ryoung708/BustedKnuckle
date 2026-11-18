@@ -4,8 +4,8 @@ import { interpretFaultCode } from "../js/fault-interpreter.js";
 const knownP = interpretFaultCode("P205B-64");
 assert.equal(knownP.status, "prototype-unverified");
 assert.match(knownP.description, /Reductant/i);
-assert.match(knownP.caution, /not a verified OEM definition/i);
-assert.match(knownP.source, /not yet been independently verified/i);
+assert.match(knownP.caution, /Unverified prototype entry/i);
+assert.match(knownP.source, /independent source not recorded/i);
 
 const knownSpn = interpretFaultCode("SPN 3515 FMI 4");
 assert.equal(knownSpn.status, "generic-fmi-only");
