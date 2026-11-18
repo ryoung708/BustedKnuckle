@@ -1,32 +1,16 @@
 {
-  "version": 1,
+  "version": 2,
   "policy": {
-    "standardized": "Only add a generic code definition when the code assignment and wording can be independently verified against a permitted source.",
-    "oem_specific": "Keep manufacturer, controller, engine family, model year, emissions generation and calibration scope explicit. Never treat an SPN/FMI pair as globally unique when OEM scope is unknown.",
-    "technician_cases": "Technician-reported findings are case evidence, not standardized code definitions. Require review before promoting them.",
-    "licensing": "Record source and license/permission for every imported dataset. Do not ingest share-alike or restricted datasets into the proprietary catalog without an explicit licensing decision.",
-    "safety": "No parts replacement or repair recommendation may be generated from an unverified code definition."
+    "standardized": "Use separate standardized OBD-II and public J1939 reference files; keep edition and scope visible.",
+    "oem_specific": "OEM records are separate and require manufacturer, controller, engine family, model years, emissions generation and calibration context where applicable.",
+    "technician_cases": "Submissions are local pending-review records, never automatically trusted.",
+    "licensing": "Record source and permission. No paid/restricted/share-alike data imported.",
+    "safety": "No part replacement or repair recommendation from a code definition alone."
   },
-  "record_schema": {
-    "code_type": "obd2 | j1939 | oem",
-    "code": "string",
-    "spn": "integer or null",
-    "fmi": "integer or null",
-    "manufacturer": "string or null",
-    "controller": "string or null",
-    "engine_family": "string or null",
-    "model_year_start": "integer or null",
-    "model_year_end": "integer or null",
-    "emissions_generation": "string or null",
-    "description": "original concise description",
-    "source_type": "standard | regulation | public_bulletin | manufacturer_publication | technician_verified",
-    "source_title": "string",
-    "source_url": "string",
-    "source_page": "string or null",
-    "license_status": "public_facts_original_wording | permission_confirmed | restricted_do_not_import | review_required",
-    "confidence": "verified | publicly_documented | technician_verified | unverified",
-    "reviewed_at": "ISO-8601 date or null",
-    "review_notes": "string"
+  "files": {
+    "obd2": "obd2-standard-codes.json",
+    "j1939": "j1939-spn-reference.json",
+    "oem": "oem-fault-catalog.json"
   },
-  "records": []
+  "submission_store": "ironknuckle.faultSubmissions.v1"
 }

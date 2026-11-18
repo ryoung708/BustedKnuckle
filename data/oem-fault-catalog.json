@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "scope": "OEM-specific definitions must be added only with clear vehicle/controller applicability and permitted source provenance.",
+  "supported_manufacturers": [
+    "Mack",
+    "Volvo",
+    "Cummins",
+    "Detroit Diesel",
+    "PACCAR",
+    "International",
+    "Allison",
+    "Eaton",
+    "Bendix"
+  ],
+  "records": [],
+  "submission_policy": "Do not promote technician submissions to trusted OEM definitions without review and a permitted source or repeatable verified case."
+}
