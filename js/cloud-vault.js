@@ -178,39 +178,101 @@ async function shareEntireCase(caseId, button) {
   if (!user || !caseId) return;
   const originalText = button?.textContent || "Share entire case";
   if (button) { button.disabled = true; button.textContent = "Preparing case…"; }
-  status("Preparing a secure link for the case and all attached evidence…", "SHARING");
+  status("Collecting the case record and original evidence files…", "PREPARING");
+
+  const safeBaseName = value => String(value || "ironknuckle-case")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "ironknuckle-case";
+
   try {
+    const { data: caseRecord, error: caseError } = await client.from("diagnostic_cases")
+      .select("id,title,status,raw_case,submitted_at,created_at,updated_at,complaint,vehicle_context,fault_codes,tests_performed,confirmed_root_cause,repair_performed,verification_result,verification_notes,verified_at,technician_confidence")
+      .eq("id", caseId).single();
+    if (caseError) throw caseError;
+
+    const { data: attachments, error: attachmentError } = await client.from("case_attachments")
+      .select("id,storage_path,original_name,mime_type,size_bytes,category,created_at")
+      .eq("case_id", caseId).eq("owner_id", user.id).order("created_at", { ascending: true });
+    if (attachmentError) throw attachmentError;
+
+    const packageName = safeBaseName(caseRecord.title || caseId);
+    const attachmentManifest = (attachments || []).map(file => ({
+      id: file.id,
+      name: file.original_name,
+      mimeType: file.mime_type,
+      sizeBytes: file.size_bytes,
+      category: file.category,
+      createdAt: file.created_at
+    }));
+    const casePackage = {
+      product: "IronKnuckle Diagnostics",
+      exportedAt: new Date().toISOString(),
+      case: caseRecord,
+      attachments: attachmentManifest,
+      note: "Original evidence files are included alongside this case record."
+    };
+    const files = [new File([JSON.stringify(casePackage, null, 2)], packageName + "-case.json", {
+      type: "application/json",
+      lastModified: Date.now()
+    })];
+
+    for (const attachment of attachments || []) {
+      status("Downloading private evidence: " + attachment.original_name, "PREPARING FILES");
+      const { data: blob, error: downloadError } = await client.storage.from(BUCKET).download(attachment.storage_path);
+      if (downloadError || !blob) {
+        throw new Error("Could not retrieve evidence file " + attachment.original_name + (downloadError?.message ? ": " + downloadError.message : "."));
+      }
+      files.push(new File([blob], attachment.original_name, {
+        type: attachment.mime_type || blob.type || "application/octet-stream",
+        lastModified: attachment.created_at ? new Date(attachment.created_at).getTime() : Date.now()
+      }));
+    }
+
+    const shareText = "IronKnuckle diagnostic case: " + (caseRecord.title || "Untitled case") +
+      ". Includes the case record and " + (attachments?.length || 0) + " original evidence file(s).";
+    if (navigator.share && navigator.canShare?.({ files })) {
+      try {
+        await navigator.share({
+          files,
+          title: "IronKnuckle diagnostic case",
+          text: shareText
+        });
+        status("Case record and " + (attachments?.length || 0) +
+          " original evidence file(s) sent to the share sheet. Choose ChatGPT to attach them to your conversation.", "READY TO SHARE");
+        return;
+      } catch (shareError) {
+        if (shareError?.name === "AbortError") {
+          status("Share cancelled. Your case and evidence remain safely stored in your private vault.", "CANCELLED");
+          return;
+        }
+        console.warn("Direct evidence sharing was unavailable; using secure-link fallback:", shareError);
+      }
+    }
+
+    status("This browser cannot share files directly. Preparing the secure case link instead…", "LINK FALLBACK");
     const { data, error } = await client.functions.invoke("share-case", { body: { caseId } });
     if (error) throw error;
     const shareUrl = data?.url;
     if (!shareUrl || !shareUrl.startsWith(SUPABASE_URL + "/functions/v1/share-case?token=")) {
       throw new Error("The secure share link was not returned.");
     }
-    const fileCount = Number(data.attachmentCount || 0);
-    const shareText = "Review this IronKnuckle diagnostic case and its " + fileCount +
-      " attached evidence file(s). The link expires in 24 hours.";
     if (navigator.share) {
       try {
-        await navigator.share({ title: "IronKnuckle diagnostic case", text: shareText, url: shareUrl });
-        status("Case share sheet opened. Choose ChatGPT to send the complete case.", "READY TO SHARE");
+        await navigator.share({
+          title: "IronKnuckle diagnostic case",
+          text: shareText + " The secure link expires in 24 hours.",
+          url: shareUrl
+        });
+        status("Secure case link shared. It expires in 24 hours.", "READY TO SHARE");
       } catch (shareError) {
-        if (shareError?.name !== "AbortError") throw shareError;
-        try {
-          await navigator.clipboard.writeText(shareUrl);
-          status("Share sheet closed. The short case link was copied; paste it into ChatGPT.", "LINK COPIED");
-        } catch {
-          window.prompt("Copy this short case link and paste it into ChatGPT. It expires in 24 hours:", shareUrl);
-          status("Short case link ready. It expires in 24 hours.", "LINK READY");
+        if (shareError?.name === "AbortError") {
+          status("Share cancelled. Your case and evidence remain safely stored in your private vault.", "CANCELLED");
+          return;
         }
+        throw shareError;
       }
     } else {
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        status("Short case link copied. Paste it into ChatGPT. It includes all case evidence and expires in 24 hours.", "LINK COPIED");
-      } catch {
-        window.prompt("Copy this short case link and paste it into ChatGPT. It expires in 24 hours:", shareUrl);
-        status("Short case link ready. It expires in 24 hours.", "LINK READY");
-      }
+      await navigator.clipboard.writeText(shareUrl);
+      status("Secure case link copied. It expires in 24 hours.", "LINK COPIED");
     }
   } catch (error) {
     console.error("IronKnuckle complete case share failed:", error);
