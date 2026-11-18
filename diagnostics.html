@@ -65,6 +65,47 @@ function renderHistory(){const box=$("history"),q=($("librarySearch")?.value||""
 function start(){active=createSession({year:$("year").value,make:$("make").value,model:$("model").value,engine:$("engine").value,emissions:$("emissions").value,vinLast6:$("vin").value,complaint:$("complaint").value,workflowId:$("workflow").value});stepIndex=0;sessions.push(active);saveCurrent();renderWork()}
 function saveCurrent(){if(!active)return;active.updatedAt=new Date().toISOString();const i=sessions.findIndex(s=>s.id===active.id);if(i>=0)sessions[i]=active;else sessions.push(active);persist();if(window.IronKnuckleCloud?.saveCase)window.IronKnuckleCloud.saveCase(active)}
 let editingFaultIndex=null;
+function launchFaultGuidance(button){
+ const faultIndex=Number(button.dataset.diagnoseFault);
+ const currentFlow=workflows[active?.workflowId];
+ const currentStep=currentFlow?.steps?.[stepIndex];
+ const list=active?.entries?.[currentStep?.id]?.faultCodes||[];
+ const fault=list[faultIndex];
+ if(!fault)throw new Error("That fault is no longer attached to the current step. Refresh the case and try again.");
+ const flowId="fault_guidance_"+String(fault.code||"unknown").toLowerCase().replace(/[^a-z0-9]+/g,"_")+"_"+faultIndex;
+ const plan=faultGuidancePlan(fault);
+ active.guidedFaultFlows=active.guidedFaultFlows||{};
+ active.guidedFaultFlows[flowId]=plan;
+ workflows[flowId]=plan;
+ active.returnWorkflowId=active.workflowId;
+ active.returnStepIndex=stepIndex;
+ active.workflowId=flowId;
+ active.currentStep=0;
+ active.status="in-progress";
+ active.finishedEarly=false;
+ stepIndex=0;
+ saveCurrent();
+ renderWork();
+}
+$("work").addEventListener("click",event=>{
+ const button=event.target.closest("[data-diagnose-fault]");
+ if(button){
+  event.preventDefault();
+  try{launchFaultGuidance(button)}
+  catch(error){const message=document.createElement("p");message.className="caution";message.setAttribute("role","alert");message.textContent="Could not start guided diagnostics: "+error.message;$("work").prepend(message);console.error("IronKnuckle guided fault launch failed",error)}
+  return;
+ }
+ const back=event.target.closest("#returnToCase");
+ if(back){
+  event.preventDefault();
+  const target=active?.returnWorkflowId;
+  if(!target||!workflows[target]){const message=document.createElement("p");message.className="caution";message.textContent="The original investigation could not be restored. Your fault-guidance results remain saved."; $("work").prepend(message);return}
+  active.workflowId=target;
+  stepIndex=Math.max(0,Math.min(active.returnStepIndex||0,workflows[target].steps.length-1));
+  delete active.returnWorkflowId;delete active.returnStepIndex;
+  saveCurrent();renderWork();
+ }
+});
 function faultGuidancePlan(fault){
  const code=String(fault.code||"").toUpperCase(),description=String(fault.description||"").toLowerCase(),controller=String(fault.controller||"");
  const text=code+" "+description+" "+controller;
@@ -123,6 +164,7 @@ function faultCodeMarkup(entry){
 function parseMeasurements(raw){const value=String(raw||"").trim();if(!value)return {};try{return JSON.parse(value)}catch{return {actual:value}}}
 function renderWork(){
  if(!active)return;
+ restoreFaultGuidanceFlows(active);
  document.body.classList.add("case-active");editingFaultIndex=null;
  const flow=workflows[active.workflowId],step=flow.steps[stepIndex],entry=active.entries[step.id]||{};
  const evaluation=evaluateSession(active),brain=analyzeDiagnosticCase(active,flow.steps,{relatedCases:relatedDiagnosticCases()});
@@ -273,8 +315,7 @@ document.querySelectorAll("[data-remove-fault]").forEach(button=>button.onclick=
  if(editingFaultIndex!==null&&editingFaultIndex===Number(button.dataset.removeFault))editingFaultIndex=null;
  active.entries[step.id].faultCodes=list;saveCurrent();renderWork();
 });
-if(flow.faultGuidance&&$("returnToCase"))$("returnToCase").onclick=()=>{active.workflowId=active.returnWorkflowId||"check_engine_light";stepIndex=Math.max(0,Math.min(active.returnStepIndex||0,workflows[active.workflowId].steps.length-1));delete active.returnWorkflowId;delete active.returnStepIndex;saveCurrent();renderWork()};
- document.querySelectorAll("[data-diagnose-fault]").forEach(button=>button.onclick=()=>{const fault=(active.entries[step.id]?.faultCodes||[])[Number(button.dataset.diagnoseFault)];if(!fault)return;const flowId="fault_guidance_"+String(fault.code||"unknown").toLowerCase().replace(/[^a-z0-9]+/g,"_")+"_"+Number(button.dataset.diagnoseFault);const plan=faultGuidancePlan(fault);active.guidedFaultFlows=active.guidedFaultFlows||{};active.guidedFaultFlows[flowId]=plan;workflows[flowId]=plan;active.returnWorkflowId=active.workflowId;active.returnStepIndex=stepIndex;active.workflowId=flowId;active.currentStep=0;stepIndex=0;saveCurrent();renderWork()});
+
  $("finishEarly").onclick=()=>{const measurements=parseMeasurements($("measurements").value);const choice=document.querySelector("input[name=choice]:checked")?.value||"";recordStep(active,stepIndex,{choice,measurements,notes:$("notes").value});if(!choice){active.entries[step.id].skipped=true;active.entries[step.id].skippedAt=new Date().toISOString()}active.finishedEarly=true;active.status="ready-for-review";active.conclusion="Technician finished before all suggested steps were needed.";saveCurrent();renderWork()};
 $("prev").onclick=()=>{stepIndex=Math.max(0,stepIndex-1);renderWork()};
 $("next").onclick=()=>{const choice=document.querySelector('input[name="choice"]:checked')?.value||"";const measurements=parseMeasurements($("measurements").value);recordStep(active,stepIndex,{choice,measurements,notes:$("notes").value});if(!choice){active.entries[step.id].skipped=true;active.entries[step.id].skippedAt=new Date().toISOString()}if(stepIndex===flow.steps.length-1){active.finishedEarly=false;active.status="ready-for-review";active.conclusion="Review required; no automatic diagnosis."; }const wasSkipped=!choice;stepIndex=Math.min(stepIndex+1,flow.steps.length-1);saveCurrent();renderWork();if(wasSkipped){const hint=document.createElement("p");hint.className="small";hint.textContent="Previous stage saved as OPEN / NOT COMPLETED. No observation or test result was assumed.";hint.setAttribute("role","status");$("work").prepend(hint)}};
