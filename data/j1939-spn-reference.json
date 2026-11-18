@@ -775,5 +775,26 @@
       "vehicle_scope": "Supplemental generic J1939 reference; confirm current SPN assignment and OEM/controller context",
       "caution": "SPN names the parameter being reported. FMI describes the failure mode; neither alone identifies the failed component."
     }
-  ]
+  ],
+  "source_addresses": {
+    "0": "Primary engine controller (CPC/ECM)",
+    "1": "Secondary engine controller (MCM/ECM #2)",
+    "3": "Primary transmission controller (TCM)",
+    "11": "Brake system controller (ABS)",
+    "17": "Cruise control controller",
+    "18": "CNG fuel system controller",
+    "19": "Steering controller",
+    "23": "Instrument cluster",
+    "25": "Climate control controller",
+    "33": "Body controller",
+    "37": "Off-vehicle gateway",
+    "42": "Headway / collision-mitigation controller",
+    "47": "Suspension controller",
+    "49": "Primary cab controller",
+    "51": "Tire-pressure controller",
+    "61": "Exhaust-emissions controller (ACM)",
+    "71": "Chassis controller",
+    "74": "Cellular communications unit",
+    "127": "Multipurpose camera"
+  }
 }
