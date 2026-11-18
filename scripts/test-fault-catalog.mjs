@@ -36,7 +36,7 @@ assert.equal(slashFormat.spn,1049);
 assert.equal(slashFormat.fmi,3);
 const slashInterpretation = interpretFaultCode("11/1049/3");
 assert.equal(slashInterpretation.status,"public-spn");
-assert.match(slashInterpretation.detail,/Source address 11/);
+assert.match(slashInterpretation.detail,/Source address 11 \(Brake system controller/i);
 
 const unknownSpn = interpretFaultCode("SPN 999999 FMI 4");
 assert.equal(unknownSpn.status,"generic-fmi-only");
