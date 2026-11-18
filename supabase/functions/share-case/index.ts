@@ -235,7 +235,7 @@ Deno.serve(async (req: Request) => {
       for (const file of attachments ?? []) {
         const { data: signed, error: signError } = await admin.storage
           .from(BUCKET)
-          .createSignedUrl(file.storage_path, FILE_TTL_SECONDS, { download: file.original_name });
+          .createSignedUrl(file.storage_path, FILE_TTL_SECONDS);
         evidence.push({
           id: file.id,
           name: file.original_name,
