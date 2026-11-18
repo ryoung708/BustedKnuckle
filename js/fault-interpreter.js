@@ -20,7 +20,7 @@ export function parseFaultInput(raw) {
   const triple = value.match(/\b(\d{1,3})\s*[/, ]\s*(?:SPN\s*)?(\d{1,6})\s*[/, ]\s*(?:FMI\s*)?(\d{1,2})\b/i);
   const spnMatch = value.match(/SPN\s*[:#=-]?\s*(\d+)/i) || value.match(/\b(\d{1,6})\s*[,/ ]+\s*(?:FMI\s*)?(\d{1,2})\b/i);
   const fmiMatch = value.match(/FMI\s*[:#=-]?\s*(\d{1,2})/i);
-  const pCode = p ? p[0].replace(/[-_ ]/g, "") : "";
+  const pCode = p ? p[0].split(/[-_ ]/)[0] : "";
   const suffix = p && /[-_ ]/.test(p[0]) ? p[0].match(/[-_ ]([0-9A-F]{2})$/)?.[1] || "" : "";
   const spn = triple ? Number(triple[2]) : (spnMatch ? Number(spnMatch[1]) : null);
   const fmi = triple ? Number(triple[3]) : (fmiMatch ? Number(fmiMatch[1]) : (spnMatch?.[2] ? Number(spnMatch[2]) : null));
@@ -88,7 +88,8 @@ export function interpretFaultCode(raw) {
   if (parsed.spn !== null) {
     const spn = spnByNumber.get(parsed.spn);
     if (spn) {
-      const detail = "SPN "+parsed.spn+(parsed.fmi!==null?" · FMI "+parsed.fmi+" — "+fmiMeaning:"")+(parsed.sourceAddress!==null?" · Source address "+parsed.sourceAddress:"");
+      const saName = parsed.sourceAddress!==null ? (j1939Reference.source_addresses?.[String(parsed.sourceAddress)] || "") : "";
+      const detail = "SPN "+parsed.spn+(parsed.fmi!==null?" · FMI "+parsed.fmi+" — "+fmiMeaning:"")+(parsed.sourceAddress!==null?" · Source address "+parsed.sourceAddress+(saName?" ("+saName+")":""):"");
       return result("public-spn","SPN "+parsed.spn,spn.description,detail,
         spn.source_title+" · "+spn.source_page,
         spn.caution,{confidence:spn.confidence,sourceUrl:spn.source_url,scope:spn.vehicle_scope,codeType:"j1939",system:spn.system});
