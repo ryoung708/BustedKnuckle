@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "reference": {
+    "standard": "SAE J1939/73",
+    "topic": "Failure Mode Identifier (FMI) generic descriptions",
+    "wording": "Original plain-language paraphrases; not copied standard text",
+    "scope": "Generic failure-mode meaning only. FMI does not identify the failed component or prove a repair.",
+    "review_status": "Reference paraphrase; confirm against the applicable licensed standard edition and OEM implementation before treating as authoritative."
+  },
+  "entries": {
+    "0": "Measured value is valid but above the expected operating range at the most severe level.",
+    "1": "Measured value is valid but below the expected operating range at the most severe level.",
+    "2": "Signal data is unstable, intermittent, or otherwise implausible.",
+    "3": "Voltage is higher than expected or the circuit may be shorted to a supply.",
+    "4": "Voltage is lower than expected or the circuit may be shorted to ground.",
+    "5": "Circuit current is lower than expected; an open circuit or high resistance may be involved.",
+    "6": "Circuit current is higher than expected; an overload or short to ground may be involved.",
+    "7": "A mechanical system is not responding as expected or may be out of adjustment.",
+    "8": "Signal frequency, pulse width, or period is outside the expected range.",
+    "9": "Data is not being updated at the expected rate.",
+    "10": "The rate of change in the reported value is outside the expected range.",
+    "11": "The specific failure cannot be determined from this FMI alone.",
+    "12": "An intelligent device or component has reported an internal fault.",
+    "13": "The reported value or device is outside its calibration range.",
+    "14": "A special instruction or condition applies; consult the OEM definition.",
+    "15": "Measured value is valid but above the expected range at the least severe level.",
+    "16": "Measured value is valid but above the expected range at a moderately severe level.",
+    "17": "Measured value is valid but below the expected range at the least severe level.",
+    "18": "Measured value is valid but below the expected range at a moderately severe level.",
+    "19": "Received network data is in error.",
+    "20": "Reported value has drifted higher than expected.",
+    "21": "Reported value has drifted lower than expected.",
+    "31": "A condition exists; the specific meaning depends on the SPN and OEM implementation."
+  }
+}
