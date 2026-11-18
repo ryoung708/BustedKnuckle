@@ -16,6 +16,8 @@ assert.match(egr.description,/EGR/i);
 const manufacturerCode = interpretFaultCode("P1496");
 assert.equal(manufacturerCode.status,"not-found");
 assert.match(manufacturerCode.description,/manufacturer-controlled/i);
+assert.equal(interpretFaultCode("P3400").status,"not-found");
+assert.match(interpretFaultCode("P3400").description,/reserved range/i);
 
 const publicSpn = interpretFaultCode("SPN 100");
 assert.equal(publicSpn.status,"public-spn");
