@@ -28,6 +28,16 @@ export function parseFaultInput(raw) {
   return { pCode, pSuffix:suffix, spn:Number.isInteger(spn)?spn:null, fmi:Number.isInteger(fmi)?fmi:null, sourceAddress };
 }
 
+function findOemRecord(raw, parsed) {
+  const supplied = normalize(raw);
+  const candidates = oemRecords.filter(record => {
+    const codeMatch = normalize(record.code) === normalize(parsed.pCode || (parsed.spn !== null ? "SPN"+parsed.spn+(parsed.fmi !== null ? "FMI"+parsed.fmi : "") : ""));
+    if (!codeMatch) return false;
+    const manufacturer = normalize(record.manufacturer);
+    return !manufacturer || supplied.includes(manufacturer);
+  });
+  return candidates.length === 1 ? {record:candidates[0]} : {ambiguous:candidates.length > 1, count:candidates.length};
+}
 function legacyMatch(parsed) {
   const entries = Object.entries(legacyLibrary);
   if (parsed.pCode) {
@@ -50,6 +60,20 @@ export function interpretFaultCode(raw) {
   const parsed = parseFaultInput(raw);
   if (!parsed) return result("empty","Enter a fault code","Enter a generic OBD-II code, an SPN, or an SPN/FMI pair.","","","");
   const fmiMeaning = parsed.fmi !== null ? (FMI_MEANINGS[String(parsed.fmi)] || "No generic FMI explanation is available in this reference.") : "";
+  const oemMatch = findOemRecord(raw, parsed);
+  if (oemMatch.ambiguous) return result("ambiguous-oem","Multiple OEM definitions match this code",
+    "The code exists under more than one manufacturer record.",
+    "Add the manufacturer and reporting controller to narrow the lookup.",
+    "IronKnuckle OEM catalog", "Do not select a definition until the manufacturer/controller context is known.",
+    {confidence:"ambiguous",codeType:"oem"});
+  if (oemMatch.record) {
+    const record=oemMatch.record;
+    return result("oem-documented",record.code,record.description,
+      [record.manufacturer,record.controller,record.engine_family].filter(Boolean).join(" · "),
+      record.source_title || record.source_url || "OEM catalog source",
+      record.caution || "Confirm model year, emissions generation and calibration applicability before acting.",
+      {confidence:record.confidence||"unverified",sourceUrl:record.source_url||"",scope:record.vehicle_scope||"OEM-specific applicability",codeType:"oem"});
+  }
 
   // An unsuffixed P-code is eligible for the standardized OBD-II table.
   // OEM/HD suffix forms are kept separate because the same base string can be used in an OEM translation.
@@ -91,10 +115,12 @@ export function interpretFaultCode(raw) {
 
   if (parsed.pCode) {
     const prefix = parsed.pCode.slice(0,2);
-    const manufacturerSpecific = prefix==="P1" || prefix==="P3";
+    const numericCode=Number(parsed.pCode.slice(1));
+    const manufacturerSpecific = prefix==="P1" || (prefix==="P3" && numericCode<=3399);
+    const reserved = prefix==="P3" && numericCode>=3400;
     return result("not-found", "No catalog match for "+parsed.pCode,
-      manufacturerSpecific?"This P-code is in a manufacturer-controlled range in the referenced code structure.":"This code is not in the current IronKnuckle standardized-code seed list.",
-      manufacturerSpecific?"Select the manufacturer and controller to research the OEM definition.":"The code may be valid but has not yet been added to this catalog.",
+      manufacturerSpecific?"This P-code is in a manufacturer-controlled range in the referenced code structure.":reserved?"This P-code falls in a reserved range in the referenced historical code structure.":"This code is not in the current IronKnuckle standardized-code seed list.",
+      manufacturerSpecific?"Select the manufacturer and controller to research the OEM definition.":reserved?"No generic or OEM definition has been added for this reserved range.":"The code may be valid but has not yet been added to this catalog.",
       "SAE J2012 code-family structure; see source note.",
       "Do not assume a generic description for a manufacturer-controlled code. Confirm the vehicle-specific definition and service procedure.",
       {confidence:"unverified",codeType:manufacturerSpecific?"oem":"obd2"});
