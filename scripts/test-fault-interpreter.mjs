@@ -27,7 +27,7 @@ assert.match(conditionExists.detail, /A condition exists/i);
 
 const unknown = interpretFaultCode("P0000-00");
 assert.equal(unknown.status, "not-found");
-assert.match(unknown.caution, /approved service information/i);
+assert.match(unknown.caution, /vehicle-specific definition/i);
 
 assert.equal(interpretFaultCode("").status, "empty");
 console.log("FAULT INTERPRETER TESTS PASSED");
