@@ -11,8 +11,8 @@ function parseInput(raw) {
   const value = String(raw || "").trim().toUpperCase();
   if (!value) return null;
   const p = value.match(/P[0-9A-F]{4}(?:[-_ ]?[0-9A-F]{2})?/);
-  const spn = value.match(/SPN\\s*[:#=-]?\\s*(\\d+)/i) || value.match(/\\b(\\d{1,6})\\s*[,/ ]+\\s*(?:FMI\\s*)?(\\d{1,2})\\b/i);
-  const fmi = value.match(/FMI\\s*[:#=-]?\\s*(\\d{1,2})/i);
+  const spn = value.match(/SPN\s*[:#=-]?\s*(\d+)/i) || value.match(/\b(\d{1,6})\s*[,/ ]+\s*(?:FMI\s*)?(\d{1,2})\b/i);
+  const fmi = value.match(/FMI\s*[:#=-]?\s*(\d{1,2})/i);
   let pCode = p ? p[0].replace(/[-_ ]/g, "") : "";
   const spnValue = spn ? Number(spn[1]) : null;
   const fmiValue = fmi ? Number(fmi[1]) : (spn && spn[2] ? Number(spn[2]) : null);
