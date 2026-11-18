@@ -101,7 +101,7 @@ const faultPreview=()=>{const result=interpretFaultCode($("faultCode").value);$(
 };
 document.querySelectorAll("[data-edit-fault]").forEach(button=>button.onclick=()=>{
  const item=(active.entries[step.id]?.faultCodes||[])[Number(button.dataset.editFault)];if(!item)return;
- editingFaultIndex=Number(button.dataset.editFault);$("faultCode").value=item.code||"";$("faultController").value=item.controller||"";$("faultStatus").value=item.status||"unknown";$("addFaultCode").textContent="Save changes";$("faultCode").focus();
+ editingFaultIndex=Number(button.dataset.editFault);$("faultCode").value=item.code||"";$("faultController").value=item.controller||"";$("faultStatus").value=item.status||"unknown";$("addFaultCode").textContent="Save changes";faultPreview();$("faultCode").focus();
 });
 document.querySelectorAll("[data-remove-fault]").forEach(button=>button.onclick=()=>{
  const list=active.entries[step.id]?.faultCodes||[];list.splice(Number(button.dataset.removeFault),1);
