@@ -21,9 +21,8 @@ function json(data: unknown, status = 200) {
 }
 
 function escapeHtml(value: unknown): string {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  })[char]!);
+  const replacements: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  return String(value ?? "").replace(/[&<>"']/g, char => replacements[char] ?? char);
 }
 
 function htmlReport(payload: {
