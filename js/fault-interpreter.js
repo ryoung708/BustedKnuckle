@@ -31,7 +31,8 @@ export function parseFaultInput(raw) {
 function findOemRecord(raw, parsed) {
   const supplied = normalize(raw);
   const candidates = oemRecords.filter(record => {
-    const codeMatch = normalize(record.code) === normalize(parsed.pCode || (parsed.spn !== null ? "SPN"+parsed.spn+(parsed.fmi !== null ? "FMI"+parsed.fmi : "") : ""));
+    const queryCode = parsed.pCode ? parsed.pCode + (parsed.pSuffix || "") : (parsed.spn !== null ? "SPN"+parsed.spn+(parsed.fmi !== null ? "FMI"+parsed.fmi : "") : "");
+    const codeMatch = normalize(record.code) === normalize(queryCode);
     if (!codeMatch) return false;
     const manufacturer = normalize(record.manufacturer);
     return !manufacturer || supplied.includes(manufacturer);
