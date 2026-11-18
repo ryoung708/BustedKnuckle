@@ -68,7 +68,7 @@ function renderCloudCases() {
     const raw = row.raw_case || {};
     const vehicle = titleFor(raw);
     const faults = Object.values(raw.entries || {}).flatMap(entry => entry.faultCodes || []).map(f => f.code).filter(Boolean);
-    return '<article class="case-card"><div class="case-card-head"><b>' + esc(row.title || vehicle) + '</b><span class="case-status">' + esc(row.status) + '</span></div><p>' + esc(raw.complaint || "No complaint recorded") + '</p>' + (faults.length ? '<p><b>Faults:</b> ' + esc(faults.join(", ")) + '</p>' : '') + '<div class="case-actions"><button class="btn primary" data-open-cloud="' + esc(row.id) + '">Open case</button><button class="btn" data-attach="' + esc(row.id) + '">Manage evidence</button></div></article>';
+    return '<article class="case-card"><div class="case-card-head"><b>' + esc(row.title || vehicle) + '</b><span class="case-status">' + esc(row.status) + '</span></div><p>' + esc(raw.complaint || "No complaint recorded") + '</p>' + (faults.length ? '<p><b>Faults:</b> ' + esc(faults.join(", ")) + '</p>' : '') + '<div class="case-actions"><button class="btn primary" data-open-cloud="' + esc(row.id) + '">Open case</button><button class="btn" data-attach="' + esc(row.id) + '">Manage evidence</button><button class="btn" data-share-case="' + esc(row.id) + '">Share entire case</button></div></article>';
   }).join("");
   box.querySelectorAll("[data-open-cloud]").forEach(button => button.addEventListener("click", () => {
     const row = cloudRows.find(item => item.id === button.dataset.openCloud);
@@ -82,6 +82,7 @@ function renderCloudCases() {
     window.dispatchEvent(new CustomEvent("ironknuckle:open-case", { detail: { cloudId: row.id, raw } }));
     document.getElementById("work")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }));
+  box.querySelectorAll("[data-share-case]").forEach(button => button.addEventListener("click", () => shareEntireCase(button.dataset.shareCase, button)));
   box.querySelectorAll("[data-attach]").forEach(button => button.addEventListener("click", () => {
     selectedCloudCase = cloudRows.find(row => row.id === button.dataset.attach) || null;
     $("attachTarget").textContent = selectedCloudCase ? selectedCloudCase.title : "Choose a cloud case.";
@@ -172,6 +173,52 @@ async function saveCase(raw) {
   return next;
 }
 window.IronKnuckleCloud = { saveCase, getCases: () => cloudRows.map(row => row.raw_case).filter(Boolean) };
+
+async function shareEntireCase(caseId, button) {
+  if (!user || !caseId) return;
+  const originalText = button?.textContent || "Share entire case";
+  if (button) { button.disabled = true; button.textContent = "Preparing case…"; }
+  status("Preparing a secure link for the case and all attached evidence…", "SHARING");
+  try {
+    const { data, error } = await client.functions.invoke("share-case", { body: { caseId } });
+    if (error) throw error;
+    const shareUrl = data?.url;
+    if (!shareUrl || !shareUrl.startsWith(SUPABASE_URL + "/functions/v1/share-case?token=")) {
+      throw new Error("The secure share link was not returned.");
+    }
+    const fileCount = Number(data.attachmentCount || 0);
+    const shareText = "Review this IronKnuckle diagnostic case and its " + fileCount +
+      " attached evidence file(s). The link expires in 24 hours.";
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "IronKnuckle diagnostic case", text: shareText, url: shareUrl });
+        status("Case share sheet opened. Choose ChatGPT to send the complete case.", "READY TO SHARE");
+      } catch (shareError) {
+        if (shareError?.name !== "AbortError") throw shareError;
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          status("Share sheet closed. The short case link was copied; paste it into ChatGPT.", "LINK COPIED");
+        } catch {
+          window.prompt("Copy this short case link and paste it into ChatGPT. It expires in 24 hours:", shareUrl);
+          status("Short case link ready. It expires in 24 hours.", "LINK READY");
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        status("Short case link copied. Paste it into ChatGPT. It includes all case evidence and expires in 24 hours.", "LINK COPIED");
+      } catch {
+        window.prompt("Copy this short case link and paste it into ChatGPT. It expires in 24 hours:", shareUrl);
+        status("Short case link ready. It expires in 24 hours.", "LINK READY");
+      }
+    }
+  } catch (error) {
+    console.error("IronKnuckle complete case share failed:", error);
+    status("Could not prepare the case share: " + (error.message || "Please try again."), "ERROR");
+  } finally {
+    if (button) { button.disabled = false; button.textContent = originalText; }
+  }
+}
 
 async function loadAttachments() {
   if (!selectedCloudCase || !user) return;
