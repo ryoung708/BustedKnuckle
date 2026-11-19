@@ -401,7 +401,7 @@
 <section class="electrical-launch" id="electricalLaunch"><div><strong>Electrical training bench</strong><p>Explore the interactive meter simulator or open the full chassis wiring lab.</p></div><a href="./chassis-lab.html">Open chassis lab →</a></section>
 <section class="electrical-launch" id="transmissionLaunch" style="display:none"><div><strong>Eaton Fuller 18-speed 3D model</strong><p>Explore the transmission exterior, open the cutaway and inspect the major geartrain components.</p></div><a href="./transmission.html">Open 3D transmission →</a></section>
 <section class="electrical-launch" id="amt3dLaunch" style="display:none"><div><strong>Automated manual transmission — 3D cutaway</strong><p>Inspect the clutch actuator, pneumatic shift cylinders, rails, forks, synchronizer and output yoke in a rotatable model.</p></div><a href="./amt-transmission.html">Open AMT 3D trainer →</a></section>
-<section class="electrical-launch" id="mdrive3dLaunch" style="display:none"><div><strong>Mack mDRIVE HD ATO2612F — 12-speed HD</strong><p>Explore the new configurable exterior foundation, housing assemblies, input interface and output yoke.</p></div><a href="./mdrive-ato2612f-12.html">Open ATO2612F 12-speed 3D model →</a></section>
+
 <section class="module-explorer" id="moduleExplorer" hidden aria-live="polite">
  <div class="module-heading"><div><div class="eyebrow" id="moduleEyebrow">Interactive system map</div><h2 id="moduleTitle">Explore the system</h2><p id="moduleIntro"></p></div></div>
  <div class="component-list" id="componentList" aria-label="System components"></div>
@@ -1517,7 +1517,7 @@ import { learningProfiles } from "./js/learning-profiles.js";
 const picker=document.getElementById("learningProfileSelect");
 const status=document.getElementById("learningProfileStatus");
 const tabs=[...document.querySelectorAll("[data-system]")];
-const launchLinks={ "mack-mdrive-hd-ato2612f-12":{label:"Open the Mack mDRIVE HD ATO2612F 12-speed model",href:"./mdrive-ato2612f-12.html"},"eaton-fuller-18-2022":{label:"Open the Eaton Fuller 18-speed learning model",href:"./transmission.html"} };
+const launchLinks={"eaton-fuller-18-2022":{label:"Open the Eaton Fuller 18-speed learning model",href:"./transmission.html"} };
 let activeSystem="electrical";
 function renderProfiles(){
  const items=learningProfiles.filter(p=>p.system===activeSystem);
