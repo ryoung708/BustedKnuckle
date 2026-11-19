@@ -49,6 +49,11 @@ const flywheel=new THREE.Group();flywheel.position.set(-3.45,0,0);groups.clutch.
 cyl(flywheel,1.05,.18,0,0,0,M.steel,'clutch');cyl(flywheel,.72,.22,.18,0,0,M.dark,'clutch');cyl(flywheel,.46,.12,.32,0,0,M.clutch,'clutch');
 for(let i=0;i<16;i++){const a=i*Math.PI*2/16;mesh(flywheel,new THREE.BoxGeometry(.12,.10,.08),M.gear,[.0,Math.cos(a)*.94,Math.sin(a)*.94],[a,0,0],'clutch')}
 cyl(groups.clutch,.20,.18,-2.93,0,0,M.steel,'clutch');cyl(groups.clutch,.28,.16,-2.72,0,0,M.clutch,'clutch');
+// Mechanical release fork and linkage for the driver-operated clutch pedal.
+const releaseFork=new THREE.Group();releaseFork.position.set(-2.72,.12,.48);groups.clutch.add(releaseFork);
+mesh(releaseFork,new THREE.BoxGeometry(.14,.82,.16),M.gear,[0,.28,0],[0,0,-.28],'clutch');
+mesh(releaseFork,new THREE.BoxGeometry(.14,.48,.16),M.gear,[0,-.08,.28],[0,0,.28],'clutch');
+mesh(releaseFork,new THREE.SphereGeometry(.12,18,16),M.steel,[0,-.34,.42],null,'clutch');
 cyl(groups.input,.16,2.5,-1.65,0,0,M.shaft,'input');makeGear(groups.input,-.52,0,0,.70,.28,'input',30);
 for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(groups.input,new THREE.BoxGeometry(.52,.055,.045),M.gear,[-2.75,Math.cos(a)*.16,Math.sin(a)*.16],[a,0,0],'input')}
 // Five-position front section with twin countershafts. Both countershafts are driven by the input gear.
@@ -178,7 +183,7 @@ document.querySelectorAll('[data-lesson]').forEach(btn=>btn.addEventListener('cl
 function animate(){requestAnimationFrame(animate);clock+=.02;
 // Shaft rotation is independent of the camera/view mode: exterior must show the driveline working too.
 // With the clutch engaged, engine speed reaches the input and countershaft even in neutral.
-if(clutch){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftA.rotation.x=-clock*.82;countershaftB.rotation.x=clock*.82}
+if(clutch){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftA.rotation.x=-clock*.82;countershaftB.rotation.x=-clock*.82}
 const ratios=[.42,.53,.66,.80,.96];
 freeGearGroups.forEach((g,i)=>{g.rotation.x=clutch?clock*.82*ratios[i]:0});
 reverseGear.rotation.x=clutch?clock*.72:0;reverseIdler.rotation.x=clutch?-clock*.95:0;
@@ -187,5 +192,5 @@ const mainSpeed=selectedPosition<0?0:ratios[selectedPosition]*(rangeHigh?.82:1);
 mainshaft.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;
 syncs.forEach((s,i)=>{s.collar.position.x+=(s.center+s.target-s.collar.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22});
 if(clutch&&gear!=='N'){groups.output.rotation.x=clock*mainSpeed*(gear==='R'?-1:1)}
-rangeCarrier.rotation.x=rangeHigh?Math.PI/2:0;rangePiston.position.y=rangeHigh?.92:1.05;renderer.render(scene,camera)}animate();choosePart('case');applyGear();
+rangeCarrier.rotation.x=rangeHigh?Math.PI/2:0;rangePiston.position.y=rangeHigh?.92:1.05;releaseFork.rotation.z=clutch?0:.22;renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
