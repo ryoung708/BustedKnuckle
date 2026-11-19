@@ -111,8 +111,9 @@ cyl(rangeCarrier,.58,.12,.10,0,0,M.dark,'range');
 const rangeShiftSleeve=cyl(groups.range,.30,.18,4.34,0,0,M.clutch,'range');
 const rangePiston=cyl(groups.range,.14,.62,4.42,1.05,.55,M.air,'range');
 const rangeRod=cyl(groups.range,.065,.55,4.78,1.05,.55,M.steel,'range');
-// Output shaft and yoke.
-cyl(groups.output,.17,1.7,3.55,0,0,M.shaft,'output');cyl(groups.output,.54,.18,4.45,0,0,M.dark,'output');
+// Output shaft and yoke. Radial witness fins make shaft rotation visible in the cutaway.
+cyl(groups.output,.17,1.7,3.55,0,0,M.shaft,'output');
+for(let n=0;n<4;n++){const a=n*Math.PI/2;mesh(groups.output,new THREE.BoxGeometry(.12,.52,.09),M.clutch,[3.72,Math.cos(a)*.34,Math.sin(a)*.34],[a,0,0],'output')}cyl(groups.output,.54,.18,4.45,0,0,M.dark,'output');
 const yoke=new THREE.Group();yoke.position.set(4.58,0,0);groups.output.add(yoke);cyl(yoke,.22,.24,0,0,0,M.steel,'output');[-.36,.36].forEach(y=>{mesh(yoke,new THREE.BoxGeometry(.16,.72,.20),M.gear,[.12,y,0],null,'output');cyl(yoke,.11,.22,.12,y,0,M.steel,'output')});mesh(yoke,new THREE.BoxGeometry(.2,.12,.82),M.steel,[.12,0,0],null,'output');
 label('MANUAL CLUTCH',-3.25,1.65,0);label('INPUT SHAFT',-.8,1.65,0);label('TWIN COUNTERSHAFTS',-.4,-1.65,0);label('MAIN SHAFT',1.1,1.45,0);label('SHIFT RAILS / FORKS',1.0,2.05,-.8);label('LOW / HIGH RANGE',4.05,1.55,0);label('OUTPUT YOKE',4.75,1.25,0);
 const floor=new THREE.GridHelper(13,26,0x385064,0x233542);floor.position.y=-1.8;scene.add(floor);
@@ -190,9 +191,17 @@ const ratios=[.42,.53,.66,.80,.96];
 freeGearGroups.forEach((g,i)=>{g.rotation.x=clutch?clock*.82*ratios[i]:0});
 reverseGear.rotation.x=clutch?clock*.72:0;reverseIdler.rotation.x=clutch?-clock*.95:0;
 const selectedPosition=gear==='1'?0:gear==='2'?1:gear==='3'?2:gear==='4'?3:gear==='5'?4:-1;
-const mainSpeed=gear==='R'?.38:selectedPosition<0?0:ratios[selectedPosition]*(rangeHigh?.82:1);
-mainshaft.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;
+const mainSpeed=gear==='R'?.38:selectedPosition<0?0:ratios[selectedPosition];
+const rangeSpeedFactor=rangeHigh?.90:.32;
+const outputSpeed=gear==='R'?.24:selectedPosition<0?0:mainSpeed*rangeSpeedFactor;
+const relativeOutputSpeed=outputSpeed/.0896;
+const outputActive=clutch&&gear!=='N';
+mainshaft.rotation.x=outputActive?clock*mainSpeed*(gear==='R'?-1:1):0;
+const speedText=!clutch?'0.0×':gear==='N'?'0.0×':relativeOutputSpeed.toFixed(1)+'×';
+document.getElementById('outputSpeed').textContent=speedText;
+document.getElementById('speedBar').style.width=Math.min(100,relativeOutputSpeed/7.5*100)+'%';
+document.getElementById('speedCaption').textContent=!clutch?'Clutch released — no engine speed is driving the output.':gear==='N'?'Neutral — input and countershafts turn, but the output remains stopped.':'Relative to 1st gear low range · input speed held constant · illustrative scale.';
 syncs.forEach((s,i)=>{s.collar.position.x+=(s.center+s.target-s.collar.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22});
-if(clutch&&gear!=='N'){groups.output.rotation.x=clock*mainSpeed*(gear==='R'?-1:1)}
-rangeCarrier.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;rangeRing.rotation.x=rangeHigh&&clutch?clock*mainSpeed:0;rangeShiftSleeve.position.x+=((rangeHigh?4.52:4.16)-rangeShiftSleeve.position.x)*.18;rangePiston.position.y=rangeHigh?.92:1.05;releaseFork.rotation.z=clutch?0:.22;renderer.render(scene,camera)}animate();choosePart('case');applyGear();
+groups.output.rotation.x=outputActive?clock*outputSpeed*(gear==='R'?-1:1):0;
+rangeCarrier.rotation.x=outputActive?clock*mainSpeed*(gear==='R'?-1:1):0;rangeRing.rotation.x=rangeHigh&&clutch?clock*mainSpeed:0;rangeShiftSleeve.position.x+=((rangeHigh?4.52:4.16)-rangeShiftSleeve.position.x)*.18;rangePiston.position.y=rangeHigh?.92:1.05;releaseFork.rotation.z=clutch?0:.22;renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
