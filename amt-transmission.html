@@ -1,39 +1,39 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090b0e"><title>AMT Transmission 3D Trainer | IronKnuckle</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090b0e"><title>10-Speed Manual Transmission Trainer | IronKnuckle</title>
 <style>
 :root{color-scheme:dark;--bg:#090b0e;--panel:#11171d;--raised:#1a232c;--line:#354250;--amber:#ff9f1c;--text:#f1f4f7;--muted:#a2afbc;--green:#70c69a;--blue:#69b7e8}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#ff9f1c13,transparent 42%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}.wrap{width:min(1280px,100%);margin:auto;padding:16px 18px 48px}.top{display:flex;justify-content:space-between;gap:12px;padding:8px 0 17px;border-bottom:1px solid var(--line)}.brand{font-size:13px;font-weight:950;letter-spacing:.15em}.brand span,.eyebrow{color:var(--amber)}a{color:inherit}.back{font-size:12px;color:var(--muted);text-decoration:none}.hero{padding:26px 0 18px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.19em;text-transform:uppercase}.hero h1{font-size:clamp(30px,5vw,45px);line-height:1.04;margin:8px 0}.hero p{max-width:900px;color:var(--muted);line-height:1.6;margin:0;font-size:14px}.model{border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}.bar h2{font-size:16px;margin:0}.bar small{color:var(--muted)}.controls{display:flex;flex-wrap:wrap;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line)}button{font:inherit}.control{padding:9px 12px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--text);font-size:11px;font-weight:850;cursor:pointer}.control.active,.control:hover{border-color:var(--amber);color:var(--amber)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;min-height:600px}.stage{position:relative;min-width:0;background:radial-gradient(ellipse at 50% 45%,#263d4b 0%,#101c26 63%,#080e14 100%)}canvas{width:100%;height:600px;display:block;touch-action:none}.hint{position:absolute;left:13px;bottom:12px;padding:8px 10px;border:1px solid #ffffff20;border-radius:7px;background:#080d11b8;color:#b9c9d2;font-size:10px;pointer-events:none}.side{padding:15px;border-left:1px solid var(--line);background:#0e141a}.side h3{margin:0 0 8px;font-size:13px}.side p{font-size:12px;line-height:1.55;color:var(--muted);margin:0 0 12px}.part-list{display:grid;gap:6px}.part{width:100%;text-align:left;padding:10px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--text);cursor:pointer}.part b{display:block;font-size:11px}.part small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.4}.part.active{border-color:var(--amber);background:#ff9f1c12}.readout{margin-top:13px;padding:12px;border-left:3px solid var(--green);border-radius:5px;background:#70c69a12}.readout b{font-size:12px}.readout p{margin:5px 0 0}.notes{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-top:15px}.note{padding:15px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}.note h3{font-size:14px;margin:0 0 8px}.note p,.note li{color:var(--muted);font-size:12px;line-height:1.6}.note ul{padding-left:18px;margin:7px 0}.warning{margin-top:12px;padding:12px;border:1px solid #8a5a20;border-radius:8px;background:#ff9f1c10;color:#eac58f;font-size:11px;line-height:1.55}@media(max-width:850px){.layout{grid-template-columns:1fr}.side{border-left:0;border-top:1px solid var(--line)}canvas{height:470px}.notes{grid-template-columns:1fr}.part-list{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.wrap{padding:12px}.bar{align-items:flex-start;flex-direction:column}canvas{height:420px}.part-list{grid-template-columns:1fr 1fr}}
 .lesson-lab{margin-top:15px;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}.lesson-head{padding:15px 16px;border-bottom:1px solid var(--line)}.lesson-head h2{margin:0 0 5px;font-size:16px}.lesson-head p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.lesson-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;padding:12px}.lesson-tab{min-height:42px;padding:8px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--muted);font-size:10px;font-weight:850;cursor:pointer}.lesson-tab.active{border-color:var(--amber);color:var(--amber);background:#ff9f1c12}.lesson-content{margin:0 12px 12px;padding:14px;border:1px solid var(--line);border-radius:8px;background:#0c1218}.lesson-content h3{margin:0 0 7px;font-size:14px}.lesson-content p,.lesson-content li{color:var(--muted);font-size:12px;line-height:1.6}.lesson-content ul{margin:7px 0;padding-left:18px}.lesson-foot{padding:0 14px 13px;color:#d7c19d;font-size:10px;line-height:1.5}@media(max-width:650px){.lesson-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.lesson-tab:last-child{grid-column:span 2}}</style><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js"}}</script></head>
 <body><div class="wrap"><header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./learning.html">← Back to Learning Center</a></header>
-<section class="hero"><div class="eyebrow">Automated manual transmission • 3D mechanical trainer</div><h1>Heavy-duty AMT — interactive trainer</h1><p>Explore an original, simplified automated manual transmission. Follow engine torque through the gear train, see how engagement sleeves and shift forks work, and learn how a controller coordinates clutch and pneumatic shifting.</p></section>
-<section class="model"><div class="bar"><h2>Automated manual transmission assembly</h2><small id="viewLabel">CUTAWAY VIEW</small></div>
+<section class="hero"><div class="eyebrow">Heavy-duty manual transmission • 3D mechanical trainer</div><h1>10-speed manual — interactive trainer</h1><p>Explore an original, simplified twin-countershaft range-shift transmission based on the common Eaton Fuller 10-speed layout. Operate the clutch, select the five main-box positions, preselect low or high range, and follow torque through the auxiliary range section.</p></section>
+<section class="model"><div class="bar"><h2>10-speed manual transmission assembly</h2><small id="viewLabel">CUTAWAY VIEW</small></div>
 <div class="controls"><button class="control active" id="cutBtn">Cutaway</button><button class="control" id="extBtn">Exterior</button><button class="control" id="explodeBtn">Exploded</button><button class="control" id="resetBtn">Reset view</button><button class="control" id="zoomInBtn" aria-label="Zoom in">＋ Zoom</button><button class="control" id="zoomOutBtn" aria-label="Zoom out">－ Zoom</button></div>
-<div class="controls"><span class="control">Gear <select id="gear" style="margin-left:8px;background:#101820;color:inherit;border:1px solid #536170;border-radius:5px;padding:5px"><option value="N">Neutral</option><option value="1" selected>1st</option><option value="2">2nd</option><option value="3">3rd</option><option value="4">4th</option><option value="R">Reverse</option></select></span><button class="control active" id="clutchBtn">Clutch engaged</button><button class="control" id="airBtn">Cycle shift air</button><span class="control" id="airReadout">Shift air: 120 psi</span></div>
-<div class="layout"><div class="stage"><canvas id="stage" aria-label="Rotatable 3D automated manual transmission cutaway"></canvas><div class="hint">Drag to rotate · Pinch/scroll to zoom · Select a component</div></div>
+<div class="controls"><span class="control">Main-box position <select id="gear" style="margin-left:8px;background:#101820;color:inherit;border:1px solid #536170;border-radius:5px;padding:5px"><option value="N">Neutral</option><option value="1" selected>1st position</option><option value="2">2nd position</option><option value="3">3rd position</option><option value="4">4th position</option><option value="5">5th position</option><option value="R">Reverse</option></select></span><button class="control active" id="clutchBtn">Clutch engaged</button><button class="control" id="rangeBtn">Range: LOW</button><span class="control" id="rangeReadout">Selected ratio: 1st</span></div>
+<div class="layout"><div class="stage"><canvas id="stage" aria-label="Rotatable 3D ten-speed manual twin-countershaft transmission cutaway"></canvas><div class="hint">Drag to rotate · Pinch/scroll to zoom · Select a component</div></div>
 <aside class="side"><h3>Explore components</h3><p>Tap a component or select it in the model.</p><div class="part-list" id="parts">
-<button class="part active" data-part="case"><b>Transmission case</b><small>Cutaway housing and support structure</small></button>
-<button class="part" data-part="clutch"><b>Clutch & release system</b><small>Flywheel, clutch pack, release bearing and pneumatic actuator</small></button>
-<button class="part" data-part="input"><b>Input shaft</b><small>Splines, drive gear and input bearings</small></button>
-<button class="part" data-part="counter"><b>Countershaft</b><small>Fixed gear stack driven by the input gear</small></button>
-<button class="part" data-part="main"><b>Mainshaft & gears</b><small>Free-running gears and synchronizer hubs</small></button>
-<button class="part" data-part="forks"><b>Shift rails & forks</b><small>Forks slide synchronizer sleeves into engagement</small></button>
-<button class="part" data-part="reverse"><b>Reverse synchronizer</b><small>Dedicated reverse sleeve, fork and idler gear path</small></button>
-<button class="part" data-part="pneumatic"><b>Pneumatic actuators</b><small>Air cylinders and linkage operate clutch and shifts</small></button><button class="part" data-part="control"><b>Transmission controller</b><small>Coordinates clutch, gear selection and feedback</small></button>
-<button class="part" data-part="output"><b>Output shaft & yoke</b><small>Delivers torque to the driveline</small></button></div>
-<div class="readout"><b id="partTitle">Transmission case</b><p id="partText">The housing supports the shafts, bearings, gear train and pneumatic shift hardware.</p></div>
-<div class="readout" style="border-left-color:var(--amber)"><b id="stateTitle">1st gear · clutch engaged</b><p id="stateText">Input → countershaft → selected mainshaft gear → synchronizer sleeve → output.</p></div></aside></div></section>
-<section class="lesson-lab" aria-labelledby="lessonTitle"><div class="lesson-head"><h2 id="lessonTitle">Learn the AMT — one system at a time</h2><p>Short, interactive lessons built around the simplified model. Select a topic to see the principle, the parts involved and what a technician should understand.</p></div><div class="lesson-tabs" role="tablist" aria-label="AMT lessons"><button class="lesson-tab active" type="button" data-lesson="torque" role="tab" aria-selected="true">1 · Torque path</button><button class="lesson-tab" type="button" data-lesson="engagement" role="tab" aria-selected="false">2 · Gear engagement</button><button class="lesson-tab" type="button" data-lesson="shift" role="tab" aria-selected="false">3 · Shift control</button><button class="lesson-tab" type="button" data-lesson="range" role="tab" aria-selected="false">4 · Split & range</button><button class="lesson-tab" type="button" data-lesson="diagnostics" role="tab" aria-selected="false">5 · Diagnostics</button></div><div class="lesson-content" id="lessonContent" role="tabpanel" aria-live="polite"><h3>Follow the torque</h3><p>With the clutch engaged, engine torque enters the transmission through the input shaft. The input drive gear turns the countershaft. A selected gear pair transfers torque to the mainshaft, which drives the output.</p><ul><li>Watch the input and countershaft rotate.</li><li>Select a gear to move its engagement sleeve.</li><li>Release the clutch to see torque transfer stop.</li></ul></div><div class="lesson-foot">Training concept only. Real AMT layouts, shift strategies, air circuits, sensors and gear counts vary. Use vehicle-specific authorized service information for specifications and repair decisions.</div></section><section class="notes"><article class="note"><h3>What moves when a shift is commanded</h3><ul><li>The transmission controller requests a gear and coordinates engine torque reduction with clutch release.</li><li>A pneumatic clutch actuator operates the clutch release mechanism; the model shows the cylinder, rod and release fork.</li><li>Shift-control air cylinders move selector rails. Each rail carries a fork that slides a synchronizer sleeve.</li><li>The sleeve locks the selected free-running gear to the mainshaft; the clutch then re-engages and torque flows to the output.</li></ul></article><article class="note"><h3>Teaching model boundaries</h3><p>This is an original simplified AMT teaching architecture. It is not a dimensional model of a specific transmission. Shaft count, gear count, selector arrangement, clutch actuation, air circuits and control strategy vary by design. Use the applicable OEM service information for exact component placement and calibration.</p></article></section>
-<div class="warning"><b>Accuracy note:</b> Conceptual 3D teaching model. It illustrates general mechanical relationships and actuator motion. It is not an OEM-specific model, service procedure, or substitute for vehicle-specific specifications.</div></div>
+<button class="part active" data-part="case"><b>Main case</b><small>Supports the front gear section, shafts and bearings</small></button>
+<button class="part" data-part="clutch"><b>Manual clutch</b><small>Driver-operated friction clutch and release mechanism</small></button>
+<button class="part" data-part="input"><b>Input shaft</b><small>Receives engine torque through the clutch</small></button>
+<button class="part" data-part="counter"><b>Twin countershafts</b><small>Opposed gear trains share the load around the mainshaft</small></button>
+<button class="part" data-part="main"><b>Mainshaft & five positions</b><small>Selected sliding clutch collars connect a gear to the shaft</small></button>
+<button class="part" data-part="forks"><b>Manual shift rails & forks</b><small>The shift lever mechanically moves the selector rails and forks</small></button>
+<button class="part" data-part="reverse"><b>Reverse gear train</b><small>An idler gear adds a gear mesh to reverse output direction</small></button>
+<button class="part" data-part="range"><b>Two-speed range section</b><small>Low/high auxiliary range stage at the rear of the transmission</small></button>
+<button class="part" data-part="output"><b>Output shaft & yoke</b><small>Delivers the selected ratio to the driveline</small></button></div>
+<div class="readout"><b id="partTitle">Main case</b><p id="partText">The housing supports the shafts, bearings and gear train.</p></div>
+<div class="readout" style="border-left-color:var(--amber)"><b id="stateTitle">1st gear · low range · clutch engaged</b><p id="stateText">Input shaft → twin countershafts → selected main-box gear → mainshaft → low-range auxiliary section → output.</p></div></aside></div></section>
+<section class="lesson-lab" aria-labelledby="lessonTitle"><div class="lesson-head"><h2 id="lessonTitle">Learn the 10-speed manual — one system at a time</h2><p>Explore the clutch, twin-countershaft gear train, manual gear selection, range shifting and basic diagnostics.</p></div><div class="lesson-tabs" role="tablist" aria-label="AMT lessons"><button class="lesson-tab active" type="button" data-lesson="torque" role="tab" aria-selected="true">1 · Torque path</button><button class="lesson-tab" type="button" data-lesson="engagement" role="tab" aria-selected="false">2 · Gear engagement</button><button class="lesson-tab" type="button" data-lesson="shift" role="tab" aria-selected="false">3 · Manual shifting</button><button class="lesson-tab" type="button" data-lesson="range" role="tab" aria-selected="false">4 · Low / high range</button><button class="lesson-tab" type="button" data-lesson="diagnostics" role="tab" aria-selected="false">5 · Diagnostics</button></div><div class="lesson-content" id="lessonContent" role="tabpanel" aria-live="polite"><h3>Follow the torque</h3><p>With the clutch engaged, engine torque enters the input shaft. The input gear drives both countershafts. The selected front-section gear transfers torque to the mainshaft, then through the auxiliary range section to the output.</p><ul><li>Watch both countershafts turn in opposite directions.</li><li>Select one of five main-box positions.</li><li>Change low/high range to double the five-position pattern.</li></ul></div><div class="lesson-foot">Training concept only. Exact Eaton model layouts, ratios and service details vary; use the transmission identification tag and authorized model-specific service information for repair decisions. Eaton and Fuller are used only to identify the general product family. IronKnuckle is independent and is not affiliated with or endorsed by Eaton.</div></section><section class="notes"><article class="note"><h3>What moves during a manual shift</h3><ul><li>The driver operates the clutch pedal to disconnect engine torque while shifting.</li><li>The shift lever moves a mechanical selector rail and fork.</li><li>A sliding clutch collar engages the selected gear; this conventional 10-speed teaching layout is unsynchronized.</li><li>The driver preselects low or high range. The air-shifted auxiliary range change occurs as the shift lever passes through neutral.</li></ul></article><article class="note"><h3>Teaching model boundaries</h3><p>This is an original simplified representation of a common Eaton Fuller-style 10-speed range-shift layout, not a dimensional reproduction of a particular Eaton model. Gear tooth counts, exact ratios, bearing locations and model-specific details vary. Confirm the transmission identification tag and use authorized service information for repair specifications.</p></article></section>
+<div class="warning"><b>Accuracy note:</b> Original educational model of a common 10-speed manual range-shift architecture. It is not Eaton factory CAD, an exact model-specific geartrain, or a substitute for the shift pattern and service information for the transmission installed in a truck.</div></div>
 <script type="module">
 import * as THREE from 'three';
 const canvas=document.getElementById('stage'),scene=new THREE.Scene();scene.background=new THREE.Color(0x101c26);
-const camera=new THREE.PerspectiveCamera(38,1,.1,100);let theta=.72,phi=1.05,radius=14,drag=false,lastX=0,lastY=0,exploded=false,mode='cutaway',gear='1',clutch=true,air=120,clock=0;
+const camera=new THREE.PerspectiveCamera(38,1,.1,100);let theta=.72,phi=1.05,radius=14,drag=false,lastX=0,lastY=0,exploded=false,mode='cutaway',gear='1',clutch=true,rangeHigh=false,clock=0;
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 scene.add(new THREE.HemisphereLight(0xc6deeb,0x18212a,2));const key=new THREE.DirectionalLight(0xffffff,2.7);key.position.set(5,9,7);key.castShadow=true;scene.add(key);const rim=new THREE.DirectionalLight(0x69b7e8,1.5);rim.position.set(-7,3,-5);scene.add(rim);
 const root=new THREE.Group();scene.add(root);
 const mat=(c,m=.7,r=.3,transparent=false,opacity=1)=>new THREE.MeshStandardMaterial({color:c,metalness:m,roughness:r,transparent,opacity});
 const M={case:mat(0x788b95,.7,.35,true,.22),dark:mat(0x263943,.72,.36),steel:mat(0xa8b7bf,.86,.24),gear:mat(0xc69a51,.83,.25),shaft:mat(0x69b7e8,.8,.22),clutch:mat(0x70c69a,.65,.3),air:mat(0x4e9bd0,.45,.28),rubber:mat(0x202a30,.1,.8)};
-const groups={case:new THREE.Group(),clutch:new THREE.Group(),input:new THREE.Group(),counter:new THREE.Group(),main:new THREE.Group(),forks:new THREE.Group(),pneumatic:new THREE.Group(),control:new THREE.Group(),output:new THREE.Group()};Object.values(groups).forEach(g=>root.add(g));
+const groups={case:new THREE.Group(),clutch:new THREE.Group(),input:new THREE.Group(),counter:new THREE.Group(),main:new THREE.Group(),forks:new THREE.Group(),range:new THREE.Group(),output:new THREE.Group()};Object.values(groups).forEach(g=>root.add(g));
 const pick=[];function mesh(g,geo,material,pos,rot,part){const o=new THREE.Mesh(geo,material.clone());o.position.set(...pos);if(rot)o.rotation.set(...rot);o.castShadow=true;o.receiveShadow=true;o.userData.part=part;g.add(o);if(part)pick.push(o);return o}
 function cyl(g,r,len,x,y,z,material,part,axis='x'){const o=mesh(g,new THREE.CylinderGeometry(r,r,len,48),material,[x,y,z],axis==='x'?[0,0,Math.PI/2]:axis==='z'?[Math.PI/2,0,0]:null,part);return o}
 function makeGear(g,x,y,z,r,w,part,teeth=28){cyl(g,r*.9,w,x,y,z,M.gear,part);for(let i=0;i<teeth;i++){const a=i*Math.PI*2/teeth;mesh(g,new THREE.BoxGeometry(w*.88,r*.16,r*.20),M.gear,[x,y+Math.cos(a)*r,z+Math.sin(a)*r],[a,0,0],part)}}
@@ -44,92 +44,80 @@ mesh(groups.case,new THREE.CylinderGeometry(1.45,1.35,.72,64,1,true),M.case,[-2.
 mesh(groups.case,new THREE.BoxGeometry(1.8,2.3,2.3),M.case,[3.55,0,0],null,'case');
 mesh(groups.case,new THREE.BoxGeometry(.22,2.45,2.42),M.dark,[-1.8,0,0],null,'case');
 mesh(groups.case,new THREE.BoxGeometry(.18,2.25,2.3),M.dark,[2.45,0,0],null,'case');
-// Original conceptual controller enclosure and connector blocks; not an OEM-specific ECU shape.
-mesh(groups.control,new THREE.BoxGeometry(1.18,.24,.82),M.dark,[.55,1.48,0],null,'control');
-mesh(groups.control,new THREE.BoxGeometry(.42,.18,.24),M.air,[.22,1.28,.50],null,'control');
-mesh(groups.control,new THREE.BoxGeometry(.42,.18,.24),M.steel,[.86,1.28,.50],null,'control');
-label('AMT CONTROL UNIT',.55,2.0,0);
 // Engine flywheel, clutch cover, friction disc, release bearing and input shaft.
 const flywheel=new THREE.Group();flywheel.position.set(-3.45,0,0);groups.clutch.add(flywheel);
 cyl(flywheel,1.05,.18,0,0,0,M.steel,'clutch');cyl(flywheel,.72,.22,.18,0,0,M.dark,'clutch');cyl(flywheel,.46,.12,.32,0,0,M.clutch,'clutch');
 for(let i=0;i<16;i++){const a=i*Math.PI*2/16;mesh(flywheel,new THREE.BoxGeometry(.12,.10,.08),M.gear,[.0,Math.cos(a)*.94,Math.sin(a)*.94],[a,0,0],'clutch')}
 cyl(groups.clutch,.20,.18,-2.93,0,0,M.steel,'clutch');cyl(groups.clutch,.28,.16,-2.72,0,0,M.clutch,'clutch');
+// Mechanical release fork and linkage for the driver-operated clutch pedal.
+const releaseFork=new THREE.Group();releaseFork.position.set(-2.72,.12,.48);groups.clutch.add(releaseFork);
+mesh(releaseFork,new THREE.BoxGeometry(.14,.82,.16),M.gear,[0,.28,0],[0,0,-.28],'clutch');
+mesh(releaseFork,new THREE.BoxGeometry(.14,.48,.16),M.gear,[0,-.08,.28],[0,0,.28],'clutch');
+mesh(releaseFork,new THREE.SphereGeometry(.12,18,16),M.steel,[0,-.34,.42],null,'clutch');
 cyl(groups.input,.16,2.5,-1.65,0,0,M.shaft,'input');makeGear(groups.input,-.52,0,0,.70,.28,'input',30);
 for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(groups.input,new THREE.BoxGeometry(.52,.055,.045),M.gear,[-2.75,Math.cos(a)*.16,Math.sin(a)*.16],[a,0,0],'input')}
-// Constant-mesh geartrain: one input drive pair plus four aligned forward gear pairs.
-const countershaftPivot=new THREE.Group();countershaftPivot.position.set(0,-.92,0);groups.counter.add(countershaftPivot);
-cyl(countershaftPivot,.15,4.9,-.2,0,0,M.shaft,'counter');
-makeGear(countershaftPivot,-.52,0,0,.22,.28,'counter',18); // input-to-countershaft drive gear
-const gearX=[-.05,.72,1.48,2.15],mainR=[.46,.42,.38,.34],counterR=[.46,.50,.54,.58],mainTeeth=[28,32,36,40],counterTeeth=[28,24,22,20];
-const mainshaft=cyl(groups.main,.16,4.9,.9,0,0,M.shaft,'main');
+// Five-position front section with twin countershafts. Both countershafts are driven by the input gear.
+const mainshaft=cyl(groups.main,.16,5.55,1.0,0,0,M.shaft,'main');
+const countershaftA=new THREE.Group();countershaftA.position.set(0,-.82,0);groups.counter.add(countershaftA);
+const countershaftB=new THREE.Group();countershaftB.position.set(0,.82,0);groups.counter.add(countershaftB);
+cyl(countershaftA,.15,5.25,-.15,0,0,M.shaft,'counter');
+cyl(countershaftB,.15,5.25,-.15,0,0,M.shaft,'counter');
+makeGear(countershaftA,-.58,0,0,.25,.28,'counter',18);
+makeGear(countershaftB,-.58,0,0,.25,.28,'counter',18);
+const gearX=[-.02,.66,1.34,2.02,2.70];
+const mainR=[.34,.36,.38,.40,.42],counterR=[.48,.46,.44,.42,.40];
+const mainTeeth=[24,26,28,30,32],counterTeeth=[34,32,30,28,26];
 const freeGearGroups=[];
 gearX.forEach((x,i)=>{
-  const cg=new THREE.Group();cg.position.set(x,0,0);countershaftPivot.add(cg);
-  makeGear(cg,0,0,0,counterR[i],.30,'counter',counterTeeth[i]);
+  const ca=new THREE.Group();ca.position.set(x,0,0);countershaftA.add(ca);
+  const cb=new THREE.Group();cb.position.set(x,0,0);countershaftB.add(cb);
+  makeGear(ca,0,0,0,counterR[i],.28,'counter',counterTeeth[i]);
+  makeGear(cb,0,0,0,counterR[i],.28,'counter',counterTeeth[i]);
   const mg=new THREE.Group();mg.position.set(x,0,0);groups.main.add(mg);
   makeGear(mg,0,0,0,mainR[i],.30,'main',mainTeeth[i]);
   freeGearGroups.push(mg);
 });
-// Two synchronizer assemblies: 1st/2nd and 3rd/4th.
-// Each has a shaft-keyed hub, a sliding sleeve with dog teeth, and a fork riding in its groove.
+// Sliding clutch collars and selector forks: these are dog-clutch engagement parts, not synchronizers.
 const syncs=[];
-function addSynchronizer(leftX,rightX){
+function addDogClutch(leftX,rightX){
   const center=(leftX+rightX)/2;
-  const hub=cyl(groups.main,.255,.40,center,0,0,M.steel,'main');
-  const hubRing=cyl(groups.main,.31,.09,center,0,0,M.clutch,'main');
-  const sleeve=new THREE.Group();sleeve.position.set(center,0,0);groups.main.add(sleeve);
-  cyl(sleeve,.355,.25,0,0,0,M.clutch,'forks');
-  cyl(sleeve,.375,.055,-.13,0,0,M.steel,'forks');
-  cyl(sleeve,.375,.055,.13,0,0,M.steel,'forks');
-  // Dog teeth on both sleeve ends make engagement visible.
-  [-.17,.17].forEach(x=>{for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(sleeve,new THREE.BoxGeometry(.09,.055,.055),M.gear,[x,Math.cos(a)*.36,Math.sin(a)*.36],[a,0,0],'forks')}});
+  const collar=new THREE.Group();collar.position.set(center,0,0);groups.main.add(collar);
+  cyl(collar,.30,.25,0,0,0,M.clutch,'forks');
+  [-.16,.16].forEach(x=>{for(let n=0;n<14;n++){const a=n*Math.PI*2/14;mesh(collar,new THREE.BoxGeometry(.09,.045,.045),M.gear,[x,Math.cos(a)*.30,Math.sin(a)*.30],[a,0,0],'forks')}});
   const fork=new THREE.Group();fork.position.set(center,0,0);groups.forks.add(fork);
-  mesh(fork,new THREE.TorusGeometry(.405,.052,12,48),M.gear,[0,0,0],[0,Math.PI/2,0],'forks');
-  mesh(fork,new THREE.BoxGeometry(.12,.68,.13),M.gear,[0,.48,0],null,'forks');
-  mesh(fork,new THREE.BoxGeometry(.13,.16,.20),M.steel,[0,.82,0],null,'forks');
-  const rail=cyl(groups.forks,.045,1.8,center,.98,-.72,M.steel,'forks','x');
-  syncs.push({hub,hubRing,sleeve,fork,center,leftOffset:leftX-center+.19,rightOffset:rightX-center-.19,target:0});
+  mesh(fork,new THREE.TorusGeometry(.35,.045,10,40),M.gear,[0,0,0],[0,Math.PI/2,0],'forks');
+  mesh(fork,new THREE.BoxGeometry(.11,.62,.12),M.gear,[0,.43,0],null,'forks');
+  const rail=cyl(groups.forks,.045,1.65,center,.91,-.68,M.steel,'forks','x');
+  syncs.push({collar,fork,center,leftOffset:leftX-center+.18,rightOffset:rightX-center-.18,target:0});
 }
-addSynchronizer(gearX[0],gearX[1]);
-addSynchronizer(gearX[2],gearX[3]);
-// Dedicated reverse gear and idler path. The reverse gear free-runs on the mainshaft
-// until its own synchronizer sleeve slides left and locks it to the shaft.
-const reverseGear=new THREE.Group();reverseGear.position.set(2.55,0,0);groups.main.add(reverseGear);
-makeGear(reverseGear,0,0,0,.32,.28,'reverse',24);
-for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(reverseGear,new THREE.BoxGeometry(.08,.055,.055),M.steel,[.16,Math.cos(a)*.35,Math.sin(a)*.35],[a,0,0],'reverse')}
-const reverseIdler=new THREE.Group();reverseIdler.position.set(2.48,-.43,.34);groups.main.add(reverseIdler);
-makeGear(reverseIdler,0,0,0,.23,.24,'reverse',18);
-const reverseSyncCenter=3.02;
-const reverseHub=cyl(groups.main,.255,.36,reverseSyncCenter,0,0,M.steel,'reverse');
-const reverseHubRing=cyl(groups.main,.31,.08,reverseSyncCenter,0,0,M.clutch,'reverse');
-const reverseSleeve=new THREE.Group();reverseSleeve.position.set(reverseSyncCenter,0,0);groups.main.add(reverseSleeve);
-cyl(reverseSleeve,.355,.24,0,0,0,M.clutch,'reverse');
-cyl(reverseSleeve,.375,.055,-.13,0,0,M.steel,'reverse');
-cyl(reverseSleeve,.375,.055,.13,0,0,M.steel,'reverse');
-for(let n=0;n<12;n++){const a=n*Math.PI*2/12;mesh(reverseSleeve,new THREE.BoxGeometry(.09,.055,.055),M.gear,[-.17,Math.cos(a)*.36,Math.sin(a)*.36],[a,0,0],'reverse')}
-const reverseFork=new THREE.Group();reverseFork.position.set(reverseSyncCenter,0,0);groups.forks.add(reverseFork);
-mesh(reverseFork,new THREE.TorusGeometry(.405,.052,12,48),M.gear,[0,0,0],[0,Math.PI/2,0],'reverse');
-mesh(reverseFork,new THREE.BoxGeometry(.12,.68,.13),M.gear,[0,.48,0],null,'reverse');
-mesh(reverseFork,new THREE.BoxGeometry(.13,.16,.20),M.steel,[0,.82,0],null,'reverse');
-cyl(groups.forks,.045,1.8,reverseSyncCenter,.98,-.72,M.steel,'reverse','x');
-const reverseSync={sleeve:reverseSleeve,fork:reverseFork,hub:reverseHub,hubRing:reverseHubRing,center:reverseSyncCenter,target:0,leftOffset:-.16};
-syncs.push(reverseSync);
-// Pneumatic clutch actuator mounted above bell housing; cylinder, piston rod, clevis and release lever.
-cyl(groups.pneumatic,.20,1.12,-2.8,1.25,.65,M.air,'pneumatic');cyl(groups.pneumatic,.105,.76,-2.15,1.25,.65,M.steel,'pneumatic');
-const clutchRod=new THREE.Group();clutchRod.position.set(-2.15,1.25,.65);groups.pneumatic.add(clutchRod);mesh(clutchRod,new THREE.BoxGeometry(.14,.14,.82),M.steel,[0,-.32,0],null,'pneumatic');mesh(clutchRod,new THREE.SphereGeometry(.13,20,16),M.gear,[0,-.72,0],null,'pneumatic');
-// Clutch release fork pivot and two arms.
-const releaseFork=new THREE.Group();releaseFork.position.set(-2.7,.15,.55);groups.clutch.add(releaseFork);mesh(releaseFork,new THREE.BoxGeometry(.13,1.0,.15),M.gear,[0,.35,0],[0,0,-.3],'clutch');mesh(releaseFork,new THREE.BoxGeometry(.13,.55,.15),M.gear,[0,-.1,.28],[0,0,.3],'clutch');
-// Three selector actuators: two forward synchronizer rails and a dedicated reverse rail.
-const shiftRams=[];
-[-.2,1.55,3.02].forEach((x,i)=>{cyl(groups.pneumatic,.15,.92,x,1.25,-.72,M.air,'pneumatic');const rod=new THREE.Group();rod.position.set(x+.46,1.25,-.72);groups.pneumatic.add(rod);cyl(rod,.07,.68,0,0,0,M.steel,'pneumatic');shiftRams.push(rod)});
-[-.2,1.55,3.02].forEach(x=>{cyl(groups.forks,.055,2.0,x,.98,-.72,M.steel,'forks')});
+addDogClutch(gearX[0],gearX[1]);
+addDogClutch(gearX[2],gearX[3]);
+addDogClutch(gearX[4],3.38);
+// Reverse idler and reverse gear path; simplified to show the extra mesh that reverses rotation.
+const reverseGear=new THREE.Group();reverseGear.position.set(3.38,0,0);groups.main.add(reverseGear);
+makeGear(reverseGear,0,0,0,.31,.28,'reverse',22);
+makeGear(countershaftA,3.38,0,0,.31,.28,'counter',22);
+const reverseIdler=new THREE.Group();reverseIdler.position.set(3.36,-.41,0);groups.main.add(reverseIdler);
+makeGear(reverseIdler,0,0,0,.22,.24,'reverse',16);
+// Manual shift rails and forks. The driver moves these mechanically with the shift lever.
+[-.18,1.50,3.05].forEach((x)=>cyl(groups.forks,.055,1.9,x,.92,-.68,M.steel,'forks'));
+// Rear two-speed range section: simplified planetary set with ring gear, sun gear, planets and carrier.
+const rangeRing=new THREE.Mesh(new THREE.TorusGeometry(.68,.09,14,64),M.gear.clone());
+rangeRing.rotation.y=Math.PI/2;rangeRing.position.set(4.05,0,0);rangeRing.userData.part='range';groups.range.add(rangeRing);pick.push(rangeRing);
+cyl(groups.range,.20,.55,4.05,0,0,M.steel,'range');
+const rangeCarrier=new THREE.Group();rangeCarrier.position.set(4.05,0,0);groups.range.add(rangeCarrier);
+for(let n=0;n<3;n++){const a=n*Math.PI*2/3;const y=Math.cos(a)*.43,z=Math.sin(a)*.43;makeGear(rangeCarrier,0,y,z,.16,.22,'range',14);cyl(rangeCarrier,.055,.78,0,y*.5,z*.5,M.steel,'range')}
+cyl(rangeCarrier,.58,.12,.10,0,0,M.dark,'range');
+const rangeShiftSleeve=cyl(groups.range,.30,.18,4.34,0,0,M.clutch,'range');
+const rangePiston=cyl(groups.range,.14,.62,4.42,1.05,.55,M.air,'range');
+const rangeRod=cyl(groups.range,.065,.55,4.78,1.05,.55,M.steel,'range');
 // Output shaft and yoke.
 cyl(groups.output,.17,1.7,3.55,0,0,M.shaft,'output');cyl(groups.output,.54,.18,4.45,0,0,M.dark,'output');
 const yoke=new THREE.Group();yoke.position.set(4.58,0,0);groups.output.add(yoke);cyl(yoke,.22,.24,0,0,0,M.steel,'output');[-.36,.36].forEach(y=>{mesh(yoke,new THREE.BoxGeometry(.16,.72,.20),M.gear,[.12,y,0],null,'output');cyl(yoke,.11,.22,.12,y,0,M.steel,'output')});mesh(yoke,new THREE.BoxGeometry(.2,.12,.82),M.steel,[.12,0,0],null,'output');
-label('CLUTCH / FLYWHEEL',-3.25,1.65,0);label('PNEUMATIC CLUTCH ACTUATOR',-2.4,2.05,.7);label('INPUT',-.8,1.65,0);label('COUNTERSHAFT',-.4,-1.65,0);label('MAIN SHAFT',1.1,1.45,0);label('SHIFT RAILS / FORKS',1.0,2.05,-.8);label('OUTPUT YOKE',4.45,1.25,0);
+label('MANUAL CLUTCH',-3.25,1.65,0);label('INPUT SHAFT',-.8,1.65,0);label('TWIN COUNTERSHAFTS',-.4,-1.65,0);label('MAIN SHAFT',1.1,1.45,0);label('SHIFT RAILS / FORKS',1.0,2.05,-.8);label('LOW / HIGH RANGE',4.05,1.55,0);label('OUTPUT YOKE',4.75,1.25,0);
 const floor=new THREE.GridHelper(13,26,0x385064,0x233542);floor.position.y=-1.8;scene.add(floor);
 const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let selected='case';
-const desc={reverse:['Reverse synchronizer & idler','A dedicated selector fork slides the reverse synchronizer sleeve toward the reverse gear. The sleeve dog teeth lock that free-running gear to the mainshaft; the idler adds the extra gear mesh that reverses output direction.'],case:['Transmission case','The casting supports the geartrain, shafts, bearings and actuator hardware.'],clutch:['Clutch & release system','The flywheel and clutch transfer engine torque to the input shaft. The pneumatic clutch actuator strokes the release fork and bearing to disengage the clutch during a shift.'],input:['Input shaft','The input shaft receives clutch torque. Its drive gear turns the countershaft; splines connect the clutch disc to the shaft.'],counter:['Countershaft','The countershaft carries fixed gears in constant mesh with the free-running mainshaft gears.'],main:['Mainshaft & gears','Mainshaft gears rotate freely until the synchronizer sleeve locks the selected gear to the shaft.'],forks:['Shift rails & forks','The shift actuator moves a rail. Its fork slides the synchronizer sleeve to lock the selected gear to the mainshaft.'],pneumatic:['Pneumatic actuators','Compressed air moves the clutch actuator and selector cylinders. Pressure and position feedback are controlled by the AMT system.'],control:['Transmission controller','The controller coordinates clutch release, gear selection and shift feedback. It uses vehicle-specific inputs and control logic; this model does not represent an OEM controller or its pinout.'],output:['Output shaft & yoke','The engaged mainshaft drives the output shaft and yoke, sending torque to the driveline.']};
+const desc={reverse:['Reverse gear train','A reverse idler adds an extra gear mesh so the output turns in the opposite direction.'],case:['Main case','The casting supports the gear train, shafts and bearings.'],clutch:['Manual clutch','The driver-operated clutch connects or disconnects engine torque from the transmission input shaft.'],input:['Input shaft','The input shaft receives engine torque through the clutch and drives both countershafts.'],counter:['Twin countershafts','Two countershafts sit on opposite sides of the mainshaft. Their gear trains share the transmitted load.'],main:['Mainshaft & five positions','Five main-box gear positions are selected by sliding clutch collars that lock a gear to the mainshaft. This conventional layout is unsynchronized.'],forks:['Manual shift rails & forks','The shift lever moves a selector rail and fork mechanically to engage a sliding clutch collar.'],range:['Two-speed range section','The rear auxiliary section provides low and high range. The driver preselects range; an air-shift mechanism changes range as the lever passes through neutral.'],output:['Output shaft & yoke','The auxiliary section drives the output shaft and yoke to the driveline.']};
 function choosePart(p){selected=p;document.querySelectorAll('.part').forEach(b=>b.classList.toggle('active',b.dataset.part===p));document.getElementById('partTitle').textContent=desc[p][0];document.getElementById('partText').textContent=desc[p][1];pick.forEach(o=>{o.material.emissive=new THREE.Color(o.userData.part===p?0x5b3100:0);o.material.emissiveIntensity=o.userData.part===p?.7:0})}
 function applyGear(){
   syncs.forEach(s=>s.target=0);
@@ -137,9 +125,12 @@ function applyGear(){
   if(gear==='2')syncs[0].target=syncs[0].rightOffset;
   if(gear==='3')syncs[1].target=syncs[1].leftOffset;
   if(gear==='4')syncs[1].target=syncs[1].rightOffset;
-  if(gear==='R')reverseSync.target=reverseSync.leftOffset;
-  document.getElementById('stateTitle').textContent=(gear==='N'?'Neutral':gear==='R'?'Reverse':gear+' gear')+' · clutch '+(clutch?'engaged':'released');
-  document.getElementById('stateText').textContent=gear==='N'?'Both synchronizer sleeves are centered in neutral; the free-running gears are not locked to the mainshaft.':gear==='R'?'The dedicated reverse fork moves its sleeve onto the reverse gear. The idler gear adds a mesh, locking the reverse gear to the mainshaft and reversing output rotation.':'Input → countershaft fixed gear → matching free-running mainshaft gear → sliding synchronizer sleeve → mainshaft → output yoke.';
+  if(gear==='5')syncs[2].target=syncs[2].leftOffset;
+  if(gear==='R')syncs[2].target=syncs[2].rightOffset;
+  const ratio=gear==='N'?'Neutral':gear==='R'?(rangeHigh?'Reverse high':'Reverse low'):(rangeHigh?String(Number(gear)+5)+'th':gear+'th');
+  document.getElementById('stateTitle').textContent=ratio+' · '+(rangeHigh?'high':'low')+' range · clutch '+(clutch?'engaged':'released');
+  document.getElementById('rangeReadout').textContent='Selected ratio: '+ratio;
+  document.getElementById('stateText').textContent=gear==='N'?'The main-box selector is in neutral. The input and countershafts can rotate without driving the output.':gear==='R'?'The reverse gear path adds an idler mesh. The selected low/high range determines the auxiliary-section ratio.':'Input → twin countershafts → selected main-box gear → sliding clutch collar → mainshaft → low/high range section → output.';
 }
 function setMode(next){
  mode=next;
@@ -155,11 +146,11 @@ function setMode(next){
   }
  });
  Object.keys(groups).forEach(name=>{
-  groups[name].visible=!exterior||name==='case'||name==='clutch'||name==='input'||name==='output'||name==='control';
+  groups[name].visible=!exterior||name==='case'||name==='clutch'||name==='input'||name==='output'||name==='range';
  });
  if(explodedView){
   groups.input.position.x=-.55;groups.clutch.position.y=.55;groups.counter.position.y=-.35;
-  groups.main.position.y=.4;groups.forks.position.y=.65;groups.pneumatic.position.y=.65;groups.output.position.x=.7;
+  groups.main.position.y=.4;groups.forks.position.y=.65;groups.range.position.y=.65;groups.output.position.x=.7;
  }else{
   Object.values(groups).forEach(g=>g.position.set(0,0,0));
  }
@@ -184,25 +175,24 @@ document.getElementById('zoomInBtn').addEventListener('click',()=>zoomBy(.82));
 document.getElementById('zoomOutBtn').addEventListener('click',()=>zoomBy(1.22));
 document.getElementById('gear').addEventListener('change',e=>{gear=e.target.value;applyGear()});
 document.getElementById('clutchBtn').addEventListener('click',e=>{clutch=!clutch;e.currentTarget.textContent=clutch?'Clutch engaged':'Clutch released';e.currentTarget.classList.toggle('active',clutch);applyGear()});
-document.getElementById('airBtn').addEventListener('click',()=>{air=air===120?90:air===90?60:120;document.getElementById('airReadout').textContent='Shift air: '+air+' psi';});
+document.getElementById('rangeBtn').addEventListener('click',e=>{rangeHigh=!rangeHigh;e.currentTarget.textContent='Range: '+(rangeHigh?'HIGH':'LOW');e.currentTarget.classList.toggle('active',rangeHigh);rangePiston.position.y=rangeHigh?.92:1.05;applyGear()});
 document.getElementById('cutBtn').addEventListener('click',()=>setMode('cutaway'));document.getElementById('extBtn').addEventListener('click',()=>setMode('exterior'));document.getElementById('explodeBtn').addEventListener('click',()=>{exploded=!exploded;setMode(exploded?'exploded':'cutaway')});
 
 document.getElementById('resetBtn').addEventListener('click',()=>{theta=.72;phi=1.05;radius=14;cameraSet();root.rotation.set(0,0,0);setMode('cutaway')});
 document.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>choosePart(b.dataset.part)));
-const lessons={torque:{title:'Follow the torque',body:'With the clutch engaged, engine torque enters through the input shaft. The input drive gear turns the countershaft. A selected gear pair transfers torque to the mainshaft, which drives the output.',items:['Watch the input and countershaft rotate.','Select a gear to move its engagement sleeve.','Release the clutch to see torque transfer stop.']},engagement:{title:'How a gear becomes connected',body:'A gear pair may remain in constant mesh while its gear on the mainshaft can rotate freely. A hub is splined to the shaft. The engagement sleeve slides over the hub and couples the selected gear to the shaft.',items:['The fork moves the sleeve; it does not move the gear teeth into mesh.','The sleeve engages dog teeth on the selected gear.','The selected gear can now transmit torque into the mainshaft.']},shift:{title:'How an automated shift is coordinated',body:'The controller coordinates engine torque management, clutch release, selector movement and clutch re-engagement. Pneumatic actuators may move selector rails and forks in systems designed around compressed air.',items:['A shift request is received and checked against operating conditions.','The clutch is released and the selector mechanism moves.','Position feedback is checked before torque is restored.']},range:{title:'Why splitter and range stages exist',body:'Some heavy-duty transmissions use additional gear stages to create more usable ratios. A splitter changes the ratio within a gear group; a range section selects a lower or higher group. Their physical arrangement and shift sequence differ by design.',items:['A splitter provides a closer step between adjacent ratios.','A range section expands the overall ratio spread.','This lesson explains the principle, not a specific 12-speed or 16-speed layout.']},diagnostics:{title:'Think in systems before replacing parts',body:'A shift complaint can originate in the mechanical gear train, clutch, air supply, actuator, sensor feedback, wiring or controller inputs. Confirm the complaint and gather evidence before deciding which system to test.',items:['Verify the reported gear and operating conditions.','Check air supply and leaks using the correct vehicle specifications.','Inspect wiring/connectors and verify actuator or position feedback.','Separate an electrical/control fault from a mechanical engagement problem.']}};
+const lessons={torque:{title:'Follow the torque',body:'Engine torque passes through the manual clutch and input shaft. The input drive gear turns both countershafts. The selected front-box gear pair drives the mainshaft, then the rear range section provides low or high range before torque reaches the output.',items:['Both countershafts rotate in the same direction while the mainshaft gear turns the opposite direction.','The selected front-box position determines the gear pair.','The auxiliary range stage changes the overall ratio.']},engagement:{title:'How a gear is engaged',body:'The gears remain in constant mesh. A sliding clutch collar, moved by a shift fork, engages the dog teeth of the selected gear and locks that gear to the mainshaft. This conventional 10-speed architecture is unsynchronized.',items:['The driver operates the clutch pedal during a shift.','The shift lever moves a mechanical rail and fork.','The collar engages dog teeth; it does not slide the gear teeth into mesh.']},shift:{title:'Manual shifting',body:'The driver selects five main-box positions in low range, then preselects high range before shifting through neutral into the same five positions again. The range section changes automatically as the shift lever passes through neutral.',items:['Use the vehicle-specific shift pattern and progression.','Preselect the range change before moving the shift lever through neutral.','Double-clutching and engine-speed matching are part of conventional unsynchronized shifting technique.']},range:{title:'How low and high range create ten speeds',body:'The front section has five gear positions. The two-speed auxiliary range section provides low and high range, allowing those five positions to be used twice for ten forward ratios.',items:['Positions 1–5 are selected in low range.','Preselect high range before the 5-to-6 shift.','Positions 6–10 reuse the same five shift-lever positions in high range.']},diagnostics:{title:'Think in systems before replacing parts',body:'A manual range-shift transmission can have mechanical, clutch, air-supply or range-control problems. Confirm the complaint and isolate the system before removing components.',items:['Check clutch release and driver shift technique.','Inspect shift linkage, rails, forks and clutch collars.','Verify air supply and range-shift operation against the exact model specifications.','Inspect for lubricant, bearing, gear or internal damage only after external checks.']}};
 document.querySelectorAll('[data-lesson]').forEach(btn=>btn.addEventListener('click',()=>{const lesson=lessons[btn.dataset.lesson];document.querySelectorAll('[data-lesson]').forEach(tab=>{const active=tab===btn;tab.classList.toggle('active',active);tab.setAttribute('aria-selected',String(active))});document.getElementById('lessonContent').innerHTML='<h3>'+lesson.title+'</h3><p>'+lesson.body+'</p><ul>'+lesson.items.map(item=>'<li>'+item+'</li>').join('')+'</ul>';}));
 function animate(){requestAnimationFrame(animate);clock+=.02;
 // Shaft rotation is independent of the camera/view mode: exterior must show the driveline working too.
 // With the clutch engaged, engine speed reaches the input and countershaft even in neutral.
-if(clutch){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftPivot.rotation.x=-clock*.8}
-const ratios=[1,1.18,1.38,1.62];
-freeGearGroups.forEach((g,i)=>{g.rotation.x=clutch?clock*.8*ratios[i]:0});
-reverseGear.rotation.x=clutch?clock*.8:0;
-reverseIdler.rotation.x=clutch?-clock*1.1:0;
-const selectedSync=gear==='1'||gear==='2'?0:gear==='3'||gear==='4'?1:gear==='R'?2:-1;
-const mainSpeed=gear==='1'?.42:gear==='2'?.58:gear==='3'?.78:gear==='4'?1:gear==='R'?.5:0;
+if(clutch){flywheel.rotation.x=clock;groups.input.rotation.x=clock;countershaftA.rotation.x=-clock*.82;countershaftB.rotation.x=-clock*.82}
+const ratios=[.42,.53,.66,.80,.96];
+freeGearGroups.forEach((g,i)=>{g.rotation.x=clutch?clock*.82*ratios[i]:0});
+reverseGear.rotation.x=clutch?clock*.72:0;reverseIdler.rotation.x=clutch?-clock*.95:0;
+const selectedPosition=gear==='1'?0:gear==='2'?1:gear==='3'?2:gear==='4'?3:gear==='5'?4:-1;
+const mainSpeed=gear==='R'?.38:selectedPosition<0?0:ratios[selectedPosition]*(rangeHigh?.82:1);
 mainshaft.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;
-syncs.forEach((s,i)=>{s.sleeve.position.x+=(s.center+s.target-s.sleeve.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22;s.hub.rotation.x=mainshaft.rotation.x;s.hubRing.rotation.x=mainshaft.rotation.x;s.sleeve.rotation.x=mainshaft.rotation.x});
+syncs.forEach((s,i)=>{s.collar.position.x+=(s.center+s.target-s.collar.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22});
 if(clutch&&gear!=='N'){groups.output.rotation.x=clock*mainSpeed*(gear==='R'?-1:1)}
-clutchRod.position.y=clutch?.0:.18;releaseFork.rotation.z=clutch?0:.18;const railBases=[.26,2.01,3.48];shiftRams.forEach((r,i)=>r.position.x=railBases[i]+(selectedSync===i?syncs[i].target:0)*(air/120));renderer.render(scene,camera)}animate();choosePart('case');applyGear();
+rangeCarrier.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;rangeRing.rotation.x=rangeHigh&&clutch?clock*mainSpeed:0;rangeShiftSleeve.position.x+=((rangeHigh?4.52:4.16)-rangeShiftSleeve.position.x)*.18;rangePiston.position.y=rangeHigh?.92:1.05;releaseFork.rotation.z=clutch?0:.22;renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
