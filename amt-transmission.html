@@ -38,19 +38,12 @@ const pick=[];function mesh(g,geo,material,pos,rot,part){const o=new THREE.Mesh(
 function cyl(g,r,len,x,y,z,material,part,axis='x'){const o=mesh(g,new THREE.CylinderGeometry(r,r,len,48),material,[x,y,z],axis==='x'?[0,0,Math.PI/2]:axis==='z'?[Math.PI/2,0,0]:null,part);return o}
 function makeGear(g,x,y,z,r,w,part,teeth=28){cyl(g,r*.9,w,x,y,z,M.gear,part);for(let i=0;i<teeth;i++){const a=i*Math.PI*2/teeth;mesh(g,new THREE.BoxGeometry(w*.88,r*.16,r*.20),M.gear,[x,y+Math.cos(a)*r,z+Math.sin(a)*r],[a,0,0],part)}}
 function label(text,x,y,z){const c=document.createElement('canvas');c.width=512;c.height=90;const ctx=c.getContext('2d');ctx.fillStyle='#eaf2f6';ctx.font='bold 32px system-ui';ctx.textAlign='center';ctx.fillText(text,256,56);const tex=new THREE.CanvasTexture(c),s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));s.position.set(x,y,z);s.scale.set(2.7,.48,1);root.add(s)}
-// Original rounded AMT housing: smooth cast center shell, bell-housing flange and tapered rear cover.
-const mainShell=mesh(groups.case,new THREE.CapsuleGeometry(1.22,3.55,8,48),M.case,[.35,0,0],[0,0,Math.PI/2],'case');
-mainShell.scale.set(1,1.04,1);
-mesh(groups.case,new THREE.CylinderGeometry(1.38,1.28,.76,64,1,true),M.case,[-2.72,0,0],[0,0,Math.PI/2],'case');
-const bellRim=mesh(groups.case,new THREE.TorusGeometry(1.34,.075,12,64),M.steel,[-3.12,0,0],[0,Math.PI/2,0],'case');
-mesh(groups.case,new THREE.CapsuleGeometry(1.02,.62,8,40),M.case,[3.72,0,0],[0,0,Math.PI/2],'case');
-mesh(groups.case,new THREE.BoxGeometry(.22,2.12,2.08),M.dark,[-1.8,0,0],null,'case');
-mesh(groups.case,new THREE.BoxGeometry(.18,1.95,2.0),M.dark,[2.45,0,0],null,'case');
-// Raised cast ribs and a subtle rear service-cover seam give the shell a finished, machined appearance.
-for(let x=-.85;x<=1.75;x+=.65){
- const rib=mesh(groups.case,new THREE.TorusGeometry(1.16,.035,8,48),M.steel,[x,0,0],[0,Math.PI/2,0],'case');
- rib.scale.set(1,.96,1);
-}
+// Cutaway case, bell housing and rear tail casting.
+mesh(groups.case,new THREE.BoxGeometry(5.8,2.6,2.5),M.case,[.35,0,0],null,'case');
+mesh(groups.case,new THREE.CylinderGeometry(1.45,1.35,.72,64,1,true),M.case,[-2.75,0,0],[0,0,Math.PI/2],'case');
+mesh(groups.case,new THREE.BoxGeometry(1.8,2.3,2.3),M.case,[3.55,0,0],null,'case');
+mesh(groups.case,new THREE.BoxGeometry(.22,2.45,2.42),M.dark,[-1.8,0,0],null,'case');
+mesh(groups.case,new THREE.BoxGeometry(.18,2.25,2.3),M.dark,[2.45,0,0],null,'case');
 // Original conceptual controller enclosure and connector blocks; not an OEM-specific ECU shape.
 mesh(groups.control,new THREE.BoxGeometry(1.18,.24,.82),M.dark,[.55,1.48,0],null,'control');
 mesh(groups.control,new THREE.BoxGeometry(.42,.18,.24),M.air,[.22,1.28,.50],null,'control');
