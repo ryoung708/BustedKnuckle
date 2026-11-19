@@ -108,6 +108,7 @@ cyl(groups.range,.20,.55,4.05,0,0,M.steel,'range');
 const rangeCarrier=new THREE.Group();rangeCarrier.position.set(4.05,0,0);groups.range.add(rangeCarrier);
 for(let n=0;n<3;n++){const a=n*Math.PI*2/3;const y=Math.cos(a)*.43,z=Math.sin(a)*.43;makeGear(rangeCarrier,0,y,z,.16,.22,'range',14);cyl(rangeCarrier,.055,.78,0,y*.5,z*.5,M.steel,'range')}
 cyl(rangeCarrier,.58,.12,.10,0,0,M.dark,'range');
+const rangeShiftSleeve=cyl(groups.range,.30,.18,4.34,0,0,M.clutch,'range');
 const rangePiston=cyl(groups.range,.14,.62,4.42,1.05,.55,M.air,'range');
 const rangeRod=cyl(groups.range,.065,.55,4.78,1.05,.55,M.steel,'range');
 // Output shaft and yoke.
@@ -193,5 +194,5 @@ const mainSpeed=gear==='R'?.38:selectedPosition<0?0:ratios[selectedPosition]*(ra
 mainshaft.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;
 syncs.forEach((s,i)=>{s.collar.position.x+=(s.center+s.target-s.collar.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22});
 if(clutch&&gear!=='N'){groups.output.rotation.x=clock*mainSpeed*(gear==='R'?-1:1)}
-rangeCarrier.rotation.x=rangeHigh?Math.PI/2:0;rangePiston.position.y=rangeHigh?.92:1.05;releaseFork.rotation.z=clutch?0:.22;renderer.render(scene,camera)}animate();choosePart('case');applyGear();
+rangeCarrier.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;rangeRing.rotation.x=rangeHigh&&clutch?clock*mainSpeed:0;rangeShiftSleeve.position.x+=(rangeHigh?4.52:4.16)-rangeShiftSleeve.position.x)*.18;rangePiston.position.y=rangeHigh?.92:1.05;releaseFork.rotation.z=clutch?0:.22;renderer.render(scene,camera)}animate();choosePart('case');applyGear();
 </script></body></html>
