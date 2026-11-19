@@ -188,7 +188,7 @@ const ratios=[.42,.53,.66,.80,.96];
 freeGearGroups.forEach((g,i)=>{g.rotation.x=clutch?clock*.82*ratios[i]:0});
 reverseGear.rotation.x=clutch?clock*.72:0;reverseIdler.rotation.x=clutch?-clock*.95:0;
 const selectedPosition=gear==='1'?0:gear==='2'?1:gear==='3'?2:gear==='4'?3:gear==='5'?4:-1;
-const mainSpeed=selectedPosition<0?0:ratios[selectedPosition]*(rangeHigh?.82:1);
+const mainSpeed=gear==='R'?.38:selectedPosition<0?0:ratios[selectedPosition]*(rangeHigh?.82:1);
 mainshaft.rotation.x=clutch&&gear!=='N'?clock*mainSpeed*(gear==='R'?-1:1):0;
 syncs.forEach((s,i)=>{s.collar.position.x+=(s.center+s.target-s.collar.position.x)*.22;s.fork.position.x+=(s.center+s.target-s.fork.position.x)*.22});
 if(clutch&&gear!=='N'){groups.output.rotation.x=clock*mainSpeed*(gear==='R'?-1:1)}
