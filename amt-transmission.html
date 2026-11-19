@@ -155,7 +155,7 @@ function setMode(next){
   }
  });
  Object.keys(groups).forEach(name=>{
-  groups[name].visible=!exterior||name==='case'||name==='clutch'||name==='input'||name==='output';
+  groups[name].visible=!exterior||name==='case'||name==='clutch'||name==='input'||name==='output'||name==='control';
  });
  if(explodedView){
   groups.input.position.x=-.55;groups.clutch.position.y=.55;groups.counter.position.y=-.35;
