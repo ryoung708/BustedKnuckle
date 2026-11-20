@@ -6,6 +6,15 @@ assert.ok(platformRegistry.some(item=>item.id==="kenworth-peterbilt"));
 assert.ok(engineFamilies.some(item=>item.id==="detroit-dd15"));
 assert.ok(engineFamilies.some(item=>item.id==="cummins-x15"));
 
+const mack=resolveVehiclePlatform({year:"2022",make:"Mack",model:"Anthem",engineMake:"Mack",engineModel:"MP8"});
+assert.equal(mack.platformId,"mack-volvo");
+assert.equal(mack.engine.familyId,"mack-mp8");
+
+const volvo=resolveVehiclePlatform({year:"2023",make:"Volvo",model:"VNL",engineMake:"Volvo",engineModel:"D13"});
+assert.equal(volvo.platformId,"mack-volvo");
+assert.equal(volvo.normalizedMake,"Volvo","The platform grouping must not overwrite the actual truck make.");
+assert.equal(volvo.engine.familyId,"volvo-d13");
+
 const detroit=resolveVehiclePlatform({
   year:"2024",make:"Freightliner",model:"Cascadia",engineMake:"Detroit Diesel",engineModel:"DD15",
   vin:"TESTVIN",transmissionMake:"Detroit",transmissionModel:"DT12",emissionsFamily:"EPA 2024"

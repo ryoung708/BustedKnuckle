@@ -150,7 +150,7 @@ export function createSession(input={}) {
     id: input.id || (globalThis.crypto?.randomUUID?.() ?? "ik-"+Date.now()),
     createdAt: input.createdAt || now,
     updatedAt: now,
-    vehicle: { year:input.year||"", make:input.make||"", model:input.model||"", engine:input.engine||"", emissions:input.emissions||"", vinLast6:input.vinLast6||"" },
+    vehicle: { year:input.year||"", make:input.make||"", model:input.model||"", engine:input.engine||"", engineMake:input.engineMake||input.engineManufacturer||"", engineModel:input.engineModel||input.engine||"", transmissionMake:input.transmissionMake||input.transmissionManufacturer||"", transmissionModel:input.transmissionModel||"", emissions:input.emissions||"", emissionsFamily:input.emissions||"", vinLast6:input.vinLast6||"" },
     complaint: input.complaint||"",
     workflowId: input.workflowId||"j1939_dropout",
     currentStep: 0,

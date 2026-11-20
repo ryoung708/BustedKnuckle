@@ -5,6 +5,8 @@ const wh=createCaseRecord(raw,"wiringhound");
 assert.equal(wh.caseEnvelope.schema,"ironknuckle.case");
 assert.equal(wh.caseEnvelope.sourceApp,"wiringhound");
 assert.equal(wh.caseEnvelope.vehicle.engine,"MP8");
+assert.equal(wh.caseEnvelope.vehicle.engineModel,"MP8");
+assert.equal(wh.caseEnvelope.vehicle.vinLast6,"");
 assert.equal(wh.caseEnvelope.vehicle.engineModel,"MP8","Legacy engine field remains available as engineModel.");
 assert.equal(wh.caseEnvelope.vehicle.engineManufacturer,"","Unknown engine manufacturer must remain blank.");
 assert.equal(wh.caseEnvelope.entryCount,1);
@@ -14,12 +16,13 @@ assert.equal(wh.entries,raw.entries,"Original workspace payload remains intact")
 
 const expanded=createCaseRecord({...raw,vehicle:{
   year:"2024",make:"Freightliner",model:"Cascadia",vin:"TESTVIN",
-  engineMake:"Detroit Diesel",engineModel:"DD15",
+  engineMake:"Detroit Diesel",engineModel:"DD15",vinLast6:"A1B2C3",
   transmissionMake:"Detroit",transmissionModel:"DT12",emissionsFamily:"EPA 2024"
 }},"diagnostic_command_center");
 assert.equal(expanded.caseEnvelope.vehicle.engineManufacturer,"Detroit Diesel");
 assert.equal(expanded.caseEnvelope.vehicle.engineModel,"DD15");
-assert.equal(expanded.caseEnvelope.vehicle.vin,"TESTVIN");
+assert.equal(expanded.caseEnvelope.vehicle.vinLast6,"A1B2C3");
+assert.equal("vin" in expanded.caseEnvelope.vehicle,false,"Full VIN must not be retained in the shared envelope.");
 assert.equal(expanded.caseEnvelope.vehicle.transmissionManufacturer,"Detroit");
 assert.equal(expanded.caseEnvelope.vehicle.transmissionModel,"DT12");
 assert.equal(expanded.caseEnvelope.vehicle.emissionsFamily,"EPA 2024");

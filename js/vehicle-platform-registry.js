@@ -49,6 +49,12 @@ export const platformRegistry = Object.freeze([
 ]);
 
 export const engineFamilies = Object.freeze([
+  {id:"mack-mp7",manufacturer:"Mack",models:["MP7"],vehicleGroups:["mack-volvo"],coverage:"identity-ready"},
+  {id:"mack-mp8",manufacturer:"Mack",models:["MP8"],vehicleGroups:["mack-volvo"],coverage:"identity-ready"},
+  {id:"mack-mp10",manufacturer:"Mack",models:["MP10"],vehicleGroups:["mack-volvo"],coverage:"identity-ready"},
+  {id:"volvo-d11",manufacturer:"Volvo",models:["D11"],vehicleGroups:["mack-volvo"],coverage:"identity-ready"},
+  {id:"volvo-d13",manufacturer:"Volvo",models:["D13"],vehicleGroups:["mack-volvo"],coverage:"identity-ready"},
+  {id:"volvo-d16",manufacturer:"Volvo",models:["D16"],vehicleGroups:["mack-volvo"],coverage:"identity-ready"},
   {id:"detroit-dd13",manufacturer:"Detroit Diesel",models:["DD13"],vehicleGroups:["freightliner-western-star"],coverage:"identity-ready"},
   {id:"detroit-dd15",manufacturer:"Detroit Diesel",models:["DD15"],vehicleGroups:["freightliner-western-star"],coverage:"identity-ready"},
   {id:"detroit-dd16",manufacturer:"Detroit Diesel",models:["DD16"],vehicleGroups:["freightliner-western-star"],coverage:"identity-ready"},
@@ -70,9 +76,6 @@ export const specificationSourceStates = Object.freeze([
 const normalizeMake = make => {
   const normalized = key(make);
   if (!normalized) return "";
-  for (const platform of platformRegistry) {
-    if (platform.makes.some(alias => key(alias) === normalized)) return platform.makes[0];
-  }
   return clean(make);
 };
 
