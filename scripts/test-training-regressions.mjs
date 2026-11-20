@@ -121,19 +121,19 @@ assert.ok(j1939.includes("data-i"), "Module identity is available to isolation-s
 
 // The 3D inline-six engine lab must retain its mechanical cycle and fault-training controls.
 const engine3d = await readFile(new URL("../engine-3d.html", import.meta.url), "utf8");
-assert.match(engine3d, /three\\.module\\.js/);
-assert.match(engine3d, /const firingOrder=\\[1,5,3,6,2,4\\]/);
-assert.match(engine3d, /tdc=\\[0,120,240,240,120,0\\]/);
+assert.ok(engine3d.includes("three.module.js"));
+assert.ok(engine3d.includes("const firingOrder=[1,5,3,6,2,4]"));
+assert.ok(engine3d.includes("tdc=[0,120,240,240,120,0]"));
 for (const fault of ["injector", "compression", "intake", "exhaust"]) {
   assert.ok(engine3d.includes('data-fault="' + fault + '"'), "Missing 3D engine fault scenario: " + fault);
 }
-assert.match(engine3d, /crankGroup\\.rotation\\.x=rad/);
-assert.match(engine3d, /camGroup\\.rotation\\.x=camRad/);
+assert.ok(engine3d.includes("crankGroup.rotation.x=rad"));
+assert.ok(engine3d.includes("camGroup.rotation.x=camRad"));
 const engineScript = engine3d.split('<script type="module">')[1]?.split("</script>")[0];
 assert.ok(engineScript, "3D engine module script is present");
-const parseableEngineScript = engineScript.replace(/^import \\* as THREE from [^;]+;\\s*/m, "");
+const parseableEngineScript = engineScript.replace(/^import .*?;\s*/m, "");
 assert.doesNotThrow(() => new Script(parseableEngineScript), "3D engine module script parses after its import is removed");
 const homepage = await readFile(new URL("../index.html", import.meta.url), "utf8");
-assert.match(homepage, /href=["']\\.\\/engine-3d\\.html["']/);
+assert.ok(homepage.includes('href="./engine-3d.html"'));
 
 console.log("IronKnuckle circuit and training regression tests passed.");
