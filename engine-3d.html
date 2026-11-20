@@ -109,10 +109,10 @@ function updateModel(){
   const theta=THREE.MathUtils.degToRad(angle-c.tdc);
   const stroke= Math.cos(theta)*.48;
   c.pistonGroup.position.y=.05+stroke;
-  const crankPoint=new THREE.Vector3(c.x,-1.1+Math.sin(theta)*.48,Math.cos(theta)*.48);
+  const crankPoint=new THREE.Vector3(c.x,-1.1+Math.cos(theta)*.48,Math.sin(theta)*.48);
   const pistonPin=new THREE.Vector3(c.x,.0+stroke,0);
-  c.rod.position.copy(crankPoint);const delta=pistonPin.clone().sub(crankPoint);c.rod.scale.y=delta.length()/1.1;c.rod.position.copy(crankPoint);c.rod.rotation.z=Math.atan2(delta.x,delta.y);
-  c.crankThrow.rotation.x=rad;
+  c.rod.position.copy(crankPoint);const delta=pistonPin.clone().sub(crankPoint);c.rod.scale.y=delta.length()/1.1;c.rod.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());
+  c.crankThrow.rotation.x=-THREE.MathUtils.degToRad(c.tdc);
   const faulted=c.index===selected&&fault!=='none';
   const intakeOpen=p.phase==='Intake'&&!(faulted&&fault==='intake');
   const exhaustOpen=p.phase==='Exhaust'&&!(faulted&&fault==='exhaust');
