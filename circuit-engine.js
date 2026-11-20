@@ -105,21 +105,18 @@
       return 0;
     }
 
-    // Returns equivalent resistance in the simplified training network.
-    // This initial version models a single conducting path; parallel-network
-    // nodal analysis is deliberately isolated here as the next accuracy upgrade.
+    // Ohms mode is intentionally unavailable until the circuit is power-isolated.
+    // The graph omits open contacts, failed fuses, and burnt lamp elements; nodal
+    // analysis then calculates the actual equivalent resistance, including any
+    // remaining parallel paths through other lamps and shared wiring.
     function resistanceBetween(a, b) {
       if (!state.powerIsolated) return NaN;
       if (!(a in TEST_POINTS) || !(b in TEST_POINTS)) return Infinity;
       if (a === b) return 0;
 
-      // The nodal solver below calculates the equivalent resistance of every
-      // connected branch, including legitimate parallel paths. Open contacts,
-      // failed fuses and burnt lamps are represented by missing graph edges.
-
       const edges = [];
       const add = (x, y, ohms, closed = true) => {
-        if (closed) edges.push([x, y, ohms]); // one undirected branch; nodal solver accounts for both terminals
+        if (closed) edges.push([x, y, ohms]); // One undirected branch; solver handles both terminals.
       };
       add("battery", "mainFuseIn", 0.05);
       add("mainFuseIn", "mainFuseOut", 0.02, state.mainFuseGood);
@@ -137,7 +134,7 @@
       add("brakeSwitchOut", "brakeSplice", 0.05, state.fault !== "openBrake");
       add("brakeSplice", "leftBrakeIn", 0.05);
       add("brakeSplice", "rightBrakeIn", 0.05);
-      add("leftTailIn", "leftGround", 2.5, state.fault !== "lampOpen"); // Burnt lamp: open only the lamp element, not its feed/ground wiring.
+      add("leftTailIn", "leftGround", 2.5, state.fault !== "lampOpen"); // Burnt lamp opens only this load element.
       add("rightTailIn", "rightGround", 2.5);
       add("leftBrakeIn", "leftGround", 2.5);
       add("rightBrakeIn", "rightGround", 2.5);
