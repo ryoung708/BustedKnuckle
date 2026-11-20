@@ -38,11 +38,11 @@ input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color
 </header>
 <div class="eyebrow">Source-backed technical knowledge</div>
 <h1>Technical Library</h1>
-<p class="intro">Store service manuals, wiring diagrams, technical bulletins and training references in one private, searchable library. Each document keeps its source details so future diagnostic guidance can be traced back to the original material.</p>
+<p class="intro">Keep authorized service manuals, wiring diagrams, bulletins and training references in one private library. Source details stay with each document.</p>
 
 <section id="authPanel" class="panel auth">
   <div class="panel-head"><div class="panel-title">Secure sign-in required</div><span class="muted">PRIVATE LIBRARY</span></div>
-  <p class="muted">Use the same authorized IronKnuckle email account you use for the Case Vault. We'll send a one-time sign-in link. New account creation is disabled.</p>
+  <p class="muted">Sign in with your Case Vault email. A one-time link will be sent; new account creation is disabled.</p>
   <div class="field"><label for="email">Account email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
   <div class="actions"><button class="btn primary" id="signIn">Send secure sign-in link</button></div>
   <div id="authStatus" class="status" role="status">Sign in to upload and view your private technical documents.</div>
@@ -92,7 +92,7 @@ input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color
       <span class="spacer"></span><button class="btn" id="viewerZoomOut">−</button><span id="viewerZoomLabel" class="muted">150%</span><button class="btn" id="viewerZoomIn">+</button><button class="btn primary" id="viewerExport">Save page image (PNG)</button>
     </div>
     <div class="viewer-stage"><canvas id="viewerCanvas" aria-label="Rendered PDF page"></canvas></div>
-    <p class="viewer-note">Pages are rendered in your signed-in browser from the private original. Nothing is published or sent to an AI service. Use “Save page image” to export a page you are authorized to share for review.</p>
+    <p class="viewer-note">Pages render in your browser from the private original. Export only pages you are authorized to share.</p>
     <div id="viewerStatus" class="status" role="status">Select a PDF to view its pages.</div>
   </section>
 </div>
