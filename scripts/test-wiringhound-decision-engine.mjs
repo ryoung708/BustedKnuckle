@@ -12,4 +12,12 @@ assert.equal(recommendNextStep(record("light_inop","control","Command is not pre
 assert.equal(recommendNextStep(record("light_inop","load","Ground path abnormal"),lighting).stepId,"drop");
 assert.equal(recommendNextStep(record("light_inop","load_review","Load passes approved test"),lighting).stepId,"harness");
 assert.equal(recommendNextStep({workflowId:"j1939_network",entries:{}},j1939).stepId,"baseline");
+
+const powerLoss=[{id:"scope"},{id:"battery_baseline"},{id:"battery_connections"},{id:"main_disconnect"},{id:"main_distribution"},{id:"grounds"},{id:"ignition_feed"},{id:"intermittent_localization"},{id:"verify"}];
+assert.equal(recommendNextStep(record("power_loss","scope","All vehicle electrical power is lost"),powerLoss).stepId,"battery_baseline");
+assert.equal(recommendNextStep(record("power_loss","battery_baseline","Battery-post voltage stays stable during the event"),powerLoss).stepId,"battery_connections");
+assert.equal(recommendNextStep(record("power_loss","main_disconnect","Vehicle has no separate master disconnect / not applicable"),powerLoss).stepId,"main_distribution");
+assert.equal(recommendNextStep(record("power_loss","ignition_feed","Switched feeds remain stable during event"),powerLoss).stepId,"intermittent_localization");
+assert.equal(recommendNextStep(record("power_loss","scope","Could not reproduce the event"),powerLoss).state,"hold");
+
 console.log("WiringHound decision engine tests passed.");
