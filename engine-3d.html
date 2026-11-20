@@ -61,11 +61,11 @@ const head=box(10.0,.7,2.2,aluminum);head.position.set(0,1.55,0);head.visible=fa
 const rockerCover=box(9.6,.35,1.7,dark);rockerCover.position.set(0,2.08,0);rockerCover.visible=false;
 const intake=box(8.7,.42,.48,blue);intake.position.set(0,1.1,1.48);selectables.push({mesh:intake,title:'Intake manifold',desc:'Routes clean, pressurized air to each cylinder. A restriction or boost leak can reduce the available air charge.'});
 const exhaust=box(8.7,.42,.48,amber);exhaust.position.set(0,1.05,-1.48);selectables.push({mesh:exhaust,title:'Exhaust manifold',desc:'Collects exhaust gas from the cylinders and directs it toward the turbocharger turbine.'});
-const crankGroup=new THREE.Group();root.add(crankGroup);
-const crankCore=cylinder(.19,.19,9.6,steel,crankGroup,24);crankCore.rotation.z=Math.PI/2;crankCore.position.set(0,-1.1,0);
+const crankGroup=new THREE.Group();root.add(crankGroup);crankGroup.position.y=-1.1;
+const crankCore=cylinder(.19,.19,9.6,steel,crankGroup,24);crankCore.rotation.z=Math.PI/2;crankCore.position.set(0,0,0);
 const crankPins=[];
-for(let i=0;i<3;i++){const x=(i-1)*3.1;const phase=i===1?Math.PI:0;const webA=box(.28,.85,.65,steel,crankGroup);webA.position.set(x,-1.1,0);webA.rotation.z=phase;const pin=cylinder(.16,.16,1.2,amber,crankGroup,20);pin.rotation.z=Math.PI/2;pin.position.set(x,-1.1,0);crankPins.push({x,phase,pin,webA});}
-const camGroup=new THREE.Group();root.add(camGroup);const camshaft=cylinder(.12,.12,9.7,steel,camGroup,24);camshaft.rotation.z=Math.PI/2;camshaft.position.set(0,2.35,0);
+for(let i=0;i<3;i++){const x=(i-1)*3.1;const phase=i===1?Math.PI:0;const webA=box(.28,.85,.65,steel,crankGroup);webA.position.set(x,0,0);webA.rotation.z=phase;const pin=cylinder(.16,.16,1.2,amber,crankGroup,20);pin.rotation.z=Math.PI/2;pin.position.set(x,-1.1,0);crankPins.push({x,phase,pin,webA});}
+const camGroup=new THREE.Group();root.add(camGroup);camGroup.position.y=2.35;const camshaft=cylinder(.12,.12,9.7,steel,camGroup,24);camshaft.rotation.z=Math.PI/2;camshaft.position.set(0,0,0);
 const crankLabel=tag('CRANKSHAFT',new THREE.Vector3(0,-1.75,1.5)),camLabel=tag('CAMSHAFT',new THREE.Vector3(0,2.65,-.7));
 for(let i=0;i<6;i++){
  const x=cylX(i),tdc=[0,120,240,240,120,0][i];
@@ -76,7 +76,7 @@ for(let i=0;i<6;i++){
  const rod=new THREE.Group();root.add(rod);rod.position.set(x,-1.1,0);
  const rodShaft=box(.16,.9,.2,aluminum,rod);rodShaft.position.y=.48;
  const rodCap=cylinder(.24,.24,.22,steel,rod,24);rodCap.rotation.x=Math.PI/2;rodCap.position.y=0;
- const crankThrow=new THREE.Group();crankGroup.add(crankThrow);crankThrow.position.set(x,-1.1,0);
+ const crankThrow=new THREE.Group();crankGroup.add(crankThrow);crankThrow.position.set(x,0,0);
  const journal=cylinder(.17,.17,.85,amber,crankThrow,24);journal.rotation.z=Math.PI/2;journal.position.y=.48;
  const valveGroup=new THREE.Group();root.add(valveGroup);
  const valves=[];
@@ -89,7 +89,7 @@ for(let i=0;i<6;i++){
  const hit=mesh(new THREE.SphereGeometry(.62,16,12),new THREE.MeshBasicMaterial({color:0xff9f1c,transparent:true,opacity:0,depthWrite:false}),root,'Cylinder '+(i+1));hit.position.set(x,.85,.65);hit.userData.cylinder=i+1;selectables.push({mesh:hit,title:'Cylinder '+(i+1),desc:'Select this cylinder to inspect its four-stroke events and run a fault simulation.'});
 }
 const camLobes=[];
-for(let i=0;i<6;i++){const x=cylX(i);for(let v=0;v<2;v++){const lobe=mesh(new THREE.SphereGeometry(.2,18,14),amber,camGroup);lobe.scale.set(1,.72,.8);lobe.position.set(x,2.35,v===0?.38:-.38);camLobes.push(lobe);}}
+for(let i=0;i<6;i++){const x=cylX(i);for(let v=0;v<2;v++){const lobe=mesh(new THREE.SphereGeometry(.2,18,14),amber,camGroup);lobe.scale.set(1,.72,.8);lobe.position.set(x,0,v===0?.38:-.38);camLobes.push(lobe);}}
 const turboGroup=new THREE.Group();root.add(turboGroup);turboGroup.position.set(5.6,.8,-1.6);
 const turboHousing=mesh(new THREE.TorusGeometry(.55,.16,16,48),steel,turboGroup);turboHousing.rotation.y=Math.PI/2;
 const turboHub=cylinder(.14,.14,.4,amber,turboGroup,24);turboHub.rotation.z=Math.PI/2;
