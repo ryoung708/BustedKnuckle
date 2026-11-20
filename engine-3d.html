@@ -68,7 +68,7 @@ for(let i=0;i<3;i++){const x=(i-1)*3.1;const phase=i===1?Math.PI:0;const webA=bo
 const camGroup=new THREE.Group();root.add(camGroup);const camshaft=cylinder(.12,.12,9.7,steel,camGroup,24);camshaft.rotation.z=Math.PI/2;camshaft.position.set(0,2.35,0);
 const crankLabel=tag('CRANKSHAFT',new THREE.Vector3(0,-1.75,1.5)),camLabel=tag('CAMSHAFT',new THREE.Vector3(0,2.65,-.7));
 for(let i=0;i<6;i++){
- const x=cylX(i),phase=[0,Math.PI,Math.PI,0,0,Math.PI][i];
+ const x=cylX(i),tdc=[0,120,240,240,120,0][i];
  const liner=cylinder(.53,.53,1.8,dark);liner.position.set(x,.58,0);liner.rotation.x=Math.PI/2;
  const pistonGroup=new THREE.Group();root.add(pistonGroup);
  const piston=cylinder(.48,.48,.27,steel,pistonGroup,40);piston.position.set(0,0,0);pistonGroup.position.set(x,.1,0);
@@ -77,13 +77,13 @@ for(let i=0;i<6;i++){
  const rodShaft=box(.16,.9,.2,aluminum,rod);rodShaft.position.y=.48;
  const rodCap=cylinder(.24,.24,.22,steel,rod,24);rodCap.rotation.x=Math.PI/2;rodCap.position.y=0;
  const crankThrow=new THREE.Group();crankGroup.add(crankThrow);crankThrow.position.set(x,-1.1,0);
- const journal=cylinder(.17,.17,.85,amber,crankThrow,24);journal.rotation.z=Math.PI/2;
+ const journal=cylinder(.17,.17,.85,amber,crankThrow,24);journal.rotation.z=Math.PI/2;journal.position.y=.48;
  const valveGroup=new THREE.Group();root.add(valveGroup);
  const valves=[];
  for(let v=0;v<2;v++){const z=v===0?.45:-.45;const stem=cylinder(.045,.045,.48,steel,valveGroup,12);stem.position.set(x,1.95,z);const face=cylinder(.16,.16,.08,amber,valveGroup,24);face.position.set(x,1.69,z);valves.push({stem,face,base:1.95,z,v});}
  const injector=cylinder(.11,.11,.38,amber);injector.position.set(x,2.05,0);
  const burn=mesh(new THREE.SphereGeometry(.28,20,16),amber);burn.position.set(x,1.15,0);burn.material=mat(0xff8a19,.15,.25,true,.65);burn.visible=false;
- const cylinderObj={index:i+1,x,phase,pistonGroup,rod,crankThrow,valves,injector,burn,liner,phaseName:'Power',fault:'none'};
+ const cylinderObj={index:i+1,x,tdc,pistonGroup,rod,crankThrow,valves,injector,burn,liner,phaseName:'Power',fault:'none'};
  cylinders.push(cylinderObj);
  const label=tag('CYL '+(i+1),new THREE.Vector3(x,2.6,.65));
  const hit=mesh(new THREE.SphereGeometry(.62,16,12),new THREE.MeshBasicMaterial({color:0xff9f1c,transparent:true,opacity:0,depthWrite:false}),root,'Cylinder '+(i+1));hit.position.set(x,.85,.65);hit.userData.cylinder=i+1;selectables.push({mesh:hit,title:'Cylinder '+(i+1),desc:'Select this cylinder to inspect its four-stroke events and run a fault simulation.'});
@@ -106,10 +106,10 @@ function updateModel(){
  crankGroup.rotation.x=rad;camGroup.rotation.x=camRad;
  cylinders.forEach(c=>{
   const p=cycleState(c,angle);c.phaseName=p.phase;
-  const theta=THREE.MathUtils.degToRad(angle+c.phase);
+  const theta=THREE.MathUtils.degToRad(angle-c.tdc);
   const stroke= Math.cos(theta)*.48;
   c.pistonGroup.position.y=.05+stroke;
-  const crankPoint=new THREE.Vector3(c.x+Math.cos(theta)*.48,-1.1+Math.sin(theta)*.48,0);
+  const crankPoint=new THREE.Vector3(c.x,-1.1+Math.sin(theta)*.48,Math.cos(theta)*.48);
   const pistonPin=new THREE.Vector3(c.x,.0+stroke,0);
   c.rod.position.copy(crankPoint);const delta=pistonPin.clone().sub(crankPoint);c.rod.scale.y=delta.length()/1.1;c.rod.position.copy(crankPoint);c.rod.rotation.z=Math.atan2(delta.x,delta.y);
   c.crankThrow.rotation.x=rad;
