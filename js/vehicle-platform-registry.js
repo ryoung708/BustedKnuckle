@@ -76,9 +76,6 @@ export const specificationSourceStates = Object.freeze([
 const normalizeMake = make => {
   const normalized = key(make);
   if (!normalized) return "";
-  for (const platform of platformRegistry) {
-    if (platform.makes.some(alias => key(alias) === normalized)) return platform.makes[0];
-  }
   return clean(make);
 };
 
