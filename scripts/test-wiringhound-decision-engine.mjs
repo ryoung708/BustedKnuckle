@@ -19,6 +19,29 @@ assert.equal(recommendNextStep(record("power_loss","battery_baseline","Battery-p
 assert.equal(recommendNextStep(record("power_loss","main_disconnect","Vehicle has no separate master disconnect / not applicable"),powerLoss).stepId,"main_distribution");
 assert.equal(recommendNextStep(record("power_loss","ignition_feed","Switched feeds remain stable during event"),powerLoss).stepId,"intermittent_localization");
 assert.equal(recommendNextStep(record("power_loss","scope","Could not reproduce the event"),powerLoss).state,"hold");
+
+// An abnormal main-disconnect result must trigger inspection at that boundary,
+// not advance to main distribution as though the switch passed.
+const disconnectAbnormal=recommendNextStep(record("power_loss","main_disconnect","Excessive drop across closed switch"),powerLoss);
+assert.equal(disconnectAbnormal.stepId,"main_disconnect");
+assert.equal(disconnectAbnormal.state,"hold");
+assert.match(disconnectAbnormal.action,/master disconnect switch/i);
+assert.match(disconnectAbnormal.action,/cable terminations/i);
+assert.match(disconnectAbnormal.action,/Do not bypass/i);
+
+// Explicitly out-of-spec free-text readings are recognized even when the
+// technician has not selected an observation; ambiguous numeric values are not.
+const readingOnly=recommendNextStep({workflowId:"power_loss",currentStep:3,entries:{main_disconnect:{measurements:{actual:"1.4 V drop across closed switch; spec maximum 0.2 V"},testPoints:"Across switch studs"}}},powerLoss);
+assert.equal(readingOnly.stepId,"main_disconnect");
+assert.equal(readingOnly.state,"hold");
+assert.match(readingOnly.action,/Inspect the master disconnect switch/i);
+const ambiguousReading=recommendNextStep({workflowId:"power_loss",currentStep:3,entries:{main_disconnect:{measurements:{actual:"1.4 V"}}}},powerLoss);
+assert.equal(ambiguousReading.state,"hold");
+assert.match(ambiguousReading.reason,/has not been given an observed result/);
+const connectionAbnormal=recommendNextStep(record("power_loss","battery_connections","Excessive drop across a battery connection"),powerLoss);
+assert.equal(connectionAbnormal.stepId,"battery_connections");
+assert.equal(connectionAbnormal.state,"hold");
+assert.match(connectionAbnormal.action,/battery post/i);
 assert.equal(recommendNextStep({workflowId:"power_loss",currentStep:1,entries:{battery_baseline:{measurements:{actual:"12.4 V at battery posts"}}}},powerLoss).state,"hold");
 assert.equal(recommendNextStep({workflowId:"power_loss",currentStep:2,entries:{scope:{choice:"All vehicle electrical power is lost"},battery_connections:{notes:"Posts clean; voltage drop not yet measured"}}},powerLoss).stepId,"battery_connections");
 assert.equal(recommendNextStep({workflowId:"power_loss",currentStep:2,entries:{scope:{choice:"All vehicle electrical power is lost"},battery_connections:{choice:"Connection checks are within applicable limits"}}},powerLoss).stepId,"main_disconnect");
