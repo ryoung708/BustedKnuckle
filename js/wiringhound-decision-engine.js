@@ -6,6 +6,19 @@ const result=(stepId,reason,action,state="next")=>({stepId,reason,action,state})
 export function recommendNextStep(caseRecord,steps){
   if(!Array.isArray(steps)||!steps.length)return null;
   const entries=caseRecord?.entries||{};
+  const currentIndex=Math.max(0,Math.min(Number(caseRecord?.currentStep)||0,steps.length-1));
+  const currentStep=steps[currentIndex],currentEntry=entries[currentStep?.id]||{};
+  const currentChoice=String(currentEntry.choice||"").trim();
+  const currentMeasurements=currentEntry.measurements||{};
+  const hasCurrentDetails=[
+    currentEntry.notes,currentMeasurements.condition,currentMeasurements.testPoints,
+    currentMeasurements.actual,currentMeasurements.canH,currentMeasurements.canL,
+    currentMeasurements.voltage,currentMeasurements.resistance
+  ].some(value=>String(value??"").trim()) ||
+    (Array.isArray(currentEntry.faultCodes)&&currentEntry.faultCodes.length>0) ||
+    (Array.isArray(currentEntry.evidence)&&currentEntry.evidence.length>0);
+  if(!currentChoice && (hasCurrentDetails || currentIndex>0))
+    return result(currentStep.id,"This stage has not been given an observed result. Saved notes, measurements, fault codes or attachments cannot be treated as a pass or used to guess the next test.","Select the observation that best matches the test, or record why the check could not be completed. If none of the options fits, leave the stage open and clarify the finding.","hold");
   const recorded=steps.map((step,index)=>({step,index,entry:entries[step.id]}))
     .filter(x=>x.entry&&String(x.entry.choice||"").trim());
   if(!recorded.length)return result(steps[0].id,"No test result has been recorded yet.","Begin by confirming the complaint and capturing the baseline.");
