@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#090b0e"><title>Inline-Six 3D Engine Lab | IronKnuckle</title>
+<meta name="theme-color" content="#090b0e"><title>Inline-Six Mechanical Diagnostics | IronKnuckle</title>
 <style>
 :root{color-scheme:dark;--bg:#090d11;--panel:#121a22;--raised:#1b2630;--line:#354554;--amber:#ff9f1c;--text:#f1f4f7;--muted:#a5b3bf;--green:#70c69a;--red:#ff6868;--blue:#69b7e8}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#ff9f1c18,transparent 42%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -14,27 +14,27 @@
 </style>
 </head>
 <body><main class="wrap">
-<header class="top"><div class="brand">IRON<span>KNUCKLE</span> / ENGINE LAB</div><a href="./learning.html">← Back to Visual Learning Center</a></header>
-<section class="hero"><div class="eyebrow">Interactive mechanical training / prototype</div><h1>Inline-Six Diesel Engine Lab</h1><p>Rotate the engine, expose the internals, select a cylinder and introduce real training faults. Watch piston travel, valve events and combustion response change as the crankshaft turns. This is an original educational model, not an OEM-specific engine drawing.</p></section>
+<header class="top"><div class="brand">IRON<span>KNUCKLE</span> / MECHANICAL DIAGNOSTICS</div><a href="./learning.html">← Back to Visual Learning Center</a></header>
+<section class="hero"><div class="eyebrow">Shop-floor mechanical fundamentals</div><h1>Inline-Six Mechanical Diagnostics</h1><p>Start with the mechanical event. Select a cylinder, follow its 720° cycle, introduce a controlled fault and inspect what changes. This simplified training model is built to teach diagnostic thinking—not represent a specific OEM engine.</p></section>
 <div class="layout">
-<section class="viewer"><div class="viewer-head"><b>3D CUTAWAY / INLINE-SIX</b><span>Drag to orbit · scroll or pinch to zoom</span></div><div id="stage"><div class="stage-hint">CRANKSHAFT • CONNECTING RODS • PISTONS • CAMSHAFT • VALVES</div></div>
+<section class="viewer"><div class="viewer-head"><b>CRANKSHAFT &amp; VALVETRAIN / INLINE-SIX</b><span>Drag to orbit · scroll or pinch to zoom</span></div><div id="stage"><div class="stage-hint">CRANKSHAFT • CONNECTING RODS • PISTONS • CAMSHAFT • VALVES</div></div>
 <div class="toolbar"><button class="tool primary" id="playBtn">Ⅱ Pause</button><button class="tool" id="stepBtn">Step 30°</button><button class="tool" id="resetBtn">Reset view</button><button class="tool active" id="cutawayBtn">Cutaway: ON</button><button class="tool active" id="labelsBtn">Labels: ON</button><button class="tool" id="explodeBtn">Exploded view: OFF</button></div>
 <div class="legend"><span><i class="dot"></i>Normal operation</span><span><i class="dot red"></i>Faulted component</span><span><i class="dot blue"></i>Air / intake</span><span><i class="dot amber"></i>Combustion / exhaust</span></div></section>
 <aside class="panel">
-<h2>Engine operating controls</h2><p class="panel-intro">The crankshaft completes two revolutions (720°) for each four-stroke cycle. The camshaft turns at half crankshaft speed.</p>
+<h2>Operating conditions</h2><p class="panel-intro">Use the crank angle to follow the four-stroke sequence. The crankshaft completes 720° per cycle; the camshaft turns at half crankshaft speed. Timing shown is simplified for instruction.</p>
 <div class="readout"><div class="stat"><small>Engine speed</small><strong id="rpmValue">900</strong></div><div class="stat"><small>Crank angle</small><strong id="angleValue">0°</strong></div><div class="stat"><small>Cycle phase</small><strong id="phaseValue">Power</strong></div></div>
 <div class="field"><label for="rpm">Engine speed (RPM)</label><input id="rpm" type="range" min="120" max="1800" step="30" value="900"></div>
 <div class="field"><label>Selected cylinder</label><div class="cylinders" id="cylinderButtons"><button class="cyl-btn selected" data-cylinder="1">1</button><button class="cyl-btn" data-cylinder="2">2</button><button class="cyl-btn" data-cylinder="3">3</button><button class="cyl-btn" data-cylinder="4">4</button><button class="cyl-btn" data-cylinder="5">5</button><button class="cyl-btn" data-cylinder="6">6</button></div></div>
-<div class="section"><h3>Cylinder contribution / training estimate</h3><p class="panel-intro">Illustrative balance indicator—not a measured torque or OEM diagnostic value.</p><div class="contribution-grid" id="contributionGrid"></div></div>
+<div class="section"><h3>Cylinder contribution / illustrative model</h3><p class="panel-intro">Illustrative teaching scale only—not measured torque, cylinder output, or an OEM diagnostic value.</p><div class="contribution-grid" id="contributionGrid"></div></div>
 <div class="component-info" id="cylinderInfo"><b>Cylinder 1 / Power stroke</b><p>Fuel has ignited and expanding gases are driving the piston downward. Both valves are closed during the power stroke.</p></div>
-<div class="section"><h3>Introduce a training fault</h3><div class="fault-list">
-<button class="fault-choice active" data-fault="none">Healthy engine<small>All six cylinders operate normally.</small></button>
-<button class="fault-choice" data-fault="injector">Injector disabled<small>No fuel delivery in the selected cylinder; no combustion event.</small></button>
-<button class="fault-choice" data-fault="compression">Low compression<small>Compression sealing is lost; the cylinder cannot develop normal firing pressure.</small></button>
-<button class="fault-choice" data-fault="intake">Intake valve stuck closed<small>Air charge cannot enter during the intake stroke.</small></button>
-<button class="fault-choice" data-fault="exhaust">Exhaust valve stuck closed<small>Exhaust gas cannot leave during the exhaust stroke.</small></button>
+<div class="section"><h3>Introduce a mechanical fault</h3><div class="fault-list">
+<button class="fault-choice active" data-fault="none">No simulated fault<small>All six cylinders operate normally in this model.</small></button>
+<button class="fault-choice" data-fault="injector">Injector disabled<small>Fuel delivery is disabled in the selected cylinder; the normal firing event is absent.</small></button>
+<button class="fault-choice" data-fault="compression">Reduced compression<small>Sealing is compromised; the cylinder cannot build normal compression pressure.</small></button>
+<button class="fault-choice" data-fault="intake">Intake valve held closed<small>The cylinder cannot draw in its normal fresh-air charge.</small></button>
+<button class="fault-choice" data-fault="exhaust">Exhaust valve held closed<small>Exhaust gas cannot leave the cylinder during the exhaust event.</small></button>
 </div><div class="status" id="faultStatus">Healthy engine: all six cylinders are contributing evenly.</div></div>
-<div class="section"><h3>Component identification</h3><p class="panel-intro">Tap a colored part in the model to identify it. Use the controls above to expose the moving assembly.</p><div class="component-info" id="partInfo"><b>Crankshaft</b><p>Converts reciprocating piston motion into rotating output torque. Each crank throw drives its connecting rod and piston.</p></div></div>
+<div class="section"><h3>Identify the hardware</h3><p class="panel-intro">Select a component to understand its job in the engine and how a failure can affect the mechanical event.</p><div class="component-info" id="partInfo"><b>Crankshaft</b><p>Converts reciprocating piston motion into rotating output torque. Each crank throw drives its connecting rod and piston.</p></div></div>
 </aside></div></main>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js';
