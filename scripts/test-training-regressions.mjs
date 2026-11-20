@@ -129,6 +129,8 @@ for (const fault of ["injector", "compression", "intake", "exhaust"]) {
 }
 assert.ok(engine3d.includes("crankGroup.rotation.x=rad"));
 assert.ok(engine3d.includes("camGroup.rotation.x=camRad"));
+assert.ok(engine3d.includes("function renderContribution()"), "Cylinder contribution view is present");
+assert.ok(engine3d.includes("fault==='intake'"), "A closed intake valve suppresses normal combustion");
 const engineScript = engine3d.split('<script type="module">')[1]?.split("</script>")[0];
 assert.ok(engineScript, "3D engine module script is present");
 const parseableEngineScript = engineScript.replace(/^import .*?;\s*/m, "");
