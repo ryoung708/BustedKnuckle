@@ -118,7 +118,7 @@ function updateModel(){
   const intakeOpen=p.phase==='Intake'&&!(faulted&&fault==='intake');
   const exhaustOpen=p.phase==='Exhaust'&&!(faulted&&fault==='exhaust');
   c.valves.forEach((v,j)=>{const open=j===0?intakeOpen:exhaustOpen;const lift=open?.16:0;v.stem.position.y=v.base-lift;v.face.position.y=1.69-lift;});
-  c.burn.visible=p.phase==='Power'&&!(faulted&&(fault==='injector'||fault==='compression'));
+  c.burn.visible=p.phase==='Power'&&!(faulted&&(fault==='injector'||fault==='compression'||fault==='intake'));
   c.burn.scale.setScalar(c.burn.visible?(.8+.35*Math.sin(p.progress*Math.PI)):0.001);
   c.burn.material= faulted?red:amber;
  });
