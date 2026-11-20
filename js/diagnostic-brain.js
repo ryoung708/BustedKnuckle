@@ -100,8 +100,22 @@ function recommendationEvidence(record = {}, steps = [], recommendation = {}) {
     : "";
   let explanation;
   if (recommendation.state === "hold") {
-    explanation = "IronKnuckle is holding this stage because " + clean(recommendation.reason).replace(/[.!?]+$/, "") + ".";
-    if (latest) explanation += " The latest saved details are shown below; they are not treated as a completed test result.";
+    const currentStepId = steps[Math.max(0,Math.min(Number(record.currentStep)||0,steps.length-1))]?.id;
+    const priorObserved = rows.filter(row => row.choice && row.stepId !== currentStepId).slice(-1)[0];
+    if (priorObserved && recommendation.stepId === currentStepId) {
+      const priorDetails = [priorObserved.condition && "Condition: " + priorObserved.condition,
+        priorObserved.testPoints && "Test points: " + priorObserved.testPoints,
+        priorObserved.actual && "Measured: " + priorObserved.actual,
+        priorObserved.faultCodes.length && "Fault codes: " + priorObserved.faultCodes.join(", ")]
+        .filter(Boolean).join(" · ");
+      explanation = "The previous completed finding in " + priorObserved.stepTitle + " was: " + priorObserved.choice + "." +
+        (priorDetails ? " " + priorDetails + "." : "") +
+        " That finding leads the workflow to " + (clean(steps.find(step => step.id === recommendation.stepId)?.title) || recommendation.stepId) +
+        " as the next check. This stage is still open because no result has been recorded here yet; perform the check and record what actually happens. The earlier finding guides the next test but does not prove a failed component.";
+    } else {
+      explanation = "IronKnuckle is holding this stage because " + clean(recommendation.reason).replace(/[.!?]+$/, "") + ".";
+      if (latest) explanation += " The latest saved details are shown below; they are not treated as a completed test result.";
+    }
   } else if (recommendation.state === "review") {
     explanation = "The recorded workflow has reached a review point. Confirm the physical cause, repair and repeat-test evidence before closing the case.";
   } else if (latest) {
