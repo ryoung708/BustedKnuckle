@@ -30,7 +30,7 @@ export function bindVehicleIdentity(){
       transmissionMake:document.getElementById("transmissionMake")?.value,
       transmissionModel:document.getElementById("transmissionModel")?.value,
       emissionsFamily:document.getElementById("emissions")?.value,
-      vinLast6:document.getElementById("vin")?.value
+      vin:document.getElementById("vin")?.value
     });
     const hasVehicle=Boolean(result.normalizedMake&&result.model&&result.modelYear);
     const hasEngine=Boolean(result.engine.manufacturer&&result.engine.model);
