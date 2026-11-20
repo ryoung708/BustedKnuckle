@@ -98,7 +98,7 @@ const missingChallenge = [...challengeRefs].filter(id => !challengeIds.has(id));
 assert.deepEqual(missingChallenge, [], "Build-a-Fault references missing element IDs: " + missingChallenge.join(", "));
 
 // The Learning Center must load and use the exact tested four-stroke helper.
-const learning = await readFile(new URL("../learning.html", import.meta.url), "utf8");
+const learningPage = await readFile(new URL("../learning.html", import.meta.url), "utf8");
 assert.match(learning, /<script src=["']\.\/js\/engine-cycle\.js["']><\/script>/);
 assert.match(learning, /window\.IronKnuckleEngineCycle\.getValveState\(cycleDegrees\)/);
 
@@ -138,6 +138,6 @@ assert.doesNotThrow(() => new Script(parseableEngineScript), "3D engine module s
 const homepage = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const learning = await readFile(new URL("../learning.html", import.meta.url), "utf8");
 assert.ok(!homepage.includes('href="./engine-3d.html"'), "The 3D engine stays inside the Learning Center, not as a separate homepage card");
-assert.ok(learning.includes('href="./engine-3d.html"'), "The Engine Basics lesson links to the 3D engine model");
+assert.ok(learningPage.includes('href="./engine-3d.html"'), "The Engine Basics lesson links to the 3D engine model");
 
 console.log("IronKnuckle circuit and training regression tests passed.");
