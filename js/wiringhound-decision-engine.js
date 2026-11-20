@@ -6,7 +6,7 @@ function explicitlyAbnormal(value=""){
   const text=String(value||"").toLowerCase()
     .replace(/not\\s+(?:excessive|abnormal|too high|too low|out of spec)/g,"")
     .replace(/no\\s+(?:excessive|abnormal)\\s+(?:drop|reading|condition)/g,"");
-  return /out of spec|outside (?:the )?spec|above (?:the )?(?:spec|limit)|below (?:the )?(?:spec|limit)|spec(?:ification)?\\s+(?:max(?:imum)?|limit)|excessive|abnormal|too high|too low|large voltage drop|high voltage drop|fails? (?:the )?spec|voltage drop.{0,24}(?:excessive|too high)/i.test(text);
+  return /out of spec|outside (?:the )?spec|above (?:the )?(?:spec|limit)|below (?:the )?(?:spec|limit)|spec(?:ification)?\s+(?:max(?:imum)?|limit)|excessive|abnormal|too high|too low|large voltage drop|high voltage drop|fails? (?:the )?spec|voltage drop.{0,24}(?:excessive|too high)/i.test(text);
 }
 function inspectionAction(stepId){
   const actions={
