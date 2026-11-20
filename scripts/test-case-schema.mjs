@@ -22,7 +22,7 @@ const expanded=createCaseRecord({...raw,vehicle:{
 assert.equal(expanded.caseEnvelope.vehicle.engineManufacturer,"Detroit Diesel");
 assert.equal(expanded.caseEnvelope.vehicle.engineModel,"DD15");
 assert.equal(expanded.caseEnvelope.vehicle.vinLast6,"A1B2C3");
-assert.equal(expanded.caseEnvelope.vehicle.vin,"TESTVIN");
+assert.equal("vin" in expanded.caseEnvelope.vehicle,false,"Full VIN must not be retained in the shared envelope.");
 assert.equal(expanded.caseEnvelope.vehicle.transmissionManufacturer,"Detroit");
 assert.equal(expanded.caseEnvelope.vehicle.transmissionModel,"DT12");
 assert.equal(expanded.caseEnvelope.vehicle.emissionsFamily,"EPA 2024");
