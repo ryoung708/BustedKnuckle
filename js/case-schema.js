@@ -20,7 +20,6 @@ export function createCaseRecord(raw, sourceApp) {
         vinLast6: String(vehicle.vinLast6 || ""),
         engineManufacturer: String(vehicle.engineManufacturer || vehicle.engineMake || ""),
         engineModel: String(vehicle.engineModel || vehicle.engine || ""),
-        engineModel: String(vehicle.engineModel || vehicle.engine || ""),
         engine: String(vehicle.engine || vehicle.engineModel || ""),
         transmissionManufacturer: String(vehicle.transmissionManufacturer || vehicle.transmissionMake || ""),
         transmissionModel: String(vehicle.transmissionModel || vehicle.transmission || ""),
