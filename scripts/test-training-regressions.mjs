@@ -35,7 +35,7 @@ assert.ok(Number.isNaN(powered.resistanceBetween("battery", "negative")));
 const isolated = createCircuit({ tail: true, powerIsolated: true });
 assert.ok(Number.isFinite(isolated.resistanceBetween("tailSwitchIn", "tailSwitchOut")));
 
-// A genuinely open switch and each failed fuse must read OL across its terminals.
+// A genuinely open switch and each failed fuse must read OL across their terminals.
 const openSwitch = createCircuit({ tail: false, powerIsolated: true });
 assert.equal(openSwitch.resistanceBetween("tailSwitchIn", "tailSwitchOut"), Infinity);
 
@@ -48,13 +48,20 @@ for (const [input, output, state] of [
   assert.equal(circuit.resistanceBetween(input, output), Infinity, `Expected OL across ${input}/${output}`);
 }
 
-// A burnt lamp opens only its own load element. The other tail lamp remains
-// connected in parallel, so the network can still show a finite alternate path.
+// A burnt lamp opens its own element, but the intact opposite lamp remains a
+// legitimate parallel path in the installed circuit. Do not force OL in-circuit.
 const burntLampWithParallelPath = createCircuit({
   fault: "lampOpen", tail: true, brake: false, powerIsolated: true
 });
 assert.ok(Number.isFinite(burntLampWithParallelPath.resistanceBetween("leftTailIn", "leftGround")));
-assert.equal(solveEquivalentResistance([], "lampFeed", "lampGround"), Infinity);
+
+// When the failed lamp is isolated from alternate wiring, its open element reads OL.
+const isolatedBurntLamp = [
+  ["lampFeed", "lampIn", 0.05],
+  // The missing lampIn-to-lampOut edge represents the burnt filament.
+  ["lampOut", "lampGround", 0.05]
+];
+assert.equal(solveEquivalentResistance(isolatedBurntLamp, "lampIn", "lampOut"), Infinity);
 
 // The shared solver must calculate true parallel equivalent resistance: 6Ω || 3Ω = 2Ω.
 assert.ok(Math.abs(solveEquivalentResistance([
@@ -95,22 +102,21 @@ const learning = await readFile(new URL("../learning.html", import.meta.url), "u
 assert.match(learning, /<script src=["']\.\/js\/engine-cycle\.js["']><\/script>/);
 assert.match(learning, /window\.IronKnuckleEngineCycle\.getValveState\(cycleDegrees\)/);
 
-
- // J1939 trainer: both terminators must be independently isolatable and
- // resistance must be solved from the actual connected network, not presets.
- const j1939 = await readFile(new URL("../j1939-trainer.html", import.meta.url), "utf8");
- const j1939Script = j1939.split("<script>")[1]?.split("</script>")[0];
- assert.ok(j1939Script, "J1939 trainer script is present");
- assert.doesNotThrow(() => new Script(j1939Script), "J1939 trainer script parses");
- assert.ok(j1939.includes('term.addEventListener("click",toggleTerm)'), "End terminator is clickable");
- assert.ok(j1939.includes("add(1,6,120)"), "Engine ECM contains its 120Ω termination");
- assert.ok(j1939.includes("add(4,9,120)"), "Far-end terminator participates in the circuit");
- assert.ok(j1939.includes("function solveResistance(start,end)"), "Resistance uses a network solver");
- assert.ok(j1939.includes("if(!reachable.has(start))return Infinity"), "Open sections read OL when probes are disconnected");
- assert.ok(j1939.includes('if(s.key){n=NaN;unit=" Ω"}'), "Ohms mode is inhibited with key power on");
- assert.ok(j1939.includes("s.endTermConnected=!s.endTermConnected"), "End termination state toggles");
- assert.ok(j1939.includes("moduleInputOhms=10000000"), "Connected modules contribute a 10 MΩ training input path");
- assert.ok(j1939.includes("modules.forEach((_,i)=>{if(!s.off.includes(i))"), "Every connected module contributes to resistance");
- assert.ok(j1939.includes("data-i"), "Module identity is available to isolation-state renderer");
+// J1939 trainer: both terminators must be independently isolatable and
+// resistance must be solved from the actual connected network, not presets.
+const j1939 = await readFile(new URL("../j1939-trainer.html", import.meta.url), "utf8");
+const j1939Script = j1939.split("<script>")[1]?.split("</script>")[0];
+assert.ok(j1939Script, "J1939 trainer script is present");
+assert.doesNotThrow(() => new Script(j1939Script), "J1939 trainer script parses");
+assert.ok(j1939.includes('term.addEventListener("click",toggleTerm)'), "End terminator is clickable");
+assert.ok(j1939.includes("add(1,6,120)"), "Engine ECM contains its 120Ω termination");
+assert.ok(j1939.includes("add(4,9,120)"), "Far-end terminator participates in the circuit");
+assert.ok(j1939.includes("function solveResistance(start,end)"), "Resistance uses a network solver");
+assert.ok(j1939.includes("if(!reachable.has(start))return Infinity"), "Open sections read OL when probes are disconnected");
+assert.ok(j1939.includes('if(s.key){n=NaN;unit=" Ω"}'), "Ohms mode is inhibited with key power on");
+assert.ok(j1939.includes("s.endTermConnected=!s.endTermConnected"), "End termination state toggles");
+assert.ok(j1939.includes("moduleInputOhms=10000000"), "Connected modules contribute a 10 MΩ training input path");
+assert.ok(j1939.includes("modules.forEach((_,i)=>{if(!s.off.includes(i))"), "Every connected module contributes to resistance");
+assert.ok(j1939.includes("data-i"), "Module identity is available to isolation-state renderer");
 
 console.log("IronKnuckle circuit and training regression tests passed.");
