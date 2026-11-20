@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b0e"><title>Inline-Six 3D Engine Lab | IronKnuckle</title>
+<style>
+:root{color-scheme:dark;--bg:#090d11;--panel:#121a22;--raised:#1b2630;--line:#354554;--amber:#ff9f1c;--text:#f1f4f7;--muted:#a5b3bf;--green:#70c69a;--red:#ff6868;--blue:#69b7e8}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#ff9f1c18,transparent 42%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{width:min(1500px,100%);margin:auto;padding:16px 20px 40px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:8px 0 16px}.brand{font-weight:950;letter-spacing:.16em;font-size:12px}.brand span,.eyebrow{color:var(--amber)}a{color:var(--muted);text-decoration:none;font-size:12px}.hero{padding:24px 0 16px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}.hero h1{font-size:clamp(27px,5vw,43px);line-height:1.04;margin:8px 0}.hero p{max-width:800px;color:var(--muted);font-size:13px;line-height:1.6;margin:0}
+.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(290px,.75fr);gap:14px}.viewer,.panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}.viewer-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}.viewer-head b{font-size:12px}.viewer-head span{font-size:10px;color:var(--muted)}#stage{height:560px;position:relative;background:radial-gradient(ellipse at 50% 48%,#263440 0%,#111a22 55%,#080c10 100%);touch-action:none}#stage canvas{display:block;width:100%;height:100%}.stage-hint{position:absolute;left:12px;bottom:12px;padding:7px 9px;background:#080d11cc;border:1px solid #526270;border-radius:6px;color:#b6c4ce;font-size:10px;pointer-events:none}
+.toolbar{display:flex;flex-wrap:wrap;gap:7px;padding:11px;border-top:1px solid var(--line)}button,select{font:inherit}.tool,.panel button{padding:9px 11px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--text);font-size:11px;font-weight:750;cursor:pointer}.tool.active,.panel button.active{border-color:var(--amber);color:var(--amber);background:#ff9f1c12}.tool.primary{border-color:#9b682e;color:#ffbd69}
+.panel{padding:15px}.panel h2{font-size:17px;margin:0 0 6px}.panel-intro{font-size:11px;color:var(--muted);line-height:1.5;margin:0 0 13px}.field{margin:12px 0}.field label{display:block;margin-bottom:6px;color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.field select,.field input{width:100%;padding:10px;background:var(--raised);border:1px solid var(--line);border-radius:7px;color:var(--text)}.field input{accent-color:var(--amber)}.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.stat{padding:10px;background:#0c1218;border:1px solid var(--line);border-radius:7px}.stat small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em}.stat strong{display:block;margin-top:5px;font-size:18px;font-variant-numeric:tabular-nums}.cylinders{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:10px 0}.cyl-btn{padding:9px 2px!important}.cyl-btn.selected{border-color:var(--amber)!important;color:var(--amber)!important}.status{padding:11px;border-left:3px solid var(--green);border-radius:5px;background:#70c69a12;color:var(--muted);font-size:11px;line-height:1.55;margin-top:11px}.status.fault{border-color:var(--red);background:#ff686812}.fault-list{display:grid;gap:7px}.fault-choice{text-align:left!important;width:100%;line-height:1.35}.fault-choice small{display:block;color:var(--muted);font-weight:500;margin-top:4px}.section{border-top:1px solid var(--line);padding-top:13px;margin-top:14px}.section h3{font-size:12px;margin:0 0 8px}.component-info{padding:11px;border:1px solid var(--line);border-radius:8px;background:#0c1218}.component-info b{font-size:12px;color:#ffbd69}.component-info p{font-size:11px;line-height:1.5;color:var(--muted);margin:6px 0 0}.legend{display:flex;flex-wrap:wrap;gap:10px;padding:10px 14px;color:var(--muted);font-size:10px;border-top:1px solid var(--line)}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--green)}.dot.red{background:var(--red)}.dot.blue{background:var(--blue)}.dot.amber{background:var(--amber)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}#stage{height:480px}}@media(max-width:560px){.wrap{padding:12px}.top{align-items:flex-start}.viewer-head{align-items:flex-start;flex-direction:column}#stage{height:380px}.readout{grid-template-columns:repeat(3,1fr)}.stat strong{font-size:15px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="top"><div class="brand">IRON<span>KNUCKLE</span> / ENGINE LAB</div><a href="./learning.html">← Back to Visual Learning Center</a></header>
+<section class="hero"><div class="eyebrow">Interactive mechanical training / prototype</div><h1>Inline-Six Diesel Engine Lab</h1><p>Rotate the engine, expose the internals, select a cylinder and introduce real training faults. Watch piston travel, valve events and combustion response change as the crankshaft turns. This is an original educational model, not an OEM-specific engine drawing.</p></section>
+<div class="layout">
+<section class="viewer"><div class="viewer-head"><b>3D CUTAWAY / INLINE-SIX</b><span>Drag to orbit · scroll or pinch to zoom</span></div><div id="stage"><div class="stage-hint">CRANKSHAFT • CONNECTING RODS • PISTONS • CAMSHAFT • VALVES</div></div>
+<div class="toolbar"><button class="tool primary" id="playBtn">Ⅱ Pause</button><button class="tool" id="stepBtn">Step 30°</button><button class="tool" id="resetBtn">Reset view</button><button class="tool active" id="cutawayBtn">Cutaway: ON</button><button class="tool active" id="labelsBtn">Labels: ON</button><button class="tool" id="explodeBtn">Exploded view: OFF</button></div>
+<div class="legend"><span><i class="dot"></i>Normal operation</span><span><i class="dot red"></i>Faulted component</span><span><i class="dot blue"></i>Air / intake</span><span><i class="dot amber"></i>Combustion / exhaust</span></div></section>
+<aside class="panel">
+<h2>Engine operating controls</h2><p class="panel-intro">The crankshaft completes two revolutions (720°) for each four-stroke cycle. The camshaft turns at half crankshaft speed.</p>
+<div class="readout"><div class="stat"><small>Engine speed</small><strong id="rpmValue">900</strong></div><div class="stat"><small>Crank angle</small><strong id="angleValue">0°</strong></div><div class="stat"><small>Cycle phase</small><strong id="phaseValue">Power</strong></div></div>
+<div class="field"><label for="rpm">Engine speed (RPM)</label><input id="rpm" type="range" min="120" max="1800" step="30" value="900"></div>
+<div class="field"><label>Selected cylinder</label><div class="cylinders" id="cylinderButtons"><button class="cyl-btn selected" data-cylinder="1">1</button><button class="cyl-btn" data-cylinder="2">2</button><button class="cyl-btn" data-cylinder="3">3</button><button class="cyl-btn" data-cylinder="4">4</button><button class="cyl-btn" data-cylinder="5">5</button><button class="cyl-btn" data-cylinder="6">6</button></div></div>
+<div class="component-info" id="cylinderInfo"><b>Cylinder 1 / Power stroke</b><p>Fuel has ignited and expanding gases are driving the piston downward. Both valves are closed during the power stroke.</p></div>
+<div class="section"><h3>Introduce a training fault</h3><div class="fault-list">
+<button class="fault-choice active" data-fault="none">Healthy engine<small>All six cylinders operate normally.</small></button>
+<button class="fault-choice" data-fault="injector">Injector disabled<small>No fuel delivery in the selected cylinder; no combustion event.</small></button>
+<button class="fault-choice" data-fault="compression">Low compression<small>Compression sealing is lost; the cylinder cannot develop normal firing pressure.</small></button>
+<button class="fault-choice" data-fault="intake">Intake valve stuck closed<small>Air charge cannot enter during the intake stroke.</small></button>
+<button class="fault-choice" data-fault="exhaust">Exhaust valve stuck closed<small>Exhaust gas cannot leave during the exhaust stroke.</small></button>
+</div><div class="status" id="faultStatus">Healthy engine: all six cylinders are contributing evenly.</div></div>
+<div class="section"><h3>Component identification</h3><p class="panel-intro">Tap a colored part in the model to identify it. Use the controls above to expose the moving assembly.</p><div class="component-info" id="partInfo"><b>Crankshaft</b><p>Converts reciprocating piston motion into rotating output torque. Each crank throw drives its connecting rod and piston.</p></div></div>
+</aside></div></main>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js';
+
+const stage=document.getElementById('stage');
+const scene=new THREE.Scene();scene.background=null;
+const camera=new THREE.PerspectiveCamera(38,1,.1,100);camera.position.set(9,7.2,12);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;stage.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xc7d8e5,0x1b2228,2.1));
+const key=new THREE.DirectionalLight(0xffe0b8,3.1);key.position.set(5,10,8);key.castShadow=true;scene.add(key);
+const rim=new THREE.DirectionalLight(0x69b7e8,1.6);rim.position.set(-8,3,-7);scene.add(rim);
+const root=new THREE.Group();scene.add(root);
+const mat=(color,metalness=.45,roughness=.38,transparent=false,opacity=1)=>new THREE.MeshStandardMaterial({color,metalness,roughness,transparent,opacity,depthWrite:!transparent});
+const iron=mat(0x566574,.82,.3),dark=mat(0x26333e,.72,.34),steel=mat(0xb9c6ce,.9,.22),aluminum=mat(0x8b9aa5,.8,.28),amber=mat(0xff9f1c,.48,.3),blue=mat(0x3696cf,.35,.3),rubber=mat(0x171d22,.15,.75),glass=mat(0x607d8c,.35,.3,true,.19),red=mat(0xff4545,.35,.25);
+const cylinders=[],moving=[],selectables=[],labelTargets=[];
+const cylX=i=>(i-2.5)*1.55;
+function mesh(geo,material,parent=root,name=''){const m=new THREE.Mesh(geo,material);m.castShadow=true;m.receiveShadow=true;m.name=name;if(parent)parent.add(m);return m}
+function box(w,h,d,material,parent=root,name=''){return mesh(new THREE.BoxGeometry(w,h,d),material,parent,name)}
+function cylinder(r1,r2,h,material,parent=root,segments=32){return mesh(new THREE.CylinderGeometry(r1,r2,h,segments),material,parent)}
+function rodBetween(a,b,r,material,parent=root){const dir=new THREE.Vector3().subVectors(b,a);const m=mesh(new THREE.CylinderGeometry(r,r,dir.length(),12),material,parent);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());return m}
+function tag(text,pos){const el=document.createElement('div');el.textContent=text;Object.assign(el.style,{position:'absolute',fontSize:'10px',fontWeight:'800',letterSpacing:'.08em',color:'#f4f7fa',textShadow:'0 2px 5px #000',pointerEvents:'none',whiteSpace:'nowrap',display:'none'});stage.appendChild(el);labelTargets.push({el,pos:pos.clone()});return el}
+const block=box(10.1,2.1,2.25,glass,root,'Engine block / cutaway');block.position.set(0,-.1,0);selectables.push({mesh:block,title:'Cylinder block',desc:'The block houses the cylinder bores, crankshaft main bearings and lower rotating assembly. The translucent cutaway lets you see the internal mechanisms.'});
+const sump=box(9.3,.65,2.05,dark);sump.position.set(0,-1.45,0);
+const head=box(10.0,.7,2.2,aluminum);head.position.set(0,1.55,0);selectables.push({mesh:head,title:'Cylinder head',desc:'The head contains the intake and exhaust ports, valves, injector locations and the combustion-chamber roof.'});
+const rockerCover=box(9.6,.35,1.7,dark);rockerCover.position.set(0,2.08,0);
+const intake=box(8.7,.42,.48,blue);intake.position.set(0,1.1,1.48);selectables.push({mesh:intake,title:'Intake manifold',desc:'Routes clean, pressurized air to each cylinder. A restriction or boost leak can reduce the available air charge.'});
+const exhaust=box(8.7,.42,.48,amber);exhaust.position.set(0,1.05,-1.48);selectables.push({mesh:exhaust,title:'Exhaust manifold',desc:'Collects exhaust gas from the cylinders and directs it toward the turbocharger turbine.'});
+const crankGroup=new THREE.Group();root.add(crankGroup);
+const crankCore=cylinder(.19,.19,9.6,steel,crankGroup,24);crankCore.rotation.z=Math.PI/2;crankCore.position.set(0,-1.1,0);
+const crankPins=[];
+for(let i=0;i<3;i++){const x=(i-1)*3.1;const phase=i===1?Math.PI:0;const webA=box(.28,.85,.65,steel,crankGroup);webA.position.set(x,-1.1,0);webA.rotation.z=phase;const pin=cylinder(.16,.16,1.2,amber,crankGroup,20);pin.rotation.z=Math.PI/2;pin.position.set(x,-1.1,0);crankPins.push({x,phase,pin,webA});}
+const camGroup=new THREE.Group();root.add(camGroup);const camshaft=cylinder(.12,.12,9.7,steel,camGroup,24);camshaft.rotation.z=Math.PI/2;camshaft.position.set(0,2.35,0);
+const crankLabel=tag('CRANKSHAFT',new THREE.Vector3(0,-1.75,1.5)),camLabel=tag('CAMSHAFT',new THREE.Vector3(0,2.65,-.7));
+for(let i=0;i<6;i++){
+ const x=cylX(i),phase=[0,Math.PI,Math.PI,0,0,Math.PI][i];
+ const liner=cylinder(.53,.53,1.8,dark);liner.position.set(x,.58,0);liner.rotation.x=Math.PI/2;
+ const pistonGroup=new THREE.Group();root.add(pistonGroup);
+ const piston=cylinder(.48,.48,.27,steel,pistonGroup,40);piston.position.set(0,0,0);pistonGroup.position.set(x,.1,0);
+ const pin=mesh(new THREE.SphereGeometry(.12,16,12),amber,pistonGroup);pin.position.set(0,-.12,0);
+ const rod=new THREE.Group();root.add(rod);rod.position.set(x,-1.1,0);
+ const rodShaft=box(.16,.9,.2,aluminum,rod);rodShaft.position.y=.48;
+ const rodCap=cylinder(.24,.24,.22,steel,rod,24);rodCap.rotation.x=Math.PI/2;rodCap.position.y=0;
+ const crankThrow=new THREE.Group();crankGroup.add(crankThrow);crankThrow.position.set(x,-1.1,0);
+ const journal=cylinder(.17,.17,.85,amber,crankThrow,24);journal.rotation.z=Math.PI/2;
+ const valveGroup=new THREE.Group();root.add(valveGroup);
+ const valves=[];
+ for(let v=0;v<2;v++){const z=v===0?.45:-.45;const stem=cylinder(.045,.045,.48,steel,valveGroup,12);stem.position.set(x,1.95,z);const face=cylinder(.16,.16,.08,amber,valveGroup,24);face.position.set(x,1.69,z);valves.push({stem,face,base:1.95,z,v});}
+ const injector=cylinder(.11,.11,.38,amber);injector.position.set(x,2.05,0);
+ const burn=mesh(new THREE.SphereGeometry(.28,20,16),amber);burn.position.set(x,1.15,0);burn.material=mat(0xff8a19,.15,.25,true,.65);burn.visible=false;
+ const cylinderObj={index:i+1,x,phase,pistonGroup,rod,crankThrow,valves,injector,burn,liner,phaseName:'Power',fault:'none'};
+ cylinders.push(cylinderObj);
+ const label=tag('CYL '+(i+1),new THREE.Vector3(x,2.6,.65));
+ const hit=mesh(new THREE.SphereGeometry(.62,16,12),new THREE.MeshBasicMaterial({color:0xff9f1c,transparent:true,opacity:0,depthWrite:false}),root,'Cylinder '+(i+1));hit.position.set(x,.85,.65);hit.userData.cylinder=i+1;selectables.push({mesh:hit,title:'Cylinder '+(i+1),desc:'Select this cylinder to inspect its four-stroke events and run a fault simulation.'});
+}
+const camLobes=[];
+for(let i=0;i<6;i++){const x=cylX(i);for(let v=0;v<2;v++){const lobe=mesh(new THREE.SphereGeometry(.2,18,14),amber,camGroup);lobe.scale.set(1,.72,.8);lobe.position.set(x,2.35,v===0?.38:-.38);camLobes.push(lobe);}}
+const turboGroup=new THREE.Group();root.add(turboGroup);turboGroup.position.set(5.6,.8,-1.6);
+const turboHousing=mesh(new THREE.TorusGeometry(.55,.16,16,48),steel,turboGroup);turboHousing.rotation.y=Math.PI/2;
+const turboHub=cylinder(.14,.14,.4,amber,turboGroup,24);turboHub.rotation.z=Math.PI/2;
+const turbine=new THREE.Group();turboGroup.add(turbine);
+for(let i=0;i<8;i++){const blade=box(.08,.62,.12,aluminum,turbine);blade.position.set(0,0,0);blade.rotation.z=i*Math.PI/4;blade.position.y=Math.sin(i*Math.PI/4)*.22;blade.position.z=Math.cos(i*Math.PI/4)*.22;}
+tag('TURBO / EXHAUST-DRIVEN',new THREE.Vector3(5.5,1.65,-1.6));
+const firingOrder=[1,5,3,6,2,4],fireOffsets={};firingOrder.forEach((c,i)=>fireOffsets[c]=i*120);
+let selected=1,fault='none',angle=0,rpm=900,running=true,cutaway=true,labels=true,exploded=false;
+const info=document.getElementById('cylinderInfo'),partInfo=document.getElementById('partInfo'),faultStatus=document.getElementById('faultStatus');
+const phases=['Power','Exhaust','Intake','Compression'];
+function cycleState(c,crank){const local=((crank-fireOffsets[c.index]+720)%720+720)%720;const phaseIndex=Math.floor(local/180);return{phase:phases[phaseIndex],local,progress:(local%180)/180};}
+function updateModel(){
+ const rad=THREE.MathUtils.degToRad(angle),camRad=rad/2;
+ crankGroup.rotation.x=rad;camGroup.rotation.x=camRad;
+ cylinders.forEach(c=>{
+  const p=cycleState(c,angle);c.phaseName=p.phase;
+  const theta=THREE.MathUtils.degToRad(angle+c.phase);
+  const stroke= Math.cos(theta)*.48;
+  c.pistonGroup.position.y=.05+stroke;
+  const crankPoint=new THREE.Vector3(c.x+Math.cos(theta)*.48,-1.1+Math.sin(theta)*.48,0);
+  const pistonPin=new THREE.Vector3(c.x,.0+stroke,0);
+  c.rod.position.copy(crankPoint);const delta=pistonPin.clone().sub(crankPoint);c.rod.scale.y=delta.length()/1.1;c.rod.position.copy(crankPoint);c.rod.rotation.z=Math.atan2(delta.x,delta.y);
+  c.crankThrow.rotation.x=rad;
+  const faulted=c.index===selected&&fault!=='none';
+  const intakeOpen=p.phase==='Intake'&&!(faulted&&fault==='intake');
+  const exhaustOpen=p.phase==='Exhaust'&&!(faulted&&fault==='exhaust');
+  c.valves.forEach((v,j)=>{const open=j===0?intakeOpen:exhaustOpen;const lift=open?.16:0;v.stem.position.y=v.base-lift;v.face.position.y=1.69-lift;});
+  c.burn.visible=p.phase==='Power'&&!(faulted&&(fault==='injector'||fault==='compression'));
+  c.burn.scale.setScalar(c.burn.visible?(.8+.35*Math.sin(p.progress*Math.PI)):0.001);
+  c.burn.material= faulted?red:amber;
+ });
+ turbine.rotation.x-=.015+(rpm/1800)*.08;
+ document.getElementById('angleValue').textContent=Math.round(angle)+'°';
+ document.getElementById('phaseValue').textContent=cycleState(cylinders[selected-1],angle).phase;
+ document.getElementById('rpmValue').textContent=String(rpm);
+ const c=cylinders[selected-1],p=cycleState(c,angle);
+ info.innerHTML='<b>Cylinder '+selected+' / '+p.phase+' stroke</b><p>'+phaseDescription(c,p.phase)+'</p>';
+ renderFaultStatus();
+}
+function phaseDescription(c,phase){if(c.index===selected&&fault==='injector'&&phase==='Power')return'Injector fault active: fuel delivery is disabled. The piston still travels through its power stroke, but there is no normal combustion event to drive it downward.';if(c.index===selected&&fault==='compression'&&phase==='Compression')return'Compression fault active: the piston rises, but cylinder sealing is compromised, so normal compression pressure cannot be built.';if(c.index===selected&&fault==='intake'&&phase==='Intake')return'Intake valve stuck closed: the piston moves down but the cylinder cannot draw in its normal fresh-air charge.';if(c.index===selected&&fault==='exhaust'&&phase==='Exhaust')return'Exhaust valve stuck closed: the piston moves up but exhaust gas is trapped. Continued operation can cause serious damage.';return({Power:'Fuel has ignited and expanding gases drive the piston downward. Both valves are closed.',Exhaust:'The piston travels upward and pushes spent exhaust gas out through the open exhaust valve.',Intake:'The piston travels downward while the intake valve is open, drawing fresh air into the cylinder.',Compression:'Both valves are closed as the piston travels upward and compresses the trapped air charge.'})[phase];}
+function renderFaultStatus(){const descriptions={none:'Healthy engine: all six cylinders are contributing evenly.',injector:'Injector disabled on cylinder '+selected+': the cylinder has no commanded fuel event. Expect a contribution imbalance and a cylinder-specific misfire / cutout symptom.',compression:'Low compression on cylinder '+selected+': compression pressure is reduced. A relative compression test, cranking speed analysis and mechanical sealing checks can help confirm it.',intake:'Intake valve stuck closed on cylinder '+selected+': air charge is restricted. Verify valve motion and investigate valvetrain or valve damage before condemning the cylinder.',exhaust:'Exhaust valve stuck closed on cylinder '+selected+': exhaust cannot leave normally. Treat this as a potentially damaging mechanical fault; do not continue running the engine.'};faultStatus.textContent=descriptions[fault];faultStatus.classList.toggle('fault',fault!=='none');}
+function selectCylinder(n){selected=n;document.querySelectorAll('.cyl-btn').forEach(b=>b.classList.toggle('selected',Number(b.dataset.cylinder)===n));document.querySelectorAll('.fault-choice').forEach(b=>b.classList.toggle('active',b.dataset.fault===fault));updateModel();}
+document.getElementById('cylinderButtons').addEventListener('click',e=>{const b=e.target.closest('[data-cylinder]');if(b)selectCylinder(Number(b.dataset.cylinder));});
+document.querySelectorAll('.fault-choice').forEach(b=>b.addEventListener('click',()=>{fault=b.dataset.fault;document.querySelectorAll('.fault-choice').forEach(x=>x.classList.toggle('active',x===b));updateModel();}));
+document.getElementById('rpm').addEventListener('input',e=>{rpm=Number(e.target.value);updateModel();});
+document.getElementById('playBtn').addEventListener('click',e=>{running=!running;e.currentTarget.textContent=running?'Ⅱ Pause':'▶ Play';});
+document.getElementById('stepBtn').addEventListener('click',()=>{running=false;document.getElementById('playBtn').textContent='▶ Play';angle=(angle+30)%720;updateModel();});
+document.getElementById('resetBtn').addEventListener('click',()=>{camera.position.set(9,7.2,12);target.set(0,.2,0);angle=0;updateModel();});
+document.getElementById('cutawayBtn').addEventListener('click',e=>{cutaway=!cutaway;e.currentTarget.classList.toggle('active',cutaway);e.currentTarget.textContent='Cutaway: '+(cutaway?'ON':'OFF');block.material= cutaway?glass:iron;head.visible=!cutaway;rockerCover.visible=!cutaway;});
+document.getElementById('labelsBtn').addEventListener('click',e=>{labels=!labels;e.currentTarget.classList.toggle('active',labels);e.currentTarget.textContent='Labels: '+(labels?'ON':'OFF');});
+document.getElementById('explodeBtn').addEventListener('click',e=>{exploded=!exploded;e.currentTarget.classList.toggle('active',exploded);e.currentTarget.textContent='Exploded view: '+(exploded?'ON':'OFF');head.position.y=exploded?2.45:1.55;rockerCover.position.y=exploded?2.95:2.08;});
+let target=new THREE.Vector3(0,.2,0),dragging=false,lastX=0,lastY=0,yaw=.65,pitch=.48,distance=15;
+function cameraUpdate(){pitch=THREE.MathUtils.clamp(pitch,-.05,1.35);camera.position.set(target.x+distance*Math.sin(yaw)*Math.cos(pitch),target.y+distance*Math.sin(pitch),target.z+distance*Math.cos(yaw)*Math.cos(pitch));camera.lookAt(target);}
+stage.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;stage.setPointerCapture(e.pointerId);});
+stage.addEventListener('pointermove',e=>{if(!dragging)return;yaw-=(e.clientX-lastX)*.008;pitch+=(e.clientY-lastY)*.008;lastX=e.clientX;lastY=e.clientY;cameraUpdate();});
+stage.addEventListener('pointerup',()=>dragging=false);stage.addEventListener('pointercancel',()=>dragging=false);
+stage.addEventListener('wheel',e=>{e.preventDefault();distance=THREE.MathUtils.clamp(distance+e.deltaY*.008,7,27);cameraUpdate();},{passive:false});
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+stage.addEventListener('click',e=>{if(dragging)return;const rect=renderer.domElement.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(selectables.map(s=>s.mesh),false);if(hits.length){const item=selectables.find(s=>s.mesh===hits[0].object);if(item){partInfo.innerHTML='<b>'+item.title+'</b><p>'+item.desc+'</p>';if(item.mesh.userData.cylinder)selectCylinder(item.mesh.userData.cylinder);}}});
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);}new ResizeObserver(resize).observe(stage);resize();cameraUpdate();
+let previous=performance.now();function animate(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(running){angle=(angle+rpm*6*dt)%720;updateModel();}renderer.render(scene,camera);labelTargets.forEach(t=>{const p=t.pos.clone().project(camera);const x=(p.x*.5+.5)*stage.clientWidth,y=(-p.y*.5+.5)*stage.clientHeight;t.el.style.left=x+'px';t.el.style.top=y+'px';t.el.style.display=labels&&p.z<1?'block':'none';});requestAnimationFrame(animate);}updateModel();requestAnimationFrame(animate);
+</script></body></html>
