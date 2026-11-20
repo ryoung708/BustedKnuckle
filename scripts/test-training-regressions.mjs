@@ -136,6 +136,8 @@ assert.ok(engineScript, "3D engine module script is present");
 const parseableEngineScript = engineScript.replace(/^import .*?;\s*/m, "");
 assert.doesNotThrow(() => new Script(parseableEngineScript), "3D engine module script parses after its import is removed");
 const homepage = await readFile(new URL("../index.html", import.meta.url), "utf8");
-assert.ok(homepage.includes('href="./engine-3d.html"'));
+const learning = await readFile(new URL("../learning.html", import.meta.url), "utf8");
+assert.ok(!homepage.includes('href="./engine-3d.html"'), "The 3D engine stays inside the Learning Center, not as a separate homepage card");
+assert.ok(learning.includes('href="./engine-3d.html"'), "The Engine Basics lesson links to the 3D engine model");
 
 console.log("IronKnuckle circuit and training regression tests passed.");
