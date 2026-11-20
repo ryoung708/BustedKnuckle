@@ -17,8 +17,14 @@ export function createCaseRecord(raw, sourceApp) {
         year: String(vehicle.year || ""),
         make: String(vehicle.make || ""),
         model: String(vehicle.model || ""),
-        engine: String(vehicle.engine || ""),
-        emissions: String(vehicle.emissions || "")
+        vin: String(vehicle.vin || ""),
+        engineManufacturer: String(vehicle.engineManufacturer || vehicle.engineMake || ""),
+        engineModel: String(vehicle.engineModel || vehicle.engine || ""),
+        engine: String(vehicle.engine || vehicle.engineModel || ""),
+        transmissionManufacturer: String(vehicle.transmissionManufacturer || vehicle.transmissionMake || ""),
+        transmissionModel: String(vehicle.transmissionModel || vehicle.transmission || ""),
+        emissionsFamily: String(vehicle.emissionsFamily || vehicle.emissions || ""),
+        emissions: String(vehicle.emissions || vehicle.emissionsFamily || "")
       },
       complaint: String(raw.complaint || ""),
       workflowId: String(raw.workflowId || ""),
