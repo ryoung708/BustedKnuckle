@@ -72,6 +72,21 @@ try {
     }
   }
 
+  // Keep the Diagnostic Command Center transparent about the evidence behind its recommendations.
+  const diagnostics = await readFile(join(root, "diagnostics.html"), "utf8");
+  assert.match(diagnostics, /recommendation\.explanation\|\|recommendation\.reason/,
+    "Diagnostic Command Center must display the shared brain's evidence-based explanation");
+  assert.match(diagnostics, /FINDINGS USED IN THIS DECISION/,
+    "Diagnostic Command Center must label the findings used in its recommendation");
+  assert.match(diagnostics, /item\.testPoints&&"Test points: "/,
+    "Recommendation evidence must retain technician-recorded test points");
+  assert.match(diagnostics, /item\.actual&&"Measured: "/,
+    "Recommendation evidence must retain actual recorded measurements");
+  assert.match(diagnostics, /item\.condition&&"Condition: "/,
+    "Recommendation evidence must retain test conditions");
+  assert.match(diagnostics, /not independently validated measurements/,
+    "Recommendation evidence must retain the measurement-validation caution");
+
   // Guard the Learning Center's highest-risk interactive paths against silent regressions.
   const learning = await readFile(join(root, "learning.html"), "utf8");
   for (const system of ["electrical", "engine", "aftertreatment", "transmission", "differential", "summary"]) {
