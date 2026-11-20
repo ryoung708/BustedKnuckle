@@ -98,9 +98,9 @@ const missingChallenge = [...challengeRefs].filter(id => !challengeIds.has(id));
 assert.deepEqual(missingChallenge, [], "Build-a-Fault references missing element IDs: " + missingChallenge.join(", "));
 
 // The Learning Center must load and use the exact tested four-stroke helper.
-const learning = await readFile(new URL("../learning.html", import.meta.url), "utf8");
-assert.match(learning, /<script src=["']\.\/js\/engine-cycle\.js["']><\/script>/);
-assert.match(learning, /window\.IronKnuckleEngineCycle\.getValveState\(cycleDegrees\)/);
+const learningPage = await readFile(new URL("../learning.html", import.meta.url), "utf8");
+assert.match(learningPage, /<script src=["']\.\/js\/engine-cycle\.js["']><\/script>/);
+assert.match(learningPage, /window\.IronKnuckleEngineCycle\.getValveState\(cycleDegrees\)/);
 
 // J1939 trainer: both terminators must be independently isolatable and
 // resistance must be solved from the actual connected network, not presets.
@@ -136,6 +136,7 @@ assert.ok(engineScript, "3D engine module script is present");
 const parseableEngineScript = engineScript.replace(/^import .*?;\s*/m, "");
 assert.doesNotThrow(() => new Script(parseableEngineScript), "3D engine module script parses after its import is removed");
 const homepage = await readFile(new URL("../index.html", import.meta.url), "utf8");
-assert.ok(homepage.includes('href="./engine-3d.html"'));
+assert.ok(!homepage.includes('href="./engine-3d.html"'), "The 3D engine stays inside the Learning Center, not as a separate homepage card");
+assert.ok(learningPage.includes('href="./engine-3d.html"'), "The Engine Basics lesson links to the 3D engine model");
 
 console.log("IronKnuckle circuit and training regression tests passed.");

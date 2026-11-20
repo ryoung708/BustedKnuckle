@@ -9,7 +9,7 @@ const lower = value => clean(value).toLowerCase();
 const populated = value => clean(value).length > 0;
 const electricalWorkflowIds = new Set([
   "j1939_network","j1939_dropout","light_inop","general_electrical",
-  "short_ground","short_power","open_circuit","voltage_drop","intermittent"
+  "short_ground","short_power","open_circuit","voltage_drop","intermittent","power_loss"
 ]);
 const electricalTerms = /\b(j1939|can\s*(?:bus|high|low|h|l)|data.?link|communication dropout|controller offline|voltage drop|short to ground|short to power|open circuit|high resistance|harness|connector|power feed|ground path|electrical fault)\b/i;
 const powertrainTerms = /\b(engine|after.?treatment|dpf|scr|def|doser|regen|regeneration|turbo|boost|fuel pressure|rail pressure|injector|misfire|coolant|transmission|mdrive|i.?shift|clutch|gearbox|drivetrain|derate|torque loss)\b/i;
@@ -172,6 +172,7 @@ function recommendationFor(record, steps, system) {
   return next ? {stepId:next.id,reason:populated(currentEntry.choice) ? "The current observation is recorded; continue with the next powertrain workflow stage." : "No observation is recorded for the current stage.",action:populated(currentEntry.choice) ? "Perform the next check using the exact vehicle-specific procedure and record the conditions and result." : "Complete or explicitly defer the current check before treating later evidence as meaningful.",state:populated(currentEntry.choice) ? "next" : "hold"} : null;
 }
 function workflowCaution(workflowId) {
+  if (workflowId === "power_loss") return "A complete-power-loss event can involve battery source, high-current connections, master disconnects, main distribution, grounds or switched feeds. Follow the exact vehicle wiring diagram and OEM test procedure. Do not bridge high-current components or bypass circuit protection.";
   const normalized = workflowId === "j1939_network" ? "j1939_dropout" : workflowId;
   return powertrainWorkflows[normalized]?.caution ||
     "Use the exact vehicle-specific service information, wiring diagram and approved test procedure.";
