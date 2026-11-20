@@ -63,6 +63,73 @@ function summarizeEvidence(entries = {}) {
     faultCodes:faultCodes.map(f => clean(f.code)).filter(Boolean)
   };
 }
+function recommendationEvidence(record = {}, steps = [], recommendation = {}) {
+  const entries = record.entries || {};
+  const rows = Object.entries(entries).map(([stepId, entry], index) => {
+    const step = steps.find(item => item.id === stepId);
+    const measurements = entry?.measurements || {};
+    const faultCodes = Array.isArray(entry?.faultCodes) ? entry.faultCodes : [];
+    const actual = clean(measurements.actual);
+    const condition = clean(measurements.condition);
+    const testPoints = clean(measurements.testPoints);
+    const notes = clean(entry?.notes);
+    const choice = clean(entry?.choice);
+    const hasDetails = [choice, actual, condition, testPoints, notes].some(Boolean) || faultCodes.length > 0;
+    return {
+      stepId, stepTitle:step?.title || stepId, index,
+      timestamp:Date.parse(entry?.updatedAt || entry?.recordedAt || "") || 0,
+      choice, condition, testPoints, actual, notes,
+      faultCodes:faultCodes.map(item => clean(item.code)).filter(Boolean),
+      hasDetails
+    };
+  }).filter(row => row.hasDetails);
+  rows.sort((a,b) => (a.timestamp && b.timestamp && a.timestamp !== b.timestamp)
+    ? a.timestamp - b.timestamp : a.index - b.index);
+  const trail = rows.slice(-4).map(row => ({
+    stepId:row.stepId,stepTitle:row.stepTitle,observation:row.choice,
+    condition:row.condition,testPoints:row.testPoints,actual:row.actual,
+    notes:row.notes,faultCodes:row.faultCodes
+  }));
+  const latest = trail[trail.length - 1] || null;
+  const measurementSummary = latest
+    ? [latest.condition && "Condition: " + latest.condition,
+       latest.testPoints && "Test points: " + latest.testPoints,
+       latest.actual && "Measured: " + latest.actual,
+       latest.faultCodes.length && "Fault codes: " + latest.faultCodes.join(", ")]
+      .filter(Boolean).join(" · ")
+    : "";
+  let explanation;
+  if (recommendation.state === "hold") {
+    const currentStepId = steps[Math.max(0,Math.min(Number(record.currentStep)||0,steps.length-1))]?.id;
+    const priorObserved = rows.filter(row => row.choice && row.stepId !== currentStepId).slice(-1)[0];
+    if (priorObserved && recommendation.stepId === currentStepId) {
+      const priorDetails = [priorObserved.condition && "Condition: " + priorObserved.condition,
+        priorObserved.testPoints && "Test points: " + priorObserved.testPoints,
+        priorObserved.actual && "Measured: " + priorObserved.actual,
+        priorObserved.faultCodes.length && "Fault codes: " + priorObserved.faultCodes.join(", ")]
+        .filter(Boolean).join(" · ");
+      explanation = "The previous completed finding in " + priorObserved.stepTitle + " was: " + priorObserved.choice + "." +
+        (priorDetails ? " " + priorDetails + "." : "") +
+        " That finding leads the workflow to " + (clean(steps.find(step => step.id === recommendation.stepId)?.title) || recommendation.stepId) +
+        " as the next check. This stage is still open because no result has been recorded here yet; perform the check and record what actually happens. The earlier finding guides the next test but does not prove a failed component.";
+    } else {
+      explanation = "IronKnuckle is holding this stage because " + clean(recommendation.reason).replace(/[.!?]+$/, "") + ".";
+      if (latest) explanation += " The latest saved details are shown below; they are not treated as a completed test result.";
+    }
+  } else if (recommendation.state === "review") {
+    explanation = "The recorded workflow has reached a review point. Confirm the physical cause, repair and repeat-test evidence before closing the case.";
+  } else if (latest) {
+    explanation = "The latest recorded finding is from " + latest.stepTitle + ": " +
+      (latest.observation || "details recorded without a selected observation") + "." +
+      (measurementSummary ? " " + measurementSummary + "." : "") +
+      " Based on that finding, the workflow rule recommends " +
+      (clean(steps.find(step => step.id === recommendation.stepId)?.title) || recommendation.stepId) +
+      ": " + clean(recommendation.reason).replace(/[.!?]+$/, "") + ".";
+  } else {
+    explanation = "No completed test finding is available yet. Start with the first stage and record the actual observation before relying on a branch recommendation.";
+  }
+  return {explanation,latestFinding:latest,evidenceTrail:trail};
+}
 function evidenceQuality(record, evidence) {
   if (record.verification === "verified" && populated(record.rootCause) && populated(record.repairPerformed))
     return {state:"technician-verified-outcome",label:"Technician marked repair verified",note:"This is a technician-recorded outcome, not automatically peer-reviewed or OEM-certified."};
@@ -186,6 +253,7 @@ export function analyzeDiagnosticCase(caseRecord = {}, steps = [], options = {})
   const system = getSystem(caseRecord);
   const recommendation = recommendationFor(caseRecord, steps, system);
   const current = steps.find(step => step.id === recommendation?.stepId) || null;
+  const recommendationContext = recommendationEvidence(caseRecord, steps, recommendation || {});
   const currentEntry = entries[steps[caseRecord.currentStep || 0]?.id] || {};
   const measurementOnly = !populated(currentEntry.choice) && Object.values(currentEntry.measurements || {}).some(populated);
   const blocked = measurementOnly || recommendation?.state === "hold";
@@ -205,7 +273,9 @@ export function analyzeDiagnosticCase(caseRecord = {}, steps = [], options = {})
     specialist:specialistFor(system),status,workflowId:caseRecord.workflowId || "",
     recommendation:recommendation ? {
       stepId:recommendation.stepId,stepTitle:current?.title || recommendation.stepId,
-      reason:recommendation.reason,action:recommendation.action,state:recommendation.state || "next"
+      reason:recommendation.reason,action:recommendation.action,state:recommendation.state || "next",
+      explanation:recommendationContext.explanation,latestFinding:recommendationContext.latestFinding,
+      evidenceTrail:recommendationContext.evidenceTrail
     } : null,
     evidence,evidenceQuality:evidenceQuality(caseRecord,evidence),
     vehicleContext:{make:clean(vehicle.make),model:clean(vehicle.model),engine:clean(vehicle.engine),missing:missingVehicle},

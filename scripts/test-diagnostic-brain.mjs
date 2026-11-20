@@ -28,6 +28,25 @@ assert.equal(branch.recommendation.stepId,"resistance");
 assert.equal(branch.evidence.stagesWithObservations,1);
 assert.equal(branch.evidence.stagesWithMeasurements,1);
 assert.ok(branch.caution.length>20);
+assert.match(branch.recommendation.explanation,/Multiple modules offline/);
+assert.match(branch.recommendation.explanation,/0.4 V/);
+assert.match(branch.recommendation.explanation,/CAN H to ground/);
+assert.equal(branch.recommendation.evidenceTrail.length,1);
+assert.equal(branch.recommendation.latestFinding.stepTitle,"Baseline");
+
+const history = analyzeDiagnosticCase({
+  ...base,currentStep:2,
+  entries:{
+    baseline:{choice:"Multiple modules offline",updatedAt:"2026-11-16T10:00:00Z",measurements:{condition:"Key ON",testPoints:"CAN H to ground",actual:"0.4 V"},notes:"Both controllers dropped offline"},
+    resistance:{choice:"Approximately 60Ω under this test setup",updatedAt:"2026-11-16T11:00:00Z",measurements:{condition:"Key OFF",testPoints:"CAN H to CAN L",actual:"60 ohms"},notes:"ELD still connected"}
+  }
+},electricalSteps);
+assert.equal(history.recommendation.stepId,"addon");
+assert.equal(history.recommendation.evidenceTrail.length,2);
+assert.match(history.recommendation.explanation,/Approximately 60Ω/);
+assert.match(history.recommendation.explanation,/60 ohms/);
+assert.match(history.recommendation.explanation,/Key OFF/);
+assert.match(history.recommendation.explanation,/Resistance/);
 
 const missingVehicle = analyzeDiagnosticCase({workflowId:"light_inop",vehicle:{},entries:{}},electricalSteps);
 assert.deepEqual(missingVehicle.vehicleContext.missing,["make","model","engine"]);
