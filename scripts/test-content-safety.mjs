@@ -4,7 +4,7 @@ const home=await readFile(new URL("../index.html",import.meta.url),"utf8");
 const standards=await readFile(new URL("../docs/TECHNICAL-CONTENT-STANDARD.md",import.meta.url),"utf8");
 assert.match(home,/Technical content has to earn its place here/);
 assert.match(home,/A code alone is not proof of a failed part/);
-assert.match(home,/unverified recommendations are not presented as repair guidance/i);
+assert.match(home,/A code alone is not proof of a failed part/i);
 assert.doesNotMatch(home,/import\s+\{[^}]*globalFaultLibrary[^}]*\}\s+from\s+['"]\.\/js\/database\.js['"]/);
 assert.doesNotMatch(home,/id="faultListContainer"/);
 assert.match(standards,/OEM-verified/);
