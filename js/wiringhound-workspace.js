@@ -143,7 +143,32 @@ bindFollowRecommendation();
 $("workspace").querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>{readStep();stepIndex=Number(b.dataset.step);active.currentStep=stepIndex;updateCase();renderWorkspace();renderSimilar()});
 $("saveStep").onclick=()=>{readStep();$("stepFeedback").innerHTML='<span class="success">Progress saved locally'+(user?" and queued for private cloud sync.":".")+(currentEntry().choice?" Observation recorded.":" No observation selected; this stage remains open.")+'</span>'};["condition","testPoints","actualReadings","observation","stepNotes"].forEach(id=>$(id)?.addEventListener("change",()=>{readStep();refreshDecisionPanel();const f=$("stepFeedback");if(f)f.textContent=currentEntry().choice?"Draft saved. The recorded observation is now being used by the decision engine.":"Draft saved. Measurements and notes are captured; select an observed result to route the engine, or continue with this stage left open."}));
 $("previous").onclick=()=>{readStep();stepIndex=Math.max(0,stepIndex-1);active.currentStep=stepIndex;updateCase();renderWorkspace();renderSimilar()};
-$("nextStep").onclick=()=>{readStep();const d=recommendNextStep(active,steps);const target=steps.findIndex(x=>x.id===d?.stepId);if(d?.state==="review"||stepIndex===steps.length-1){$("rootCause").focus();$("stepFeedback").textContent=(d?.reason||"The guided checks are complete.")+" You can record the outcome now; any unfinished stages remain open.";return}const current=steps[stepIndex],entry=currentEntry();if(!entry.choice){entry.skipped=true;entry.skippedAt=new Date().toISOString()}const recommended=target>=0&&target!==stepIndex&&d?.state!=="hold";stepIndex=Math.min(recommended?target:stepIndex+1,steps.length-1);active.currentStep=stepIndex;updateCase();renderWorkspace();renderSimilar();const feedback=$("stepFeedback");if(feedback)feedback.textContent="Progress saved. "+current.title+(entry.choice?" was recorded.":" remains OPEN / NOT COMPLETED.")+(recommended?" The engine selected the next branch.":" You can continue; no result has been inferred.")};
+$("nextStep").onclick=()=>{
+ readStep();
+ const brain=analyzeDiagnosticCase(active,steps,{relatedCases:relatedDiagnosticCases()});
+ const d=brain.recommendation;
+ const target=steps.findIndex(x=>x.id===d?.stepId);
+ if(d?.state==="review"||stepIndex===steps.length-1){
+  $("rootCause").focus();
+  $("stepFeedback").textContent=(d?.reason||"The guided checks are complete.")+" "+(d?.action||"Review the evidence and record the outcome. Any unfinished stages remain open.");
+  return;
+ }
+ if(d?.state==="hold"||target<0||target===stepIndex){
+  updateCase();
+  refreshDecisionPanel();
+  const feedback=$("stepFeedback");
+  if(feedback)feedback.innerHTML='<span class="warn">STAY ON THIS STEP · '+esc(d?.reason||"The available evidence does not support a next step.")+' '+esc(d?.action||"Record the actual observation or clarify what remains unknown.")+'</span>';
+  return;
+ }
+ const current=steps[stepIndex],entry=currentEntry();
+ stepIndex=target;
+ active.currentStep=target;
+ updateCase();
+ renderWorkspace();
+ renderSimilar();
+ const feedback=$("stepFeedback");
+ if(feedback)feedback.textContent="Progress saved. "+current.title+" was analyzed. Next recommended step: "+steps[target].title+". "+(d.reason||"The next step was selected from the recorded evidence.");
+};
 $("finishEarly").onclick=()=>{readStep();const remaining=steps.filter(x=>!stepStatus(x)).length;active.status="finished-early";active.finishedEarly=true;active.finishedAt=new Date().toISOString();saveOutcomeFields();updateCase();renderWorkspace();$("stepFeedback").innerHTML='<span class="warn">JOB FINISHED EARLY. '+remaining+' diagnostic stage(s) remain open and were preserved. Record the root cause, repair and verification in the outcome section if known.</span>';renderSimilar()};
 $("saveOutcome").onclick=()=>{readStep();saveOutcomeFields();updateCase();renderWorkspace();$("stepFeedback").innerHTML='<span class="success">Case outcome saved. '+(active.status==="finished-early"?"Unfinished stages remain preserved.":"")+'</span>';renderSimilar()};
 $("exportCase").onclick=()=>{readStep();download("wiringhound-"+active.id+".json",JSON.stringify({product:"IronKnuckle WiringHound",schemaVersion:2,exportedAt:new Date().toISOString(),case:active},null,2))};
