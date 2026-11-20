@@ -46,6 +46,9 @@ async function recognizeImage(file,onProgress){
 }
 export async function extractFaultReport(file,{onProgress=()=>{}}={}){
  const name=String(file?.name||"").toLowerCase(),isPdf=file?.type==="application/pdf"||name.endsWith(".pdf");
+ if(file?.type==="text/plain"||file?.type==="application/json"||/\\.(txt|json)$/i.test(name)){
+  onProgress("Reading text fault report…");return {text:await file.text(),sourceKind:"text / JSON report"};
+ }
  if(!isPdf){
   if(!/^image\/(jpeg|png|webp)$/i.test(file?.type||"")&&!/\.(jpe?g|png|webp)$/i.test(name))throw new Error("Use a PDF, JPG, PNG or WebP image.");
   onProgress("Loading browser OCR engine…");return {text:await recognizeImage(file,onProgress),sourceKind:"image OCR"};
