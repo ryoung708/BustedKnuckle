@@ -77,7 +77,7 @@ for(let i=0;i<6;i++){
  const rodShaft=box(.16,.9,.2,aluminum,rod);rodShaft.position.y=.48;
  const rodCap=cylinder(.24,.24,.22,steel,rod,24);rodCap.rotation.x=Math.PI/2;rodCap.position.y=0;
  const crankThrow=new THREE.Group();crankGroup.add(crankThrow);crankThrow.position.set(x,0,0);
- const journal=cylinder(.17,.17,.85,amber,crankThrow,24);journal.rotation.z=Math.PI/2;journal.position.y=.48;
+ const journal=cylinder(.17,.17,.85,amber,crankThrow,24);journal.rotation.z=Math.PI/2;journal.position.y=.48;const cheekA=box(.18,.62,.25,steel,crankThrow);cheekA.position.set(-.43,.24,0);const cheekB=box(.18,.62,.25,steel,crankThrow);cheekB.position.set(.43,.24,0);
  const valveGroup=new THREE.Group();root.add(valveGroup);
  const valves=[];
  for(let v=0;v<2;v++){const z=v===0?.45:-.45;const stem=cylinder(.045,.045,.48,steel,valveGroup,12);stem.position.set(x,1.95,z);const face=cylinder(.16,.16,.08,amber,valveGroup,24);face.position.set(x,1.69,z);valves.push({stem,face,base:1.95,z,v});}
