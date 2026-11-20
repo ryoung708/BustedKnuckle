@@ -2,6 +2,24 @@
 // Deterministic, evidence-led routing. Recommendations are not diagnoses.
 const has=(value,...terms)=>terms.some(term=>value.includes(term));
 const result=(stepId,reason,action,state="next")=>({stepId,reason,action,state});
+function explicitlyAbnormal(value=""){
+  const text=String(value||"").toLowerCase()
+    .replace(/not\s+(?:excessive|abnormal|too high|too low|out of spec)/g,"")
+    .replace(/no\s+(?:excessive|abnormal)\s+(?:drop|reading|condition)/g,"");
+  return /out of spec|outside (?:the )?spec|above (?:the )?(?:spec|limit)|below (?:the )?(?:spec|limit)|spec(?:ification)?\s+(?:max(?:imum)?|limit)|excessive|abnormal|too high|too low|large voltage drop|high voltage drop|fails? (?:the )?spec|voltage drop.{0,24}(?:excessive|too high)/i.test(text);
+}
+function inspectionAction(stepId){
+  const actions={
+    battery_baseline:"Pause before moving downstream. Recheck the battery bank directly at the lead posts under the same load, then inspect battery condition, interconnects and charging/source conditions. Record the exact OEM limit and retest result.",
+    battery_connections:"Inspect the specific battery post, clamp, interconnect or cable connection where the drop was measured. Look for looseness, corrosion, heat, discoloration, damaged crimps or poor terminal contact. Measure across each connection separately under the same load; do not disturb energized high-current connections.",
+    main_disconnect:"Do not continue to main distribution yet. Inspect the master disconnect switch and both cable terminations for loose hardware, corrosion, heat/discoloration, damaged contacts or poor terminal fit. Measure voltage drop directly across the closed switch and separately across each cable-to-terminal connection under the same load. Do not bypass or bridge the switch.",
+    main_distribution:"Inspect the identified main fuse, fusible link, junction and terminal connections. Compare voltage at the input and output under the same load, then isolate the exact boundary where the voltage is lost. Verify the correct diagram and protection rating.",
+    grounds:"Inspect the affected ground terminal, cable, strap and chassis/engine attachment for looseness, corrosion, paint, heat or damaged crimps. Measure each ground-path segment separately under the same load.",
+    ignition_feed:"Inspect the identified ignition/run relay, socket terminals, switched feed and control connections. Monitor relay input, control and output under the same operating condition; do not condemn the relay or controller from one reading.",
+    intermittent_localization:"Inspect the exact segment or connection where the dropout was captured. Check routing, retention, terminal fit, moisture, chafing and prior repairs, then repeat the same monitored test."
+  };
+  return actions[stepId]||"Pause progression and investigate the exact test point and circuit boundary that produced the abnormal result. Verify the vehicle-specific specification, inspect the connection/component and repeat the same test before moving on.";
+}
 
 export function recommendNextStep(caseRecord,steps){
   if(!Array.isArray(steps)||!steps.length)return null;
@@ -17,6 +35,9 @@ export function recommendNextStep(caseRecord,steps){
   ].some(value=>String(value??"").trim()) ||
     (Array.isArray(currentEntry.faultCodes)&&currentEntry.faultCodes.length>0) ||
     (Array.isArray(currentEntry.evidence)&&currentEntry.evidence.length>0);
+  const currentText=[currentMeasurements.actual,currentMeasurements.condition,currentMeasurements.testPoints,currentEntry.notes].filter(Boolean).join(" ");
+  if(!currentChoice && caseRecord?.workflowId==="power_loss" && explicitlyAbnormal(currentText))
+    return result(currentStep.id,"The recorded reading or notes explicitly describe an out-of-spec or abnormal result. This is an active finding, not a pass; investigate this test point before continuing.",inspectionAction(currentStep.id),"hold");
   if(!currentChoice && (hasCurrentDetails || currentIndex>0))
     return result(currentStep.id,"This stage has not been given an observed result. Saved notes, measurements, fault codes or attachments cannot be treated as a pass or used to guess the next test.","Select the observation that best matches the test, or record why the check could not be completed. If none of the options fits, leave the stage open and clarify the finding.","hold");
   const recorded=steps.map((step,index)=>({step,index,entry:entries[step.id]}))
@@ -33,6 +54,12 @@ export function recommendNextStep(caseRecord,steps){
   const workflow=caseRecord.workflowId||"j1939_network";
   const hold=(why,action)=>result(id,why,action,"hold");
   const go=(target,why,action)=>result(target,why,action);
+  if(workflow==="power_loss" && explicitlyAbnormal([
+    latest.entry.measurements?.actual,latest.entry.measurements?.condition,
+    latest.entry.measurements?.testPoints,latest.entry.notes,answer
+  ].filter(Boolean).join(" "))){
+    return hold("An out-of-spec or abnormal result was recorded at "+latest.step.title+". Investigate this test point before advancing; do not treat the finding as a pass.",inspectionAction(id));
+  }
 
   if(id==="verify"){
     if(has(answer,"repair verified","no longer occurs"))return result("verify","The technician recorded a successful verification.","Review original complaint conditions, before/after evidence and related faults before closing.","review");
