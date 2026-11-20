@@ -26,6 +26,29 @@ export function recommendNextStep(caseRecord,steps){
     return hold("The cause or repair has not been fully verified.","Keep the case open and identify the missing proof or repeat the original failure conditions.");
   }
 
+  if(workflow==="power_loss"){
+    const route={
+      scope:["battery_baseline","The exact scope of the power loss has been defined.","Measure directly at the battery posts and, if possible, capture voltage during the actual dropout."],
+      battery_baseline:["battery_connections","The battery-post baseline is recorded. A stable or collapsing reading both require checking the high-current connections before moving downstream.","Inspect battery posts, interconnects and main cables; perform loaded voltage-drop checks using the OEM procedure."],
+      battery_connections:["main_disconnect","The battery connections have been checked or a connection issue has been identified.","Verify the master disconnect path if equipped. Do not bypass or bridge it."],
+      main_disconnect:["main_distribution","The master disconnect path is checked or not applicable.","Trace the primary feed through main protection and distribution points using the vehicle diagram."],
+      main_distribution:["grounds","The main distribution feed has been evaluated.","Check primary negative, engine, frame and cab ground paths with loaded voltage-drop tests."],
+      grounds:["ignition_feed","Primary ground paths have been evaluated.","If source and main distribution remain stable, monitor switched ignition/run and wake-up feeds."],
+      ignition_feed:["intermittent_localization","Switched power behavior has been captured.","Reproduce the dropout safely while monitoring a known-good upstream point and the downstream feed."],
+      intermittent_localization:["verify","The intermittent event has been localized or the limits of reproduction are documented.","Document physical evidence, repair and repeat the original operating conditions while monitoring the same points."]
+    };
+    const next=route[id];
+    if(next){
+      if(id==="scope"&&has(answer,"could not reproduce"))return hold("The complete-power-loss event was not reproduced.","Record when it occurs, what remains powered and what returns first. Preserve the case and capture the event before disturbing connections.");
+      if(id==="battery_connections"&&has(answer,"within applicable limits","not tested"))return go("main_disconnect","No confirmed battery-connection defect is recorded; continue downstream without assuming the connections are good under every condition.","Check the master disconnect path if equipped, then continue through primary distribution.");
+      if(id==="main_disconnect"&&has(answer,"no separate master","not applicable"))return go("main_distribution","No separate master disconnect applies to this vehicle.","Trace the primary feed through main protection and distribution points.");
+      if(id==="main_distribution"&&has(answer,"remains stable"))return go("grounds","The primary distribution feed remained stable during this test.","Evaluate the main negative and body/engine ground paths under load.");
+      if(id==="grounds"&&has(answer,"within applicable limits"))return go("ignition_feed","The tested primary ground paths remained within the applicable limits.","If source and distribution stay stable, monitor ignition/run and controller wake-up feeds.");
+      if(id==="ignition_feed"&&has(answer,"remain stable"))return go("intermittent_localization","The monitored switched feeds remained stable during this test.","Continue safe event capture at another documented boundary; avoid replacing a relay or controller without proof.");
+      return go(next[0],next[1],next[2]);
+    }
+  }
+
   if(workflow==="j1939_network"){
     switch(id){
       case "baseline":
