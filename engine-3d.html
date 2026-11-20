@@ -57,8 +57,8 @@ function rodBetween(a,b,r,material,parent=root){const dir=new THREE.Vector3().su
 function tag(text,pos){const el=document.createElement('div');el.textContent=text;Object.assign(el.style,{position:'absolute',fontSize:'10px',fontWeight:'800',letterSpacing:'.08em',color:'#f4f7fa',textShadow:'0 2px 5px #000',pointerEvents:'none',whiteSpace:'nowrap',display:'none'});stage.appendChild(el);labelTargets.push({el,pos:pos.clone()});return el}
 const block=box(10.1,2.1,2.25,glass,root,'Engine block / cutaway');block.position.set(0,-.1,0);selectables.push({mesh:block,title:'Cylinder block',desc:'The block houses the cylinder bores, crankshaft main bearings and lower rotating assembly. The translucent cutaway lets you see the internal mechanisms.'});
 const sump=box(9.3,.65,2.05,dark);sump.position.set(0,-1.45,0);
-const head=box(10.0,.7,2.2,aluminum);head.position.set(0,1.55,0);selectables.push({mesh:head,title:'Cylinder head',desc:'The head contains the intake and exhaust ports, valves, injector locations and the combustion-chamber roof.'});
-const rockerCover=box(9.6,.35,1.7,dark);rockerCover.position.set(0,2.08,0);
+const head=box(10.0,.7,2.2,aluminum);head.position.set(0,1.55,0);head.visible=false;selectables.push({mesh:head,title:'Cylinder head',desc:'The head contains the intake and exhaust ports, valves, injector locations and the combustion-chamber roof.'});
+const rockerCover=box(9.6,.35,1.7,dark);rockerCover.position.set(0,2.08,0);rockerCover.visible=false;
 const intake=box(8.7,.42,.48,blue);intake.position.set(0,1.1,1.48);selectables.push({mesh:intake,title:'Intake manifold',desc:'Routes clean, pressurized air to each cylinder. A restriction or boost leak can reduce the available air charge.'});
 const exhaust=box(8.7,.42,.48,amber);exhaust.position.set(0,1.05,-1.48);selectables.push({mesh:exhaust,title:'Exhaust manifold',desc:'Collects exhaust gas from the cylinders and directs it toward the turbocharger turbine.'});
 const crankGroup=new THREE.Group();root.add(crankGroup);
@@ -69,7 +69,7 @@ const camGroup=new THREE.Group();root.add(camGroup);const camshaft=cylinder(.12,
 const crankLabel=tag('CRANKSHAFT',new THREE.Vector3(0,-1.75,1.5)),camLabel=tag('CAMSHAFT',new THREE.Vector3(0,2.65,-.7));
 for(let i=0;i<6;i++){
  const x=cylX(i),tdc=[0,120,240,240,120,0][i];
- const liner=cylinder(.53,.53,1.8,dark);liner.position.set(x,.58,0);liner.rotation.x=Math.PI/2;
+ const liner=cylinder(.53,.53,1.8,dark);liner.position.set(x,.58,0);
  const pistonGroup=new THREE.Group();root.add(pistonGroup);
  const piston=cylinder(.48,.48,.27,steel,pistonGroup,40);piston.position.set(0,0,0);pistonGroup.position.set(x,.1,0);
  const pin=mesh(new THREE.SphereGeometry(.12,16,12),amber,pistonGroup);pin.position.set(0,-.12,0);
@@ -113,7 +113,7 @@ function updateModel(){
   const pistonPin=new THREE.Vector3(c.x,.0+stroke,0);
   c.rod.position.copy(crankPoint);const delta=pistonPin.clone().sub(crankPoint);c.rod.scale.y=delta.length()/1.1;c.rod.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());
   c.crankThrow.rotation.x=-THREE.MathUtils.degToRad(c.tdc);
-  const faulted=c.index===selected&&fault!=='none';
+  const faulted=c.index===selected&&fault!=='none';c.liner.material=c.index===selected?(fault!=='none'?red:amber):dark;
   const intakeOpen=p.phase==='Intake'&&!(faulted&&fault==='intake');
   const exhaustOpen=p.phase==='Exhaust'&&!(faulted&&fault==='exhaust');
   c.valves.forEach((v,j)=>{const open=j===0?intakeOpen:exhaustOpen;const lift=open?.16:0;v.stem.position.y=v.base-lift;v.face.position.y=1.69-lift;});
