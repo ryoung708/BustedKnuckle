@@ -380,7 +380,7 @@ async function sendEmailOtp() {
 async function verifyEmailOtp() {
   const token = $("cloudOtp").value.trim();
   if (!pendingOtpEmail) { status("Enter your email and request a code first.", "ERROR"); return; }
-  if (!/^\\d{6}$/.test(token)) { status("Enter the six-digit code from your email.", "ERROR"); $("cloudOtp").focus(); return; }
+  if (!/^\d{6}$/.test(token)) { status("Enter the six-digit code from your email.", "ERROR"); $("cloudOtp").focus(); return; }
   status("Verifying your sign-in code…", "VERIFYING");
   const { error } = await client.auth.verifyOtp({ email: pendingOtpEmail, token, type: "email" });
   if (error) { status(error.message, "ERROR"); return; }
