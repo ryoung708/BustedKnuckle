@@ -361,16 +361,37 @@ async function init() {
     else { showSignedOut(); status("Signed out. Local cases remain on this browser.", "OFFLINE"); }
   });
 }
-$("cloudSignIn").addEventListener("click", async () => {
+let pendingOtpEmail = "";
+async function sendEmailOtp() {
   const email = $("cloudEmail").value.trim();
   if (!email) { alert("Enter your authorized account email."); return; }
-  status("Sending secure sign-in link…", "SENDING");
-  const { error } = await client.auth.signInWithOtp({
-    email,
-    options: { shouldCreateUser: false, emailRedirectTo: location.href.split("#")[0].split("?")[0] }
-  });
-  status(error ? error.message : "Check your email for the one-time sign-in link. New account creation is disabled.", error ? "ERROR" : "EMAIL SENT");
-});
+  pendingOtpEmail = email;
+  status("Sending six-digit sign-in code…", "SENDING");
+  const { error } = await client.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+  if (error) {
+    status(error.message, "ERROR");
+    return;
+  }
+  $("cloudOtpPanel").hidden = false;
+  $("cloudOtp").value = "";
+  $("cloudOtp").focus();
+  status("Code sent. Enter the six digits from your email here. Account creation remains disabled.", "CODE SENT");
+}
+async function verifyEmailOtp() {
+  const token = $("cloudOtp").value.trim();
+  if (!pendingOtpEmail) { status("Enter your email and request a code first.", "ERROR"); return; }
+  if (!/^\\d{6}$/.test(token)) { status("Enter the six-digit code from your email.", "ERROR"); $("cloudOtp").focus(); return; }
+  status("Verifying your sign-in code…", "VERIFYING");
+  const { error } = await client.auth.verifyOtp({ email: pendingOtpEmail, token, type: "email" });
+  if (error) { status(error.message, "ERROR"); return; }
+  $("cloudOtpPanel").hidden = true;
+  $("cloudOtp").value = "";
+  status("Signed in. Loading your private case vault…", "CONNECTED");
+}
+$("cloudSignIn").addEventListener("click", sendEmailOtp);
+$("cloudResendOtp").addEventListener("click", sendEmailOtp);
+$("cloudVerifyOtp").addEventListener("click", verifyEmailOtp);
+$("cloudOtp").addEventListener("keydown", event => { if (event.key === "Enter") verifyEmailOtp(); });
 $("cloudSignOut").addEventListener("click", async () => {
   const { error } = await client.auth.signOut();
   if (error) status(error.message, "ERROR");
