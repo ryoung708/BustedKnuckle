@@ -12,7 +12,8 @@ const cases = [
   ["Engine cranks but will not start", "dcc", "crank_no_start"],
   ["Low engine power under load with a derate", "dcc", "power_loss"],
   ["Check engine light is on with an active SPN/FMI", "dcc", "check_engine_light"],
-  ["Driver reports an unusual engine noise", "dcc", "complaint_triage"]
+  ["Driver reports an unusual engine noise", "dcc", "complaint_triage"],
+  ["Truck will not start; cranking behavior is not known", "dcc", "complaint_triage"]
 ];
 
 for (const [complaint, route, workflowId] of cases) {
