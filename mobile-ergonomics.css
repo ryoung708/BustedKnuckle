@@ -16,35 +16,6 @@
   textarea { line-height: 1.5; }
   :focus-visible { scroll-margin-block: 90px; }
 
-  /* Keep the homepage useful without spending most of the first screen on branding. */
-  .master-wrapper { padding-left: 12px; padding-right: 12px; }
-  .brand-logo-img { height: clamp(112px, 34vw, 160px); }
-  .home-tools-grid { gap: 10px; }
-  .home-tools-grid .command-center-card,
-  .home-tools-grid .wiringhound-launch-card,
-  .home-tools-grid .learning-center-card,
-  .home-tools-grid .chassis-lab-card,
-  .technical-library-card {
-    min-height: 0;
-    padding: 13px;
-    gap: 11px;
-  }
-  .home-tools-grid .command-center-copy,
-  .home-tools-grid .wiringhound-copy,
-  .home-tools-grid .learning-center-copy,
-  .home-tools-grid .chassis-lab-copy,
-  .technical-library-copy { min-width: 0; }
-  .home-tools-grid .command-center-description,
-  .home-tools-grid .wiringhound-description,
-  .home-tools-grid .learning-center-description,
-  .home-tools-grid .chassis-lab-description,
-  .technical-library-description { font-size: 12px; line-height: 1.45; }
-  .home-tools-grid .command-center-cta,
-  .home-tools-grid .wiringhound-cta,
-  .home-tools-grid .learning-center-cta,
-  .home-tools-grid .chassis-lab-cta,
-  .technical-library-cta { min-height: 40px; }
-
   /* Diagnostic Command Center: reduce fixed/sticky UI and improve touch targets. */
   .wrap { padding-left: 12px; padding-right: 12px; }
   .case-summary { position: static; top: auto; }
@@ -68,24 +39,6 @@
   .panel { min-width: 0; }
 }
 
-@media (max-width: 380px) {
-  .home-tools-grid .command-center-icon,
-  .home-tools-grid .wiringhound-mark,
-  .home-tools-grid .learning-center-mark,
-  .home-tools-grid .chassis-lab-icon { flex-basis: 58px; width: 58px; height: 58px; }
-  .home-tools-grid .command-center-icon svg,
-  .home-tools-grid .wiringhound-mark svg,
-  .home-tools-grid .learning-center-mark svg { width: 46px; height: 46px; }
-  .home-tools-grid .command-center-title,
-  .home-tools-grid .wiringhound-title,
-  .home-tools-grid .learning-center-title,
-  .home-tools-grid .chassis-lab-title,
-  .technical-library-title { font-size: 18px; }
-}
-
 @media (max-height: 520px) and (orientation: landscape) and (max-width: 900px) {
-  .brand-logo-img { height: 92px; }
-  .premium-header { gap: 10px; padding-bottom: 12px; margin-bottom: 12px; }
-  .hero { padding-top: 14px; }
   .case-summary { position: static; }
 }
