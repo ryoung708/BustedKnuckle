@@ -3,6 +3,18 @@
 // a single reading; vehicle-specific specifications and topology must be verified.
 
 export const workflows = {
+  complaint_triage: {
+    title:"General engine / powertrain complaint triage",
+    category:"Engine diagnostics",
+    caution:"This is a broad starting path when the complaint does not clearly identify a subsystem. Use the exact vehicle configuration, OEM diagnostic procedure and specifications. Do not replace a focused fault tree when stronger evidence identifies a system.",
+    steps:[
+      {id:"complaint_baseline",title:"Define and reproduce the complaint",instruction:"Translate the driver's words into an observable condition. Record when it occurs, operating state, load, RPM, temperature, road conditions, warning messages and what still operates. Reproduce only under safe conditions.",choices:["Complaint reproduced and conditions documented","Intermittent pattern documented but not reproduced","Driver description needs clarification","Unable to reproduce"]},
+      {id:"controller_scan",title:"Capture controller faults and event data",instruction:"Scan the relevant controllers. Record exact fault identifiers, source controller, active or inactive status, occurrence information and available freeze-frame or event data. Separate primary faults from possible consequences.",choices:["Relevant active fault(s) identified","Only inactive / historic faults","Multiple unrelated faults","No relevant faults or scan incomplete"]},
+      {id:"data_review",title:"Compare live data with the correct specification",instruction:"Choose data that directly relates to the complaint. Record commanded and actual values, units, operating conditions and source controller. Compare only with specifications for the exact engine, emissions level and calibration.",choices:["Data points toward a specific subsystem","Data is implausible or inconsistent","Values appear within applicable specification","More data or vehicle information required"]},
+      {id:"targeted_inspection",title:"Narrow the system and inspect supporting evidence",instruction:"Use the complaint, fault data and measurements to select the next focused system. Inspect only the supported subsystem and document the physical or measured evidence before identifying a cause.",choices:["Specific subsystem isolated for focused diagnosis","Physical evidence found; cause not yet confirmed","No subsystem isolated","Vehicle-specific information still needed"]},
+      {id:"triage_verify",title:"Document findings and next diagnostic direction",instruction:"Record what the evidence supports, what remains unknown and the next focused test or workflow. Do not label a component failed without a confirming test and applicable specification.",choices:["Focused diagnostic direction established","More evidence required","Complaint not reproduced; follow-up needed"],terminal:true}
+    ]
+  },
   j1939_dropout: {
     title: "J1939 communication dropout",
     category: "Network / communication",
