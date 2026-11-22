@@ -4,7 +4,7 @@ export function classifyDiagnosticComplaint(complaint = "") {
   const text = String(complaint || "").toLowerCase().replace(/\s+/g, " ").trim();
   const match = pattern => pattern.test(text);
 
-  if (match(/j1939|can\s*(?:bus|high|low|h|l)|data\s*link|communication (?:loss|drop|fault)|controllers? offline|no crank|won't crank|will not crank|starter|battery|alternator|charging system|voltage drop|low voltage|short to (?:ground|power)|open circuit|wiring|harness|fuse|relay|ground (?:fault|issue)|head.?lamp|headlight|marker light|turn signal|lighting|lamp inop|light inop|complete (?:vehicle )?power loss|total (?:vehicle )?power loss/)) {
+  if (match(/j1939|can\s*(?:bus|network|high|low|h|l)|data\s*link|communication (?:loss|drop|fault)|controllers?\s+(?:go\s+)?offline|network (?:dropout|drops? out)|no crank|won't crank|will not crank|starter|battery|alternator|charging system|voltage drop|low voltage|short to (?:ground|power)|open circuit|wiring|harness|fuse|relay|ground (?:fault|issue)|head.?lamp|headlight|marker light|turn signal|lighting|lamp inop|light inop|complete (?:vehicle )?power loss|total (?:vehicle )?power loss/)) {
     return { route: "wiringhound", workflowId: "", label: "WiringHound — electrical diagnosis", reason: "The complaint points to an electrical, starting, lighting, power-distribution or network concern. WiringHound is the correct evidence-first workflow for that system." };
   }
   if (match(/after.?treatment|dpf|diesel particulate|scr system|selective catalytic|def system|diesel exhaust fluid|regen(?:eration)?|soot load|doser|inducement/)) {
