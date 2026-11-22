@@ -1,0 +1,44 @@
+/* IronKnuckle mobile usability layer.
+   Additive rules only: all changes are scoped to compact viewports so desktop styling remains unchanged. */
+@media (max-width: 680px) {
+  html { -webkit-text-size-adjust: 100%; }
+  body { min-width: 0; overflow-x: hidden; }
+  button, a, input, select, textarea, summary { touch-action: manipulation; }
+  button, .btn, .top a, .secondary, .back { min-height: 44px; }
+  input, select, textarea,
+  .field input, .field select, .field textarea,
+  .search, .library-toolbar input, .library-toolbar select,
+  .fault-code-form input, .fault-code-form select,
+  .fault-form input, .fault-form select {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  textarea { line-height: 1.5; }
+  :focus-visible { scroll-margin-block: 90px; }
+
+  /* Diagnostic Command Center: reduce fixed/sticky UI and improve touch targets. */
+  .wrap { padding-left: 12px; padding-right: 12px; }
+  .case-summary { position: static; top: auto; }
+  .step-focus { scroll-margin-top: 12px; }
+  .guided-actions { gap: 9px; }
+  .guided-actions .btn,
+  .actions .btn,
+  .case-actions .btn { min-height: 44px; padding: 11px 12px; }
+  .choice { min-height: 44px; padding: 12px; }
+  .workflow { min-height: 48px; padding: 12px; }
+  .details-card summary,
+  .library-panel > summary { min-height: 44px; display: flex; align-items: center; }
+  .fault-code-suggestion { min-height: 48px; padding: 11px; }
+
+  /* WiringHound: easier step navigation and larger field controls. */
+  .stepnav { gap: 8px; }
+  .stepnav button { min-height: 44px; padding: 10px 12px; }
+  .fault, .evidence { align-items: flex-start; flex-wrap: wrap; }
+  .case-card { padding: 12px; }
+  .case-list { -webkit-overflow-scrolling: touch; }
+  .panel { min-width: 0; }
+}
+
+@media (max-height: 520px) and (orientation: landscape) and (max-width: 900px) {
+  .case-summary { position: static; }
+}
