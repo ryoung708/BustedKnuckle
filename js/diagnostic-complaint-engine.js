@@ -13,7 +13,7 @@ export function classifyDiagnosticComplaint(complaint = "") {
   if (match(/transmission|gearbox|won't shift|will not shift|does not shift|shift concern|stuck in gear|gear engagement|clutch actuator|driveshaft|driveline|differential|axle|u.?joint|power take.?off|pto/)) {
     return { route: "dcc", workflowId: "drivetrain_fault", label: "Transmission / drivetrain concern", reason: "The complaint points to a transmission, clutch, driveline, differential or axle concern." };
   }
-  if (match(/cranks? (?:over )?(?:but )?(?:will not|won't|does not|doesn't) start|crank(?:s|ing)? but no start|crank.?no.?start|will not start|won't start|hard start|long crank/)) {
+  if (match(/cranks? (?:over )?(?:but )?(?:will not|won't|does not|doesn't) start|crank(?:s|ing)? but no start|crank.?no.?start|hard start|long crank/)) {
     return { route: "dcc", workflowId: "crank_no_start", label: "Cranks but will not start", reason: "The complaint describes a crank/no-start or difficult-start condition." };
   }
   if (match(/low power|lack of power|loss of engine power|engine derate|derate|poor acceleration|low boost|reduced torque|engine runs weak/)) {
