@@ -1,0 +1,105 @@
+/* IronKnuckle Learning Center — mobile-first layout refinements.
+   Desktop remains untouched; these rules apply only to compact viewports. */
+@media (max-width: 680px) {
+  .wrap { padding: 12px 12px 32px; }
+  .top { align-items: center; flex-wrap: wrap; padding-bottom: 12px; }
+  .brand { font-size: 12px; }
+  .back { min-height: 44px; display: inline-flex; align-items: center; }
+  .hero { padding: 22px 0 14px; }
+  .hero h1 { font-size: clamp(27px, 8vw, 36px); }
+  .hero p { font-size: 13px; }
+
+  /* Replace tall two-column system tiles with a compact swipeable topic rail. */
+  .system-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 2px 1px 10px;
+    margin: 12px -2px 12px;
+    scroll-snap-type: x proximity;
+  }
+  .system-tab {
+    flex: 0 0 190px;
+    min-height: 66px;
+    padding: 10px;
+    scroll-snap-align: start;
+  }
+  .system-tab .sys-icon { flex-basis: 32px; width: 32px; height: 32px; }
+  .system-tab b { font-size: 12px; }
+  .system-tab small { font-size: 10px; }
+
+  /* The five learning stages become a horizontal progress strip. */
+  .learning-path {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 7px;
+    scroll-snap-type: x proximity;
+  }
+  .path-step { flex: 0 0 145px; min-height: 68px; scroll-snap-align: start; }
+
+  .electrical-launch { gap: 10px; padding: 12px; }
+  .electrical-launch a { min-height: 44px; display: inline-flex; align-items: center; }
+  .module-explorer, .summary-view { padding: 13px; }
+  .module-heading h2 { font-size: 20px; }
+  .module-grid { gap: 10px; }
+  .system-diagram { padding: 7px; }
+  .component-panel { padding: 12px; }
+  .component-panel h3 { font-size: 18px; }
+
+  /* Lesson picker becomes a horizontal strip; the active lesson gets the full width below. */
+  .tabs {
+    gap: 7px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 5px;
+  }
+  .tab { flex: 0 0 auto; min-height: 42px; }
+  .layout { display: flex; flex-direction: column; gap: 10px; }
+  .layout > .list {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px;
+    scroll-snap-type: x proximity;
+  }
+  .layout > .list .choice {
+    flex: 0 0 180px;
+    min-height: 68px;
+    margin: 0;
+    padding: 10px;
+    scroll-snap-align: start;
+  }
+  .layout > .list .choice b { font-size: 12px; }
+  .layout > .list .choice small { font-size: 10px; }
+  .layout > .panel { min-width: 0; padding: 13px; }
+  .panel h2 { font-size: 20px; }
+  .facts { grid-template-columns: 1fr; }
+
+  /* Simulator controls are grouped into two compact columns instead of a long form. */
+  .bench, .simulator { padding: 13px; }
+  .bench h2, .simulator h2 { font-size: 19px; }
+  .bench-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .bench-controls label { font-size: 9px; }
+  .bench select, .sim-controls select { min-height: 44px; font-size: 16px; }
+  .bench-actions { gap: 7px; }
+  .bench-actions button, .answers button { min-height: 44px; }
+  .meter-console { grid-template-columns: 1fr; }
+  .virtual-meter { width: 100%; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .summary-footer { align-items: flex-start; flex-direction: column; }
+  .links { gap: 8px; }
+  .action { min-height: 44px; display: inline-flex; align-items: center; }
+}
+@media (max-width: 380px) {
+  .system-tab { flex-basis: 170px; }
+  .layout > .list .choice { flex-basis: 160px; }
+  .bench-controls { grid-template-columns: 1fr; }
+}
