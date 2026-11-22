@@ -30,7 +30,9 @@
 <p class="small" style="margin-top:12px">Private to your account. New cases sync when signed in; local copies remain on this browser. Remove customer identifiers, full VINs and confidential or restricted material before uploading.</p>
 </section></details>
 <div class="layout">
-<aside class="panel"><h2>New investigation</h2><p class="muted">Add vehicle details before using configuration-specific specifications.</p>
+<aside class="panel"><h2>New investigation</h2><p class="muted">Describe the complaint first. Add vehicle details when available to help guide the next tests.</p>
+<div class="field"><label for="complaint">Customer complaint / symptoms</label><textarea id="complaint" placeholder="What is the truck doing? When does it happen?"></textarea></div>
+<div class="field"><label for="workflow">Diagnostic path</label><select id="workflow"><option value="auto">Automatic — build path from complaint</option></select><p class="small workflow-recommendation" id="workflowRecommendation" aria-live="polite">Enter the customer complaint and IronKnuckle will recommend a focused diagnostic path. You can override it when needed.</p></div>
 <div class="row2"><div class="field"><label for="year">Model year</label><input id="year" inputmode="numeric" placeholder="2024"></div><div class="field"><label for="make">Truck manufacturer</label><input id="make" list="truckMakes" placeholder="Freightliner, Mack, Peterbilt…"></div></div>
 <div class="row2"><div class="field"><label for="model">Truck model</label><input id="model" placeholder="Cascadia, 579, Anthem…"></div><div class="field"><label for="engineMake">Engine manufacturer</label><input id="engineMake" list="engineMakes" placeholder="Detroit Diesel, Cummins, Mack…"></div></div>
 <div class="row2"><div class="field"><label for="engine">Engine model</label><input id="engine" list="engineModels" placeholder="DD15, X15, MP8…"></div><div class="field"><label for="transmissionMake">Transmission manufacturer</label><input id="transmissionMake" list="transmissionMakes" placeholder="Eaton, Allison, Volvo…"></div></div>
@@ -38,8 +40,7 @@
 <div class="field"><label for="vin">VIN last 6 (optional)</label><input id="vin" maxlength="6" inputmode="text" placeholder="Never enter full VIN"></div>
 <datalist id="truckMakes"></datalist><datalist id="engineMakes"></datalist><datalist id="engineModels"></datalist><datalist id="transmissionMakes"></datalist>
 <p class="small" id="vehicleIdentityStatus" aria-live="polite">Vehicle identity is optional at intake. Add the truck and engine details you know.</p>
-<div class="field"><label for="complaint">Customer complaint / symptoms</label><textarea id="complaint" placeholder="What is the truck doing? When does it happen?"></textarea></div>
-<div class="field"><label for="workflow">Diagnostic path</label><select id="workflow"><option value="auto">Automatic — build path from complaint</option></select><p class="small" id="workflowRecommendation" class="workflow-recommendation" aria-live="polite">Enter the customer complaint and IronKnuckle will recommend a focused diagnostic path. You can override it when needed.</p></div>
+
 <div class="actions"><button class="btn primary" id="start">Start investigation</button><button class="btn" id="openWiring">Send complaint to WiringHound ↗</button></div>
 <div class="footer">Cases stay in this browser and sync to your private vault when signed in. Do not enter customer personal information, full VINs, credentials or confidential employer/OEM material.</div>
 <details class="library-panel"><summary>＋ BROWSE SAVED DIAGNOSTIC CASES · LOCAL HISTORY</summary><div class="library-inner">
