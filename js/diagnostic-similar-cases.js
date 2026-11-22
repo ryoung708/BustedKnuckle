@@ -1,7 +1,7 @@
 // Complaint-intake similarity search across technician local and private saved cases.
 // Similarity is a retrieval aid only; it never infers a diagnosis.
 const STOP = new Set(["this","that","with","from","when","where","what","have","been","were","will","your","into","then","than","only","both","after","before","under","over","there","their","they","them","does","did","could","would","should","fault","issue","case","test","check","reading","actual","vehicle","truck","engine","system","module","modules","found","not","yes","and","for","the","complaint","customer","reported"]);
-const ELECTRICAL_IDS = /j1939|network|electrical|voltage|short|open_circuit|light_inop|intermittent|wiring|power_ground|power_loss/i;
+const ELECTRICAL_IDS = /j1939|network|electrical|voltage|short|open_circuit|light_inop|intermittent|wiring|power_ground/i;
 function text(value) { return String(value ?? "").trim(); }
 function norm(value) { return text(value).toLowerCase(); }
 function tokens(value) { return [...new Set(norm(value).split(/[^a-z0-9]+/).filter(word => word.length > 3 && !STOP.has(word)))]; }
