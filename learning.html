@@ -370,6 +370,86 @@
 #diffControls .drive-mode{cursor:pointer}
 @media(max-width:600px){.diff3d-stage{height:440px;min-height:440px}.diff3d-key{font-size:9px}}
 </style><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js"}}</script>
+
+<style id="learning-mobile-layout">
+/* Mobile-first Learning Center layout. Desktop presentation is intentionally untouched. */
+@media (max-width: 720px) {
+  .wrap { padding: 12px 12px 34px; }
+  .top { align-items: center; flex-wrap: wrap; padding-bottom: 14px; }
+  .back { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 10px; }
+  .hero { padding: 23px 0 16px; }
+  .hero h1 { font-size: clamp(27px, 8vw, 36px); }
+  .hero p { font-size: 13px; }
+  .profile-selector { padding: 13px; }
+  .learning-path {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 0 7px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .path-step { flex: 0 0 145px; min-width: 145px; scroll-snap-align: start; }
+  .system-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .system-tab { min-height: 72px; padding: 10px; gap: 8px; }
+  .system-tab .sys-icon { flex-basis: 30px; width: 30px; height: 30px; font-size: 17px; }
+  .system-tab b { font-size: 11px; }
+  .system-tab small { font-size: 9px; line-height: 1.3; }
+  .tabs { padding-bottom: 5px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .tab { flex: 0 0 auto; min-height: 42px; }
+  .layout { display: flex; flex-direction: column; gap: 10px; }
+  .list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 9px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .choice {
+    flex: 0 0 min(78vw, 260px);
+    min-width: 0;
+    min-height: 66px;
+    padding: 11px;
+    scroll-snap-align: start;
+    border: 1px solid var(--line);
+    background: var(--raised);
+  }
+  .choice b { font-size: 12px; }
+  .choice small { font-size: 10px; }
+  .panel { width: 100%; min-width: 0; padding: 14px; }
+  .panel h2 { font-size: 21px; line-height: 1.2; }
+  .facts { grid-template-columns: 1fr; }
+  .simulator, .bench { padding: 13px; }
+  .sim-controls, .bench-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sim-controls select, .bench select { min-height: 44px; font-size: 16px; }
+  .sim-readout { gap: 10px; padding: 11px; }
+  .meter-face { min-width: 0; width: 100%; }
+  .board-layout { grid-template-columns: minmax(0, 1fr); }
+  .board-layout .meter-console { max-width: none; }
+  .meter-console { grid-template-columns: minmax(0, 1fr); }
+  .virtual-meter { padding: 11px; }
+  .bench-actions button, .answers button, .module-check button { min-height: 44px; }
+  .system-tab, .choice, .tab, button, select { touch-action: manipulation; }
+  .electrical-launch { gap: 10px; }
+  .electrical-launch a, .summary-link, .action { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  .module-explorer, .summary-view { padding: 13px; }
+  .module-grid { grid-template-columns: minmax(0, 1fr); }
+  .summary-grid { grid-template-columns: minmax(0, 1fr); }
+  .cutaway-shell { padding: 5px; }
+  .cutaway-shell svg { max-height: 420px; }
+}
+@media (max-width: 420px) {
+  .system-tab { align-items: flex-start; min-height: 78px; }
+  .system-tab small { overflow-wrap: anywhere; }
+  .bench-controls, .sim-controls { grid-template-columns: minmax(0, 1fr); }
+  .learning-path .path-step { flex-basis: 132px; min-width: 132px; }
+  .choice { flex-basis: 82vw; }
+  .panel h2 { font-size: 19px; }
+  .module-heading h2 { font-size: 20px; }
+}
+</style>
+
 </head><body><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span> / LEARNING</div><a class="back" href="./index.html">← Back to workspace</a></header>
 <section class="hero"><div class="eyebrow">Technician learning • visual first</div><h1 id="learningHeroTitle">See the circuit.<br>Understand the test.</h1><p id="learningHeroIntro">Practical bay lessons: choose a topic, study the diagram and test your understanding.</p></section>
