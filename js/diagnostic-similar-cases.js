@@ -45,7 +45,7 @@ export function findSimilarDiagnosticCases(current = {}, candidates = [], workfl
     const exactCodes = [...currentCodes].filter(code => faultCodes(candidate).includes(code));
     const thresholdMet = exactCodes.length > 0 || (sharedTerms.length >= 2 && (sameEngine || sameVehicle)) || sharedTerms.length >= 4;
     if (!thresholdMet) return null;
-    const score = exactCodes.length * 100 + sharedTerms.length * 8 + (sameMake ? 5 : 0) + (sameModel ? 8 : 0) + (sameEngine ? 10 : 0);
+    const score = exactCodes.length * 100 + sharedTerms.length * 8 + (sameMake ? 5 : 0) + (sameModel ? 8 : 0) + (sameEngine ? 10 : 0) + (verified(candidate) && hasUsefulOutcome(candidate) ? 15 : 0);
     const cause = text(candidate.rootCause || candidate.confirmedCause || candidate.cause);
     const repair = text(candidate.repairPerformed || candidate.repair || candidate.resolution);
     return {id:String(candidate.id),title:[vehicle.year,vehicle.make,vehicle.model,vehicle.engine].filter(Boolean).join(" ") || candidateComplaint.slice(0,80) || "Saved diagnostic case",complaint:candidateComplaint,rootCause:cause,repairPerformed:repair,verified:verified(candidate) && hasUsefulOutcome(candidate),sharedTerms:sharedTerms.slice(0,6),matchReason:exactCodes.length ? "Matching fault code: " + exactCodes.join(", ") : sharedTerms.length + " shared symptom terms" + ((sameVehicle || sameEngine) ? " with matching vehicle / engine context." : "."),score};
