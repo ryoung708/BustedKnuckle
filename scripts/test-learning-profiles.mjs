@@ -11,9 +11,13 @@ assert.match(getLearningProfile("generic-amt-system").accuracy,/independent conc
 assert.match(getLearningProfile("generic-amt-system").limitations,/vehicle-specific information/i);
 assert.match(getLearningProfile("eaton-fuller-18-2022").limitations,/generic interactive AMT/i);
 assert.equal(getLearningProfile("generic-differential").system,"differential");
-assert.match(page,/id="learningProfileSelect"/);
-assert.match(page,/id="learningProfileStatus"/);
-assert.match(page,/learning-profiles\.js/);
+// The old profile picker was intentionally removed from the Learning Center.
+assert.doesNotMatch(page,/learningProfileSelect|learningProfileStatus|learning-profiles\.js/);
 assert.doesNotMatch(page,/mdrive-ato2612f-12\.html|mdrive3dLaunch/i);
-assert.match(page,/transmission\.html/);
-console.log("Model-specific learning profile tests passed.");
+// The AMT trainer is presented as one direct launch card, not an embedded iframe.
+assert.match(page,/id="amt3dLaunch"/);
+assert.match(page,/href="\.\/amt-transmission\.html"/);
+assert.match(page,/trainer-launch/);
+assert.doesNotMatch(page,/amt-trainer-embed|iframe src="\.\/amt-transmission\.html"/);
+assert.match(page,/manual-10-speed\.html/);
+console.log("Learning Center profile cleanup and AMT launch-card tests passed.");
