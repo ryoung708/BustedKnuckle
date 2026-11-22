@@ -79,7 +79,7 @@ function renderSimilarCases(){
  if(!complaint||complaint.length<8){box.hidden=true;list.innerHTML="";return}
  const detected=classifyDiagnosticComplaint(complaint),requested=$("workflow").value||"auto";
  const workflowId=requested==="auto"?detected.workflowId:requested;
- const system=detected.route==="wiringhound"?"electrical":"powertrain";
+ const selectedCategory=workflows[workflowId]?.category||"";const system=detected.route==="wiringhound"||/electrical|network/i.test(selectedCategory)?"electrical":"powertrain";
  const current={complaint,workflowId,system,vehicle:{make:$("make").value,model:$("model").value,engine:$("engine").value,year:$("year").value}};
  const matches=findSimilarDiagnosticCases(current,relatedDiagnosticCases(),workflows).slice(0,3);
  box.hidden=false;
