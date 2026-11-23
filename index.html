@@ -165,6 +165,109 @@ button,input,select{font:inherit}.master-wrapper{width:min(1500px,100%);margin:a
 @media(max-width:760px){.technical-library-card{height:auto;min-height:220px;padding:15px;gap:13px}.technical-library-title{font-size:clamp(19px,4vw,25px)}.technical-library-description{font-size:12px;line-height:1.45}}
 @media(max-width:600px){.technical-library-card{padding:12px;gap:12px}.technical-library-mark{flex-basis:64px;width:64px;height:64px;font-size:30px}.technical-library-description{font-size:11px}}
 
+
+/* Desktop home: six equal launch cards; mobile layout remains unchanged. */
+@media(min-width:761px){
+  .home-tools-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-auto-rows:340px;
+    align-items:stretch;
+  }
+  .home-tools-grid .command-center-wrap,
+  .home-tools-grid .wiringhound-launch-wrap,
+  .home-tools-grid .case-vault-home-wrap,
+  .home-tools-grid .learning-center-wrap,
+  .home-tools-grid .technical-library-wrap,
+  .home-tools-grid .chassis-lab-wrap{
+    height:100%;
+    min-width:0;
+    min-height:0;
+    margin:0;
+    grid-column:auto;
+  }
+  .home-tools-grid .command-center-card,
+  .home-tools-grid .wiringhound-launch-card,
+  .home-tools-grid .case-vault-home-card,
+  .home-tools-grid .learning-center-card,
+  .home-tools-grid .technical-library-card,
+  .home-tools-grid .chassis-lab-card{
+    display:flex;
+    width:100%;
+    height:100%;
+    min-height:0;
+    margin:0;
+    padding:16px;
+    gap:12px;
+    align-items:center;
+    overflow:hidden;
+  }
+  .home-tools-grid .command-center-icon,
+  .home-tools-grid .wiringhound-mark,
+  .home-tools-grid .case-vault-home-mark,
+  .home-tools-grid .learning-center-mark,
+  .home-tools-grid .technical-library-mark,
+  .home-tools-grid .chassis-lab-icon{
+    flex:0 0 68px;
+    width:68px;
+    height:68px;
+  }
+  .home-tools-grid .command-center-icon svg,
+  .home-tools-grid .wiringhound-mark svg,
+  .home-tools-grid .learning-center-mark svg{width:54px;height:54px}
+  .home-tools-grid .case-vault-home-mark{font-size:34px}
+  .home-tools-grid .technical-library-mark{font-size:29px}
+  .home-tools-grid .chassis-lab-icon{font-size:36px}
+  .home-tools-grid .command-center-copy,
+  .home-tools-grid .wiringhound-copy,
+  .home-tools-grid .case-vault-home-copy,
+  .home-tools-grid .learning-center-copy,
+  .home-tools-grid .technical-library-copy,
+  .home-tools-grid .chassis-lab-copy{
+    min-width:0;
+    flex:1;
+    overflow-wrap:anywhere;
+  }
+  .home-tools-grid .command-center-title,
+  .home-tools-grid .wiringhound-title,
+  .home-tools-grid .case-vault-home-title,
+  .home-tools-grid .learning-center-title,
+  .home-tools-grid .technical-library-title,
+  .home-tools-grid .chassis-lab-title{
+    font-size:clamp(16px,1.35vw,21px);
+    line-height:1.08;
+    overflow-wrap:anywhere;
+  }
+  .home-tools-grid .command-center-description,
+  .home-tools-grid .wiringhound-description,
+  .home-tools-grid .case-vault-home-description,
+  .home-tools-grid .learning-center-description,
+  .home-tools-grid .technical-library-description,
+  .home-tools-grid .chassis-lab-description{
+    font-size:11px;
+    line-height:1.4;
+    margin:7px 0 0;
+    overflow-wrap:anywhere;
+  }
+  .home-tools-grid .command-center-cta,
+  .home-tools-grid .wiringhound-cta,
+  .home-tools-grid .case-vault-home-cta,
+  .home-tools-grid .learning-center-cta,
+  .home-tools-grid .technical-library-cta,
+  .home-tools-grid .chassis-lab-cta{
+    display:inline-flex;
+    max-width:100%;
+    white-space:normal;
+    flex-wrap:wrap;
+    margin-top:9px;
+    padding:8px 9px;
+    font-size:9px;
+    line-height:1.3;
+  }
+}
+@media(min-width:761px) and (max-width:1100px){
+  .home-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:320px}
+}
+
 </style>
 </head>
 <body>
