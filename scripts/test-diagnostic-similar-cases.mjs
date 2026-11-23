@@ -12,7 +12,7 @@ const codeMatch=findSimilarDiagnosticCases({...current,faultCodes:["SPN 5246 FMI
   {id:"d",complaint:"Unrelated symptom text",workflowId:"voltage_drop",vehicle:{make:"Volvo",model:"VNL",engine:"D13"},entries:{step:{faultCodes:[{code:"SPN 5246 FMI 0"}]}}}
 ],workflows);
 assert.equal(codeMatch.length,1,"Exact fault-code matches should be found even when complaint wording differs.");
-assert.match(codeMatch[0].matchReason,/Matching fault/);
+assert.match(codeMatch[0].matchReason,/Matching SPN\/code/);
 
 const codeOnly=findSimilarDiagnosticCases({system:"electrical",faultCodes:[{code:"SPN 168",fmi:"0",controller:"VECU"}]},[
   {id:"code-only",workflowId:"j1939_network",entries:{step:{faultCodes:[{code:"168",fmi:"0",controller:"VECU"}]}}}
