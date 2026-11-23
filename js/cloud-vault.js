@@ -172,7 +172,7 @@ async function saveCase(raw) {
   saveQueues.set(raw.id, next);
   return next;
 }
-window.IronKnuckleCloud = { saveCase, getCases: () => cloudRows.map(row => row.raw_case).filter(Boolean) };
+window.IronKnuckleCloud = { saveCase, getCases: () => cloudRows.map(row => row.raw_case ? { ...row.raw_case, cloudId: row.id } : null).filter(Boolean) };
 
 async function shareEntireCase(caseId, button) {
   if (!user || !caseId) return;
