@@ -6,7 +6,12 @@ function text(value) { return String(value ?? "").trim(); }
 function norm(value) { return text(value).toLowerCase(); }
 function tokens(value) { return [...new Set(norm(value).split(/[^a-z0-9]+/).filter(word => word.length > 3 && !STOP.has(word)))]; }
 function faultCodes(record = {}) {
-  return (record.entries ? Object.values(record.entries) : []).flatMap(entry => Array.isArray(entry?.faultCodes) ? entry.faultCodes : []).map(fault => norm(fault.code).replace(/\s+/g, "")).filter(Boolean);
+  const fromEntries = (record.entries ? Object.values(record.entries) : [])
+    .flatMap(entry => Array.isArray(entry?.faultCodes) ? entry.faultCodes : []);
+  const direct = Array.isArray(record.faultCodes) ? record.faultCodes : [];
+  return [...fromEntries, ...direct]
+    .map(fault => norm(typeof fault === "string" ? fault : fault?.code).replace(/[^a-z0-9]/g, ""))
+    .filter(Boolean);
 }
 function candidateSystem(record, workflows = {}) {
   const id = text(record.workflowId || record.workflow || record.pathId);
@@ -42,7 +47,8 @@ export function findSimilarDiagnosticCases(current = {}, candidates = [], workfl
     const sameModel = Boolean(currentVehicle.model && norm(currentVehicle.model) === norm(vehicle.model));
     const sameEngine = Boolean(currentVehicle.engine && norm(currentVehicle.engine) === norm(vehicle.engine));
     const sameVehicle = sameMake && sameModel;
-    const exactCodes = [...currentCodes].filter(code => faultCodes(candidate).includes(code));
+    const candidateCodes = new Set(faultCodes(candidate));
+    const exactCodes = [...currentCodes].filter(code => candidateCodes.has(code));
     const thresholdMet = exactCodes.length > 0 || (sharedTerms.length >= 2 && (sameEngine || sameVehicle)) || sharedTerms.length >= 4;
     if (!thresholdMet) return null;
     const score = exactCodes.length * 100 + sharedTerms.length * 8 + (sameMake ? 5 : 0) + (sameModel ? 8 : 0) + (sameEngine ? 10 : 0) + (verified(candidate) && hasUsefulOutcome(candidate) ? 15 : 0);
