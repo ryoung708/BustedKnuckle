@@ -235,7 +235,49 @@ async function saveCase(raw) {
   saveQueues.set(raw.id, next);
   return next;
 }
-window.IronKnuckleCloud = { saveCase, getCases: () => cloudRows.map(row => row.raw_case ? { ...row.raw_case, cloudId: row.id } : null).filter(Boolean) };
+async function attachActiveCaseFile(raw, file, category = "service_bulletin") {
+  if (!user) throw new Error("Sign in to the private Case Vault before attaching a bulletin.");
+  if (!raw?.id || !file) throw new Error("An active case and a file are required.");
+  if (file.size > 25 * 1024 * 1024) throw new Error("This file is larger than the 25 MB limit.");
+  const allowed = ["image/jpeg","image/png","image/webp","application/pdf","text/plain","application/json"];
+  if (!allowed.includes(file.type)) throw new Error("Use PDF, JPG, PNG, WebP, TXT or JSON.");
+  await saveCase(raw);
+  const cloudId = caseMap()[raw.id];
+  if (!cloudId) throw new Error("The active case could not be synced. Save it to the private cloud first, then retry.");
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-120) || "evidence";
+  const path = user.id + "/" + cloudId + "/" + crypto.randomUUID() + "-" + safeName;
+  status("Uploading bulletin to the active case…", "UPLOADING");
+  const { error: uploadError } = await client.storage.from(BUCKET).upload(path, file, { contentType: file.type, upsert: false });
+  if (uploadError) throw uploadError;
+  const { data, error: rowError } = await client.from("case_attachments").insert({
+    case_id: cloudId, owner_id: user.id, storage_path: path,
+    original_name: file.name, mime_type: file.type, size_bytes: file.size,
+    category
+  }).select("id,original_name,mime_type,size_bytes,category,created_at").single();
+  if (rowError) {
+    await client.storage.from(BUCKET).remove([path]);
+    throw rowError;
+  }
+  await loadCloudCases();
+  await loadStorageUsage();
+  status("Bulletin attached to the active case in your private vault.", "CONNECTED");
+  return data;
+}
+async function getActiveCaseAttachments(raw, category = "service_bulletin") {
+  if (!user || !raw?.id) return [];
+  const cloudId = caseMap()[raw.id];
+  if (!cloudId) return [];
+  const { data, error } = await client.from("case_attachments")
+    .select("id,storage_path,original_name,mime_type,size_bytes,category,created_at")
+    .eq("case_id", cloudId).eq("category", category)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return Promise.all((data || []).map(async file => {
+    const { data: signed, error: signError } = await client.storage.from(BUCKET).createSignedUrl(file.storage_path, 300);
+    return { ...file, signedUrl: signError ? "" : signed.signedUrl };
+  }));
+}
+window.IronKnuckleCloud = { saveCase, getCases: () => cloudRows.map(row => row.raw_case ? { ...row.raw_case, cloudId: row.id } : null).filter(Boolean) , attachActiveCaseFile, getActiveCaseAttachments };
 
 async function shareEntireCase(caseId, button) {
   if (!user || !caseId) return;
