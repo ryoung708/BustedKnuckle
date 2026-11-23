@@ -55,28 +55,28 @@ assert.equal(casePid.status, "oem-documented");
 assert.match(casePid.description, /Vehicle speed/i);
 
 
-const volvoP114000 = interpretFaultCode("Volvo P114000");
-assert.equal(volvoP114000.status, "oem-documented");
-assert.match(volvoP114000.description, /Compression Brake/i);
-assert.equal(volvoP114000.confidence, "case-derived-unverified");
-assert.match(volvoP114000.scope, /Volvo AN/);
+const mackP114000 = interpretFaultCode("Mack P114000");
+assert.equal(mackP114000.status, "oem-documented");
+assert.match(mackP114000.description, /Compression Brake/i);
+assert.equal(mackP114000.confidence, "case-derived-unverified");
+assert.match(mackP114000.scope, /Mack AN/);
 const ambiguousP114000 = interpretFaultCode("P114000");
 assert.equal(ambiguousP114000.status, "ambiguous-oem");
-const volvoP117900 = interpretFaultCode("Volvo P117900");
-assert.equal(volvoP117900.status, "oem-documented");
-assert.match(volvoP117900.description, /PTO Active/i);
+const mackP117900 = interpretFaultCode("Mack P117900");
+assert.equal(mackP117900.status, "oem-documented");
+assert.match(mackP117900.description, /PTO Active/i);
 for (const [code, phrase] of [
-  ["Volvo P008A00", /Low Pressure Fuel System Pressure/i],
-  ["Volvo P008700", /Fuel Rail\/System Pressure/i],
-  ["Volvo P016F00", /Closed Loop Fuel Pressure Control/i],
-  ["Volvo PSID 201 FMI 9", /Data link, MID144/i],
-  ["Volvo PSID 204 FMI 9", /Data link, MID136/i],
-  ["Volvo PSID 33 FMI 12", /high or low beam control/i],
-  ["Volvo P106063", /Clutch Plate Load/i],
-  ["Volvo P105594", /Brake Switch Status/i],
-  ["Volvo SID 244 FMI 12", /CC enable switch/i],
-  ["Volvo PPID 1592 FMI 12", /Cruise Control panel/i],
-  ["Volvo PSID 230 FMI 9", /Critical MSW Error/i]
+  ["Mack P008A00", /Low Pressure Fuel System Pressure/i],
+  ["Mack P008700", /Fuel Rail\/System Pressure/i],
+  ["Mack P016F00", /Closed Loop Fuel Pressure Control/i],
+  ["Mack PSID 201 FMI 9", /Data link, MID144/i],
+  ["Mack PSID 204 FMI 9", /Data link, MID136/i],
+  ["Mack PSID 33 FMI 12", /high or low beam control/i],
+  ["Mack P106063", /Clutch Plate Load/i],
+  ["Mack P105594", /Brake Switch Status/i],
+  ["Mack SID 244 FMI 12", /CC enable switch/i],
+  ["Mack PPID 1592 FMI 12", /Cruise Control panel/i],
+  ["Mack PSID 230 FMI 9", /Critical MSW Error/i]
 ]) {
   const result = interpretFaultCode(code);
   assert.equal(result.status, "oem-documented", code);
