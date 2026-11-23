@@ -314,12 +314,12 @@ function powertrainRecommendation(record, steps) {
     "Measurements or notes were saved without a selected observation.",
     "Choose the observation that accurately describes the test, or explicitly record why the test could not be completed. Do not infer pass/fail from free text."
   );
-  if (/not tested|not completed|unable|unavailable|inconclusive|uncertain|unclear|not identified|more data|required information|cannot determine|not reproduced|needs clarification/.test(choice)) {
+  if (/not tested|not completed|incomplete|unable|unavailable|inconclusive|uncertain|unclear|not identified|more data|required information|cannot determine|not reproduced|needs clarification/.test(choice)) {
     return hold("The latest result is incomplete or inconclusive: "+step.title+".",
       "Do not advance as though this test passed. Identify the missing test condition, service information or measurement, complete the check if safe, and record the actual result."
     );
   }
-  if (/abnormal|outside (?:the )?spec|below (?:the )?(?:spec|specification|limit)|above (?:the )?(?:spec|specification|limit)|implausible|discrepancy|drop.?out|missing|failed|failure|restriction evidence|pressure below|fault found|damage found|corrosion|unstable|excessive|not within/.test(resultText)) {
+  if (/abnormal|outside (?:the )?spec|below (?:the )?(?:spec|specification|limit)|above (?:the )?(?:spec|specification|limit)|implausible|discrepancy|drop.?out|missing|failed|failure|restriction evidence|pressure below|fault found|damage found|physical evidence|corrosion|unstable|excessive|not within/.test(resultText)) {
     return hold("The latest finding may be abnormal and needs to be isolated before the workflow moves on.",
       "Stay with this finding. Confirm the test setup and vehicle-specific limit, localize the affected circuit or subsystem, and perform a discriminating follow-up test. Record what changed and do not replace a component from this result alone."
     );
