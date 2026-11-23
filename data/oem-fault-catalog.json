@@ -656,15 +656,15 @@
       "occurrence_count": 6
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -673,21 +673,21 @@
         "work_order": "88388in"
       },
       "code": "P114000",
-      "description": "Volvo Compression Brake (VCB) Control Oil Temperature Too Low, No additional information",
+      "description": "Mack/Volvo Compression Brake (VCB) Control Oil Temperature Too Low, No additional information",
       "controller": "EMS",
       "report_status": "inactive",
       "occurrence_count": 0
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -703,15 +703,15 @@
       "occurrence_count": 7
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -727,15 +727,15 @@
       "occurrence_count": 8
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -751,15 +751,15 @@
       "occurrence_count": 8
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -774,15 +774,15 @@
       "occurrence_count": 0
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -798,15 +798,15 @@
       "occurrence_count": 1
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -822,15 +822,15 @@
       "occurrence_count": 2
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -846,15 +846,15 @@
       "occurrence_count": 1
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -870,15 +870,15 @@
       "occurrence_count": 1
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -894,15 +894,15 @@
       "occurrence_count": 1
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -918,15 +918,15 @@
       "occurrence_count": 1
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
@@ -942,15 +942,15 @@
       "occurrence_count": 1
     },
     {
-      "manufacturer": "Volvo",
+      "manufacturer": "Mack",
       "engine_family": "",
-      "vehicle_scope": "Case-derived from one Volvo AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
+      "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
       "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Volvo AN diagnostic fault report exported 2026-11-23",
+      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
       "source_url": "",
       "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
       "case_metadata": {
-        "vehicle": "Volvo AN",
+        "vehicle": "Mack AN",
         "mileage": 339061.3,
         "engine_hours": 11953.9434,
         "report_exported": "2026-11-23 14:27",
