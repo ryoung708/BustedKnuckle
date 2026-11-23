@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { classifyFaultGuidanceSystem } from "../js/fault-guidance-routing.js";
 
-const lowPressure = classifyFaultGuidanceSystem({code:"P008A00",controller:"EMS"},"Mack");
+const lowPressure = classifyFaultGuidanceSystem({code:"P008A00",description:"Low Pressure Fuel System Pressure - Too Low, No additional information",controller:"EMS"},"Mack");
 assert.equal(lowPressure.system,"fuel_supply");
 assert.match(lowPressure.description,/Low Pressure Fuel System Pressure/i);
 assert.equal(lowPressure.confidence,"case-derived-unverified");
