@@ -61,6 +61,8 @@
 <script type="module">
 import {workflows,createSession,recordStep,evaluateSession,exportSession} from "./js/diagnostic-engine.js";
 import {classifyDiagnosticComplaint} from "./js/diagnostic-complaint-engine.js";
+import {unexpectedShutdownWorkflow} from "./js/diagnostic-unexpected-shutdown.js";
+workflows.unexpected_shutdown=unexpectedShutdownWorkflow;
 import {findSimilarDiagnosticCases} from "./js/diagnostic-similar-cases.js";
 import {analyzeDiagnosticCase} from "./js/diagnostic-brain.js";
 import {interpretFaultCode,searchFaultSuggestions} from "./js/fault-interpreter.js";
