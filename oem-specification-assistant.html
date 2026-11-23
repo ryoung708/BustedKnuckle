@@ -66,7 +66,7 @@ $("lookup").addEventListener("click",()=>{if(!val("manufacturer")||!val("system"
 $("clearSearch").addEventListener("click",()=>["manufacturer","vehicle","year","engine","serial","system","measurement","conditions"].forEach(id=>$(id).value=""));
 $("makePrompt").addEventListener("click",buildPrompt);
 $("copyPrompt").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("aiPrompt").value);status("promptStatus","Prompt and excerpts copied. Nothing was sent automatically.","good");}catch{$("aiPrompt").focus();$("aiPrompt").select();status("promptStatus","Clipboard unavailable. Select and copy the prompt manually.","bad");}});
-$("sourceDocument").addEventListener("change",()=>{const d=docs.find(x=>x.id===$("sourceDocument").value);if(d){$("sourceType").value="technical_library";$("sourceTitle").value=d.title;$("sourceReference").value=d.source_reference||d.revision||"";$("sourceExcerpt").value=d.extracted_text||"";}});
+$("sourceDocument").addEventListener("change",()=>{const d=docs.find(x=>x.id===$("sourceDocument").value);if(d){let i=matchedDocs.findIndex(m=>m.doc.id===d.id);if(i<0){matchedDocs.push({doc:d,score:0});i=matchedDocs.length-1;}useDocument(i);}});
 $("saveCandidate").addEventListener("click",()=>saveRecord(false));$("saveApproved").addEventListener("click",()=>saveRecord(true));$("refreshRecords").addEventListener("click",()=>loadRecords().catch(e=>status("saveStatus",e.message,"bad")));
 init().catch(e=>status("authStatus","Initialization failed: "+e.message,"bad"));
 </script></body></html>
