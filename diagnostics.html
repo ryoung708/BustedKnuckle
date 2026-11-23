@@ -66,6 +66,7 @@ workflows.unexpected_shutdown=unexpectedShutdownWorkflow;
 import {findSimilarDiagnosticCases} from "./js/diagnostic-similar-cases.js";
 import {analyzeDiagnosticCase} from "./js/diagnostic-brain.js";
 import {interpretFaultCode,searchFaultSuggestions} from "./js/fault-interpreter.js";
+import {classifyFaultGuidanceSystem} from "./js/fault-guidance-routing.js";
 import {extractFaultReport,parseFaultReportText,findFaultDuplicates} from "./js/fault-report-importer.js";
 import {saveFaultSubmission,exportFaultSubmissions,getFaultSubmissionCount} from "./js/fault-submissions.js";
 import {bindVehicleIdentity} from "./js/vehicle-identity-ui.js";
@@ -161,7 +162,7 @@ $("work").addEventListener("click",async event=>{
  }
 });
 function faultGuidancePlan(fault){
- const code=String(fault.code||"").toUpperCase(),manufacturer=String(active?.vehicle?.make||"").trim(),catalog=interpretFaultCode((manufacturer?manufacturer+" ":"")+code),description=String(fault.description||catalog.description||"").toLowerCase(),controller=String(fault.controller||"");
+ const code=String(fault.code||"").toUpperCase(),manufacturer=String(active?.vehicle?.make||"").trim(),routing=classifyFaultGuidanceSystem(fault,manufacturer),description=String(fault.description||routing.description||"").toLowerCase(),controller=String(fault.controller||"");
  const text=code+" "+description+" "+controller;
  let family,title,first,instruction,choices,second,secondInstruction,third,thirdInstruction;
  if(/SPN\\s*63[89]|U0[0-9A-F]{4}|communication|data link|message|update rate|erratic|intermittent/.test(text)){
@@ -176,26 +177,26 @@ function faultGuidancePlan(fault){
   choices=["Single wheel / sensor indicated","Multiple wheels affected","Fault occurs only while moving","Fault is inactive / not reproduced"];
   second="Inspect the sensor, tone ring and harness";secondInstruction="Inspect sensor mounting, air gap where applicable, tone ring/encoder condition, bearing play, connector sealing and harness routing. Compare the affected corner with a known-good equivalent.";
   third="Compare live wheel-speed data";thirdInstruction="Using the approved scan tool procedure, compare all wheel speeds during the specified safe test. Look for dropouts, spikes or implausible differences and correlate with physical inspection. Do not road-test an unsafe vehicle.";
- }else if(/low pressure fuel|fuel (?:rail|system|supply).*pressure|pressure.*too low|fuel pressure/.test(text)){
+ }else if(routing.system==="fuel_supply"){
   family="Fuel supply / pressure";title="Low-pressure fuel system fault";
   first="Confirm the fuel-pressure complaint and operating conditions";instruction="Confirm the exact Mack fault definition, reporting controller, active/inactive status, occurrence count and freeze-frame data. Record engine model, model year, emissions/calibration, fuel temperature, engine speed/load and when the fault sets. Compare low-pressure supply and rail-pressure faults as separate evidence; do not assume one sensor or component is responsible.";
   choices=["Active low-pressure fault with drivability symptoms","Active low-pressure fault without obvious symptoms","Multiple related fuel-pressure faults present","Inactive / historic fault only","Definition or vehicle applicability uncertain"];
   second="Evaluate low-pressure fuel supply using the Mack-specific procedure";secondInstruction="Use the correct Mack/engine service information to identify the specified low-pressure test points, operating conditions and limits. Inspect filter condition and service history, fuel supply restrictions, suction-side air ingress, lines/fittings, tank pickup and supply-pump operation as applicable. Record actual pressure, units, engine speed/load and the exact specification source. Do not substitute a generic pressure value.";
   third="Separate a supply problem from a control or sensor-circuit problem";thirdInstruction="Compare commanded and actual fuel-pressure data with an independent mechanical pressure measurement where the OEM procedure permits. If scan data is implausible or disagrees with the mechanical reading, then follow the exact wiring diagram and pinpoint test for the pressure sensor, reference, signal and grounds. If both readings show low supply pressure, continue the fuel-delivery diagnosis rather than defaulting to an electrical path.";
   choices=["Supply pressure below Mack specification","Mechanical pressure normal but scan value incorrect","Pressure changes with restriction / air ingress / supply test","Results inconclusive or test not completed"];
- }else if(/after.?treatment|def |reductant|nox|dpf|soot|exhaust gas temperature|egt|dos(er|ing)|scr|catalyst/.test(text)||/^P20|^P22|^P24/.test(code)){
+ }else if(routing.system==="aftertreatment"){
   family="Aftertreatment";title="After-treatment fault";
   first="Confirm fault status and after-treatment context";instruction="Record exact code, reporting controller, active/inactive status, occurrence count, derate or inducement, regeneration history and available freeze-frame data. Identify other related after-treatment faults before selecting a component.";
   choices=["Active fault with derate / warning","Active fault without drivability change","Multiple related after-treatment faults","Inactive / historic fault only"];
   second="Compare live data and operating conditions";secondInstruction="Review the relevant commanded and actual sensor values, temperatures, pressures, dosing state and regeneration status using the exact engine/calibration procedure. Compare only with OEM specifications for this vehicle.";
   third="Inspect the indicated subsystem";thirdInstruction="Use the OEM fault tree to inspect the supported sensor, pressure tubes, exhaust leaks, DEF quality/supply/dosing, connectors and harness routing as applicable. Do not force a regeneration or replace a component from the code alone.";
- }else if(/circuit|open|short|voltage|current|electrical|sensor/.test(text)){
+ }else if(routing.system==="electrical"){
   family="Electrical / sensor circuit";title="Circuit or sensor fault";
   first="Verify the exact circuit and fault conditions";instruction="Confirm the code definition, reporting controller, active status and applicable vehicle configuration. Identify the circuit from the correct wiring diagram; note related codes, symptoms and whether the fault is repeatable.";
   choices=["Fault is active and repeatable","Fault is intermittent","Only inactive / historic fault","Circuit and test procedure not yet identified"];
   second="Inspect connector, harness and circuit protection";secondInstruction="With the correct diagram, inspect the identified connector, terminal fit, corrosion, moisture, abrasion, pinching, splices and fuse/protection. Check the relevant power, ground and signal using the prescribed loaded test. Do not guess pin numbers or generic voltage/resistance limits.";
   third="Test the circuit at documented points";thirdInstruction="Follow the OEM pinpoint test. Record meter reference, key state, connected/disconnected load, test pins and actual values. Compare with the vehicle-specific specification and isolate one segment at a time.";
- }else if(/boost|turbo|intake|pressure|air flow|manifold/.test(text)){
+ }else if(routing.system==="air_boost"){
   family="Air / boost";title="Air-path or boost performance fault";
   first="Establish when the fault sets";instruction="Record engine load, RPM, ambient conditions, symptoms, derate, active status and freeze-frame data. Compare commanded and actual boost/airflow values under the same operating conditions.";
   choices=["Only under load","At idle / no load","Across operating range","Intermittent / not reproduced"];
@@ -405,6 +406,7 @@ $("export").onclick=()=>download("ironknuckle-case-"+active.id+".json",exportSes
 if($("saveOutcome"))$("saveOutcome").onclick=()=>{active.rootCause=$("rootCause").value;active.repairPerformed=$("repairPerformed").value;active.verification=$("verification").value;active.status=active.verification==="verified"?"confirmed":active.verification==="unconfirmed"?"needs-more-evidence":active.verification==="pending"?"ready-for-review":"ready-for-review";saveCurrent();alert("Case outcome saved to the Diagnostic Case Library.")};
 $("openVault").onclick=()=>{document.body.classList.remove("case-active");$("cloudVaultPanel").open=true;$("cloudVaultPanel").scrollIntoView({behavior:"smooth",block:"start"})};
 $("new").onclick=()=>{active=null;document.body.classList.remove("case-active");$("work").innerHTML='<div class="empty">Start another investigation from the left panel.</div>'};
+refreshBulletinAttachments();
 }
 function download(name,content){const a=document.createElement("a"),url=URL.createObjectURL(new Blob([content],{type:"application/json"}));a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)}
 function openWiringWithComplaint(){const q=new URLSearchParams({complaint:$("complaint").value,year:$("year").value,make:$("make").value,model:$("model").value,engine:$("engine").value,engineMake:$("engineMake").value,transmissionMake:$("transmissionMake").value,transmissionModel:$("transmissionModel").value,emissions:$("emissions").value,vin:$("vin").value});location.href="./wiringhound.html?"+q.toString()}$("start").onclick=start;$("openWiring").onclick=openWiringWithComplaint;
