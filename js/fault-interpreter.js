@@ -16,7 +16,7 @@ function normalize(value) { return String(value || "").toUpperCase().replace(/[^
 export function parseFaultInput(raw) {
   const value = String(raw || "").trim().toUpperCase();
   if (!value) return null;
-  const proprietary = value.match(/\b(PSID|PID)\s*[:#=-]?\s*(\d+)(?:\s*[/, ]*\s*(?:FMI\s*)?(\d{1,2}))?\b/i);
+  const proprietary = value.match(/\b(PSID|PPID|SID|PID)\s*[:#=-]?\s*(\d+)(?:\s*[/, ]*\s*(?:FMI\s*)?(\d{1,2}))?\b/i);
   if (proprietary) return {
     pCode:"", pSuffix:"", spn:null, fmi:proprietary[3] ? Number(proprietary[3]) : null,
     sourceAddress:null, proprietaryType:proprietary[1].toUpperCase(),
