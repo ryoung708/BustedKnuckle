@@ -55,16 +55,15 @@ assert.equal(casePid.status, "oem-documented");
 assert.match(casePid.description, /Vehicle speed/i);
 
 
-const mackP114000 = interpretFaultCode("Mack P114000");
-assert.equal(mackP114000.status, "oem-documented");
-assert.match(mackP114000.description, /Compression Brake/i);
-assert.equal(mackP114000.confidence, "case-derived-unverified");
-assert.match(mackP114000.scope, /Mack AN/);
-const ambiguousP114000 = interpretFaultCode("P114000");
+const mackP008A00 = interpretFaultCode("Mack P008A00");
+assert.equal(mackP008A00.status, "oem-documented");
+assert.match(mackP008A00.description, /Low Pressure Fuel System Pressure/i);
+assert.equal(mackP008A00.confidence, "case-derived-unverified");
+assert.match(mackP008A00.scope, /Mack AN/);
+const ambiguousP114000 = interpretFaultCode("Mack P114000");
 assert.equal(ambiguousP114000.status, "ambiguous-oem");
-const mackP117900 = interpretFaultCode("Mack P117900");
-assert.equal(mackP117900.status, "oem-documented");
-assert.match(mackP117900.description, /PTO Active/i);
+const ambiguousP117900 = interpretFaultCode("Mack P117900");
+assert.equal(ambiguousP117900.status, "ambiguous-oem");
 for (const [code, phrase] of [
   ["Mack P008A00", /Low Pressure Fuel System Pressure/i],
   ["Mack P008700", /Fuel Rail\/System Pressure/i],
