@@ -223,7 +223,73 @@ function verifiedCaseMatches(current, candidates = []) {
     .sort((a,b) => b.score-a.score)
     .slice(0,3);
 }
+function shutdownRecommendation(record, steps) {
+  const entries=record.entries||{};
+  const completed=steps.map((step,index)=>({step,index,entry:entries[step.id]||{}}))
+    .filter(item=>populated(item.entry.choice));
+  const latest=completed.at(-1);
+  if(!latest) return {
+    stepId:steps[0]?.id,reason:"No shutdown test result has been recorded yet.",
+    action:"Start by documenting whether the engine cuts cleanly, hesitates, resets the dash, and whether temperature or vibration changes the event.",
+    state:"hold"
+  };
+  const answer=clean(latest.entry.choice).toLowerCase();
+  const go=(id,reason,action)=>({stepId:id,reason,action,state:"next"});
+  const hold=(reason,action)=>({stepId:latest.step.id,reason,action,state:"hold"});
+  if(latest.step.id==="shutdown_pattern") return go("engine_architecture",
+    "The shutdown behavior is documented; the next decision depends on the engine's actual fuel/control architecture.",
+    "Identify the exact engine model/serial and confirm whether its fuel and shutdown controls are electronic or mechanical before selecting pinouts or specifications.");
+  if(latest.step.id==="engine_architecture"){
+    if(answer.includes("unknown")||answer.includes("unavailable")||answer.includes("not identified"))
+      return hold("The engine/control architecture is not confirmed.",
+        "Pause system-specific testing. Identify the engine and control family from the data plate and authorized service information; do not guess at sensor type, pinout or test values.");
+    return go("shutdown_fault_scan","The engine/control architecture is identified.",
+      "Capture active and inactive controller faults and event data before clearing anything. No warning lamp does not rule out stored faults.");
+  }
+  if(latest.step.id==="shutdown_fault_scan") return go("power_ground_integrity",
+    "Stored events have been captured; verify the electrical foundation before condemning timing or fuel components.",
+    "Inspect and test battery, engine and controller power/grounds under load. Record test points and compare only with the exact OEM limits.");
+  if(latest.step.id==="power_ground_integrity"){
+    if(answer.includes("abnormal")||answer.includes("unstable"))
+      return hold("A power or ground abnormality was found; downstream sensor and fuel-control conclusions may be unreliable.",
+        "Localize the affected cable, eyelet, stud, splice, fuse, relay or ground path. Repair only the confirmed defect, then repeat the same loaded voltage-drop test before advancing.");
+    if(answer.includes("not tested")||answer.includes("unavailable"))
+      return hold("Power and ground integrity has not been established.",
+        "Obtain the correct diagram, test points and OEM limits, then perform loaded checks. Do not treat visual inspection or unloaded continuity as proof.");
+    return go("engine_speed_timing_signal","Power and ground paths have been verified under load.",
+      "Monitor engine RPM/synchronization and the correct timing signal during the failure window. Check connector retention and harness condition without assuming a sensor type or generic resistance value.");
+  }
+  if(latest.step.id==="engine_speed_timing_signal"){
+    if(answer.includes("drops out")||answer.includes("defect physically"))
+      return hold("Timing/speed evidence is abnormal or a physical connector/harness defect is present.",
+        "Localize the signal loss with the correct wiring diagram and approved test method. Repair the confirmed circuit defect and repeat the signal check; do not replace the sensor solely from the symptom.");
+    if(answer.includes("unavailable")||answer.includes("not reproduced"))
+      return hold("The timing/speed signal has not been evaluated through the failure event.",
+        "Capture the correct live data or approved signal test during the cold/warm failure window. Record if the controller remains online.");
+    return go("fuel_control_delivery","Timing/speed data remained stable through the shutdown event.",
+      "Now evaluate the fuel-control/shutdown device and fuel delivery using the confirmed system architecture and engine-specific service specifications.");
+  }
+  if(latest.step.id==="fuel_control_delivery"){
+    if(answer.includes("drops out")||answer.includes("outside"))
+      return hold("Fuel-control or delivery evidence is abnormal.",
+        "Isolate the exact control circuit or fuel-delivery fault using the correct engine-specific procedure. Do not bypass shutdown devices or use generic pressure/voltage values.");
+    if(answer.includes("not tested")||answer.includes("unavailable"))
+      return hold("Fuel control and delivery have not been verified.",
+        "Confirm architecture and authorized specifications before testing the shutoff device, fuel pressure, restriction or air ingress.");
+    return go("shutdown_repair_verification","Power/ground, timing/speed and fuel-control checks have not identified an abnormality.",
+      "Repeat the original conditions, capture any event data, and document the remaining unknowns. Do not declare a component failed without confirming evidence.");
+  }
+  if(latest.step.id==="shutdown_repair_verification") return {
+    stepId:latest.step.id,reason:"The verification result is recorded.",
+    action:answer.includes("no longer occurs")
+      ? "Review the evidence and confirm the original cold/warm conditions were repeated. Mark the case verified only when the repair is supported by the before/after results."
+      : "Keep the case unverified. Record the remaining symptom or repeat-test plan; do not promote an unconfirmed cause to the diagnostic knowledge base.",
+    state:"review"
+  };
+  return null;
+}
 function recommendationFor(record, steps, system) {
+  if (record.workflowId === "unexpected_shutdown") return shutdownRecommendation(record,steps);
   if (system === "electrical") return recommendNextStep(record, steps);
   if (!Array.isArray(steps) || !steps.length) return null;
   const entries = record.entries || {};
