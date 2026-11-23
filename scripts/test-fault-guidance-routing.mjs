@@ -9,7 +9,7 @@ assert.equal(lowPressure.confidence,"case-derived-unverified");
 const railPressure = classifyFaultGuidanceSystem({code:"P008700",controller:"EMS"},"Mack");
 assert.equal(railPressure.system,"fuel_supply");
 
-const electrical = classifyFaultGuidanceSystem({code:"P2452-13",controller:"EMS"},"Mack");
+const electrical = classifyFaultGuidanceSystem({code:"P0000-00",description:"Engine coolant temperature sensor circuit open",controller:"EMS"},"Mack");
 assert.equal(electrical.system,"electrical");
 
 const genericP0 = classifyFaultGuidanceSystem({code:"P0000-00",controller:"ECM"},"Mack");
