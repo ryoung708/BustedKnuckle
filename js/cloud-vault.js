@@ -45,6 +45,65 @@ function showSignedOut() {
   $("cloudAttach").hidden = true;
   $("cloudCases").innerHTML = "";
 }
+
+const STORAGE_QUOTA_BYTES = 500 * 1024 * 1024;
+function formatStorageBytes(value) {
+  const bytes = Math.max(0, Number(value) || 0);
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + " KB";
+  if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+}
+async function loadStorageUsage() {
+  const meter = $("storageMeter");
+  if (!meter) return;
+  if (!user) { meter.hidden = true; return; }
+  meter.hidden = false;
+  $("storageMeterTotal").textContent = "Checking usage…";
+  $("storageMeterAlert").hidden = true;
+  const { data, error } = await client.rpc("get_ironknuckle_storage_usage");
+  if (error) {
+    console.error("IronKnuckle storage usage lookup failed:", error);
+    $("storageMeterTotal").textContent = "Usage unavailable";
+    $("caseStorageBreakdown").textContent = "Case evidence: unavailable";
+    $("libraryStorageBreakdown").textContent = "Technical library: unavailable";
+    $("storageFileCount").textContent = "Files: unavailable";
+    $("storageMeterNote")?.textContent;
+    $("storageMeterAlert").textContent = "We couldn't retrieve your storage total. Your existing files are unchanged.";
+    $("storageMeterAlert").hidden = false;
+    return;
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) {
+    $("storageMeterTotal").textContent = "Usage unavailable";
+    return;
+  }
+  const used = Math.max(0, Number(row.used_bytes) || 0);
+  const percent = used / STORAGE_QUOTA_BYTES * 100;
+  const shownPercent = Math.min(100, percent);
+  $("storageMeterTotal").textContent = formatStorageBytes(used) + " used · 500 MB reference";
+  $("storageMeterFill").style.width = shownPercent.toFixed(1) + "%";
+  $("storageMeterFill").classList.toggle("warn", percent >= 80 && percent < 95);
+  $("storageMeterFill").classList.toggle("critical", percent >= 95);
+  $("storageMeterProgress").setAttribute("aria-valuenow", String(Math.round(shownPercent)));
+  $("caseStorageBreakdown").textContent = "Case evidence: " + formatStorageBytes(row.case_file_bytes);
+  $("libraryStorageBreakdown").textContent = "Technical library: " + formatStorageBytes(row.technical_library_bytes);
+  $("storageFileCount").textContent = "Files: " + (Number(row.file_count) || 0);
+  const alert = $("storageMeterAlert");
+  if (percent >= 95) {
+    alert.textContent = "Storage is above 95% of the provisional starter reference. Review large files before adding more.";
+    alert.classList.add("critical");
+    alert.hidden = false;
+  } else if (percent >= 80) {
+    alert.textContent = "Storage is above 80% of the provisional starter reference. Keep an eye on larger evidence uploads.";
+    alert.classList.remove("critical");
+    alert.hidden = false;
+  } else {
+    alert.textContent = "";
+    alert.classList.remove("critical");
+    alert.hidden = true;
+  }
+}
+
 async function loadCloudCases() {
   if (!user) return;
   status("Loading your private cases…", "SYNCING");
@@ -55,6 +114,7 @@ async function loadCloudCases() {
   cloudRows = data || [];
   renderCloudCases();
   status(cloudRows.length + " private case(s) in your vault. New saves sync automatically.", "CONNECTED");
+  await loadStorageUsage();
 }
 function renderCloudCases() {
   const box = $("cloudCases");
@@ -352,6 +412,7 @@ async function uploadEvidence() {
   }
   $("attachmentFile").value = "";
   await loadAttachments();
+  await loadStorageUsage();
   status("Evidence uploaded to your private vault.", "CONNECTED");
 }
 async function init() {
