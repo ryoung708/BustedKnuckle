@@ -389,5 +389,16 @@ window.addEventListener("ironknuckle:open-case", event => {
 });
 
 renderHistory();
+const requestedLocalCase = new URLSearchParams(location.search).get("localCaseId");
+if (requestedLocalCase) {
+  const saved = sessions.find(item => String(item.id) === requestedLocalCase);
+  if (saved && workflows[saved.workflowId]) {
+    active = saved;
+    stepIndex = Math.max(0, Math.min(Number(saved.currentStep) || 0, workflows[saved.workflowId].steps.length - 1));
+    renderWork();
+    renderHistory();
+    document.getElementById("work")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
 </script><script type="module" src="./js/cloud-vault.js"></script>
 </body></html>
