@@ -118,7 +118,7 @@ async function loadCloudCases() {
 function renderCloudCases() {
   const box = $("cloudCases");
   const query = ($("cloudCaseSearch")?.value || "").toLowerCase().trim();
-  const visibleRows = cloudRows.filter(row => { const raw = row.raw_case || {}; const faultText = Object.values(raw.entries || {}).flatMap(entry => entry.faultCodes || []).map(f => [f.code, f.controller, f.status].join(" ")).join(" "); return !query || [row.title, raw.complaint, raw.workflowId, faultText, JSON.stringify(raw.vehicle || {})].join(" ").toLowerCase().includes(query); });
+  const visibleRows = cloudRows.filter(row => { const raw = row.raw_case || {}; const searchableText = [row.title, row.status, JSON.stringify(raw)].join(" ").toLowerCase(); return !query || searchableText.includes(query); });
   if (!visibleRows.length) {
     box.innerHTML = '<p class="small">' + (cloudRows.length ? 'No private cases match this search.' : 'Your cloud vault is empty. Sync a local case to start.') + '</p>';
     return;
