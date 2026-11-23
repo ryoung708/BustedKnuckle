@@ -12,7 +12,23 @@ const codeMatch=findSimilarDiagnosticCases({...current,faultCodes:["SPN 5246 FMI
   {id:"d",complaint:"Unrelated symptom text",workflowId:"voltage_drop",vehicle:{make:"Volvo",model:"VNL",engine:"D13"},entries:{step:{faultCodes:[{code:"SPN 5246 FMI 0"}]}}}
 ],workflows);
 assert.equal(codeMatch.length,1,"Exact fault-code matches should be found even when complaint wording differs.");
-assert.match(codeMatch[0].matchReason,/Matching fault code/);
+assert.match(codeMatch[0].matchReason,/Matching fault/);
+
+const codeOnly=findSimilarDiagnosticCases({system:"electrical",faultCodes:[{code:"SPN 168",fmi:"0",controller:"VECU"}]},[
+  {id:"code-only",workflowId:"j1939_network",entries:{step:{faultCodes:[{code:"168",fmi:"0",controller:"VECU"}]}}}
+],workflows);
+assert.equal(codeOnly.length,1,"A code-only lookup should find a saved case without complaint text.");
+assert.match(codeOnly[0].matchReason,/168.*FMI 0.*vecu/i);
+
+const wrongFmi=findSimilarDiagnosticCases({system:"electrical",faultCodes:[{code:"SPN 168",fmi:"0",controller:"VECU"}]},[
+  {id:"wrong-fmi",workflowId:"j1939_network",entries:{step:{faultCodes:[{code:"SPN 168",fmi:"5",controller:"VECU"}]}}}
+],workflows);
+assert.equal(wrongFmi.length,0,"Different known FMIs must not be treated as an exact match.");
+
+const wrongController=findSimilarDiagnosticCases({system:"electrical",faultCodes:[{code:"SPN 168",fmi:"0",controller:"VECU"}]},[
+  {id:"wrong-controller",workflowId:"j1939_network",entries:{step:{faultCodes:[{code:"SPN 168",fmi:"0",controller:"ACM"}]}}}
+],workflows);
+assert.equal(wrongController.length,0,"Different known reporting controllers must not be treated as an exact match.");
 
 const matches=findSimilarDiagnosticCases(current,candidates,workflows);
 assert.equal(matches.length,2);
