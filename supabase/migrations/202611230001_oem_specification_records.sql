@@ -44,7 +44,7 @@ begin
       select d.source_type into linked_source_type
       from public.technical_documents d
       where d.id = new.source_document_id and d.owner_id = new.owner_id;
-      if linked_source_type not in ('oem_service_info','oem_bulletin') then
+      if linked_source_type is null or linked_source_type not in ('oem_service_info','oem_bulletin') then
         raise exception 'Approved Technical Library specifications require an owned OEM service-information or OEM bulletin document';
       end if;
     else
