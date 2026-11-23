@@ -79,6 +79,10 @@ function renderCloudCases() {
       window.location.href = "./wiringhound.html?cloudCase=" + encodeURIComponent(row.id);
       return;
     }
+    if (location.pathname.endsWith("/case-vault.html")) {
+      window.location.href = "./diagnostics.html?cloudCase=" + encodeURIComponent(row.id);
+      return;
+    }
     window.dispatchEvent(new CustomEvent("ironknuckle:open-case", { detail: { cloudId: row.id, raw } }));
     document.getElementById("work")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }));
@@ -353,8 +357,15 @@ async function uploadEvidence() {
 async function init() {
   const { data: { session } } = await client.auth.getSession();
   user = session?.user || null;
-  if (user) { showSignedIn(); await loadCloudCases(); }
-  else { showSignedOut(); status("Sign in to access your private cross-device case vault.", "OFFLINE"); }
+  if (user) {
+    showSignedIn();
+    await loadCloudCases();
+    const requestedCase = new URLSearchParams(location.search).get("cloudCase");
+    if (requestedCase && location.pathname.endsWith("/diagnostics.html")) {
+      const row = cloudRows.find(item => item.id === requestedCase);
+      if (row?.raw_case) window.dispatchEvent(new CustomEvent("ironknuckle:open-case", { detail: { cloudId: row.id, raw: row.raw_case } }));
+    }
+  } else { showSignedOut(); status("Sign in to access your private cross-device case vault.", "OFFLINE"); }
   client.auth.onAuthStateChange((_event, sessionNow) => {
     user = sessionNow?.user || null;
     if (user) { showSignedIn(); loadCloudCases(); }
