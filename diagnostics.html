@@ -138,7 +138,7 @@ $("work").addEventListener("click",async event=>{
    saveCurrent();
    $("bulletinFile").value="";$("bulletinNumber").value="";$("bulletinTitle").value="";$("bulletinSource").value="";$("bulletinNote").value="";
    $("bulletinUploadStatus").textContent="Bulletin attached to this case and synced privately.";
-   await refreshBulletinAttachments();
+   renderWork();
   }catch(error){$("bulletinUploadStatus").textContent="Upload failed: "+(error.message||error)}
   finally{uploadBulletin.disabled=false}
   return;
