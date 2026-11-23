@@ -292,7 +292,12 @@ function powertrainRecommendation(record, steps) {
   if (!Array.isArray(steps) || !steps.length) return null;
   const entries = record.entries || {};
   const recorded = steps.map((step,index)=>({step,index,entry:entries[step.id]||{}}))
-    .filter(item=>populated(item.entry.choice) || Object.values(item.entry.measurements||{}).some(populated) || populated(item.entry.notes));
+    .filter(item=>populated(item.entry.choice) || Object.values(item.entry.measurements||{}).some(populated) || populated(item.entry.notes))
+    .sort((a,b)=>{
+      const ta=Date.parse(a.entry.updatedAt||a.entry.recordedAt||"");
+      const tb=Date.parse(b.entry.updatedAt||b.entry.recordedAt||"");
+      return Number.isFinite(ta)&&Number.isFinite(tb)&&ta!==tb ? ta-tb : a.index-b.index;
+    });
   const latest = recorded.at(-1);
   if (!latest) {
     const first=steps[0];
