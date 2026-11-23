@@ -37,7 +37,7 @@ assert.equal(readingOnly.state,"hold");
 assert.match(readingOnly.action,/Inspect the master disconnect switch/i);
 const ambiguousReading=recommendNextStep({workflowId:"power_loss",currentStep:3,entries:{main_disconnect:{measurements:{actual:"1.4 V"}}}},powerLoss);
 assert.equal(ambiguousReading.state,"hold");
-assert.match(ambiguousReading.reason,/has not been given an observed result/);
+assert.match(ambiguousReading.reason,/has saved notes, measurements/);
 const connectionAbnormal=recommendNextStep(record("power_loss","battery_connections","Excessive drop across a battery connection"),powerLoss);
 assert.equal(connectionAbnormal.stepId,"battery_connections");
 assert.equal(connectionAbnormal.state,"hold");
