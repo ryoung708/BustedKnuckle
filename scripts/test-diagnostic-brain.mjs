@@ -88,4 +88,30 @@ const unverified = {...verifiedReference,id:"draft-002",verification:"unverified
 const noUnverifiedReference = analyzeDiagnosticCase(currentWithCode,powertrainSteps,{relatedCases:[unverified]});
 assert.equal(noUnverifiedReference.verifiedCaseMatches.length,0);
 
-console.log("IronKnuckle Diagnostic Brain v2 specialist and knowledge tests passed.");
+// Powertrain recommendations now consume the latest submitted result instead of
+// blindly returning the next array position.
+const crankSteps = [
+  {id:"codes",title:"Scan controllers"},
+  {id:"enable",title:"Check start authorization and synchronization"},
+  {id:"fuel",title:"Verify fuel supply and delivery"},
+  {id:"air_exhaust",title:"Check air and mechanical prerequisites"},
+  {id:"verify",title:"Confirm root cause",terminal:true}
+];
+const noStartBase = {workflowId:"crank_no_start",vehicle:{make:"Cummins",model:"N14",engine:"N14"},complaint:"Cranks but will not start"};
+const incomplete = analyzeDiagnosticCase({...noStartBase,currentStep:1,entries:{codes:{choice:"Scan incomplete"}}},crankSteps);
+assert.equal(incomplete.recommendation.stepId,"codes");
+assert.equal(incomplete.recommendation.state,"hold");
+assert.match(incomplete.recommendation.action,/Do not advance/i);
+const abnormalFuel = analyzeDiagnosticCase({...noStartBase,currentStep:3,entries:{codes:{choice:"Relevant active faults present"},enable:{choice:"Enable and sync appear valid"},fuel:{choice:"Supply pressure below specification",measurements:{actual:"Below engine-specific limit",condition:"Cranking"}}}},crankSteps);
+assert.equal(abnormalFuel.recommendation.stepId,"fuel");
+assert.equal(abnormalFuel.recommendation.state,"hold");
+assert.match(abnormalFuel.recommendation.action,/localize the affected circuit or subsystem/i);
+const normalFuel = analyzeDiagnosticCase({...noStartBase,currentStep:3,entries:{codes:{choice:"Relevant active faults present"},enable:{choice:"Enable and sync appear valid"},fuel:{choice:"Fuel supply meets specification"}}},crankSteps);
+assert.equal(normalFuel.recommendation.stepId,"air_exhaust");
+assert.equal(normalFuel.recommendation.state,"next");
+assert.match(normalFuel.recommendation.action,/exact vehicle-specific procedure/i);
+const measuredNoChoice = analyzeDiagnosticCase({...noStartBase,currentStep:1,entries:{codes:{measurements:{actual:"Several codes stored"}}}},crankSteps);
+assert.equal(measuredNoChoice.recommendation.stepId,"codes");
+assert.equal(measuredNoChoice.recommendation.state,"hold");
+
+console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");

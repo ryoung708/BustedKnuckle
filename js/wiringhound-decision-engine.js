@@ -38,8 +38,8 @@ export function recommendNextStep(caseRecord,steps){
   const currentText=[currentMeasurements.actual,currentMeasurements.condition,currentMeasurements.testPoints,currentEntry.notes].filter(Boolean).join(" ");
   if(!currentChoice && caseRecord?.workflowId==="power_loss" && explicitlyAbnormal(currentText))
     return result(currentStep.id,"The recorded reading or notes explicitly describe an out-of-spec or abnormal result. This is an active finding, not a pass; investigate this test point before continuing.",inspectionAction(currentStep.id),"hold");
-  if(!currentChoice && (hasCurrentDetails || currentIndex>0))
-    return result(currentStep.id,"This stage has not been given an observed result. Saved notes, measurements, fault codes or attachments cannot be treated as a pass or used to guess the next test.","Select the observation that best matches the test, or record why the check could not be completed. If none of the options fits, leave the stage open and clarify the finding.","hold");
+  if(!currentChoice && hasCurrentDetails)
+    return result(currentStep.id,"This stage has saved notes, measurements, fault codes or attachments but no selected observation. That evidence cannot be treated as a pass or used to guess the next test.","Select the observation that best matches the test, or record why the check could not be completed. If none of the options fits, leave the stage open and clarify the finding.","hold");
   const recorded=steps.map((step,index)=>({step,index,entry:entries[step.id]}))
     .filter(x=>x.entry&&String(x.entry.choice||"").trim());
   if(!recorded.length)return result(steps[0].id,"No test result has been recorded yet.","Begin by confirming the complaint and capturing the baseline.");
