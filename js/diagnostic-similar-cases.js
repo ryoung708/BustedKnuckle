@@ -29,6 +29,8 @@ function matchFaultIdentities(current, candidate) {
       code: a.code,
       fmi: a.fmi || b.fmi,
       controller: a.controller || b.controller,
+      fmiConfirmed: Boolean(a.fmi && b.fmi && a.fmi === b.fmi),
+      controllerConfirmed: Boolean(a.controller && b.controller && a.controller === b.controller),
       score: 100 + (a.fmi && b.fmi ? 20 : 0) + (a.controller && b.controller ? 15 : 0)
     });
   }
@@ -82,7 +84,7 @@ export function findSimilarDiagnosticCases(current = {}, candidates = [], workfl
     const score = bestFaultScore + sharedTerms.length * 8 + (sameMake ? 5 : 0) + (sameModel ? 8 : 0) + (sameEngine ? 10 : 0) + (verified(candidate) && hasUsefulOutcome(candidate) ? 15 : 0);
     const cause = text(candidate.rootCause || candidate.confirmedCause || candidate.cause);
     const repair = text(candidate.repairPerformed || candidate.repair || candidate.resolution);
-    const faultReason = faultMatches.length ? "Matching fault: " + faultMatches.map(item => [item.code, item.fmi ? "FMI " + item.fmi : "", item.controller].filter(Boolean).join(" · ")).join(", ") : "";
+    const faultReason = faultMatches.length ? "Matching SPN/code: " + faultMatches.map(item => [item.code, item.fmi ? "FMI " + item.fmi + (item.fmiConfirmed ? "" : " (not recorded on both cases)") : "FMI not recorded", item.controller ? item.controller + (item.controllerConfirmed ? "" : " (not recorded on both cases)") : "controller not recorded"].join(" · ")).join(", ") : "";
     return {id:String(candidate.id),title:[vehicle.year,vehicle.make,vehicle.model,vehicle.engine].filter(Boolean).join(" ") || candidateComplaint.slice(0,80) || "Saved diagnostic case",complaint:candidateComplaint,rootCause:cause,repairPerformed:repair,verified:verified(candidate) && hasUsefulOutcome(candidate),sharedTerms:sharedTerms.slice(0,6),faultMatches,matchReason:faultReason || sharedTerms.length + " shared symptom terms" + ((sameVehicle || sameEngine) ? " with matching vehicle / engine context." : "."),score};
   }).filter(Boolean).sort((a,b) => b.score-a.score).slice(0,5);
 }
