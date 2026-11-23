@@ -288,21 +288,50 @@ function shutdownRecommendation(record, steps) {
   };
   return null;
 }
+function powertrainRecommendation(record, steps) {
+  if (!Array.isArray(steps) || !steps.length) return null;
+  const entries = record.entries || {};
+  const recorded = steps.map((step,index)=>({step,index,entry:entries[step.id]||{}}))
+    .filter(item=>populated(item.entry.choice) || Object.values(item.entry.measurements||{}).some(populated) || populated(item.entry.notes));
+  const latest = recorded.at(-1);
+  if (!latest) {
+    const first=steps[0];
+    return {stepId:first.id,reason:"No test result has been recorded yet.",action:"Start with this test. Record the actual observation, test conditions, measurement, units and applicable specification.",state:"hold"};
+  }
+  const {step,index,entry}=latest;
+  const choice=lower(entry.choice);
+  const detail=lower([entry.notes,entry.measurements?.actual,entry.measurements?.condition,entry.measurements?.testPoints].filter(Boolean).join(" "));
+  const resultText=choice+" "+detail;
+  const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
+  const next=steps[index+1];
+  const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  if (!populated(entry.choice)) return hold(
+    "Measurements or notes were saved without a selected observation.",
+    "Choose the observation that accurately describes the test, or explicitly record why the test could not be completed. Do not infer pass/fail from free text."
+  );
+  if (/not tested|not completed|unable|unavailable|inconclusive|uncertain|unclear|not identified|more data|required information|cannot determine|not reproduced|needs clarification/.test(choice)) {
+    return hold("The latest result is incomplete or inconclusive: "+step.title+".",
+      "Do not advance as though this test passed. Identify the missing test condition, service information or measurement, complete the check if safe, and record the actual result."
+    );
+  }
+  if (/abnormal|outside (?:the )?spec|below (?:the )?(?:spec|specification|limit)|above (?:the )?(?:spec|specification|limit)|implausible|discrepancy|drop.?out|missing|failed|failure|restriction evidence|pressure below|fault found|damage found|corrosion|unstable|excessive|not within/.test(resultText)) {
+    return hold("The latest finding may be abnormal and needs to be isolated before the workflow moves on.",
+      "Stay with this finding. Confirm the test setup and vehicle-specific limit, localize the affected circuit or subsystem, and perform a discriminating follow-up test. Record what changed and do not replace a component from this result alone."
+    );
+  }
+  if (record.status === "ready-for-review" || record.finishedEarly || step.terminal || !next) {
+    return {stepId:step.id,reason:"The investigation has reached a review point.",action:"Review the physical cause, repair details and before/after verification evidence. Keep the outcome unverified if the original complaint has not been retested.",state:"review"};
+  }
+  const explicitNext=typeof step.next==="string" ? steps.find(item=>item.id===step.next) : null;
+  const target=explicitNext||next;
+  return go(target,"The recorded observation supports moving to the next diagnostic stage.",
+    "Perform "+target.title+" using the exact vehicle-specific procedure. Record actual values, units, test points and operating conditions. If the result is abnormal or unclear, stop and investigate that finding rather than continuing."
+  );
+}
 function recommendationFor(record, steps, system) {
   if (record.workflowId === "unexpected_shutdown") return shutdownRecommendation(record,steps);
   if (system === "electrical") return recommendNextStep(record, steps);
-  if (!Array.isArray(steps) || !steps.length) return null;
-  const entries = record.entries || {};
-  const index = Math.max(0,Math.min(Number(record.currentStep)||0,steps.length-1));
-  const current = steps[index];
-  const currentEntry = entries[current?.id] || {};
-  const hasMeasurements = Object.values(currentEntry.measurements || {}).some(populated);
-  if (hasMeasurements && !populated(currentEntry.choice))
-    return {stepId:current.id,reason:"Measurements were entered without a selected observation.",action:"Select the observation that matches the actual test result, or leave this stage open and explain what remains unknown.",state:"hold"};
-  if (record.status === "ready-for-review" || record.finishedEarly || index >= steps.length-1)
-    return {stepId:current?.id,reason:"The technician has reached a review point or finished the workflow early.",action:"Review the physical cause, repair details and verification evidence. Do not promote an unverified cause to a diagnosis.",state:"review"};
-  const next = steps[index+1];
-  return next ? {stepId:next.id,reason:populated(currentEntry.choice) ? "The current observation is recorded; continue with the next powertrain workflow stage." : "No observation is recorded for the current stage.",action:populated(currentEntry.choice) ? "Perform the next check using the exact vehicle-specific procedure and record the conditions and result." : "Complete or explicitly defer the current check before treating later evidence as meaningful.",state:populated(currentEntry.choice) ? "next" : "hold"} : null;
+  return powertrainRecommendation(record,steps);
 }
 function workflowCaution(workflowId) {
   if (workflowId === "power_loss") return "A complete-power-loss event can involve battery source, high-current connections, master disconnects, main distribution, grounds or switched feeds. Follow the exact vehicle wiring diagram and OEM test procedure. Do not bridge high-current components or bypass circuit protection.";
