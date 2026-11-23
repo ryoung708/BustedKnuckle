@@ -67,7 +67,6 @@ async function loadStorageUsage() {
     $("caseStorageBreakdown").textContent = "Case evidence: unavailable";
     $("libraryStorageBreakdown").textContent = "Technical library: unavailable";
     $("storageFileCount").textContent = "Files: unavailable";
-    $("storageMeterNote")?.textContent;
     $("storageMeterAlert").textContent = "We couldn't retrieve your storage total. Your existing files are unchanged.";
     $("storageMeterAlert").hidden = false;
     return;
