@@ -12,13 +12,18 @@ const codeMatch=findSimilarDiagnosticCases({...current,faultCodes:["SPN 5246 FMI
   {id:"d",complaint:"Unrelated symptom text",workflowId:"voltage_drop",vehicle:{make:"Volvo",model:"VNL",engine:"D13"},entries:{step:{faultCodes:[{code:"SPN 5246 FMI 0"}]}}}
 ],workflows);
 assert.equal(codeMatch.length,1,"Exact fault-code matches should be found even when complaint wording differs.");
-assert.match(codeMatch[0].matchReason,/Matching fault/);
+assert.match(codeMatch[0].matchReason,/Matching SPN\/code/);
 
 const codeOnly=findSimilarDiagnosticCases({system:"electrical",faultCodes:[{code:"SPN 168",fmi:"0",controller:"VECU"}]},[
   {id:"code-only",workflowId:"j1939_network",entries:{step:{faultCodes:[{code:"168",fmi:"0",controller:"VECU"}]}}}
 ],workflows);
 assert.equal(codeOnly.length,1,"A code-only lookup should find a saved case without complaint text.");
 assert.match(codeOnly[0].matchReason,/168.*FMI 0.*vecu/i);
+const partialQualifier=findSimilarDiagnosticCases({system:"electrical",faultCodes:[{code:"SPN 168",fmi:"0",controller:"VECU"}]},[
+  {id:"partial-qualifier",workflowId:"j1939_network",entries:{step:{faultCodes:[{code:"SPN 168"}]}}}
+],workflows);
+assert.equal(partialQualifier.length,1,"An SPN-only record may still be a useful partial match.");
+assert.match(partialQualifier[0].matchReason,/not recorded on both cases/i,"The result must disclose when FMI/controller context is missing from one case.");
 
 const wrongFmi=findSimilarDiagnosticCases({system:"electrical",faultCodes:[{code:"SPN 168",fmi:"0",controller:"VECU"}]},[
   {id:"wrong-fmi",workflowId:"j1939_network",entries:{step:{faultCodes:[{code:"SPN 168",fmi:"5",controller:"VECU"}]}}}
