@@ -10,12 +10,13 @@
     "test:decision": "node scripts/test-wiringhound-decision-engine.mjs && node scripts/test-wiringhound-complaint-engine.mjs",
     "test:training": "node scripts/test-training-regressions.mjs",
     "test:pages": "node scripts/test-page-integrity.mjs",
-    "test": "node scripts/test-fault-report-importer.mjs && node scripts/test-fault-interpreter.mjs && node scripts/test-fault-catalog.mjs && npm run test:diagnostics && npm run test:guided-tests && npm run test:electrical && npm run test:decision && npm run test:brain && npm run test:training && npm run test:pages && npm run test:profiles && npm run test:case-schema && npm run test:vehicle-platforms && npm run test:content-safety",
+    "test": "node scripts/test-bulletin-intelligence.mjs && node scripts/test-fault-report-importer.mjs && node scripts/test-fault-interpreter.mjs && node scripts/test-fault-catalog.mjs && npm run test:diagnostics && npm run test:guided-tests && npm run test:electrical && npm run test:decision && npm run test:brain && npm run test:training && npm run test:pages && npm run test:profiles && npm run test:case-schema && npm run test:vehicle-platforms && npm run test:content-safety",
     "test:profiles": "node scripts/test-learning-profiles.mjs",
     "test:case-schema": "node scripts/test-case-schema.mjs",
     "test:vehicle-platforms": "node scripts/test-vehicle-platform-registry.mjs",
     "test:content-safety": "node scripts/test-content-safety.mjs",
     "test:brain": "node scripts/test-diagnostic-brain.mjs",
-    "test:importer": "node scripts/test-fault-report-importer.mjs"
+    "test:importer": "node scripts/test-fault-report-importer.mjs",
+    "test:bulletins": "node scripts/test-bulletin-intelligence.mjs"
   }
 }
