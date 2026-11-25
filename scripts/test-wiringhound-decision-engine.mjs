@@ -92,6 +92,6 @@ assert.equal(recommendNextStep(record("light_inop","load","Connector concern fou
 assert.equal(recommendNextStep(record("light_inop","drop","Excessive drop on positive/ground path"),lighting).stepId,"harness");
 assert.equal(recommendNextStep(record("light_inop","drop","Both paths within specification"),lighting).stepId,"load_review");
 assert.equal(recommendNextStep(record("light_inop","load_review","Load failed on known-good supply and ground"),lighting).stepId,"verify");
-assert.equal(recommendNextStep(record("light_inop","harness","No physical fault found"),lighting).stepId,"drop");
+assert.equal(recommendNextStep(record("light_inop","harness","No physical fault isolated"),lighting).stepId,"drop");
 
 console.log("WiringHound decision engine tests passed.");
