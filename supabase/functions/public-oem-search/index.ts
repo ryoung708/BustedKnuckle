@@ -38,7 +38,7 @@ async function searchBingRss(query: string) {
     if (!response.ok) return { provider: "Bing RSS", query, ok: false, status: response.status, error: "Provider returned HTTP " + response.status, results: [] };
     const xml = await response.text();
     const results = parseBingRssResults(xml, query);
-    if (!results.length && !/<(?:rss|feed)\\b/i.test(xml))
+    if (!results.length && !/<(?:rss|feed)\b/i.test(xml))
       return { provider: "Bing RSS", query, ok: false, status: response.status, error: "Provider response was not recognizable RSS/XML", results: [] };
     return { provider: "Bing RSS", query, ok: true, status: response.status, results };
   } catch (error) {
@@ -63,7 +63,7 @@ Deno.serve(async (req: Request) => {
     const year = String(body.year || "").trim().replace(/[^0-9]/g, "").slice(0, 4);
     if (!manufacturer || !code) return json({ error: "Manufacturer and fault code are required." }, 400);
     const vehicle = [year, manufacturer, model].filter(Boolean).join(" ");
-    const hyphenatedCode = code.replace(/^([A-Z]\\d{3}[A-Z])(\\d{2})$/, "$1-$2");
+    const hyphenatedCode = code.replace(/^([A-Z]\d{3}[A-Z])(\d{2})$/, "$1-$2");
     const queries = [...new Set([
       [vehicle, code, "service bulletin OR CBR"].filter(Boolean).join(" "),
       [manufacturer, hyphenatedCode, "technical service bulletin OR CBR"].join(" "),
@@ -71,10 +71,7 @@ Deno.serve(async (req: Request) => {
       ["site:static.nhtsa.gov/odi/tsbs", manufacturer, code].join(" "),
     ])];
     const providerRuns = await Promise.all(queries.flatMap(query => [searchDuckDuckGo(query), searchBingRss(query)]));
-    const results = dedupeSearchResults(providerRuns.map(run => run.results)).map(item => ({
-      ...item,
-      sourceType: item.sourceType,
-    }));
+    const results = dedupeSearchResults(providerRuns.map(run => run.results));
     const successfulRequests = providerRuns.filter(run => run.ok).length;
     const providerDiagnostics = ["DuckDuckGo HTML", "Bing RSS"].map(provider => {
       const runs = providerRuns.filter(run => run.provider === provider);
