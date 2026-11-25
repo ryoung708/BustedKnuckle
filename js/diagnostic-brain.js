@@ -311,6 +311,25 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // P016F00: a verified low-side pass must advance to high-side rail-pressure testing.
+  if(step.id==="p016f_low_side"){
+    if(/low-side pressure meets oem specification under the fault conditions/i.test(choice))
+      return go(steps[index+1],"Low-side supply pressure was verified within the applicable OEM specification under the conditions that set the fault.","The low side has passed. Move to the high-pressure system: compare commanded and actual rail pressure together under the same operating conditions. Record both values, units and OEM limits.");
+    if(/below oem specification|pressure unstable|air \/ restriction evidence/i.test(choice))
+      return hold("The low-side supply has not passed; a supply-side abnormality remains to be isolated.","Stay on the low side. Confirm the test point and operating condition, then use the exact engine-specific procedure to isolate the supply/transfer pump, filters, restriction, tank pickup or air ingress. Do not move to high-side conclusions until low-side supply is corrected and rechecked.");
+    if(/incomplete|specification unavailable/.test(choice))
+      return hold("Low-side pressure has not been proven within specification.","Obtain the correct engine/serial-specific pressure specification and test point, then repeat the low-side test under the conditions that set P016F00. Do not treat missing data as a pass.");
+  }
+  if(step.id==="p016f_high_side"){
+    if(/actual rail pressure falls below commanded|cannot track target/.test(choice))
+      return go(steps[index+1],"Actual rail pressure is not following the commanded target despite a verified low-side supply.","Continue with the OEM high-pressure pinpoint tests to distinguish pump output, metering/pressure control and injector/rail leakage. Do not replace a component from this discrepancy alone.");
+    if(/tracks commanded within oem specification/.test(choice))
+      return go(steps[steps.findIndex(item=>item.id==="p016f_verify")],"Actual rail pressure tracked the commanded target within the applicable specification during the test.","The pressure-control fault was not reproduced in the high-side data. Preserve the event data and investigate sensor plausibility/intermittent conditions if the fault remains or returns; do not condemn the high-pressure pump.");
+    if(/implausible|sensor \/ circuit concern/.test(choice))
+      return hold("Rail-pressure data is implausible or points to a sensor/circuit concern.","Verify the rail-pressure sensor supply, ground and signal using the exact wiring diagram and OEM test procedure. Confirm scan-tool data against the approved physical test method before replacing the sensor.");
+    if(/incomplete|specification unavailable/.test(choice))
+      return hold("High-side rail-pressure performance has not been established.","Obtain the correct commanded/actual rail-pressure parameters, test conditions and engine-specific limits. Do not infer a high-pressure failure without those values.");
+  }
   // Explicit branches for the Mack P205B64 applicability gate and final repeat test.
   // These decisions remain inside the shared recommendation engine.
   if(step.id==="p205b_applicability"){
