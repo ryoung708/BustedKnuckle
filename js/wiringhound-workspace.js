@@ -5,6 +5,7 @@ import { classifyComplaint, powerLossSteps } from "./wiringhound-complaint-engin
 import { extractFaultReport, parseFaultReportText, findFaultDuplicates } from "./fault-report-importer.js";
 import { interpretFaultCode, searchFaultSuggestions } from "./fault-interpreter.js";
 import { bindVehicleIdentity } from "./vehicle-identity-ui.js";
+import { applyVehiclePrefill, rememberVehiclePrefill, bindVehiclePrefillControls } from "./vehicle-intake-prefill.js";
 import {renderGuidedTestMarkup} from "./guided-test-library.js";
 
 const SUPABASE_URL = "https://wpxvaqmzxhxlrutklypm.supabase.co";
@@ -17,6 +18,8 @@ const LOCAL_FAULT_CATALOG = "ironknuckle.wiringhound.fault-catalog.v1";
 const $ = id => document.getElementById(id);
 const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 bindVehicleIdentity();
+applyVehiclePrefill();
+bindVehiclePrefillControls();
 
 const j1939Steps = [
  {id:"baseline",title:"Establish the symptom",kicker:"01 // baseline",copy:"Reproduce the communication problem. Measure CAN High and CAN Low individually to the same verified ground reference and record key state, test points and behavior.",condition:"Key ON // DC volts",test:"CAN H and CAN L to the same known-good ground",choices:["Both readings remain present / stable","Both legs drop out / fall very low","Only one leg drops or behaves abnormally","Intermittent / changes with key cycle","Complaint not reproduced"],prompt:"Record actual CAN H and CAN L voltage, units, key state, ground reference and whether readings changed during the key cycle."},
@@ -106,6 +109,7 @@ async function importFaultReport(){
 function startCase(){
  const complaint=$("complaint").value.trim();
  if(!complaint){alert("Enter the customer or driver complaint first.");$("complaint").focus();return}
+ rememberVehiclePrefill();
  const requested=$("workflowSelect")?.value||"auto";
  const detected=classifyComplaint(complaint);
  const workflowId=requested==="auto"?detected.id:requested;
