@@ -311,6 +311,73 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // Check Engine Light requires an attached scan and a reviewed primary fault before testing.
+  if(record.workflowId==="check_engine_light"){
+    if(step.id==="complaint"){
+      if(/check engine light confirmed on; fault code\(s\) retrieved and attached/i.test(choice)){
+        const attachedFaults=Object.values(record.entries||{}).flatMap(item=>Array.isArray(item?.faultCodes)?item.faultCodes:[]);
+        if(!attachedFaults.length) return hold(
+          "The selected result says fault codes were retrieved and attached, but no fault-code records are attached to this case.",
+          "Use the FAULT CODES / SCAN DATA panel to add or import the actual codes. Include reporting controller and active/inactive status, then repeat this step. Do not proceed using a statement that codes were attached when the case contains none."
+        );
+        return go(steps.find(item=>item.id==="prioritize"),"The Check Engine Light is confirmed and the case contains attached fault-code evidence.","Review all attached codes together, including controller, status and event data. Identify the primary fault before selecting a component test.");
+      }
+      if(/check engine light on; scan attempted but no fault codes retrieved/i.test(choice)) return hold(
+        "The lamp is on, but the scan did not retrieve any fault codes.",
+        "Record which controllers were scanned and which could not communicate. Verify diagnostic-tool connection and controller power/communication as appropriate, then repeat the complete scan. Do not invent a fault code or start a code-specific test without one."
+      );
+      if(/check engine light not illuminated/i.test(choice)) return hold(
+        "The Check Engine Light and related warning were not reproduced.",
+        "Clarify the driver's actual complaint and preserve any event history. If the concern is not a warning-lamp/fault-code complaint, use the appropriate complaint-triage or subsystem workflow instead of continuing this CEL path."
+      );
+      if(/unable to verify lamp or complete scan/i.test(choice)) return hold(
+        "The lamp state or complete controller scan has not been verified.",
+        "Complete the lamp check and full scan, record the controllers covered and attach the scan report. An incomplete scan is not a no-fault result."
+      );
+    }
+    if(step.id==="prioritize"){
+      if(/one fault clearly leads the investigation/i.test(choice))
+        return go(steps.find(item=>item.id==="test"),"A primary fault candidate has been identified from the attached evidence.","Open the matching code-specific guided path or current OEM fault tree. Verify the exact engine/calibration applicability before performing the first pinpoint test.");
+      if(/several faults appear related/i.test(choice)) return hold(
+        "Several attached faults appear related and the primary fault has not been established.",
+        "Compare timestamps, occurrence counts, reporting controllers, freeze-frame and symptom correlation. Separate primary faults from consequence codes; select the earliest/most directly supported fault before proceeding."
+      );
+      if(/shared power \\/ ground \\/ network issue/i.test(choice)) return hold(
+        "The fault pattern points to a shared electrical supply, ground or network issue.",
+        "Stop the generic engine fault test. Use WiringHound General Electrical or J1939 Network as appropriate, attach the affected controllers/codes and verify the shared feed or network boundary before returning to engine-specific diagnosis."
+      );
+      if(/evidence does not yet identify a direction/i.test(choice)) return hold(
+        "The attached fault data does not yet identify a defensible primary direction.",
+        "Review freeze-frame/event data, reporting controller, fault status and symptom timing. Obtain the missing vehicle-specific information or use the code-specific OEM fault tree; do not select a component by code description alone."
+      );
+    }
+    if(step.id==="test"){
+      if(/fault isolated and repaired per oem procedure/i.test(choice))
+        return go(steps.find(item=>item.id==="verify"),"The fault was isolated and repaired using the applicable OEM procedure.","Repeat the original operating conditions, verify the warning and symptom are resolved, and rescan the relevant controllers. Preserve before/after measurements.");
+      if(/test confirms a physical \\/ circuit fault/i.test(choice)) return hold(
+        "A physical or circuit fault is indicated, but the repair has not yet been completed and verified.",
+        "Localize the exact defect with the OEM pinpoint test. Record the failed measurement, connector/pin or circuit boundary and applicable limit; repair only the confirmed defect, then select the repaired result."
+      );
+      if(/test points to a different system/i.test(choice)) return hold(
+        "The test evidence points to a different system than the current fault path.",
+        "Stop this fault-specific sequence and open the correct system workflow or matching DTC path. Attach the test result and evidence supporting the new direction; do not continue the wrong fault tree."
+      );
+      if(/test results are within specification/i.test(choice)) return hold(
+        "The performed test passed, but the Check Engine Light fault remains unresolved.",
+        "Continue the next discriminating test in the current OEM fault tree. Record what the passing result rules out and what remains untested; do not treat one passing test as a completed diagnosis."
+      );
+      if(/required test or service information unavailable/i.test(choice)) return hold(
+        "The required fault-specific test or service information is unavailable.",
+        "Obtain the current OEM procedure and confirm engine/calibration applicability before continuing. Do not substitute generic limits or guess at connector pins."
+      );
+    }
+    if(step.id==="verify"){
+      if(/repair complete; verification pending|cause remains unconfirmed|no repair required/i.test(choice)) return hold(
+        "The fault has not been verified as resolved under the original conditions.",
+        "Keep the case open. Complete the repair or obtain the missing evidence, then repeat the original operating conditions and post-repair scan. Do not mark the case repaired while the warning or relevant fault remains unresolved."
+      );
+    }
+  }
   // General complaint triage is a routing workflow, not a component-diagnosis shortcut.
   if(record.workflowId==="complaint_triage"){
     if(step.id==="complaint_baseline"){
