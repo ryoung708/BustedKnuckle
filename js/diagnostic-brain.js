@@ -503,7 +503,7 @@ function powertrainRecommendation(record, steps) {
       action:"Do not troubleshoot or replace the UQLS under CBR 2107-22. Save the scan report and use applicable guided diagnostics for any green codes or other symptoms.",
       state:"review"
     };
-    if(/AN\\(4\\)|PR\\(4\\)|unknown|stop/.test(choice)) return hold(
+    if(/AN\(4\)|PR\(4\)|unknown|stop/.test(choice)) return hold(
       "The 2026 Mack CBR applicability has not been established or this variant is excluded.",
       "Stop this guided path. Confirm the VIN, exact chassis variant and emissions generation, then retrieve the applicable Mack procedure. Do not carry on with CBR 2107-22."
     );
