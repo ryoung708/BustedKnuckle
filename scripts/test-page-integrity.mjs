@@ -92,6 +92,22 @@ try {
   assert.match(diagnostics, /active\.entries\[firstStep\.id\]=\{choice:"",measurements:\{\},notes:"Fault codes entered during investigation intake\."/);
   assert.match(diagnostics, /faultCodes:intakeCodes\.map\(code=>\(\{id:/);
 
+  // Both diagnostic intake forms must share manufacturer-filtered engine options.
+  const vehicleIdentity = await readFile(join(root, "js/vehicle-identity-ui.js"), "utf8");
+  assert.match(vehicleIdentity, /function modelsForManufacturer\(value\)/,
+    "Engine model suggestions must be filtered by the selected engine manufacturer");
+  assert.match(vehicleIdentity, /engineManufacturerAliases/,
+    "Common engine manufacturer aliases must resolve to the correct engine family");
+  assert.match(vehicleIdentity, /refreshEngineModels\(\{clearInvalid:true\}\)/,
+    "Changing engine manufacturer must clear a model that belongs to another manufacturer");
+  assert.match(vehicleIdentity, /Select engine manufacturer first/,
+    "Engine model intake must prompt for manufacturer before suggesting models");
+  const wiringWorkspace = await readFile(join(root, "js/wiringhound-workspace.js"), "utf8");
+  assert.match(wiringWorkspace, /bindVehicleIdentity\(\)/,
+    "WiringHound must initialize the shared vehicle and engine selectors");
+  assert.match(diagnostics, /bindVehicleIdentity\(\)/,
+    "DCC must initialize the same shared vehicle and engine selectors");
+
   // The DCC must connect fault intake, source discovery and actionable test guidance.
   assert.match(diagnostics, /function currentGuidedFault\(\)/,
     "DCC must resolve the active fault while a fault-specific path is open");
