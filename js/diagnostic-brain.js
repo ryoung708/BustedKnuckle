@@ -311,6 +311,104 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // Unexpected engine shutdown needs explicit pass/fail gates; generic linear advancement is unsafe.
+  if(record.workflowId==="unexpected_shutdown"){
+    if(step.id==="shutdown_pattern"){
+      if(/not yet reproduced|behavior unclear/i.test(choice)) return hold(
+        "The shutdown pattern has not been established.",
+        "Capture whether the engine cuts cleanly or hesitates, whether the dash resets, operating temperature/load and restart behavior. Reproduce only in a safe controlled setting before selecting a component."
+      );
+      return go(steps.find(item=>item.id==="engine_architecture"),"The shutdown behavior has been characterized.","Identify the exact engine serial/model, fuel system and electronic or mechanical control architecture from the data plate and authorized service information.");
+    }
+    if(step.id==="engine_architecture"){
+      if(/engine and electronic control system positively identified|mechanical fuel\\/control architecture positively identified/i.test(choice))
+        return go(steps.find(item=>item.id==="shutdown_fault_scan"),"The engine and control architecture are positively identified.","Scan the correct engine controller and relevant vehicle controllers before clearing any faults. Save event data and note whether the ECM remains online during shutdown.");
+      if(/control architecture still unknown|service information unavailable/i.test(choice)) return hold(
+        "The exact engine control architecture or authorized service information is not confirmed.",
+        "Stop before using system-specific pinouts, specifications or component tests. Identify the engine serial/model and obtain the correct OEM documentation; do not assume CELECT/CELECT Plus or a mechanical fuel system."
+      );
+    }
+    if(step.id==="shutdown_fault_scan"){
+      if(/relevant engine speed \\/ timing \\/ synchronization fault/i.test(choice)) return hold(
+        "An engine speed/timing/synchronization fault is present and needs its own fault-specific diagnosis.",
+        "Attach the exact code, controller, status and event data. Follow the matching OEM fault tree and correlate the fault timestamp with the shutdown before moving to power/ground or fuel tests."
+      );
+      if(/ecm power, ignition, voltage or communication fault/i.test(choice)) return hold(
+        "The ECM power/ignition/voltage/communication path is implicated.",
+        "Use WiringHound General Electrical or J1939 Network as appropriate. Verify ECM power, grounds, switched feeds and communication at the exact boundaries under load; do not condemn the ECM before its feeds and network are proven."
+      );
+      if(/fuel-control \\/ shutdown-device fault/i.test(choice)) return hold(
+        "A fuel-control or shutdown-device fault is present.",
+        "Use the confirmed engine/fuel-system architecture and the matching OEM fault tree to test command, supply and actual device response. Never bypass the shutdown device."
+      );
+      if(/no relevant faults found; scan completed/i.test(choice))
+        return go(steps.find(item=>item.id==="power_ground_integrity"),"The complete scan found no relevant active fault that explains the shutdown.","Verify battery, engine and ECM power/ground paths with loaded voltage-drop tests at the exact OEM test points.");
+      if(/controller unavailable or scan incomplete/i.test(choice)) return hold(
+        "The controller scan is incomplete or the engine controller is unavailable.",
+        "Restore compatible diagnostic communication and repeat the scan. Record whether the ECM loses power or communication during the event; no warning lamp does not prove there are no stored faults."
+      );
+    }
+    if(step.id==="power_ground_integrity"){
+      if(/ground path abnormal|positive or switched ecm supply abnormal/i.test(choice)) return hold(
+        "An ECM power or ground path is abnormal or unstable.",
+        "Localize the voltage drop to the exact battery, engine, frame, ECM ground, fuse, relay or switched-feed boundary using the wiring diagram and loaded test. Repair only the proven connection/circuit and repeat the same test under load."
+      );
+      if(/power and ground paths verified within exact oem limits under load|connection repaired; repeat loaded test now passes/i.test(choice))
+        return go(steps.find(item=>item.id==="engine_speed_timing_signal"),"The required power and ground paths have passed their loaded OEM checks.","Monitor engine RPM, synchronization and the applicable timing/position signal through cranking, warm-up and the shutdown event using the exact engine procedure.");
+      if(/not tested|test points or limits unavailable/i.test(choice)) return hold(
+        "The ECM power/ground checks are not complete or the exact limits are unavailable.",
+        "Obtain the correct wiring diagram and OEM loaded voltage-drop limits. Record test points, meter leads, load and actual readings; visual inspection or unloaded continuity alone is not a pass."
+      );
+    }
+    if(step.id==="engine_speed_timing_signal"){
+      if(/rpm \\/ timing \\/ synchronization drops out or becomes implausible/i.test(choice)) return hold(
+        "The engine speed/timing/synchronization signal drops out or becomes implausible during the event.",
+        "Identify the exact sensor type and use the OEM signal test while monitoring the event. Inspect the connector/harness for pin fit, corrosion, oil/water intrusion, rub-through and heat damage; do not apply generic resistance or pinout values."
+      );
+      if(/signal remains stable through the shutdown event/i.test(choice))
+        return go(steps.find(item=>item.id==="fuel_control_delivery"),"The monitored speed/timing signal remains stable through the shutdown event.","Evaluate fuel-control command/actual operation and fuel delivery using the confirmed engine/fuel-system architecture and exact OEM procedure.");
+      if(/connector, terminal or harness defect physically found/i.test(choice)) return hold(
+        "A connector, terminal or harness defect is visible but has not yet been repaired and retested.",
+        "Localize the exact terminal or harness damage, complete the approved repair and repeat the same signal test through the original shutdown conditions. Do not replace the sensor unless the OEM test proves it failed."
+      );
+      if(/connector \\/ harness defect repaired; signal retest passes/i.test(choice))
+        return go(steps.find(item=>item.id==="shutdown_repair_verification"),"The timing-signal connector/harness defect was repaired and the signal retest passed.","Repeat the original shutdown conditions and verify the engine remains running, ECM communication stays stable and no relevant faults return.");
+      if(/data unavailable or event not reproduced/i.test(choice)) return hold(
+        "The timing/synchronization signal has not been evaluated through the shutdown event.",
+        "Obtain the correct OEM live-data or signal test and safely reproduce the failure. A normal reading outside the event does not clear an intermittent signal."
+      );
+    }
+    if(step.id==="fuel_control_delivery"){
+      if(/fuel-control command \\/ actuation drops out/i.test(choice)) return hold(
+        "Fuel-control command or actual shutdown-device actuation drops out.",
+        "Compare command and actual response at the device using the exact control architecture and wiring diagram. Verify its power, ground, command and mechanical response; never bypass a shutdown device."
+      );
+      if(/fuel delivery outside exact oem specification/i.test(choice)) return hold(
+        "Fuel delivery is outside the exact engine-specific specification.",
+        "Follow the confirmed fuel-system pinpoint procedure to distinguish supply restriction, air ingress, filter, pump or control faults. Record the test point and OEM limit; do not apply generic fuel-pressure values."
+      );
+      if(/fuel-control and delivery remain stable within applicable criteria/i.test(choice)) return hold(
+        "Fuel-control and delivery checks appear normal, but the shutdown cause remains unresolved.",
+        "Do not advance to repair verification. Continue the exact OEM unexpected-shutdown pinpoint procedure using the event data and remaining engine-control/mechanical evidence; preserve what has been ruled out."
+      );
+      if(/fuel-control\\/delivery defect isolated and repaired; retest passes/i.test(choice))
+        return go(steps.find(item=>item.id==="shutdown_repair_verification"),"A fuel-control/delivery defect was isolated, repaired and retested successfully.","Repeat the original cold/warm and load conditions when safe, then confirm the shutdown does not recur and the controller scan remains clear.");
+      if(/not tested|architecture or specification unavailable/i.test(choice)) return hold(
+        "Fuel-control and delivery have not been tested using the confirmed system architecture.",
+        "Confirm whether the engine is electronically or mechanically controlled and obtain the correct OEM procedure before testing. Do not bypass a shutdown device or guess at fuel-pressure limits."
+      );
+    }
+    if(step.id==="shutdown_repair_verification"){
+      if(/symptom still occurs/i.test(choice)) return hold(
+        "The engine still shuts down after the attempted repair.",
+        "The cause is not resolved. Preserve the new event data and return to the earliest test that did not pass or the next OEM pinpoint branch; do not repeat the same repair without new evidence."
+      );
+      if(/retest incomplete|original conditions not repeated|cause remains unconfirmed/i.test(choice)) return hold(
+        "The shutdown repair has not been verified under the original failure conditions.",
+        "Keep the case open. Repeat the original cold/warm, load and vibration conditions when safe, complete the loaded electrical checks and post-repair scan, and document any remaining unknowns."
+      );
+    }
+  }
   // Check Engine Light requires an attached scan and a reviewed primary fault before testing.
   if(record.workflowId==="check_engine_light"){
     if(step.id==="complaint"){
