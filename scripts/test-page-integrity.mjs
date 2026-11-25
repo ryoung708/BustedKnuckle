@@ -111,6 +111,10 @@ try {
     "Technical Library must use open-source browser OCR for scanned pages");
   assert.match(technicalLibrary, /worker\.recognize\(canvas\)/,
     "Scanned PDF pages must be rendered and passed to OCR");
+  assert.match(technicalLibrary, /function pdfTextLines\(items\)/,
+    "PDF text extraction must retain line boundaries for numbered procedures");
+  assert.match(technicalLibrary, /line=pdfTextLines\(content\.items\)/,
+    "Bulletin parsing must receive line-preserving PDF text");
   assert.match(technicalLibrary, /\[Page \"\+pageNo/,
     "Extracted text must preserve page markers");
   assert.match(technicalLibrary, /parseBulletinIntelligence\(/,
