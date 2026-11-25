@@ -19,11 +19,11 @@
       "controller": "Aftertreatment / engine control (verify reporting module by vehicle)",
       "engine_family": "",
       "description": "Reductant tank temperature sensor circuit range/performance — the reported tank-temperature value is implausible compared with other engine temperature readings.",
-      "vehicle_scope": "US17+ / OBD16 emissions and newer applications identified by the cited troubleshooting reference; confirm VIN, emissions generation, controller and calibration before applying.",
+      "vehicle_scope": "Mack US17+OBD16 through US22+OBD2023 applications covered by CBR 2107-22; excludes AN(4) and PR(4). Confirm VIN, chassis variant, emissions generation and current applicability.",
       "confidence": "source-referenced",
-      "source_title": "Reductant Tank Temperature Sensor Troubleshooting Guide (UQLS), NHTSA manufacturer communication 10201715",
-      "source_url": "https://static.nhtsa.gov/odi/tsbs/2021/MC-10201715-0001.pdf",
-      "caution": "A stored inactive code alone does not establish a failed sensor. For an active/repeating code, use approved vehicle-specific diagnostics and verify connector condition, DEF quality and tank condition before condemning the combined DEF level/quality/temperature sensor. Do not treat this description as a complete repair procedure."
+      "source_title": "Mack DEF Level (UQLS) Sensor Troubleshooting Guide, CBR 2107-22 202601 (NHTSA manufacturer communication 11028032)",
+      "source_url": "https://static.nhtsa.gov/odi/tsbs/2026/MC-11028032-0001.pdf",
+      "caution": "Use only when the exact Mack chassis/emissions configuration is within CBR 2107-22. This bulletin excludes AN(4) and PR(4). An inactive/historic code alone does not establish a failed sensor. Follow the active/confirmed fault sequence and use the repeat-test result before considering UQLS replacement."
     },
     {
       "manufacturer": "Mack",
