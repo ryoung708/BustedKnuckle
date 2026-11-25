@@ -497,7 +497,7 @@ const faultPreview=()=>{const result=interpretFaultCode($("faultCode").value);$(
  const targetIndex=editingFaultIndex===null?list.length:editingFaultIndex;
  if(editingFaultIndex===null)list.push(item);else list[editingFaultIndex]=item;
  active.entries[step.id]={...(active.entries[step.id]||entry),faultCodes:list};
- editingFaultIndex=null;saveCurrent();launchFaultGuidanceFor(step.id,targetIndex);
+ editingFaultIndex=null;saveCurrent();if(active.workflowId==="check_engine_light"&&step.id==="complaint"){renderWork();return}launchFaultGuidanceFor(step.id,targetIndex);
 };
 document.querySelectorAll("[data-edit-fault]").forEach(button=>button.onclick=()=>{
  const item=(active.entries[step.id]?.faultCodes||[])[Number(button.dataset.editFault)];if(!item)return;
