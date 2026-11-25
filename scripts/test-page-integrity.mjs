@@ -87,6 +87,11 @@ try {
   assert.match(diagnostics, /not independently validated measurements/,
     "Recommendation evidence must retain the measurement-validation caution");
 
+  // Fault codes entered on the intake form must be seeded into the first step of the new case.
+  assert.match(diagnostics, /const intakeCodes=\$\("intakeFaultCodes"\)\.value\.split/);
+  assert.match(diagnostics, /active\.entries\[firstStep\.id\]=\{choice:"",measurements:\{\},notes:"Fault codes entered during investigation intake\."/);
+  assert.match(diagnostics, /faultCodes:intakeCodes\.map\(code=>\(\{id:/);
+
   // The DCC must connect fault intake, source discovery and actionable test guidance.
   assert.match(diagnostics, /function currentGuidedFault\(\)/,
     "DCC must resolve the active fault while a fault-specific path is open");
