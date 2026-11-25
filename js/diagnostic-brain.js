@@ -331,7 +331,7 @@ function powertrainRecommendation(record, steps) {
         "The controller data needed to understand the event is unavailable.",
         "Restore communication with the missing controller, verify the diagnostic-tool connection and repeat the scan. Confirm whether a torque/shift inhibit or related controller fault is present before continuing."
       );
-      if(/active faults reviewed; no primary cause established|only inactive \\/ historic faults|no relevant faults retrieved after complete scan/i.test(choice))
+      if(/active faults reviewed; no primary cause established|only inactive \/ historic faults|no relevant faults retrieved after complete scan/i.test(choice))
         return go(steps.find(item=>item.id==="data"),"The complete scan has been reviewed and no uninvestigated primary active fault remains.","Compare commanded and actual gear, input/output speed, clutch state, torque request/inhibit and applicable pressure/temperature data under the original event conditions.");
     }
     if(step.id==="data"){
@@ -339,11 +339,11 @@ function powertrainRecommendation(record, steps) {
         "The transmission is not achieving the commanded operating state.",
         "Record the requested gear, actual gear, shift state and torque/shift inhibit source. Follow the exact transmission OEM pinpoint procedure to verify the relevant input signals, enable conditions and control outputs; do not condemn the TCM from a command/actual mismatch alone."
       );
-      if(/speed \\/ ratio evidence abnormal/i.test(choice)) return hold(
+      if(/speed \/ ratio evidence abnormal/i.test(choice)) return hold(
         "Input/output speed or gear-ratio evidence is abnormal.",
         "Compare input and output speed against the OEM ratio chart for the commanded gear and exact operating conditions. Verify the relevant speed-sensor signals and circuits using the correct diagram; do not apply a generic ratio or RPM threshold."
       );
-      if(/pressure \\/ temperature evidence abnormal/i.test(choice)) return hold(
+      if(/pressure \/ temperature evidence abnormal/i.test(choice)) return hold(
         "Pressure or temperature data is outside the expected operating range.",
         "Use the exact transmission model/calibration procedure to verify the pressure or temperature measurement at the specified test point and operating state. Confirm sensor plausibility and fluid temperature; do not infer an internal failure from one data value."
       );
@@ -357,7 +357,7 @@ function powertrainRecommendation(record, steps) {
     if(step.id==="inspection"){
       if(/defect isolated and corrected per oem procedure/i.test(choice))
         return go(steps.find(item=>item.id==="verify"),"The indicated driveline/transmission defect was isolated and corrected using the OEM procedure.","Complete the required setup/relearn if applicable, then verify operation under the original conditions when safe. Preserve before/after values and the post-repair scan.");
-      if(/leak \\/ fluid issue found/i.test(choice)) return hold(
+      if(/leak \/ fluid issue found/i.test(choice)) return hold(
         "A fluid or leak concern has been observed but is not yet isolated.",
         "Verify fluid type, level and condition using the exact transmission temperature and fill/check procedure. Locate the leak source and repair only the confirmed issue; do not overfill or substitute fluid."
       );
@@ -365,7 +365,7 @@ function powertrainRecommendation(record, steps) {
         "A mechanical driveline concern has been observed but is not yet localized.",
         "Secure the vehicle and isolate the affected joint, shaft, mount, bearing or driveline component using the OEM inspection procedure. Record the physical evidence and measurements before recommending repair."
       );
-      if(/control \\/ electrical issue indicated/i.test(choice)) return hold(
+      if(/control \/ electrical issue indicated/i.test(choice)) return hold(
         "The evidence points to a transmission control or electrical issue.",
         "Use the correct wiring diagram and pinpoint test to verify module power/ground, network communication, relevant inputs and commanded outputs under load. Do not replace a controller until its feeds, grounds and inputs are proven."
       );
@@ -383,7 +383,7 @@ function powertrainRecommendation(record, steps) {
         "A related transmission/drivetrain fault remains active after repair.",
         "Keep the case open. Preserve the post-repair scan and return to the applicable OEM code-specific diagnostic path to determine why the fault remains."
       );
-      if(/repair complete; verification pending|cause remains unconfirmed|road test \\/ verification not yet safe/i.test(choice)) return hold(
+      if(/repair complete; verification pending|cause remains unconfirmed|road test \/ verification not yet safe/i.test(choice)) return hold(
         "The repair has not been verified under the original conditions or the vehicle is not safe for a road test.",
         "Do not mark the repair complete. Resolve the safety concern or obtain the approved stationary verification method, then complete the OEM post-repair checks and document any deferred test."
       );
