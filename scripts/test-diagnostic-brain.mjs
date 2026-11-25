@@ -283,4 +283,17 @@ assert.equal(normalCrankResult.status,"ready-for-review");
 assert.equal(normalCrankResult.completed,5);
 assert.equal(normalCrankResult.total,5);
 
+const branchedCrankSession=createSession({workflowId:"crank_no_start",make:"Mack",model:"Anthem",engine:"MP8"});
+recordStep(branchedCrankSession,0,{choice:"No relevant faults found"});
+recordStep(branchedCrankSession,1,{choice:"Enable and sync appear valid"});
+recordStep(branchedCrankSession,2,{choice:"Supply outside specification"});
+recordStep(branchedCrankSession,3,{choice:"Defect confirmed and corrected"});
+recordStep(branchedCrankSession,4,{choice:"Fuel supply meets OEM specification under cranking conditions"});
+recordStep(branchedCrankSession,5,{choice:"Concern isolated and corrected; prerequisites now pass"});
+recordStep(branchedCrankSession,6,{choice:"Cause and repair verified"});
+const branchedCrankResult=evaluateSession(branchedCrankSession);
+assert.equal(branchedCrankResult.status,"ready-for-review");
+assert.equal(branchedCrankResult.completed,5);
+assert.equal(branchedCrankResult.total,5);
+
 console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");
