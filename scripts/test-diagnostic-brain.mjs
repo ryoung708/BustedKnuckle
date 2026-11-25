@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { analyzeDiagnosticCase } from "../js/diagnostic-brain.js";
 import { getP016F00Guidance } from "../js/fault-guidance-routing.js";
+import { getMackP205B64Guidance } from "../js/oem-fault-guidance.js";
+import { workflows, createSession, recordStep, evaluateSession } from "../js/diagnostic-engine.js";
 
 const electricalSteps = [
   {id:"baseline",title:"Baseline"},
@@ -223,5 +225,87 @@ const pendingLowSideRepair = analyzeDiagnosticCase({
 assert.equal(pendingLowSideRepair.recommendation.stepId,"p016f_low_side_isolate");
 assert.equal(pendingLowSideRepair.recommendation.state,"hold");
 assert.match(pendingLowSideRepair.recommendation.action,/Do not proceed to high-side testing/i);
+
+// Mack UQLS CBR must hard-stop excluded AN(4) / PR(4) variants.
+const p205Plan=getMackP205B64Guidance({code:"P205B64"},{make:"Mack",model:"AN(4)"});
+const p205Excluded=analyzeDiagnosticCase({
+  workflowId:"fault_guidance_p205b",
+  vehicle:{make:"Mack",model:"AN(4)",engine:"MP8"},
+  entries:{p205b_applicability:{choice:"AN(4), PR(4), or emissions applicability unknown — stop"}}
+},p205Plan.steps);
+assert.equal(p205Excluded.recommendation.stepId,"p205b_applicability");
+assert.equal(p205Excluded.recommendation.state,"hold");
+assert.match(p205Excluded.recommendation.action,/Stop this guided path/i);
+
+// Real crank/no-start workflow: explicit outcome routing and optional fuel branch stages.
+const crankPlan = workflows.crank_no_start.steps;
+const crankBase = {workflowId:"crank_no_start",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"Cranks but will not start"};
+const scanIncomplete = analyzeDiagnosticCase({...crankBase,entries:{codes:{choice:"Scan incomplete"}}},crankPlan);
+assert.equal(scanIncomplete.recommendation.stepId,"codes");
+assert.equal(scanIncomplete.recommendation.state,"hold");
+assert.match(scanIncomplete.recommendation.action,/repeat the full scan/i);
+
+const scanClear = analyzeDiagnosticCase({...crankBase,entries:{codes:{choice:"No relevant faults found"}}},crankPlan);
+assert.equal(scanClear.recommendation.stepId,"enable");
+
+const activeFaults = analyzeDiagnosticCase({...crankBase,entries:{codes:{choice:"Relevant active faults present"}}},crankPlan);
+assert.equal(activeFaults.recommendation.stepId,"codes");
+assert.equal(activeFaults.recommendation.state,"hold");
+assert.match(activeFaults.recommendation.action,/attach every relevant code/i);
+
+const enableMissing = analyzeDiagnosticCase({...crankBase,entries:{enable:{choice:"Start enable missing"}}},crankPlan);
+assert.equal(enableMissing.recommendation.stepId,"enable");
+assert.equal(enableMissing.recommendation.state,"hold");
+assert.match(enableMissing.recommendation.action,/inhibit reason/i);
+
+const enableValid = analyzeDiagnosticCase({...crankBase,entries:{enable:{choice:"Enable and sync appear valid"}}},crankPlan);
+assert.equal(enableValid.recommendation.stepId,"fuel");
+
+const fuelFail = analyzeDiagnosticCase({...crankBase,entries:{fuel:{choice:"Supply outside specification"}}},crankPlan);
+assert.equal(fuelFail.recommendation.stepId,"fuel_isolation");
+
+const fuelCorrected = analyzeDiagnosticCase({...crankBase,entries:{fuel_isolation:{choice:"Defect confirmed and corrected"}}},crankPlan);
+assert.equal(fuelCorrected.recommendation.stepId,"fuel_retest");
+
+const fuelRetestPass = analyzeDiagnosticCase({...crankBase,entries:{fuel_retest:{choice:"Fuel supply meets OEM specification under cranking conditions"}}},crankPlan);
+assert.equal(fuelRetestPass.recommendation.stepId,"air_exhaust");
+
+const fuelRetestFail = analyzeDiagnosticCase({...crankBase,entries:{fuel_retest:{choice:"Supply remains outside OEM specification"}}},crankPlan);
+assert.equal(fuelRetestFail.recommendation.stepId,"fuel_isolation");
+
+const airRepair = analyzeDiagnosticCase({...crankBase,entries:{air_exhaust:{choice:"Concern isolated and corrected; prerequisites now pass"}}},crankPlan);
+assert.equal(airRepair.recommendation.stepId,"verify");
+const noCause = analyzeDiagnosticCase({...crankBase,entries:{air_exhaust:{choice:"No abnormality identified"}}},crankPlan);
+assert.equal(noCause.recommendation.stepId,"air_exhaust");
+assert.equal(noCause.recommendation.state,"hold");
+assert.match(noCause.recommendation.action,/Do not mark the engine diagnosed/i);
+
+const verifiedCrank = analyzeDiagnosticCase({...crankBase,entries:{verify:{choice:"Cause and repair verified"}}},crankPlan);
+assert.equal(verifiedCrank.recommendation.state,"review");
+
+// Optional branch steps must not prevent a normal, fully verified no-start path from completing.
+const normalCrankSession=createSession({workflowId:"crank_no_start",make:"Mack",model:"Anthem",engine:"MP8"});
+recordStep(normalCrankSession,0,{choice:"No relevant faults found"});
+recordStep(normalCrankSession,1,{choice:"Enable and sync appear valid"});
+recordStep(normalCrankSession,2,{choice:"Fuel supply meets specification"});
+recordStep(normalCrankSession,5,{choice:"No abnormality identified"});
+recordStep(normalCrankSession,6,{choice:"Cause and repair verified"});
+const normalCrankResult=evaluateSession(normalCrankSession);
+assert.equal(normalCrankResult.status,"ready-for-review");
+assert.equal(normalCrankResult.completed,5);
+assert.equal(normalCrankResult.total,5);
+
+const branchedCrankSession=createSession({workflowId:"crank_no_start",make:"Mack",model:"Anthem",engine:"MP8"});
+recordStep(branchedCrankSession,0,{choice:"No relevant faults found"});
+recordStep(branchedCrankSession,1,{choice:"Enable and sync appear valid"});
+recordStep(branchedCrankSession,2,{choice:"Supply outside specification"});
+recordStep(branchedCrankSession,3,{choice:"Defect confirmed and corrected"});
+recordStep(branchedCrankSession,4,{choice:"Fuel supply meets OEM specification under cranking conditions"});
+recordStep(branchedCrankSession,5,{choice:"Concern isolated and corrected; prerequisites now pass"});
+recordStep(branchedCrankSession,6,{choice:"Cause and repair verified"});
+const branchedCrankResult=evaluateSession(branchedCrankSession);
+assert.equal(branchedCrankResult.status,"ready-for-review");
+assert.equal(branchedCrankResult.completed,5);
+assert.equal(branchedCrankResult.total,5);
 
 console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");

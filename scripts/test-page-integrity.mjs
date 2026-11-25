@@ -145,9 +145,14 @@ try {
     "DCC must surface the concrete check/test target from each diagnostic step");
   assert.match(diagnostics, /WHERE \/ HOW TO CHECK/,
     "DCC must surface the method/location guidance from each diagnostic step");
+  const dccWorkflowEngineText = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
+  const crankWorkflowText = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("crank_no_start:"), dccWorkflowEngineText.indexOf("engine_power_loss:"));
+  assert.match(crankWorkflowText, /id:"codes"[\s\S]*?test:/);
+  assert.match(crankWorkflowText, /id:"fuel_isolation"[\s\S]*?optional:true/);
+  assert.match(crankWorkflowText, /id:"fuel_retest"[\s\S]*?optional:true/);
+  assert.match(crankWorkflowText, /id:"verify"[\s\S]*?terminal:true/);
   assert.doesNotMatch(diagnostics, /FIND PUBLIC OEM BULLETINS/,
     "Public source discovery must not remain buried in the fault-entry accordion");
-  const dccWorkflowEngineText = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
   const celWorkflow = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("check_engine_light:"), dccWorkflowEngineText.indexOf("\n  }", dccWorkflowEngineText.indexOf("check_engine_light:")));
   assert.match(celWorkflow, /Verify the Check Engine Light and attach fault codes/,
     "Check Engine Light workflow must begin by verifying the lamp and capturing faults");
@@ -191,8 +196,12 @@ try {
   const dccComplaintEngineText = await readFile(join(root, "js/diagnostic-complaint-engine.js"), "utf8");
   assert.match(dccWorkflowEngineText, /engine_power_loss:\s*\{/);
   assert.match(dccComplaintEngineText, /workflowId:\s*"engine_power_loss"/);
-  assert.match(diagnostics, /row\?\.workflowId==="power_loss"\?\{\.\.\.row,workflowId:"engine_power_loss"\}/);
-  assert.match(diagnostics, /normalizeLegacyDcc=item=>item\?\.workflowId==="power_loss"&&item\.product!=="IronKnuckle WiringHound"/);
+  assert.match(diagnostics, /function normalizeDccSession\(row\)/);
+  assert.match(diagnostics, /next\.workflowId==="power_loss"/);
+  assert.match(diagnostics, /normalizeLegacyDcc=item=>normalizeDccSession\(item\)/);
+  assert.match(diagnostics, /currentStep>=3\?currentStep\+2:currentStep/);
+  assert.match(diagnostics, /step\.optional\?"OPTIONAL BRANCH"/);
+  assert.match(diagnostics, /requiredSteps\.filter\(s=>active\.entries\[s\.id\]\?\.choice\)/);
 
   // Public OEM source discovery must distinguish zero matches from provider failure and retain fallback diagnostics.
   const publicSearch = await readFile(join(root, "supabase/functions/public-oem-search/index.ts"), "utf8");

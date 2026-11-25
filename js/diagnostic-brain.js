@@ -311,6 +311,100 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // Crank/no-start is a staged powertrain path. Failed checks stay focused;
+  // optional fuel isolation/retest stages are required only when the low side fails.
+  if(record.workflowId==="crank_no_start"){
+    if(step.id==="codes"){
+      if(/relevant active faults present/i.test(choice)) return hold(
+        "Active faults are present and have not yet been evaluated for this no-start.",
+        "Attach every relevant code with controller, active/inactive status and event data. Run the matching code-specific guided path where available. Only continue after the faults have been reviewed and you have recorded whether they explain the no-start."
+      );
+      if(/controllers not communicating|scan incomplete/i.test(choice)) return hold(
+        "The controller scan is incomplete; the available fault list may be misleading.",
+        "Restore communication with the missing controller(s), verify diagnostic-tool connection and power/ground as applicable, then repeat the full scan. Do not advance as though no relevant faults exist."
+      );
+      if(/active faults reviewed; none explain no-start|no relevant faults found/i.test(choice))
+        return go(steps.find(item=>item.id==="enable"),"The available controller scan is complete and no primary no-start fault remains to be evaluated.","Check the start-enable state, cranking engine-speed signal, cam/crank synchronization and only the interlocks fitted to this vehicle. Record the source controller and actual live-data values.");
+    }
+    if(step.id==="enable"){
+      if(/start enable missing/i.test(choice)) return hold(
+        "The engine is not being granted start authorization.",
+        "Identify the controller that is withholding start enable and the exact inhibit reason. Verify the relevant configured interlock input at its source and at the receiving controller using the OEM diagram/live data. Check neutral/park, clutch/brake, PTO or immobilizer only if fitted; do not bypass an interlock."
+      );
+      if(/engine speed \/ sync data abnormal/i.test(choice)) return hold(
+        "Cranking speed or synchronization data is abnormal.",
+        "Use the engine-specific procedure to verify the crankshaft and camshaft speed/synchronization signals during cranking. Compare scan data with the approved physical test method, then inspect the supported sensor circuit, connector, harness or mechanical timing evidence. Do not invent a universal RPM or waveform limit."
+      );
+      if(/enable and sync appear valid/i.test(choice))
+        return go(steps.find(item=>item.id==="fuel"),"Start authorization and synchronization appear valid under the recorded cranking conditions.","Verify low-pressure fuel supply during cranking with the exact engine/serial-specific test point and specification. Record actual pressure, units and test conditions.");
+      if(/data unavailable/i.test(choice)) return hold(
+        "Start authorization or synchronization has not been proven.",
+        "Obtain the correct OEM live-data parameters and start-enable procedure for this engine/controller combination. Do not treat unavailable data as a pass."
+      );
+    }
+    if(step.id==="fuel"){
+      if(/supply outside specification|air \/ restriction evidence/i.test(choice))
+        return go(steps.find(item=>item.id==="fuel_isolation"),"The low-pressure fuel supply did not pass during cranking; isolate the supply-side cause before moving to air/mechanical checks.","Follow the exact engine/serial-specific low-pressure pinpoint sequence to separate pump output, filter/line restriction, tank pickup/vent restriction and air ingress. Do not use generic pressure limits or replace a component from this result alone.");
+      if(/fuel supply meets specification/i.test(choice))
+        return go(steps.find(item=>item.id==="air_exhaust"),"Fuel supply was verified within the applicable OEM specification during cranking.","Proceed to the engine-specific intake, exhaust and mechanical prerequisite checks using the exact vehicle-specific procedure. Preserve the fuel reading and the conditions under which it passed.");
+      if(/not tested/i.test(choice)) return hold(
+        "Fuel supply has not been tested during cranking.",
+        "Perform the OEM low-pressure supply test at the specified test point and conditions. Record the actual value and applicable limit; do not advance on an untested fuel system."
+      );
+    }
+    if(step.id==="fuel_isolation"){
+      if(/defect confirmed and corrected/i.test(choice))
+        return go(steps.find(item=>item.id==="fuel_retest"),"A low-pressure supply defect was isolated and corrected; it must be verified under the original cranking conditions.","Repeat the same low-pressure supply test during cranking. Compare the measured value with the engine-specific limit before proceeding.");
+      if(/defect identified; repair pending/i.test(choice)) return hold(
+        "A fuel-supply defect has been identified but not corrected.",
+        "Complete the approved repair and retain the before-repair evidence. Do not continue the no-start path until the low-pressure supply has been retested."
+      );
+      if(/no low-side cause isolated/i.test(choice)) return hold(
+        "The low-pressure supply remains abnormal, but the cause is not isolated.",
+        "Continue the current OEM pinpoint sequence. Verify the test setup, pump command/output, filter and line restriction, tank pickup/vent and air ingress only as prescribed for this engine. Record each discriminating result; do not guess or replace parts."
+      );
+      if(/procedure \/ specification unavailable/i.test(choice)) return hold(
+        "The required low-pressure pinpoint procedure or specification is unavailable.",
+        "Obtain current engine/serial-specific OEM service information before continuing. Keep the no-start diagnosis open; do not infer a failed component."
+      );
+    }
+    if(step.id==="fuel_retest"){
+      if(/fuel supply meets oem specification under cranking conditions/i.test(choice))
+        return go(steps.find(item=>item.id==="air_exhaust"),"The corrected low-pressure supply now meets the OEM specification during cranking.","Continue to the intake, exhaust and mechanical prerequisite checks. Preserve the before/after fuel readings and conditions.");
+      if(/supply remains outside oem specification|air \/ restriction evidence remains/i.test(choice))
+        return go(steps.find(item=>item.id==="fuel_isolation"),"The repeat cranking test still shows an abnormal low-pressure supply.","Return to the low-pressure pinpoint tests. The repair has not restored the required supply; isolate the remaining delivery, restriction or air-ingress cause.");
+      if(/retest incomplete|conditions not reproduced/i.test(choice)) return hold(
+        "The repaired fuel supply has not been verified under the original cranking conditions.",
+        "Repeat the exact OEM test with the same test point, equipment and cranking conditions. Do not advance until the low-pressure result is conclusive."
+      );
+    }
+    if(step.id==="air_exhaust"){
+      if(/concern isolated and corrected; prerequisites now pass/i.test(choice))
+        return go(steps.find(item=>item.id==="verify"),"The indicated air/exhaust/mechanical concern was isolated and corrected; confirm the original no-start is resolved.","Record the confirmed physical cause and repair, then repeat the original crank/start conditions. Save the post-repair scan and the measurements that proved the prerequisite now passes.");
+      if(/restriction or mechanical concern found/i.test(choice)) return hold(
+        "An intake, exhaust or mechanical abnormality is indicated but has not been isolated.",
+        "Use the engine-specific OEM pinpoint test to identify whether the concern is intake restriction, exhaust restriction, valve/compression/timing or another supported mechanical issue. Record the exact measurement and limit; do not condemn a turbocharger or engine from a broad symptom."
+      );
+      if(/data points to another system/i.test(choice)) return hold(
+        "The no-start evidence points outside the checks in this workflow.",
+        "Stop this generic sequence and follow the relevant system-specific or fault-code-guided path. Attach the supporting code/live-data evidence and preserve the original no-start conditions; do not continue to a repair recommendation here."
+      );
+      if(/no abnormality identified/i.test(choice)) return hold(
+        "The listed prerequisites did not reveal a cause; the no-start remains unresolved.",
+        "Do not mark the engine diagnosed. Preserve cranking data and continue the exact OEM no-start pinpoint procedure for remaining fuel-control, sensor plausibility, ECM power/ground or mechanical checks supported by the evidence."
+      );
+      if(/further evidence needed/i.test(choice)) return hold(
+        "The air, exhaust and mechanical checks are not conclusive.",
+        "Identify the missing engine-specific test, measurement or operating condition and complete it before advancing. Do not treat an incomplete inspection as normal."
+      );
+    }
+    if(step.id==="verify"){
+      if(/repair pending verification|cause unconfirmed/i.test(choice)) return hold(
+        "The no-start cause or repair has not been verified.",
+        "Keep the case open. Complete the repair or obtain the missing evidence, then recreate the original cranking/no-start conditions and record the post-repair scan and restart result."
+      );
+    }
+  }
   // Mack P016F00 CBR gates: a coexisting P009B-13 takes priority; K010 filter checks
   // are only prescribed when the code combination and vehicle applicability are confirmed.
   if(step.id==="p016f_confirm"){
@@ -409,7 +503,7 @@ function powertrainRecommendation(record, steps) {
       action:"Do not troubleshoot or replace the UQLS under CBR 2107-22. Save the scan report and use applicable guided diagnostics for any green codes or other symptoms.",
       state:"review"
     };
-    if(/AN\\(4\\)|PR\\(4\\)|unknown|stop/.test(choice)) return hold(
+    if(/AN\(4\)|PR\(4\)|unknown|stop/.test(choice)) return hold(
       "The 2026 Mack CBR applicability has not been established or this variant is excluded.",
       "Stop this guided path. Confirm the VIN, exact chassis variant and emissions generation, then retrieve the applicable Mack procedure. Do not carry on with CBR 2107-22."
     );
