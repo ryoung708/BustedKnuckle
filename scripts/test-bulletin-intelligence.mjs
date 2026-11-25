@@ -10,7 +10,7 @@ Vehicle Applicability
 Exclusions
 Does not apply to AN(4) and PR(4).
 Fault Codes
-P205B64 P203A13 P206A13
+P205B64 P203A13 P206A13 U02A200
 Service Procedure
 1. Inspect both UQLS harness connector halves for damaged pins, corrosion or water intrusion.
 2. Verify DEF quality with refractometer.
@@ -28,7 +28,7 @@ assert.equal(result.document.revision, "202601");
 assert.equal(result.document.publicationDate, "January 7, 2026");
 assert.ok(result.applicability.some(item => item.text.includes("2017-2024")));
 assert.ok(result.exclusions.some(item => item.text.includes("AN(4)")));
-assert.deepEqual(result.faultCodes, ["P205B64", "P203A13", "P206A13"]);
+assert.deepEqual(result.faultCodes, ["P205B64", "P203A13", "P206A13", "U02A200"]);
 assert.equal(result.procedureSteps.length, 5);
 assert.equal(result.procedureSteps[0].sourcePage, 1);
 assert.equal(result.procedureSteps[2].sourcePage, 2);
@@ -62,6 +62,8 @@ assert.equal(real.document.bulletinNumber, "2107-22");
 assert.equal(real.document.publicationDate, "7 January 2026");
 assert.ok(real.applicability.some(item => item.text.includes("2017 to 2024")));
 assert.ok(real.exclusions.some(item => item.text.includes("AN(4)") && item.text.includes("PR(4)")));
+assert.ok(real.faultCodes.includes("U02A200"));
+assert.ok(real.applicability.some(item => item.text.includes("US17+OBD16")));
 assert.equal(real.procedureSteps.length, 9);
 assert.ok(real.procedureSteps.some(step => step.text.includes("high idle for 2 minutes") && step.sourcePage === 2));
 assert.ok(real.evaluation.some(item => item.text.includes("return active")));
