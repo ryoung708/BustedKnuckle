@@ -311,6 +311,70 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // Engine low-power/derate is a powertrain path, separate from WiringHound vehicle power loss.
+  if(record.workflowId==="engine_power_loss"){
+    if(step.id==="conditions"){
+      if(/complaint not reproduced; event data available/i.test(choice))
+        return go(steps.find(item=>item.id==="codes"),"The low-power event is intermittent, but stored operating/event data is available.","Use the event data to identify load, RPM, speed, temperature and torque-limit state when power dropped. Capture the full controller scan and determine which controller requested derate.");
+      if(/complaint not reproduced; no event data available/i.test(choice)) return hold(
+        "The low-power complaint is not present and no event data is available.",
+        "Obtain the driver's exact operating conditions and reproduce the concern only when safe. Capture load, RPM, speed, temperature, warning message and torque-limit state when it occurs; do not guess at a failed component."
+      );
+      return go(steps.find(item=>item.id==="codes"),"The low-power/derate operating conditions are defined.","Scan all relevant controllers and identify the source of any torque reduction or derate request before testing air or fuel components.");
+    }
+    if(step.id==="codes"){
+      if(/active derate request identified; reason not isolated|relevant fault without derate; not yet diagnosed/i.test(choice)) return hold(
+        "A derate request or relevant active fault is present, but its cause has not been isolated.",
+        "Attach the fault codes and identify the requesting controller, torque limit, inhibit reason and event sequence. Follow the relevant code-specific OEM diagnostic path before proceeding to general air/fuel tests."
+      );
+      if(/controller data unavailable/i.test(choice)) return hold(
+        "The source of the torque reduction cannot be established because controller data is unavailable.",
+        "Restore communication with the missing controller(s), repeat the complete scan and retrieve torque-limit/derate request data. Do not assume the engine itself initiated the derate."
+      );
+      if(/active faults reviewed; no primary cause established|no active faults found after complete scan/i.test(choice))
+        return go(steps.find(item=>item.id==="airfuel"),"The complete controller scan is reviewed and no uninvestigated primary active fault explains the power loss.","Compare the applicable air-path, turbo-control and fuel-supply data under the load/RPM conditions that produced the complaint.");
+    }
+    if(step.id==="airfuel"){
+      if(/air-path discrepancy/i.test(choice)) return hold(
+        "The air-path data does not agree with the expected engine operation.",
+        "Use the exact engine-specific pinpoint procedure to distinguish intake restriction, charge-air leak, turbo actuator/control response and sensor plausibility. Compare commanded/actual values at the specified load and RPM; do not condemn the turbo from a boost discrepancy alone."
+      );
+      if(/fuel delivery discrepancy/i.test(choice)) return hold(
+        "The fuel-delivery data does not agree with the expected engine operation.",
+        "Identify whether the discrepancy is on the low-pressure supply or high-pressure rail side, then follow the matching engine/serial-specific OEM test. Record the test point, commanded/actual values and operating conditions; do not replace a pump or injector from a broad symptom."
+      );
+      if(/sensor plausibility issue/i.test(choice)) return hold(
+        "One or more engine sensor values may be implausible.",
+        "Compare the suspect value with related sensors and known operating conditions using the OEM plausibility procedure. Verify sensor power, ground, signal and harness only as directed by the wiring diagram; record the measured values before considering replacement."
+      );
+      if(/no discrepancy identified/i.test(choice))
+        return go(steps.find(item=>item.id==="exhaust"),"The reviewed air/fuel values agree with the applicable specification under the recorded conditions.","Review exhaust/after-treatment temperatures, differential pressure, regeneration state and fault data for a supported restriction or derate cause.");
+    }
+    if(step.id==="exhaust"){
+      if(/aftertreatment issue supported by data/i.test(choice)) return hold(
+        "The evidence points to an after-treatment fault or derate.",
+        "Stop the generic engine power-loss sequence and open the Aftertreatment Fault workflow or the specific active-code guided path. Attach the supporting faults, temperatures, pressure and regeneration data; never force a regeneration or bypass an inhibit."
+      );
+      if(/exhaust restriction suspected/i.test(choice)) return hold(
+        "The evidence suggests an exhaust restriction, but it has not been confirmed.",
+        "Perform the exact engine/emissions-specific restriction test at the specified operating condition. Verify pressure sensor/tubes and compare measured values with the OEM limit; do not condemn the DPF or exhaust component from suspicion alone."
+      );
+      if(/values within specification but power loss unresolved/i.test(choice)) return hold(
+        "The reviewed exhaust/after-treatment values are within specification, but the power-loss cause remains unresolved.",
+        "Do not advance to repair verification without a confirmed cause. Capture additional event data and continue the OEM low-power pinpoint procedure for remaining air, fuel, engine-control or mechanical causes supported by the evidence."
+      );
+      if(/more data required/i.test(choice)) return hold(
+        "The exhaust/after-treatment review is incomplete.",
+        "Identify the missing sensor, pressure, regeneration or operating-condition data and obtain the exact engine/emissions-specific specification before proceeding."
+      );
+    }
+    if(step.id==="verify"){
+      if(/post-repair fault remains active|verification pending|cause unconfirmed|load verification not safe/i.test(choice)) return hold(
+        "Power restoration has not been verified under the original load conditions or a related fault remains active.",
+        "Keep the case open. Resolve the remaining fault or safety limitation, then complete the OEM post-repair scan and safe load verification. Do not claim the derate is repaired without evidence."
+      );
+    }
+  }
   // Transmission/drivetrain decisions require measured evidence and safe verification.
   if(record.workflowId==="drivetrain_fault"){
     if(step.id==="complaint"){
