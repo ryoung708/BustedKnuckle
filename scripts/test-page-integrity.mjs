@@ -155,6 +155,8 @@ try {
     "The CEL intake must allow all scan codes to be attached before opening one code-specific path");
   assert.match(diagnostics, /data-diagnose-fault/,
     "Each attached CEL fault must remain individually openable for guided diagnostics");
+  assert.ok(diagnostics.includes("split(/[;,\\n]+/)"),"Intake must split fault codes on commas, semicolons and newlines");
+  assert.ok(diagnostics.includes("/SPN\\s*63[89]/"),"SPN classification must accept whitespace before 638/639");
   const complaintTriageWorkflowText = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("complaint_triage:"), dccWorkflowEngineText.indexOf("j1939_dropout:"));
   assert.match(complaintTriageWorkflowText, /id:"complaint_baseline"[\s\S]*?test:/);
   assert.match(complaintTriageWorkflowText, /id:"controller_scan"[\s\S]*?prompt:/);
