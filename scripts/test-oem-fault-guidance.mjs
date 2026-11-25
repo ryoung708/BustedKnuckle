@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {getMackP205B64Guidance} from "../js/oem-fault-guidance.js";
+import {analyzeDiagnosticCase} from "../js/diagnostic-brain.js";
 const plan=getMackP205B64Guidance({code:"P205B64"},{make:"Mack",model:"Anthem",year:"2022",emissions:"US17+OBD16"});
 assert.ok(plan);
 assert.equal(plan.steps.length,7);
@@ -14,4 +15,19 @@ assert.match(plan.steps[5].instruction,/15 seconds/i);
 assert.match(plan.steps[6].instruction,/258-040/i);
 assert.equal(getMackP205B64Guidance({code:"P205B64"},{make:"Volvo"}),null);
 assert.equal(getMackP205B64Guidance({code:"P205A13"},{make:"Mack"}),null);
+
+const steps=plan.steps;
+const base={workflowId:"fault_guidance_p205b64",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},entries:{}};
+const stopped=analyzeDiagnosticCase({...base,entries:{p205b_applicability:{choice:"AN(4), PR(4), or emissions applicability unknown — stop"}}},steps);
+assert.equal(stopped.recommendation.state,"hold");
+assert.match(stopped.recommendation.action,/Stop this guided path/i);
+const inactive=analyzeDiagnosticCase({...base,entries:{p205b_applicability:{choice:"Inactive / historic — no troubleshooting required"}}},steps);
+assert.equal(inactive.recommendation.state,"review");
+assert.match(inactive.recommendation.action,/Do not troubleshoot or replace/i);
+const active=analyzeDiagnosticCase({...base,entries:{p205b_applicability:{choice:"Active/confirmed and applicability verified"}}},steps);
+assert.equal(active.recommendation.stepId,"p205b_connector");
+const result=analyzeDiagnosticCase({...base,entries:{p205b_applicability:{choice:"Active/confirmed and applicability verified"},p205b_cycle:{choice:"Repeat sequence completed; P205B64 returned active/confirmed"},p205b_result:{choice:"P205B64 returned active/confirmed after repeat test"}}},steps);
+assert.equal(result.recommendation.state,"review");
+assert.match(result.recommendation.action,/UQLS replacement/i);
+
 console.log("Mack P205B64 fault-specific guided workflow tests passed.");
