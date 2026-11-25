@@ -37,7 +37,7 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
   const modelText = String(vehicle.model || vehicle.chassis || "").toUpperCase();
   const engineText = [vehicle.engine, vehicle.engineModel, vehicle.engineMake].filter(Boolean).join(" ").toUpperCase();
   const emissions = String(vehicle.emissions || vehicle.emissionsFamily || "").toUpperCase().replace(/\s/g, "");
-  const supportedModels = /\b(?:TE|LR|MRU|AN|CHU|CXU|GR|GU|PI)(?:\b|[0-9])/i.test(modelText);
+  const supportedModels = /\b(?:TE|LR|MRU|AN|CHU|CXU|GR|GU|PI)(?:\b|[0-9])|\b(?:ANTHEM|GRANITE|PINNACLE|TERRAPRO)\b/i.test(modelText);
   const supportedEngines = /\b(?:MP7|MP8|11L|13L)\b/i.test(engineText);
   const supportedEmissions = /US17\+OBD(16|18|19)/.test(emissions);
   const k010Candidate = year >= 2018 && supportedModels && supportedEngines && supportedEmissions;
