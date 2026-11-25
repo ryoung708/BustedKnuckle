@@ -187,6 +187,13 @@ try {
   assert.match(diagnostics, /Open broader web search/,
     "A zero-result public index search must provide a broader search fallback");
 
+  // DCC engine low-power and WiringHound whole-vehicle power loss must use distinct workflow IDs.
+  const diagnosticEngine = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
+  const complaintEngine = await readFile(join(root, "js/diagnostic-complaint-engine.js"), "utf8");
+  assert.match(diagnosticEngine, /engine_power_loss:\s*\{/);
+  assert.match(complaintEngine, /workflowId:\s*"engine_power_loss"/);
+  assert.match(diagnostics, /row\?\.workflowId==="power_loss"\?\{\.\.\.row,workflowId:"engine_power_loss"\}/);
+
   // Public OEM source discovery must distinguish zero matches from provider failure and retain fallback diagnostics.
   const publicSearch = await readFile(join(root, "supabase/functions/public-oem-search/index.ts"), "utf8");
   const publicSearchParser = await readFile(join(root, "supabase/functions/public-oem-search/search-parser.js"), "utf8");
