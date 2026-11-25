@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { analyzeDiagnosticCase } from "../js/diagnostic-brain.js";
 import { getP016F00Guidance } from "../js/fault-guidance-routing.js";
+import { workflows, createSession, recordStep, evaluateSession } from "../js/diagnostic-engine.js";
 
 const electricalSteps = [
   {id:"baseline",title:"Baseline"},
@@ -223,5 +224,61 @@ const pendingLowSideRepair = analyzeDiagnosticCase({
 assert.equal(pendingLowSideRepair.recommendation.stepId,"p016f_low_side_isolate");
 assert.equal(pendingLowSideRepair.recommendation.state,"hold");
 assert.match(pendingLowSideRepair.recommendation.action,/Do not proceed to high-side testing/i);
+
+// Real crank/no-start workflow: explicit outcome routing and optional fuel branch stages.
+const crankPlan = workflows.crank_no_start.steps;
+const crankBase = {workflowId:"crank_no_start",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"Cranks but will not start"};
+const scanIncomplete = analyzeDiagnosticCase({...crankBase,entries:{codes:{choice:"Scan incomplete"}}},crankPlan);
+assert.equal(scanIncomplete.recommendation.stepId,"codes");
+assert.equal(scanIncomplete.recommendation.state,"hold");
+assert.match(scanIncomplete.recommendation.action,/repeat the full scan/i);
+
+const scanClear = analyzeDiagnosticCase({...crankBase,entries:{codes:{choice:"No relevant faults found"}}},crankPlan);
+assert.equal(scanClear.recommendation.stepId,"enable");
+
+const activeFaults = analyzeDiagnosticCase({...crankBase,entries:{codes:{choice:"Relevant active faults present"}}},crankPlan);
+assert.equal(activeFaults.recommendation.stepId,"codes");
+assert.equal(activeFaults.recommendation.state,"hold");
+assert.match(activeFaults.recommendation.action,/attach every relevant code/i);
+
+const enableMissing = analyzeDiagnosticCase({...crankBase,entries:{enable:{choice:"Start enable missing"}}},crankPlan);
+assert.equal(enableMissing.recommendation.stepId,"enable");
+assert.equal(enableMissing.recommendation.state,"hold");
+assert.match(enableMissing.recommendation.action,/inhibit reason/i);
+
+const enableValid = analyzeDiagnosticCase({...crankBase,entries:{enable:{choice:"Enable and sync appear valid"}}},crankPlan);
+assert.equal(enableValid.recommendation.stepId,"fuel");
+
+const fuelFail = analyzeDiagnosticCase({...crankBase,entries:{fuel:{choice:"Supply outside specification"}}},crankPlan);
+assert.equal(fuelFail.recommendation.stepId,"fuel_isolation");
+
+const fuelCorrected = analyzeDiagnosticCase({...crankBase,entries:{fuel_isolation:{choice:"Defect confirmed and corrected"}}},crankPlan);
+assert.equal(fuelCorrected.recommendation.stepId,"fuel_retest");
+
+const fuelRetestPass = analyzeDiagnosticCase({...crankBase,entries:{fuel_retest:{choice:"Fuel supply meets OEM specification under cranking conditions"}}},crankPlan);
+assert.equal(fuelRetestPass.recommendation.stepId,"air_exhaust");
+
+const fuelRetestFail = analyzeDiagnosticCase({...crankBase,entries:{fuel_retest:{choice:"Supply remains outside OEM specification"}}},crankPlan);
+assert.equal(fuelRetestFail.recommendation.stepId,"fuel_isolation");
+
+const noCause = analyzeDiagnosticCase({...crankBase,entries:{air_exhaust:{choice:"No abnormality identified"}}},crankPlan);
+assert.equal(noCause.recommendation.stepId,"air_exhaust");
+assert.equal(noCause.recommendation.state,"hold");
+assert.match(noCause.recommendation.action,/Do not mark the engine diagnosed/i);
+
+const verifiedCrank = analyzeDiagnosticCase({...crankBase,entries:{verify:{choice:"Cause and repair verified"}}},crankPlan);
+assert.equal(verifiedCrank.recommendation.state,"review");
+
+// Optional branch steps must not prevent a normal, fully verified no-start path from completing.
+const normalCrankSession=createSession({workflowId:"crank_no_start",make:"Mack",model:"Anthem",engine:"MP8"});
+recordStep(normalCrankSession,0,{choice:"No relevant faults found"});
+recordStep(normalCrankSession,1,{choice:"Enable and sync appear valid"});
+recordStep(normalCrankSession,2,{choice:"Fuel supply meets specification"});
+recordStep(normalCrankSession,5,{choice:"No abnormality identified"});
+recordStep(normalCrankSession,6,{choice:"Cause and repair verified"});
+const normalCrankResult=evaluateSession(normalCrankSession);
+assert.equal(normalCrankResult.status,"ready-for-review");
+assert.equal(normalCrankResult.completed,5);
+assert.equal(normalCrankResult.total,5);
 
 console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");
