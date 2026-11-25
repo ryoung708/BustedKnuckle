@@ -42,6 +42,8 @@ Valid For
 All Mack models 2017 to 2024
 Note: This CBR does not apply to PR(4) and AN(4)
 Preview Solution CBR-2107-22
+Fault Codes
+P205B64 P203A13 P203C00 P206A13 P206C00 P206B64 P205A13 P205C00 P204364 P203F00 P203B00 U02A200 P24FF00 P207F00
 Diagnosis and Repair
 Diagnostic Steps For Yellow Codes
 1. Check the sensor wiring harness connection.
