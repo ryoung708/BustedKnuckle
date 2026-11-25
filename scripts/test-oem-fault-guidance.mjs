@@ -26,6 +26,18 @@ assert.equal(inactive.recommendation.state,"review");
 assert.match(inactive.recommendation.action,/Do not troubleshoot or replace/i);
 const active=analyzeDiagnosticCase({...base,entries:{p205b_applicability:{choice:"Active/confirmed and applicability verified"}}},steps);
 assert.equal(active.recommendation.stepId,"p205b_connector");
+const cleanConnector=analyzeDiagnosticCase({...base,entries:{
+  p205b_applicability:{choice:"Active/confirmed and applicability verified"},
+  p205b_connector:{choice:"No pin, wire, corrosion or moisture damage found"}
+}},steps);
+assert.equal(cleanConnector.recommendation.stepId,"p205b_quality");
+assert.equal(cleanConnector.recommendation.state,"next");
+const damagedConnector=analyzeDiagnosticCase({...base,entries:{
+  p205b_applicability:{choice:"Active/confirmed and applicability verified"},
+  p205b_connector:{choice:"Damage, corrosion or water intrusion found"}
+}},steps);
+assert.equal(damagedConnector.recommendation.stepId,"p205b_connector");
+assert.equal(damagedConnector.recommendation.state,"hold");
 const result=analyzeDiagnosticCase({...base,entries:{p205b_applicability:{choice:"Active/confirmed and applicability verified"},p205b_cycle:{choice:"Repeat sequence completed; P205B64 returned active/confirmed"},p205b_result:{choice:"P205B64 returned active/confirmed after repeat test"}}},steps);
 assert.equal(result.recommendation.state,"review");
 assert.match(result.recommendation.action,/UQLS replacement/i);
