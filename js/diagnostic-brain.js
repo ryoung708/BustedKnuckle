@@ -324,9 +324,31 @@ function powertrainRecommendation(record, steps) {
     if(/PTT version below 2\.7\.85|current guided diagnostics unavailable/i.test(choice))
       return hold("The published CBR guidance requires current Premium Tech Tool Guided Diagnostics.",
         "Update/confirm PTT 2.7.85 or newer as directed by K40914241, then load the latest guided diagnostic for the exact vehicle. Do not replace it with an invented generic pinpoint test.");
-    if(/P0087-00, P016F-00 and P228F-00 all present/i.test(choice))
-      return go(steps[index+1],"The full K01029637 code combination and applicability were confirmed.",
-        "Follow CBR K01029637 now: inspect the fuel-tank vent filter and both hose connections, then remove and inspect the secondary fuel-filter lip seal. Photograph the required locations and attach them to the eService case.");
+    if(/P0087-00, P016F-00 and P228F-00 all present/i.test(choice)){
+      const attachedCodes = new Set(Object.values(record.entries || {}).flatMap(item =>
+        Array.isArray(item?.faultCodes) ? item.faultCodes.map(fault =>
+          clean(fault.code).toUpperCase().replace(/[^A-Z0-9]/g,"")) : []));
+      const hasK010Combination = ["P008700","P016F00","P228F00"].every(code=>attachedCodes.has(code));
+      if(!hasK010Combination) return hold(
+        "The selected CBR option says all three trigger codes are present, but the complete P0087-00 / P016F-00 / P228F-00 set is not attached to this case.",
+        "Attach the full scan-report fault set and confirm each code's controller and active/inactive status. Do not use the K01029637 filter inspection path until all three trigger codes are documented."
+      );
+      const vehicle = record.vehicle || {};
+      const modelText = clean(vehicle.model || vehicle.chassis).toUpperCase();
+      const engineText = [vehicle.engine,vehicle.engineModel,vehicle.engineMake].filter(Boolean).join(" ").toUpperCase();
+      const year = Number(vehicle.year || 0);
+      const emissions = clean(vehicle.emissions || vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
+      const modelEligible = /\b(?:TE|LR|MRU|AN|CHU|CXU|GR|GU|PI)(?:\b|[0-9])/i.test(modelText);
+      const engineEligible = /\b(?:MP7|MP8|11L|13L)\b/i.test(engineText);
+      const emissionsEligible = /US17\+OBD(16|18|19)/.test(emissions);
+      if(!clean(vehicle.make).toLowerCase().includes("mack") || year < 2018 || !modelEligible || !engineEligible || !emissionsEligible)
+        return hold(
+          "The vehicle details entered in the case do not establish K01029637 applicability.",
+          "Before using the CBR filter inspection, verify the Mack model code, model year (2018 or newer), MP7/MP8 or 11L/13L engine family, and US17+OBD16/18/19 emissions from VIN/build data. If any item is outside scope or unknown, do not apply K01029637; use current PTT Guided Diagnostics and the correct vehicle-specific procedure."
+        );
+      return go(steps.find(item=>item.id==="p016f_cbr_filter"),"The full K01029637 code combination is attached and the entered model/year/engine/emissions meet the bulletin's candidate scope; confirm common-rail configuration in the OEM build data.",
+        "Follow CBR K01029637 only after the VIN/build confirms common-rail configuration and exact applicability: inspect the fuel-tank vent filter and both hose connections, then remove and inspect the secondary fuel-filter lip seal. Photograph the required locations and attach them to the eService case.");
+    }
     if(/P016F-00 present; K01029637 combination not present/i.test(choice))
       return go(steps[steps.findIndex(item=>item.id==="p016f_low_side")],"P016F00 is confirmed but the K01029637 three-code trigger is not present.",
         "Use the latest applicable PTT Guided Diagnostics (K40914241) for this engine and emissions configuration. Begin with the specified low-side supply checks; do not apply the K01029637 lip-seal CBR as though its code combination were met.");
