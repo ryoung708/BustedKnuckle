@@ -164,7 +164,7 @@ try {
   assert.match(faultRouting, /Verify low-side fuel supply pressure/);
   assert.match(faultRouting, /compare commanded vs. actual rail pressure/i);
   assert.match(faultRouting, /Never loosen a high-pressure line/);
-  assert.match(diagnostics, /getP016F00Guidance\(fault,active\?\.vehicle\)/,
+  assert.match(diagnostics, /getP016F00Guidance\\(fault,active\\)/,
     "Mack P016F00 must launch its staged fuel-pressure workflow");
   const diagnosticBrain = await readFile(join(root, "js/diagnostic-brain.js"), "utf8");
   assert.match(diagnosticBrain, /step\.id==="p016f_low_side"/);
