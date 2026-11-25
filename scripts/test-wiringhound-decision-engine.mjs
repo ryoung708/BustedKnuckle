@@ -81,12 +81,16 @@ assert.equal(recommendNextStep(record("j1939_network","verify","Repair not yet v
 // Light INOP branch matrix: a pass, failed test and incomplete result must not share the same route.
 assert.equal(recommendNextStep(record("light_inop","protection","Protection output missing / device opens"),lighting).stepId,"protection_review");
 assert.equal(recommendNextStep(record("light_inop","protection","Input and output feed appear correct"),lighting).stepId,"control");
-assert.equal(recommendNextStep(record("light_inop","control","Command is present and changes correctly"),lighting).stepId,"load");
-assert.equal(recommendNextStep(record("light_inop","control_inputs","Input missing / incorrect state"),lighting).state,"hold");
+assert.equal(recommendNextStep(record("light_inop","control","Command not present"),lighting).stepId,"control_inputs");
+assert.equal(recommendNextStep(record("light_inop","control","Command present; output missing"),lighting).stepId,"load");
+assert.equal(recommendNextStep(record("light_inop","control","Controller reports output or protection fault"),lighting).stepId,"load");
+assert.equal(recommendNextStep(record("light_inop","control_inputs","Missing input / enable condition identified"),lighting).state,"hold");
 assert.equal(recommendNextStep(record("light_inop","load","Supply missing at load"),lighting).stepId,"protection");
+assert.equal(recommendNextStep(record("light_inop","load","Correct supply and ground present"),lighting).stepId,"load_review");
+assert.equal(recommendNextStep(record("light_inop","control_inputs","Inputs and enables appear correct"),lighting).stepId,"control");
 assert.equal(recommendNextStep(record("light_inop","load","Connector concern found"),lighting).stepId,"harness");
 assert.equal(recommendNextStep(record("light_inop","drop","Excessive drop on positive/ground path"),lighting).stepId,"harness");
-assert.equal(recommendNextStep(record("light_inop","drop","Both positive and ground paths within limits"),lighting).stepId,"load_review");
+assert.equal(recommendNextStep(record("light_inop","drop","Both paths within specification"),lighting).stepId,"load_review");
 assert.equal(recommendNextStep(record("light_inop","load_review","Load failed on known-good supply and ground"),lighting).stepId,"verify");
 assert.equal(recommendNextStep(record("light_inop","harness","No physical fault found"),lighting).stepId,"drop");
 
