@@ -2,7 +2,7 @@
 // never infer a truck variant, pinout or test limit from the fault code alone.
 const MACK_UQLS_SOURCE={
  title:"Mack CBR 2107-22 · DEF Level (UQLS) Sensor Troubleshooting Guide",
- url:"https://static.nhtsa.gov/odi/tsbs/2026/MC-11028032-0001.pdf",
+ url:"https://static.oemdtc.com/NHTSA-PDFs/MC-11028032-0001.pdf",
  reference:"CBR 2107-22 202601 · Published 7 January 2026",
  scope:"Mack US17+OBD16 through US22+OBD2023; excludes AN(4) and PR(4)"
 };
