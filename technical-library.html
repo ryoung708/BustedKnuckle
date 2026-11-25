@@ -26,6 +26,7 @@ input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color
 .doc-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.doc{min-width:0;background:var(--raised);border:1px solid var(--line);border-radius:9px;padding:14px}.doc-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.doc-title{font-size:14px;font-weight:900;overflow-wrap:anywhere}.pill{flex:none;border:1px solid #ff9f1c55;border-radius:99px;padding:4px 7px;color:#ffbd69;font-size:9px;font-weight:850;text-transform:uppercase}.doc-meta{color:var(--muted);font-size:11px;line-height:1.6;margin:8px 0}.doc-note{color:#c7d0da;font-size:11px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.doc-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.empty{border:1px dashed #465363;border-radius:9px;padding:24px;text-align:center;color:var(--muted);font-size:12px;grid-column:1/-1}
 
 .visual-viewer{margin-top:16px}.viewer-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}.viewer-toolbar .spacer{flex:1}.viewer-stage{background:#080a0d;border:1px solid var(--line);border-radius:9px;padding:12px;min-height:260px;display:flex;justify-content:center;align-items:flex-start;overflow:auto}.viewer-stage canvas{display:block;max-width:100%;height:auto;box-shadow:0 8px 28px #0008;background:#fff}.viewer-note{color:var(--muted);font-size:11px;line-height:1.5;margin-top:9px}
+.bulletin-review{margin-top:16px}.bulletin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bulletin-item{background:var(--raised);border:1px solid var(--line);border-radius:8px;padding:12px;min-width:0}.bulletin-item h3{font-size:11px;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px}.bulletin-item p,.bulletin-item li{font-size:12px;line-height:1.55;color:#d7dee6}.bulletin-item ul{padding-left:18px;margin:6px 0}.bulletin-editor{min-height:300px;font:11px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}.bulletin-warning{border-left:3px solid var(--amber);padding:8px 10px;background:#ff9f1c0d;color:#f4c98d;font-size:11px;line-height:1.5;margin:7px 0}@media(max-width:700px){.bulletin-grid{grid-template-columns:1fr}}
 
 @media(max-width:700px){.wrap{padding:13px 12px 35px}.grid,.doc-list{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.panel{padding:14px}header{align-items:flex-start}.brand img{width:46px;height:46px}}
 </style>
@@ -70,7 +71,7 @@ input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color
       </div>
       <div class="actions"><button class="btn primary" id="uploadButton" type="submit">Upload to Technical Library</button><button class="btn" type="reset">Clear form</button></div>
     </form>
-    <div id="uploadStatus" class="status" role="status">Documents are private to the signed-in account. Uploading stores the original file; it does not automatically extract or index PDF text yet.</div>
+    <div id="uploadStatus" class="status" role="status">Documents are private to the signed-in account. Uploads are private. Text extraction and OCR run locally in this browser; extracted bulletin data remains a review draft until you approve it.</div>
   </section>
 
   <section class="panel">
@@ -84,6 +85,13 @@ input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color
   <section id="readerPanel" class="panel hidden">
     <div class="panel-head"><div class="panel-title" id="readerTitle">Extracted document text</div><button class="btn" id="closeReader">Close text</button></div>
     <pre id="readerContent" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:620px;overflow:auto;background:#080a0d;border:1px solid var(--line);border-radius:8px;padding:14px;color:#d9e0e8;font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace"></pre>
+  </section>
+  <section id="bulletinReader" class="panel bulletin-review hidden">
+    <div class="panel-head"><div><div class="panel-title">Bulletin Intelligence · Review Draft</div><div id="bulletinDocumentTitle" class="muted"></div></div><button class="btn" id="closeBulletinReader">Close reader</button></div>
+    <div class="bulletin-warning">Automatic extraction is not OEM verification. Confirm every statement against the original document before approving or using it in diagnosis. OCR text may contain recognition errors.</div>
+    <div id="bulletinSummary" class="bulletin-grid"></div>
+    <div class="field" style="margin-top:14px"><label for="bulletinJsonEditor">Structured extraction · editable JSON</label><textarea id="bulletinJsonEditor" class="bulletin-editor" spellcheck="false"></textarea><p class="help">Each applicability statement and procedure step retains its source page and excerpt. Correct errors before saving or approving.</p></div>
+    <div class="actions"><button class="btn primary" id="saveBulletinDraft">Save review draft</button><button class="btn" id="approveBulletin">Approve verified bulletin</button><span id="bulletinReviewStatus" class="muted">Not saved yet</span></div>
   </section>
   <section id="visualViewer" class="panel visual-viewer hidden">
     <div class="panel-head"><div><div class="panel-title">PDF page viewer</div><div id="viewerDocumentTitle" class="muted">Private document</div></div><button class="btn" id="closeVisualViewer">Close viewer</button></div>
@@ -99,6 +107,7 @@ input[type=file]{padding:8px;background:var(--raised)}.help{font-size:10px;color
 </div>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
+import { parseBulletinIntelligence } from "./js/bulletin-intelligence.js";
 const SUPABASE_URL = "https://wpxvaqmzxhxlrutklypm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_8Dhvi0M8P31FLB9kH5-RiA_5qyq9A0O";
 const BUCKET = "ironknuckle-technical-library";
@@ -123,37 +132,115 @@ function renderDocuments(){
  $("docCount").textContent=documents.length+" document"+(documents.length===1?"":"s");
  const box=$("documentList");
  if(!rows.length){box.innerHTML='<div class="empty">'+(documents.length?'No documents match this search.':'Your Technical Library is empty. Upload your first service document above.')+'</div>';return;}
- box.innerHTML=rows.map(row=>'<article class="doc"><div class="doc-top"><div class="doc-title">'+esc(row.title)+'</div><span class="pill">'+esc(categories[row.category]||"Other")+'</span></div><div class="doc-meta">'+esc([row.manufacturer,row.model,row.model_year,row.system].filter(Boolean).join(" · ")||"No equipment details added")+'<br>'+esc(sourceLabels[row.source_type]||"Other")+(row.source_reference?' · '+esc(row.source_reference):'')+(row.revision?' · '+esc(row.revision):'')+'<br>'+esc(row.original_name)+' · '+sizeLabel(Number(row.size_bytes)||0)+' · '+new Date(row.created_at).toLocaleDateString()+(row.tags?.length?'<br>Tags: '+esc(row.tags.join(", ")):'')+'<br>Text extraction: '+esc(row.extraction_status||"pending")+(row.extraction_page_count?' · '+row.extraction_page_count+' pages':'')+'</div>'+(row.notes?'<div class="doc-note">'+esc(row.notes)+'</div>':'')+'<div class="doc-actions"><button class="btn primary" data-preview="'+esc(row.id)+'">Open original</button>'+(row.mime_type==="application/pdf"?'<button class="btn" data-visual="'+esc(row.id)+'">View pages</button>':'')+'<button class="btn" data-read="'+esc(row.id)+'">Read extracted text</button><button class="btn" data-extract="'+esc(row.id)+'">Extract / re-extract</button><button class="btn" data-download="'+esc(row.id)+'">Download</button><button class="btn danger" data-delete="'+esc(row.id)+'">Delete</button></div></article>').join("");
+ box.innerHTML=rows.map(row=>'<article class="doc"><div class="doc-top"><div class="doc-title">'+esc(row.title)+'</div><span class="pill">'+esc(categories[row.category]||"Other")+'</span></div><div class="doc-meta">'+esc([row.manufacturer,row.model,row.model_year,row.system].filter(Boolean).join(" · ")||"No equipment details added")+'<br>'+esc(sourceLabels[row.source_type]||"Other")+(row.source_reference?' · '+esc(row.source_reference):'')+(row.revision?' · '+esc(row.revision):'')+'<br>'+esc(row.original_name)+' · '+sizeLabel(Number(row.size_bytes)||0)+' · '+new Date(row.created_at).toLocaleDateString()+(row.tags?.length?'<br>Tags: '+esc(row.tags.join(", ")):'')+'<br>Text extraction: '+esc(row.extraction_status||"pending")+(row.extraction_page_count?' · '+row.extraction_page_count+' pages':'')+'</div>'+(row.notes?'<div class="doc-note">'+esc(row.notes)+'</div>':'')+'<div class="doc-actions"><button class="btn primary" data-preview="'+esc(row.id)+'">Open original</button>'+(row.mime_type==="application/pdf"?'<button class="btn" data-visual="'+esc(row.id)+'">View pages</button>':'')+'<button class="btn" data-read="'+esc(row.id)+'">Read extracted text</button><button class="btn" data-extract="'+esc(row.id)+'">Extract / re-extract</button>'+(row.category==="technical_bulletin"||row.source_type==="oem_bulletin"?'<button class="btn primary" data-bulletin="'+esc(row.id)+'">Read bulletin</button>':'')<button class="btn" data-download="'+esc(row.id)+'">Download</button><button class="btn danger" data-delete="'+esc(row.id)+'">Delete</button></div></article>').join("");
  box.querySelectorAll("[data-preview]").forEach(button=>button.addEventListener("click",()=>openDocument(button.dataset.preview)));
  box.querySelectorAll("[data-visual]").forEach(button=>button.addEventListener("click",()=>openVisualViewer(button.dataset.visual)));
  box.querySelectorAll("[data-read]").forEach(button=>button.addEventListener("click",()=>readExtractedText(button.dataset.read)));
+ box.querySelectorAll("[data-bulletin]").forEach(button=>button.addEventListener("click",()=>openBulletinReader(button.dataset.bulletin)));
  box.querySelectorAll("[data-extract]").forEach(button=>button.addEventListener("click",()=>runExtraction(button.dataset.extract)));
  box.querySelectorAll("[data-download]").forEach(button=>button.addEventListener("click",()=>downloadDocument(button.dataset.download)));
  box.querySelectorAll("[data-delete]").forEach(button=>button.addEventListener("click",()=>deleteDocument(button.dataset.delete)));
 }
 
-async function extractFileText(file){
+async function extractFileText(file, onProgress=()=>{}){
  const type=file.type||"";
- if(type==="application/pdf"||file.name?.toLowerCase().endsWith(".pdf")){
-   const pdfjs=await import("https://esm.sh/pdfjs-dist@4.10.38/build/pdf.mjs");
-   pdfjs.GlobalWorkerOptions.workerSrc="https://esm.sh/pdfjs-dist@4.10.38/build/pdf.worker.mjs";
-   const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;
-   const pages=[];let total=0;
-   for(let pageNo=1;pageNo<=pdf.numPages;pageNo++){
-     const page=await pdf.getPage(pageNo),content=await page.getTextContent();
-     const line=content.items.map(item=>item.str||"").join(" ").replace(/\s+/g," ").trim();
-     if(line)pages.push("[Page "+pageNo+"]\n"+line);
-     total+=line.length;
-     if(total>=MAX_EXTRACT_CHARS)break;
+ const isPdf=type==="application/pdf"||file.name?.toLowerCase().endsWith(".pdf");
+ const isImage=["image/jpeg","image/png","image/webp"].includes(type)||/\.(jpe?g|png|webp)$/i.test(file.name||"");
+ const isText=type==="text/plain"||type==="text/csv"||type==="application/json"||/\.(txt|csv|json)$/i.test(file.name||"");
+ if(isText)return {text:(await file.text()).slice(0,MAX_EXTRACT_CHARS),status:"extracted",pageCount:null,error:null,method:"text"};
+ if(!isPdf&&!isImage)return {text:null,status:"unsupported",pageCount:null,error:"Supported: text-native or scanned PDF, JPG, PNG, WebP, TXT, CSV and JSON."};
+ const {createWorker}=await import("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js");
+ let worker=null, pdf=null, total=0, ocrCount=0, failedOcr=0;
+ const pages=[];
+ try{
+  if(isPdf){
+   const pdfjs=await getPdfJs();
+   pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;
+  }
+  const pageCount=isPdf?pdf.numPages:1;
+  const maxPages=Math.min(pageCount,100);
+  for(let pageNo=1;pageNo<=maxPages;pageNo++){
+   onProgress("Reading page "+pageNo+" of "+pageCount+"…");
+   let line="", method="text";
+   if(isPdf){
+    const page=await pdf.getPage(pageNo),content=await page.getTextContent();
+    line=content.items.map(item=>item.str||"").join(" ").replace(/\s+/g," ").trim();
+    if(line.length<35){
+     try{
+      if(!worker)worker=await createWorker("eng",1,{logger:message=>{if(message.status==="recognizing text")onProgress("OCR page "+pageNo+" of "+pageCount+" · "+Math.round((message.progress||0)*100)+"%");}});
+      const viewport=page.getViewport({scale:2});
+      const canvas=document.createElement("canvas"),context=canvas.getContext("2d");
+      canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+      await page.render({canvasContext:context,viewport}).promise;
+      const recognized=await worker.recognize(canvas);
+      line=(recognized.data.text||"").replace(/\s+/g," ").trim();
+      method="ocr";ocrCount++;
+      canvas.width=0;canvas.height=0;
+      if(!line)failedOcr++;
+     }catch(ocrError){method="ocr failed";failedOcr++;line=line||("OCR failed: "+(ocrError.message||String(ocrError)));}
+    }
+   }else{
+    if(!worker)worker=await createWorker("eng",1,{logger:message=>{if(message.status==="recognizing text")onProgress("OCR image · "+Math.round((message.progress||0)*100)+"%");}});
+    const recognized=await worker.recognize(file);
+    line=(recognized.data.text||"").replace(/\s+/g," ").trim();
+    method="ocr";ocrCount++;if(!line)failedOcr++;
    }
-   const extracted=pages.join("\n\n").slice(0,MAX_EXTRACT_CHARS);
-   if(!extracted.trim())return {text:null,status:"unsupported",pageCount:pdf.numPages,error:"No selectable text found. This may be a scanned/image-only PDF; OCR is not included yet."};
-   return {text:extracted,status:"extracted",pageCount:pdf.numPages,error:total>MAX_EXTRACT_CHARS?"Text was capped at 1.5 million characters.":null};
+   if(line)pages.push("[Page "+pageNo+(method==="text"?"":" · "+method)+"]\n"+line);
+   total+=line.length;
+   if(total>=MAX_EXTRACT_CHARS)break;
+  }
+  const extracted=pages.join("\n\n").slice(0,MAX_EXTRACT_CHARS);
+  const capped=pageCount>maxPages||total>MAX_EXTRACT_CHARS;
+  const errorParts=[];
+  if(failedOcr)errorParts.push(failedOcr+" page(s) had OCR errors or returned no text.");
+  if(capped)errorParts.push("Processing was capped at "+maxPages+" pages / 1.5 million characters.");
+  if(!extracted.trim())return {text:null,status:"unsupported",pageCount,error:errorParts.join(" ")||"No readable text was found.",method:ocrCount?"ocr":"text"};
+  return {text:extracted,status:"extracted",pageCount,error:errorParts.join(" ")||null,method:ocrCount?"text+ocr":"text"};
+ }finally{if(worker)await worker.terminate();}
+}
+let activeBulletinDocumentId=null;
+function bulletinSummaryMarkup(data){
+ const item=(label,content)=>'<div class="bulletin-item"><h3>'+esc(label)+'</h3><p>'+esc(content||"Not identified — verify in original")+'</p></div>';
+ const codes=(data.faultCodes||[]).join(", ")||"No fault codes identified";
+ const steps=(data.procedureSteps||[]).map(step=>'<li><strong>Step '+esc(step.stepNumber)+'</strong> · '+esc(step.text)+' <span class="muted">(page '+esc(step.sourcePage??"unknown")+')</span></li>').join("");
+ const warnings=(data.warnings||[]).map(warning=>'<div class="bulletin-warning">'+esc(warning)+'</div>').join("");
+ return item("Bulletin number",data.document?.bulletinNumber)+item("Revision",data.document?.revision)+item("Publication date",data.document?.publicationDate)+item("Fault codes",codes)+
+ '<div class="bulletin-item"><h3>Applicability · '+(data.applicability||[]).length+' extracted lines</h3><ul>'+((data.applicability||[]).map(line=>'<li>'+esc(line.text)+' <span class="muted">(p. '+esc(line.sourcePage??"?")+')</span></li>').join("")||"<li>Not identified</li>")+'</ul></div>'+
+ '<div class="bulletin-item"><h3>Exclusions · '+(data.exclusions||[]).length+' extracted lines</h3><ul>'+((data.exclusions||[]).map(line=>'<li>'+esc(line.text)+' <span class="muted">(p. '+esc(line.sourcePage??"?")+')</span></li>').join("")||"<li>Not identified</li>")+'</ul></div>'+
+ '<div class="bulletin-item" style="grid-column:1/-1"><h3>Procedure · '+(data.procedureSteps||[]).length+' extracted steps</h3><ol>'+steps+'</ol></div>'+
+ '<div class="bulletin-item" style="grid-column:1/-1"><h3>Warnings / review flags</h3>'+warnings+'</div>';
+}
+async function openBulletinReader(id){
+ const row=documents.find(item=>item.id===id);if(!row)return;
+ if(!row.extracted_text){setStatus("listStatus","Extract text from this document first. For scanned PDFs, the extraction now includes browser OCR.","bad");return;}
+ activeBulletinDocumentId=id;
+ $("bulletinDocumentTitle").textContent=row.title+" · "+row.original_name;
+ let data;
+ const {data:saved,error}=await client.from("bulletin_intelligence").select("*").eq("document_id",id).maybeSingle();
+ if(error){setStatus("listStatus","Bulletin review storage is not available yet. Apply the bulletin_intelligence migration before using review/save: "+error.message,"bad");return;}
+ if(saved){data=saved.extracted_data;$("bulletinReviewStatus").textContent="Saved status: "+saved.review_status;}
+ else{
+  data=parseBulletinIntelligence(row.extracted_text,{title:row.title,manufacturer:row.manufacturer,model:row.model,source_reference:row.source_reference,revision:row.revision,pageCount:row.extraction_page_count,fileName:row.original_name});
+  $("bulletinReviewStatus").textContent="New extraction · candidate only";
  }
- if(type==="text/plain"||type==="text/csv"||type==="application/json"||/\.(txt|csv|json)$/i.test(file.name||"")){
-   return {text:(await file.text()).slice(0,MAX_EXTRACT_CHARS),status:"extracted",pageCount:null,error:null};
- }
- return {text:null,status:"unsupported",pageCount:null,error:"Text extraction currently supports PDF, TXT, CSV and JSON. Image OCR is not included."};
+ $("bulletinSummary").innerHTML=bulletinSummaryMarkup(data);
+ $("bulletinJsonEditor").value=JSON.stringify(data,null,2);
+ $("bulletinReader").classList.remove("hidden");
+ $("bulletinReader").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function saveBulletinIntelligence(approve=false){
+ if(!activeBulletinDocumentId||!user)return;
+ let extractedData;
+ try{extractedData=JSON.parse($("bulletinJsonEditor").value);}catch(error){setStatus("bulletinReviewStatus","JSON is invalid: "+error.message,"bad");return;}
+ if(!extractedData||typeof extractedData!=="object"||!extractedData.document||!Array.isArray(extractedData.procedureSteps)){setStatus("bulletinReviewStatus","The extraction is missing required document or procedure fields.","bad");return;}
+ const reviewStatus=approve?"approved":"candidate";
+ extractedData.reviewStatus=reviewStatus;
+ const payload={document_id:activeBulletinDocumentId,owner_id:user.id,extracted_data:extractedData,review_status:reviewStatus,reviewed_at:approve?new Date().toISOString():null};
+ const {error}=await client.from("bulletin_intelligence").upsert(payload,{onConflict:"document_id,owner_id"});
+ if(error){setStatus("bulletinReviewStatus","Could not save bulletin review: "+error.message,"bad");return;}
+ $("bulletinSummary").innerHTML=bulletinSummaryMarkup(extractedData);
+ $("bulletinReviewStatus").textContent=approve?"Approved by reviewer · source must still be followed as written":"Saved as review candidate";
+ setStatus("listStatus",approve?"Bulletin extraction marked approved. Confirmed content remains linked to its original document and page references.":"Bulletin extraction draft saved privately.","good");
 }
 function readExtractedText(id){
  const row=documents.find(item=>item.id===id);if(!row)return;
@@ -168,7 +255,7 @@ async function runExtraction(id){
  const {data:blob,error}=await client.storage.from(BUCKET).download(row.storage_path);
  if(error){setStatus("listStatus","Could not retrieve original: "+error.message,"bad");return;}
  try{
-   const result=await extractFileText(new File([blob],row.original_name,{type:row.mime_type}));
+   const result=await extractFileText(new File([blob],row.original_name,{type:row.mime_type}),message=>setStatus("listStatus",message));
    const {error:updateError}=await client.from("technical_documents").update({extracted_text:result.text,extraction_status:result.status,extraction_page_count:result.pageCount,extracted_at:new Date().toISOString(),extraction_error:result.error}).eq("id",id);
    if(updateError)throw updateError;
    await loadDocuments();
@@ -262,7 +349,7 @@ async function uploadDocument(event){
  if(uploadError){setStatus("uploadStatus","Upload failed: "+uploadError.message,"bad");button.disabled=false;button.textContent="Upload to Technical Library";return;}
  const tags=$("tags").value.split(",").map(value=>value.trim()).filter(Boolean).slice(0,30);
  let extraction={text:null,status:"pending",pageCount:null,error:null};
- try{extraction=await extractFileText(file);}catch(error){extraction={text:null,status:"failed",pageCount:null,error:error.message||String(error)};}
+ try{extraction=await extractFileText(file,message=>setStatus("uploadStatus",message));}catch(error){extraction={text:null,status:"failed",pageCount:null,error:error.message||String(error)};}
  const payload={owner_id:user.id,title,category:$("category").value,source_type:$("sourceType").value,manufacturer:$("manufacturer").value.trim()||null,model:$("model").value.trim()||null,model_year:$("modelYear").value.trim()||null,system:$("system").value.trim()||null,source_reference:$("sourceReference").value.trim()||null,revision:$("revision").value.trim()||null,tags,notes:$("notes").value.trim()||null,storage_path:path,original_name:file.name,mime_type:file.type,size_bytes:file.size,extracted_text:extraction.text,extraction_status:extraction.status,extraction_page_count:extraction.pageCount,extracted_at:new Date().toISOString(),extraction_error:extraction.error};
  const {error:recordError}=await client.from("technical_documents").insert(payload);
  if(recordError){await client.storage.from(BUCKET).remove([path]);setStatus("uploadStatus","Document record could not be saved; the uploaded file was rolled back: "+recordError.message,"bad");button.disabled=false;button.textContent="Upload to Technical Library";return;}
@@ -312,6 +399,9 @@ $("signOut").addEventListener("click",async()=>{const {error}=await client.auth.
 $("search").addEventListener("input",renderDocuments);
 $("filterCategory").addEventListener("change",renderDocuments);
 $("closeReader").addEventListener("click",()=>$("readerPanel").classList.add("hidden"));
+$("closeBulletinReader").addEventListener("click",()=>{$("bulletinReader").classList.add("hidden");activeBulletinDocumentId=null;});
+$("saveBulletinDraft").addEventListener("click",()=>saveBulletinIntelligence(false));
+$("approveBulletin").addEventListener("click",()=>{if(confirm("Have you checked the extracted applicability, exclusions, revision and every procedure step against the original bulletin?"))saveBulletinIntelligence(true);});
 init().catch(error=>setStatus("authStatus",error.message||String(error),"bad"));
 </script>
 </body>
