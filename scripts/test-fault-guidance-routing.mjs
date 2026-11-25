@@ -27,6 +27,7 @@ const p016f = getP016F00Guidance({code:"P016F-00"}, {
   entries:{codes:{faultCodes:[{code:"P0087-00"},{code:"P016F-00"},{code:"P228F-00"}]}}
 });
 assert.ok(p016f);
+assert.equal(p016f.caseFlags.k010Candidate,true,"Mack Anthem should resolve to the listed AN model family");
 assert.match(p016f.sourceReference,/K01029637/);
 assert.match(p016f.sourceUrl,/10153480/);
 assert.equal(p016f.steps[1].id,"p016f_cbr_filter");
@@ -36,9 +37,11 @@ const pBase={workflowId:"fault_guidance_p016f",vehicle:{make:"Mack",model:"Anthe
 const precursor=analyzeDiagnosticCase({...pBase,entries:{p016f_confirm:{choice:"P009B-13 is also active; diagnose EPRV circuit first"}}},p016f.steps);
 assert.equal(precursor.recommendation.state,"hold");
 assert.match(precursor.recommendation.action,/K94743326/);
-const combo=analyzeDiagnosticCase({...pBase,entries:{p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}}},p016f.steps);
+const p016fTriggerCodes=[{code:"P0087-00"},{code:"P016F-00"},{code:"P228F-00"}];
+const combo=analyzeDiagnosticCase({...pBase,entries:{codes:{faultCodes:p016fTriggerCodes},p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}}},p016f.steps);
 assert.equal(combo.recommendation.stepId,"p016f_cbr_filter");
 const filterPass=analyzeDiagnosticCase({...pBase,entries:{
+ codes:{faultCodes:p016fTriggerCodes},
  p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"},
  p016f_cbr_filter:{choice:"Both CBR inspection areas checked; no defect found"}
 }},p016f.steps);
