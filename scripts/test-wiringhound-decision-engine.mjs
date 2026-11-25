@@ -46,4 +46,57 @@ assert.equal(recommendNextStep({workflowId:"power_loss",currentStep:1,entries:{b
 assert.equal(recommendNextStep({workflowId:"power_loss",currentStep:2,entries:{scope:{choice:"All vehicle electrical power is lost"},battery_connections:{notes:"Posts clean; voltage drop not yet measured"}}},powerLoss).stepId,"battery_connections");
 assert.equal(recommendNextStep({workflowId:"power_loss",currentStep:2,entries:{scope:{choice:"All vehicle electrical power is lost"},battery_connections:{choice:"Connection checks are within applicable limits"}}},powerLoss).stepId,"main_disconnect");
 
+// Power-loss path: never advance on an untested or unresolved boundary.
+assert.equal(recommendNextStep(record("power_loss","battery_connections","Not tested / result uncertain"),powerLoss).stepId,"battery_connections");
+assert.equal(recommendNextStep(record("power_loss","battery_connections","Not tested / result uncertain"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","battery_baseline","Battery-post voltage collapses during the event"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","main_disconnect","Power is present at input but lost at output"),powerLoss).state,"hold");
+assert.match(recommendNextStep(record("power_loss","main_disconnect","Power is present at input but lost at output"),powerLoss).action,/closed switch/i);
+assert.equal(recommendNextStep(record("power_loss","main_distribution","Power at protection input; missing at output"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","grounds","Not tested / ground architecture unclear"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","ignition_feed","Ignition or run command disappears"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","ignition_feed","Switched feeds remain stable during event"),powerLoss).stepId,"intermittent_localization");
+assert.equal(recommendNextStep(record("power_loss","intermittent_localization","No dropout reproduced during monitoring"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","intermittent_localization","Dropout localized to repeatable connection or segment"),powerLoss).stepId,"verify");
+assert.equal(recommendNextStep(record("power_loss","scope","Engine shuts off but cab and accessories stay powered"),powerLoss).state,"hold");
+assert.match(recommendNextStep(record("power_loss","scope","Engine shuts off but cab and accessories stay powered"),powerLoss).action,/Unexpected Shutdown/i);
+
+// General Electrical uses the same electrical decision tree as Light INOP; exercise it explicitly.
+assert.equal(recommendNextStep(record("general_electrical","protection","No power at protection input"),lighting).stepId,"upstream_feed");
+assert.equal(recommendNextStep(record("general_electrical","control","Command not present"),lighting).stepId,"control_inputs");
+assert.equal(recommendNextStep(record("general_electrical","load","Ground path abnormal"),lighting).stepId,"drop");
+assert.equal(recommendNextStep(record("general_electrical","load_review","Load passes approved test"),lighting).stepId,"harness");
+
+// J1939 isolation and evidence gates: every branch must be completed or explicitly held.
+assert.equal(recommendNextStep(record("j1939_network","resistance","Resistance is unstable or changes with harness movement"),j1939).stepId,"segment");
+assert.equal(recommendNextStep(record("j1939_network","addon","No change when add-on devices are removed"),j1939).stepId,"module_isolation");
+assert.equal(recommendNextStep(record("j1939_network","addon_review","No issue found in add-on branch"),j1939).stepId,"module_isolation");
+assert.equal(recommendNextStep(record("j1939_network","module_isolation","Dropout remained / no clear change"),j1939).stepId,"all_isolated");
+assert.equal(recommendNextStep(record("j1939_network","module_branch_review","No branch fault / no defect"),j1939).stepId,"all_isolated");
+assert.equal(recommendNextStep(record("j1939_network","all_isolated","Unable to verify complete isolation"),j1939).state,"hold");
+assert.equal(recommendNextStep(record("j1939_network","segment","Unable to isolate clearly"),j1939).state,"hold");
+assert.equal(recommendNextStep(record("j1939_network","harness","Intermittent change; exact location not isolated"),j1939).state,"hold");
+assert.equal(recommendNextStep(record("j1939_network","verify","Repair not yet verified"),j1939).state,"hold");
+
+// Light INOP branch matrix: a pass, failed test and incomplete result must not share the same route.
+assert.equal(recommendNextStep(record("light_inop","protection","Protection output missing / device opens"),lighting).stepId,"protection_review");
+assert.equal(recommendNextStep(record("light_inop","protection","Input and output feed appear correct"),lighting).stepId,"control");
+assert.equal(recommendNextStep(record("light_inop","control","Command not present"),lighting).stepId,"control_inputs");
+assert.equal(recommendNextStep(record("light_inop","control","Command present; output missing"),lighting).stepId,"load");
+assert.equal(recommendNextStep(record("light_inop","control","Controller reports output or protection fault"),lighting).stepId,"load");
+assert.equal(recommendNextStep(record("light_inop","control_inputs","Missing input / enable condition identified"),lighting).state,"hold");
+assert.match(recommendNextStep(record("light_inop","control_inputs","Missing input / enable condition identified"),lighting).action,/source controller/i);
+assert.equal(recommendNextStep(record("light_inop","control_inputs","Required data or procedure unavailable"),lighting).state,"hold");
+assert.equal(recommendNextStep(record("light_inop","protection_review","Downstream overload / short identified"),lighting).state,"hold");
+assert.match(recommendNextStep(record("light_inop","protection_review","Downstream overload / short identified"),lighting).action,/never install a larger fuse/i);
+assert.equal(recommendNextStep(record("light_inop","drop","Reading changes when harness is moved"),lighting).stepId,"harness");
+assert.equal(recommendNextStep(record("light_inop","load","Supply missing at load"),lighting).stepId,"protection");
+assert.equal(recommendNextStep(record("light_inop","load","Correct supply and ground present"),lighting).stepId,"load_review");
+assert.equal(recommendNextStep(record("light_inop","control_inputs","Inputs and enables appear correct"),lighting).stepId,"control");
+assert.equal(recommendNextStep(record("light_inop","load","Connector concern found"),lighting).stepId,"harness");
+assert.equal(recommendNextStep(record("light_inop","drop","Excessive drop on positive/ground path"),lighting).stepId,"harness");
+assert.equal(recommendNextStep(record("light_inop","drop","Both paths within specification"),lighting).stepId,"load_review");
+assert.equal(recommendNextStep(record("light_inop","load_review","Load failed on known-good supply and ground"),lighting).stepId,"verify");
+assert.equal(recommendNextStep(record("light_inop","harness","No physical fault isolated"),lighting).stepId,"drop");
+
 console.log("WiringHound decision engine tests passed.");
