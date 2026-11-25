@@ -108,6 +108,49 @@ function renderHistory(){const box=$("history"),q=($("librarySearch")?.value||""
 function start(){const complaint=$("complaint").value.trim();if(!complaint){alert("Enter the customer complaint first so IronKnuckle can build the diagnostic path.");$("complaint").focus();return}const detected=classifyDiagnosticComplaint(complaint),requested=$("workflow").value||"auto";if(requested==="auto"&&detected.route==="wiringhound"){openWiringWithComplaint();return}const workflowId=requested==="auto"?detected.workflowId:requested;active=createSession({year:$("year").value,make:$("make").value,model:$("model").value,engine:$("engine").value,engineMake:$("engineMake").value,transmissionMake:$("transmissionMake").value,transmissionModel:$("transmissionModel").value,emissions:$("emissions").value,vinLast6:$("vin").value,complaint,workflowId});active.workflowGeneratedFromComplaint=requested==="auto";active.workflowReason=detected.reason;active.detectedWorkflow=detected.workflowId;stepIndex=0;sessions.push(active);saveCurrent();renderWork()}
 function saveCurrent(){if(!active)return;active.updatedAt=new Date().toISOString();const i=sessions.findIndex(s=>s.id===active.id);if(i>=0)sessions[i]=active;else sessions.push(active);persist();if(window.IronKnuckleCloud?.saveCase)window.IronKnuckleCloud.saveCase(active)}
 let editingFaultIndex=null;
+function currentGuidedFault(){
+ const id=active?.activeFaultId;
+ if(!id)return null;
+ for(const [stepId,record] of Object.entries(active.entries||{})){
+  const index=(record?.faultCodes||[]).findIndex(item=>item.id===id);
+  if(index>=0)return {fault:record.faultCodes[index],stepId,index};
+ }
+ return null;
+}
+function faultResearchMarkup(){
+ const found=currentGuidedFault();if(!found)return "";
+ const {fault}=found,flow=workflows[active.workflowId]||{};
+ const research=active.faultResearch?.[fault.id]||{};
+ const known=flow.sourceTitle?'<article class="case-card"><b>CODE-SPECIFIC OEM REFERENCE</b><p>'+safe(flow.sourceTitle)+'</p><p>'+safe(flow.sourceReference||"Source reference recorded in IronKnuckle")+'</p>'+(flow.applicability?'<p><b>Applicability:</b> '+safe(flow.applicability)+'</p>':'')+(flow.caution?'<p class="caution">'+safe(flow.caution)+'</p>':'')+(flow.sourceUrl?'<a class="btn" href="'+safe(flow.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Open original bulletin ↗</a>':'')+'<p class="small">This reference is explicitly linked to this fault in IronKnuckle. Verify the VIN, emissions family, chassis variant, revision and exclusions before using it.</p></article>':"";
+ const matches=(research.results||[]).slice(0,5).map((item,index)=>'<article class="case-card"><b>'+safe(item.title||item.host||"Public source")+'</b><p class="small">'+safe(item.sourceType||"Public web result")+' · '+safe(item.host||"")+'</p><p>'+safe(item.snippet||"Open the source to inspect its contents.")+'</p><p class="caution"><b>POSSIBLE SOURCE MATCH — NOT YET VERIFIED.</b> Search relevance does not prove that this document contains a procedure for this exact fault or applies to this truck.</p><div class="case-actions"><a class="btn" href="'+safe(item.url)+'" target="_blank" rel="noopener noreferrer">Open source ↗</a><button class="btn" type="button" data-attach-public-source="'+index+'">Attach to case</button></div></article>').join("");
+ let state="";
+ if(research.status==="searching")state='<p class="small" role="status">Searching public OEM bulletin indexes for '+safe(fault.code)+'…</p>';
+ else if(research.status==="complete")state='<p class="small" role="status">'+(research.results?.length||0)+' possible public source(s) found. Search results are leads, not validated service instructions.</p>';
+ else if(research.status==="error")state='<p class="small" role="status">Public source search could not complete: '+safe(research.error||"Unknown search error")+'</p>';
+ else state='<p class="small" role="status">Public bulletin search has not run yet.</p>';
+ const definition=fault.description?'<p>'+safe(fault.description)+'</p>':'<p class="small">No confirmed code definition is stored. Confirm the OEM definition before choosing a component.</p>';
+ return '<section class="step-focus" id="fault-research"><div class="eyebrow">FAULT RESEARCH · AUTOMATIC SOURCE MATCHING</div><h2>'+safe(fault.code)+' · '+safe(fault.status||"status unknown").toUpperCase()+'</h2>'+definition+(fault.controller?'<p class="small">Reporting controller: '+safe(fault.controller)+'</p>':'')+(known||"")+'<div class="case-card"><b>PUBLIC OEM SOURCE SEARCH</b>'+state+(matches||'<p class="small">No possible public matches are displayed yet. A missing search result does not mean no bulletin exists.</p>')+'<button class="btn" type="button" id="retryFaultSourceSearch">Search public sources again</button></div></section>';
+}
+async function searchPublicBulletinsForActiveFault(force=false){
+ const found=currentGuidedFault();if(!found)return;
+ const {fault}=found,make=String(active?.vehicle?.make||"").trim(),year=String(active?.vehicle?.year||"").trim(),model=String(active?.vehicle?.model||"").trim();
+ if(!make){active.faultResearch=active.faultResearch||{};active.faultResearch[fault.id]={status:"error",error:"Add the vehicle manufacturer to the case before searching."};saveCurrent();renderWork();return;}
+ active.faultResearch=active.faultResearch||{};
+ const prior=active.faultResearch[fault.id];
+ if(!force&&prior?.status==="complete"&&Date.now()-Date.parse(prior.searchedAt||"")<86400000)return;
+ active.faultResearch[fault.id]={status:"searching",results:[]};saveCurrent();renderWork();
+ try{
+  const response=await fetch("https://wpxvaqmzxhxlrutklypm.supabase.co/functions/v1/public-oem-search",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({manufacturer:make,code:fault.code,year,model})});
+  const payload=await response.json();if(!response.ok)throw new Error(payload.error||"Public source search failed.");
+  if(active?.activeFaultId!==fault.id)return;
+  active.faultResearch[fault.id]={status:"complete",results:Array.isArray(payload.results)?payload.results:[],searchedAt:payload.searchedAt,searchProvider:payload.searchProvider,fallbackSearchUrl:payload.fallbackSearchUrl};
+  saveCurrent();renderWork();
+ }catch(error){
+  if(active?.activeFaultId!==fault.id)return;
+  active.faultResearch[fault.id]={status:"error",error:error.message||String(error),searchedAt:new Date().toISOString()};
+  saveCurrent();renderWork();
+ }
+}
 function launchFaultGuidanceFor(stepId,faultIndex){
  const list=active?.entries?.[stepId]?.faultCodes||[],fault=list[faultIndex];
  if(!fault)throw new Error("Fault is no longer attached to this case.");
@@ -120,6 +163,7 @@ function launchFaultGuidanceFor(stepId,faultIndex){
  active.returnWorkflowId=active.workflowId;active.returnStepIndex=stepIndex;
  active.activeFaultId=fault.id;active.workflowId=flowId;active.currentStep=0;
  active.status="in-progress";active.finishedEarly=false;stepIndex=0;saveCurrent();renderWork();
+ if(!active.faultResearch?.[fault.id]?.status)searchPublicBulletinsForActiveFault();
 }
 function launchFaultGuidance(button){
  const current=workflows[active?.workflowId]?.steps?.[stepIndex];
@@ -144,6 +188,17 @@ $("work").addEventListener("click",async event=>{
   finally{uploadBulletin.disabled=false}
   return;
  }
+ const attachPublic=event.target.closest("[data-attach-public-source]");
+ if(attachPublic){
+  const found=currentGuidedFault(),items=active?.faultResearch?.[active?.activeFaultId]?.results||[],item=items[Number(attachPublic.dataset.attachPublicSource)];
+  if(found&&item){
+   active.relatedBulletins=Array.isArray(active.relatedBulletins)?active.relatedBulletins:[];
+   if(!active.relatedBulletins.some(ref=>ref.url===item.url))active.relatedBulletins.push({url:item.url,title:item.title||"Public OEM source",source:item.host||item.sourceType,note:"Possible source match for "+found.fault.code+"; contents and vehicle applicability not yet verified.",publicSource:true,discoveredAt:new Date().toISOString()});
+   saveCurrent();renderWork();
+  }
+  return;
+ }
+ if(event.target.closest("#retryFaultSourceSearch")){searchPublicBulletinsForActiveFault(true);return;}
  const button=event.target.closest("[data-diagnose-fault]");
  if(button){
   event.preventDefault();
@@ -251,6 +306,7 @@ function renderWork(){
  $("work").innerHTML=
  '<section class="case-summary"><div class="case-summary-top"><strong>ACTIVE INVESTIGATION</strong><span class="status">'+safe((active.status||"in-progress").replaceAll("-"," ").toUpperCase())+'</span></div><div class="case-meta">'+safe(vehicle)+' · '+safe(flow.title)+'</div>'+(active.workflowGeneratedFromComplaint?'<div class="workflow-recommendation"><strong>PATH GENERATED FROM COMPLAINT</strong> — '+safe(active.workflowReason||'Automatic complaint classification')+'</div>':'')+'<div class="case-complaint"><b>Complaint:</b> '+safe(active.complaint||"Not recorded")+'</div>'+caseFaultsMarkup()+'<div class="case-progress-label"><span>'+recorded+' of '+flow.steps.length+' stages recorded</span><span>'+progress+'%</span></div><div class="progress" style="margin:6px 0 0"><i style="width:'+progress+'%"></i></div></section>'+
  '<div class="stephead"><div><div class="eyebrow">'+safe(flow.category)+'</div><div class="step-status '+(entry.choice?"":"pending")+'">'+(entry.choice?"RESULT RECORDED":"CURRENT TEST · ACTION REQUIRED")+'</div></div><span class="counter">STEP '+(stepIndex+1)+' / '+flow.steps.length+'</span></div>'+
+ faultResearchMarkup()+
  '<section class="step-focus"><div class="eyebrow">CURRENT DIAGNOSTIC TEST</div><h2>'+safe(step.title)+'</h2><p class="instruction">'+safe(step.instruction)+'</p></section>'+
  '<section class="step-result"><h3>WHAT DID YOU FIND?</h3><div class="choice-list">'+step.choices.map((c,i)=>'<label class="choice"><input type="radio" name="choice" value="'+safe(c)+'" '+(entry.choice===c?"checked":"")+'><span>'+safe(c)+'</span></label>').join("")+'</div></section>'+
  '<section class="capture-card"><h3>RECORD THE ACTUAL RESULT</h3><div class="field"><label for="measurements">Measurement / test conditions</label><textarea id="measurements" rows="2" placeholder="Example: 18.2 psi at idle, engine at operating temperature; test point...">'+safe(measurementText)+'</textarea></div><div class="small">Include units, operating state, test points and the applicable specification when relevant.</div></section>'+
