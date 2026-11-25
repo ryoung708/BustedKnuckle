@@ -46,4 +46,25 @@ assert.equal(recommendNextStep({workflowId:"power_loss",currentStep:1,entries:{b
 assert.equal(recommendNextStep({workflowId:"power_loss",currentStep:2,entries:{scope:{choice:"All vehicle electrical power is lost"},battery_connections:{notes:"Posts clean; voltage drop not yet measured"}}},powerLoss).stepId,"battery_connections");
 assert.equal(recommendNextStep({workflowId:"power_loss",currentStep:2,entries:{scope:{choice:"All vehicle electrical power is lost"},battery_connections:{choice:"Connection checks are within applicable limits"}}},powerLoss).stepId,"main_disconnect");
 
+// Power-loss path: never advance on an untested or unresolved boundary.
+assert.equal(recommendNextStep(record("power_loss","battery_connections","Not tested / result uncertain"),powerLoss).stepId,"battery_connections");
+assert.equal(recommendNextStep(record("power_loss","battery_connections","Not tested / result uncertain"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","battery_baseline","Battery-post voltage collapses during the event"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","main_disconnect","Power is present at input but lost at output"),powerLoss).state,"hold");
+assert.match(recommendNextStep(record("power_loss","main_disconnect","Power is present at input but lost at output"),powerLoss).action,/closed switch/i);
+assert.equal(recommendNextStep(record("power_loss","main_distribution","Power at protection input; missing at output"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","grounds","Not tested / ground architecture unclear"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","ignition_feed","Ignition or run command disappears"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","ignition_feed","Switched feeds remain stable during event"),powerLoss).stepId,"intermittent_localization");
+assert.equal(recommendNextStep(record("power_loss","intermittent_localization","No dropout reproduced during monitoring"),powerLoss).state,"hold");
+assert.equal(recommendNextStep(record("power_loss","intermittent_localization","Dropout localized to repeatable connection or segment"),powerLoss).stepId,"verify");
+assert.equal(recommendNextStep(record("power_loss","scope","Engine shuts off but cab and accessories stay powered"),powerLoss).state,"hold");
+assert.match(recommendNextStep(record("power_loss","scope","Engine shuts off but cab and accessories stay powered"),powerLoss).action,/Unexpected Shutdown/i);
+
+// General Electrical uses the same electrical decision tree as Light INOP; exercise it explicitly.
+assert.equal(recommendNextStep(record("general_electrical","protection","No power at protection input"),lighting).stepId,"upstream_feed");
+assert.equal(recommendNextStep(record("general_electrical","control","Command is not present"),lighting).stepId,"control_inputs");
+assert.equal(recommendNextStep(record("general_electrical","load","Ground path abnormal"),lighting).stepId,"drop");
+assert.equal(recommendNextStep(record("general_electrical","load_review","Load passes with known-good feed"),lighting).stepId,"harness");
+
 console.log("WiringHound decision engine tests passed.");
