@@ -237,6 +237,53 @@ assert.equal(p205Excluded.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Excluded.recommendation.state,"hold");
 assert.match(p205Excluded.recommendation.action,/Stop this guided path/i);
 
+// Drivetrain path: active codes, data mismatches, physical findings and road-test safety must branch.
+const driveSteps=workflows.drivetrain_fault.steps;
+const driveBase={workflowId:"drivetrain_fault",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"Harsh transmission shift"};
+const driveNoEvent=analyzeDiagnosticCase({...driveBase,entries:{complaint:{choice:"Complaint not reproduced; no event data available"}}},driveSteps);
+assert.equal(driveNoEvent.recommendation.stepId,"complaint");
+assert.equal(driveNoEvent.recommendation.state,"hold");
+
+const driveEvent=analyzeDiagnosticCase({...driveBase,entries:{complaint:{choice:"Complaint not reproduced; event data available"}}},driveSteps);
+assert.equal(driveEvent.recommendation.stepId,"codes");
+
+const driveActiveCodes=analyzeDiagnosticCase({...driveBase,entries:{codes:{choice:"Relevant active fault(s) found; not yet diagnosed"}}},driveSteps);
+assert.equal(driveActiveCodes.recommendation.state,"hold");
+assert.match(driveActiveCodes.recommendation.action,/code-specific OEM diagnostic path/i);
+
+const driveScanClear=analyzeDiagnosticCase({...driveBase,entries:{codes:{choice:"No relevant faults retrieved after complete scan"}}},driveSteps);
+assert.equal(driveScanClear.recommendation.stepId,"data");
+
+const driveCommandMismatch=analyzeDiagnosticCase({...driveBase,entries:{data:{choice:"Command and actual state disagree"}}},driveSteps);
+assert.equal(driveCommandMismatch.recommendation.stepId,"data");
+assert.equal(driveCommandMismatch.recommendation.state,"hold");
+assert.match(driveCommandMismatch.recommendation.action,/requested gear/i);
+
+const driveRatioAbnormal=analyzeDiagnosticCase({...driveBase,entries:{data:{choice:"Speed / ratio evidence abnormal"}}},driveSteps);
+assert.equal(driveRatioAbnormal.recommendation.state,"hold");
+assert.match(driveRatioAbnormal.recommendation.action,/ratio chart/i);
+
+const driveDataPass=analyzeDiagnosticCase({...driveBase,entries:{data:{choice:"Data agrees with expected operation"}}},driveSteps);
+assert.equal(driveDataPass.recommendation.stepId,"inspection");
+
+const driveMechanicalFinding=analyzeDiagnosticCase({...driveBase,entries:{inspection:{choice:"Mechanical driveline defect found"}}},driveSteps);
+assert.equal(driveMechanicalFinding.recommendation.stepId,"inspection");
+assert.equal(driveMechanicalFinding.recommendation.state,"hold");
+
+const driveControlFinding=analyzeDiagnosticCase({...driveBase,entries:{inspection:{choice:"Control / electrical issue indicated"}}},driveSteps);
+assert.equal(driveControlFinding.recommendation.state,"hold");
+assert.match(driveControlFinding.recommendation.action,/module power\/ground/i);
+
+const driveDefectCorrected=analyzeDiagnosticCase({...driveBase,entries:{inspection:{choice:"Defect isolated and corrected per OEM procedure"}}},driveSteps);
+assert.equal(driveDefectCorrected.recommendation.stepId,"verify");
+
+const driveRoadTestUnsafe=analyzeDiagnosticCase({...driveBase,entries:{verify:{choice:"Road test / verification not yet safe"}}},driveSteps);
+assert.equal(driveRoadTestUnsafe.recommendation.stepId,"verify");
+assert.equal(driveRoadTestUnsafe.recommendation.state,"hold");
+
+const driveVerified=analyzeDiagnosticCase({...driveBase,entries:{verify:{choice:"Repair verified under original conditions"}}},driveSteps);
+assert.equal(driveVerified.recommendation.state,"review");
+
 // After-treatment path: active faults, data anomalies, inspection and verification must branch explicitly.
 const afterSteps=workflows.aftertreatment_fault.steps;
 const afterBase={workflowId:"aftertreatment_fault",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"After-treatment derate"};
