@@ -346,7 +346,7 @@ function powertrainRecommendation(record, steps) {
       if(/supply outside specification|air \/ restriction evidence/i.test(choice))
         return go(steps.find(item=>item.id==="fuel_isolation"),"The low-pressure fuel supply did not pass during cranking; isolate the supply-side cause before moving to air/mechanical checks.","Follow the exact engine/serial-specific low-pressure pinpoint sequence to separate pump output, filter/line restriction, tank pickup/vent restriction and air ingress. Do not use generic pressure limits or replace a component from this result alone.");
       if(/fuel supply meets specification/i.test(choice))
-        return go(steps.find(item=>item.id==="air_exhaust"),"Fuel supply was verified within the applicable OEM specification during cranking.","Proceed to the engine-specific intake, exhaust and mechanical prerequisite checks. Preserve the fuel reading and the conditions under which it passed.");
+        return go(steps.find(item=>item.id==="air_exhaust"),"Fuel supply was verified within the applicable OEM specification during cranking.","Proceed to the engine-specific intake, exhaust and mechanical prerequisite checks using the exact vehicle-specific procedure. Preserve the fuel reading and the conditions under which it passed.");
       if(/not tested/i.test(choice)) return hold(
         "Fuel supply has not been tested during cranking.",
         "Perform the OEM low-pressure supply test at the specified test point and conditions. Record the actual value and applicable limit; do not advance on an untested fuel system."
