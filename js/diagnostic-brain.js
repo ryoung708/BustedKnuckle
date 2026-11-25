@@ -342,7 +342,7 @@ function powertrainRecommendation(record, steps) {
         "Several attached faults appear related and the primary fault has not been established.",
         "Compare timestamps, occurrence counts, reporting controllers, freeze-frame and symptom correlation. Separate primary faults from consequence codes; select the earliest/most directly supported fault before proceeding."
       );
-      if(/shared power \\/ ground \\/ network issue/i.test(choice)) return hold(
+      if(/shared power \/ ground \/ network issue/i.test(choice)) return hold(
         "The fault pattern points to a shared electrical supply, ground or network issue.",
         "Stop the generic engine fault test. Use WiringHound General Electrical or J1939 Network as appropriate, attach the affected controllers/codes and verify the shared feed or network boundary before returning to engine-specific diagnosis."
       );
@@ -354,7 +354,7 @@ function powertrainRecommendation(record, steps) {
     if(step.id==="test"){
       if(/fault isolated and repaired per oem procedure/i.test(choice))
         return go(steps.find(item=>item.id==="verify"),"The fault was isolated and repaired using the applicable OEM procedure.","Repeat the original operating conditions, verify the warning and symptom are resolved, and rescan the relevant controllers. Preserve before/after measurements.");
-      if(/test confirms a physical \\/ circuit fault/i.test(choice)) return hold(
+      if(/test confirms a physical \/ circuit fault/i.test(choice)) return hold(
         "A physical or circuit fault is indicated, but the repair has not yet been completed and verified.",
         "Localize the exact defect with the OEM pinpoint test. Record the failed measurement, connector/pin or circuit boundary and applicable limit; repair only the confirmed defect, then select the repaired result."
       );
