@@ -151,6 +151,10 @@ try {
   assert.match(celWorkflowText, /id:"complaint"[\s\S]*?test:/);
   assert.match(celWorkflowText, /id:"prioritize"[\s\S]*?prompt:/);
   assert.match(celWorkflowText, /id:"verify"[\s\S]*?terminal:true/);
+  assert.match(diagnostics, /active\.workflowId==="check_engine_light"&&step\.id==="complaint"\)\{renderWork\(\);return\}/,
+    "The CEL intake must allow all scan codes to be attached before opening one code-specific path");
+  assert.match(diagnostics, /data-diagnose-fault/,
+    "Each attached CEL fault must remain individually openable for guided diagnostics");
   const complaintTriageWorkflowText = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("complaint_triage:"), dccWorkflowEngineText.indexOf("j1939_dropout:"));
   assert.match(complaintTriageWorkflowText, /id:"complaint_baseline"[\s\S]*?test:/);
   assert.match(complaintTriageWorkflowText, /id:"controller_scan"[\s\S]*?prompt:/);
