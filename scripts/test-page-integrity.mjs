@@ -187,6 +187,18 @@ try {
   assert.match(diagnostics, /Open broader web search/,
     "A zero-result public index search must provide a broader search fallback");
 
+  // Public OEM source discovery must distinguish zero matches from provider failure and retain fallback diagnostics.
+  const publicSearch = await readFile(join(root, "supabase/functions/public-oem-search/index.ts"), "utf8");
+  const publicSearchParser = await readFile(join(root, "supabase/functions/public-oem-search/search-parser.js"), "utf8");
+  assert.match(publicSearch, /searchBingRss/);
+  assert.match(publicSearch, /format=rss/);
+  assert.match(publicSearch, /provider-unavailable/);
+  assert.match(publicSearch, /providerDiagnostics/);
+  assert.match(publicSearchParser, /parseBingRssResults/);
+  assert.match(publicSearchParser, /parseDuckDuckGoResults/);
+  assert.match(diagnostics, /research\.searchStatus==="provider-unavailable"/);
+  assert.match(diagnostics, /research\.providerDiagnostics/);
+
   // The Technical Library must OCR scanned sources and expose a reviewable, page-cited bulletin draft.
   const technicalLibrary = await readFile(join(root, "technical-library.html"), "utf8");
   assert.match(technicalLibrary, /tesseract\.js@5/,
