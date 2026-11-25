@@ -310,6 +310,39 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // Explicit branches for the Mack P205B64 applicability gate and final repeat test.
+  // These decisions remain inside the shared recommendation engine.
+  if(step.id==="p205b_applicability"){
+    if(/inactive|historic/.test(choice)) return {
+      stepId:step.id,reason:"P205B64 is not active/confirmed.",
+      action:"Do not troubleshoot or replace the UQLS under this active-fault procedure. Save the scan report and investigate only if the fault becomes active or another symptom requires diagnosis.",
+      state:"review"
+    };
+    if(/AN\(4\)|PR\(4\)|unknown|stop/.test(choice)) return hold(
+      "The 2026 Mack CBR applicability has not been established or this variant is excluded.",
+      "Stop this guided path. Confirm the VIN, exact chassis variant and emissions generation, then retrieve the applicable Mack procedure. Do not carry on with the CBR 2107-22 sequence."
+    );
+    if(/active\/confirmed and applicability verified/.test(choice)) return go(
+      steps[index+1],"The fault is active/confirmed and the truck was confirmed within the bulletin scope.",
+      "Inspect both UQLS harness connector halves for damaged pins/wires, corrosion and water intrusion."
+    );
+  }
+  if(step.id==="p205b_result"){
+    if(/returned active\/confirmed/.test(choice)) return {
+      stepId:step.id,reason:"P205B64 returned active/confirmed after the prescribed repeat test.",
+      action:"The applicable Mack CBR supports UQLS replacement at this point. Confirm the VIN/variant still matches the bulletin and use the current Mack Impact procedure plus TSB 258-040 for sensor replacement and wire routing. Record the before/after scan results.",
+      state:"review"
+    };
+    if(/did not return active/.test(choice)) return {
+      stepId:step.id,reason:"P205B64 did not return active after the prescribed repeat test.",
+      action:"Do not replace the UQLS under this procedure. Save the final scan report and release/continue service according to the shop's verification process.",
+      state:"review"
+    };
+    if(/uncertain|another fault/.test(choice)) return hold(
+      "The repeat-test result is not conclusive.",
+      "Do not replace the UQLS yet. Record the remaining active codes and repeat/complete the applicable diagnostic procedure."
+    );
+  }
   if (!populated(entry.choice)) return hold(
     "Measurements or notes were saved without a selected observation.",
     "Choose the observation that accurately describes the test, or explicitly record why the test could not be completed. Do not infer pass/fail from free text."
