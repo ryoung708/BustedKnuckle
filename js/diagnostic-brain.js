@@ -331,7 +331,7 @@ function powertrainRecommendation(record, steps) {
         "The engine is not being granted start authorization.",
         "Identify the controller that is withholding start enable and the exact inhibit reason. Verify the relevant configured interlock input at its source and at the receiving controller using the OEM diagram/live data. Check neutral/park, clutch/brake, PTO or immobilizer only if fitted; do not bypass an interlock."
       );
-      if(/engine speed \\/ sync data abnormal/i.test(choice)) return hold(
+      if(/engine speed \/ sync data abnormal/i.test(choice)) return hold(
         "Cranking speed or synchronization data is abnormal.",
         "Use the engine-specific procedure to verify the crankshaft and camshaft speed/synchronization signals during cranking. Compare scan data with the approved physical test method, then inspect the supported sensor circuit, connector, harness or mechanical timing evidence. Do not invent a universal RPM or waveform limit."
       );
@@ -343,7 +343,7 @@ function powertrainRecommendation(record, steps) {
       );
     }
     if(step.id==="fuel"){
-      if(/supply outside specification|air \\/ restriction evidence/i.test(choice))
+      if(/supply outside specification|air \/ restriction evidence/i.test(choice))
         return go(steps.find(item=>item.id==="fuel_isolation"),"The low-pressure fuel supply did not pass during cranking; isolate the supply-side cause before moving to air/mechanical checks.","Follow the exact engine/serial-specific low-pressure pinpoint sequence to separate pump output, filter/line restriction, tank pickup/vent restriction and air ingress. Do not use generic pressure limits or replace a component from this result alone.");
       if(/fuel supply meets specification/i.test(choice))
         return go(steps.find(item=>item.id==="air_exhaust"),"Fuel supply was verified within the applicable OEM specification during cranking.","Proceed to the engine-specific intake, exhaust and mechanical prerequisite checks. Preserve the fuel reading and the conditions under which it passed.");
@@ -363,7 +363,7 @@ function powertrainRecommendation(record, steps) {
         "The low-pressure supply remains abnormal, but the cause is not isolated.",
         "Continue the current OEM pinpoint sequence. Verify the test setup, pump command/output, filter and line restriction, tank pickup/vent and air ingress only as prescribed for this engine. Record each discriminating result; do not guess or replace parts."
       );
-      if(/procedure \\/ specification unavailable/i.test(choice)) return hold(
+      if(/procedure \/ specification unavailable/i.test(choice)) return hold(
         "The required low-pressure pinpoint procedure or specification is unavailable.",
         "Obtain current engine/serial-specific OEM service information before continuing. Keep the no-start diagnosis open; do not infer a failed component."
       );
@@ -371,7 +371,7 @@ function powertrainRecommendation(record, steps) {
     if(step.id==="fuel_retest"){
       if(/fuel supply meets oem specification under cranking conditions/i.test(choice))
         return go(steps.find(item=>item.id==="air_exhaust"),"The corrected low-pressure supply now meets the OEM specification during cranking.","Continue to the intake, exhaust and mechanical prerequisite checks. Preserve the before/after fuel readings and conditions.");
-      if(/supply remains outside oem specification|air \\/ restriction evidence remains/i.test(choice))
+      if(/supply remains outside oem specification|air \/ restriction evidence remains/i.test(choice))
         return go(steps.find(item=>item.id==="fuel_isolation"),"The repeat cranking test still shows an abnormal low-pressure supply.","Return to the low-pressure pinpoint tests. The repair has not restored the required supply; isolate the remaining delivery, restriction or air-ingress cause.");
       if(/retest incomplete|conditions not reproduced/i.test(choice)) return hold(
         "The repaired fuel supply has not been verified under the original cranking conditions.",
