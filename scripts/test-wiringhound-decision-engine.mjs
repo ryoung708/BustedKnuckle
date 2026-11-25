@@ -85,6 +85,11 @@ assert.equal(recommendNextStep(record("light_inop","control","Command not presen
 assert.equal(recommendNextStep(record("light_inop","control","Command present; output missing"),lighting).stepId,"load");
 assert.equal(recommendNextStep(record("light_inop","control","Controller reports output or protection fault"),lighting).stepId,"load");
 assert.equal(recommendNextStep(record("light_inop","control_inputs","Missing input / enable condition identified"),lighting).state,"hold");
+assert.match(recommendNextStep(record("light_inop","control_inputs","Missing input / enable condition identified"),lighting).action,/source controller/i);
+assert.equal(recommendNextStep(record("light_inop","control_inputs","Required data or procedure unavailable"),lighting).state,"hold");
+assert.equal(recommendNextStep(record("light_inop","protection_review","Downstream overload / short identified"),lighting).state,"hold");
+assert.match(recommendNextStep(record("light_inop","protection_review","Downstream overload / short identified"),lighting).action,/never install a larger fuse/i);
+assert.equal(recommendNextStep(record("light_inop","drop","Reading changes when harness is moved"),lighting).stepId,"harness");
 assert.equal(recommendNextStep(record("light_inop","load","Supply missing at load"),lighting).stepId,"protection");
 assert.equal(recommendNextStep(record("light_inop","load","Correct supply and ground present"),lighting).stepId,"load_review");
 assert.equal(recommendNextStep(record("light_inop","control_inputs","Inputs and enables appear correct"),lighting).stepId,"control");
