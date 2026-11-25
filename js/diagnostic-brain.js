@@ -333,7 +333,7 @@ function powertrainRecommendation(record, steps) {
         "The after-treatment fault picture is incomplete.",
         "Restore communication with the missing controller(s), verify the diagnostic-tool connection and repeat the complete OEM-designated scan. Do not infer that no relevant faults exist from an incomplete scan."
       );
-      if(/active faults reviewed; no primary cause established|only inactive \\/ historic faults|no relevant faults found after complete scan/i.test(choice))
+      if(/active faults reviewed; no primary cause established|only inactive \/ historic faults|no relevant faults found after complete scan/i.test(choice))
         return go(steps.find(item=>item.id==="data"),"The complete scan has been reviewed and no uninvestigated primary active fault remains.","Compare the applicable sensor, pressure, dosing and regeneration data under the exact operating conditions and calibration-specific limits.");
     }
     if(step.id==="data"){
@@ -341,11 +341,11 @@ function powertrainRecommendation(record, steps) {
         "One or more after-treatment sensor values may be implausible.",
         "Compare the suspect value with related sensors and ambient/engine conditions using the OEM plausibility test. Verify the sensor's wiring, connector, supply and ground only as directed by the wiring diagram; record actual values and limits before considering replacement."
       );
-      if(/pressure \\/ restriction evidence/i.test(choice)) return hold(
+      if(/pressure \/ restriction evidence/i.test(choice)) return hold(
         "The data indicates a possible exhaust or after-treatment restriction.",
         "Verify the differential-pressure sensor and both pressure tubes/ports for blockage, damage, leaks or incorrect routing. Compare the measured pressure with the exact OEM limit at the specified engine speed/load and regeneration state; do not condemn the DPF from a single reading."
       );
-      if(/dosing \\/ def system concern/i.test(choice)) return hold(
+      if(/dosing \/ def system concern/i.test(choice)) return hold(
         "The dosing/DEF data indicates a possible supply, quality or control concern.",
         "Follow the engine-specific DEF/dosing pinpoint procedure. Verify fluid quality and level, tank temperature where relevant, commanded dosing, supply pressure and electrical control using OEM limits. Do not command a dosing test or replace the doser unless the procedure authorizes it."
       );
@@ -359,7 +359,7 @@ function powertrainRecommendation(record, steps) {
     if(step.id==="inspection"){
       if(/defect isolated and corrected per oem procedure/i.test(choice))
         return go(steps.find(item=>item.id==="verify"),"The indicated defect was isolated and corrected using the OEM procedure.","Perform only the authorized post-repair routine. Re-scan the relevant controllers and repeat the original operating conditions to confirm the fault does not return.");
-      if(/physical defect found|leak \\/ restriction evidence found|electrical or connector concern found/i.test(choice)) return hold(
+      if(/physical defect found|leak \/ restriction evidence found|electrical or connector concern found/i.test(choice)) return hold(
         "A physical, leak/restriction or electrical concern has been observed but is not yet isolated and verified.",
         "Localize the exact defect with the relevant OEM pinpoint test. Record the location, measurement and evidence; repair only the confirmed defect, then select the corrected option after the repair is complete. Do not replace a component based on a broad inspection finding."
       );
@@ -377,7 +377,7 @@ function powertrainRecommendation(record, steps) {
         "The original or a related after-treatment fault remains active after repair.",
         "Do not close the case as repaired. Preserve the post-repair scan and event data, then return to the applicable code-specific OEM diagnostic path to identify why the fault remains."
       );
-      if(/repair complete; verification pending|cause remains unconfirmed|procedure inhibited \\/ not authorized/i.test(choice)) return hold(
+      if(/repair complete; verification pending|cause remains unconfirmed|procedure inhibited \/ not authorized/i.test(choice)) return hold(
         "The after-treatment repair has not been fully verified or the required service procedure is inhibited.",
         "Keep the case open. Confirm all OEM enable conditions and complete the authorized post-repair verification; never force a regeneration or bypass an inhibit. Record the remaining unknowns."
       );
