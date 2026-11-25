@@ -213,12 +213,17 @@ let activeBulletinDocumentId=null;
 function bulletinSummaryMarkup(data){
  const item=(label,content)=>'<div class="bulletin-item"><h3>'+esc(label)+'</h3><p>'+esc(content||"Not identified — verify in original")+'</p></div>';
  const codes=(data.faultCodes||[]).join(", ")||"No fault codes identified";
+ const revisionSource=data.document?.revisionSource?.sourcePage?" · source p. "+data.document.revisionSource.sourcePage:"";
+ const dateSource=data.document?.publicationDateSource?.sourcePage?" · source p. "+data.document.publicationDateSource.sourcePage:"";
  const steps=(data.procedureSteps||[]).map(step=>'<li><strong>Step '+esc(step.stepNumber)+'</strong> · '+esc(step.text)+' <span class="muted">(page '+esc(step.sourcePage??"unknown")+')</span></li>').join("");
  const warnings=(data.warnings||[]).map(warning=>'<div class="bulletin-warning">'+esc(warning)+'</div>').join("");
- return item("Bulletin number",data.document?.bulletinNumber)+item("Revision",data.document?.revision)+item("Publication date",data.document?.publicationDate)+item("Fault codes",codes)+
+ return item("Bulletin number",data.document?.bulletinNumber)+item("Revision",(data.document?.revision||"Not identified")+revisionSource)+item("Publication date",(data.document?.publicationDate||"Not identified")+dateSource)+item("Fault codes",codes)+
  '<div class="bulletin-item"><h3>Applicability · '+(data.applicability||[]).length+' extracted lines</h3><ul>'+((data.applicability||[]).map(line=>'<li>'+esc(line.text)+' <span class="muted">(p. '+esc(line.sourcePage??"?")+')</span></li>').join("")||"<li>Not identified</li>")+'</ul></div>'+
  '<div class="bulletin-item"><h3>Exclusions · '+(data.exclusions||[]).length+' extracted lines</h3><ul>'+((data.exclusions||[]).map(line=>'<li>'+esc(line.text)+' <span class="muted">(p. '+esc(line.sourcePage??"?")+')</span></li>').join("")||"<li>Not identified</li>")+'</ul></div>'+
  '<div class="bulletin-item" style="grid-column:1/-1"><h3>Procedure · '+(data.procedureSteps||[]).length+' extracted steps</h3><ol>'+steps+'</ol></div>'+
+ '<div class="bulletin-item" style="grid-column:1/-1"><h3>Results / decision criteria</h3><ul>'+((data.evaluation||[]).map(line=>'<li>'+esc(line.text)+' <span class="muted">(p. '+esc(line.sourcePage??"?")+')</span></li>').join("")||"<li>Not identified</li>")+'</ul></div>'+
+ '<div class="bulletin-item" style="grid-column:1/-1"><h3>Replacement / warranty rules</h3><ul>'+((data.replacementRules||[]).map(line=>'<li>'+esc(line.text)+' <span class="muted">(p. '+esc(line.sourcePage??"?")+')</span></li>').join("")||"<li>Not identified</li>")+'</ul></div>'+
+ '<div class="bulletin-item" style="grid-column:1/-1"><h3>Related references</h3><ul>'+((data.references||[]).map(ref=>'<li>'+esc(ref.reference)+' <span class="muted">(p. '+esc(ref.sourcePage??"?")+')</span></li>').join("")||"<li>None identified</li>")+'</ul></div>'+
  '<div class="bulletin-item" style="grid-column:1/-1"><h3>Warnings / review flags</h3>'+warnings+'</div>';
 }
 async function openBulletinReader(id){

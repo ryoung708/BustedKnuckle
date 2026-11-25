@@ -61,23 +61,52 @@ export function parseBulletinIntelligence(extractedText, metadata = {}) {
     /\b(?:revision|rev\.?|version)\s*[:#-]?\s*([A-Z0-9][A-Z0-9._ -]{0,30})/i
   ]);
   const publicationDate = findField(lines, [
-    /\b(?:published|publication date|issued|release date|date)\s*[:#-]?\s*((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[a-z]*\s+\d{1,2},?\s+\d{4}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})/i
+    /\b(?:published|publication date|issued|release date|date)\s*[:#-]?\s*((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[a-z]*\s+\d{1,2},?\s+\d{4}|\d{1,2}\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[a-z]*\s+\d{4}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})/i
   ]);
   const applicability = collectSection(
     pages,
-    /^(?:vehicle\s+)?(?:applicability|application|models?\s+affected|affected\s+vehicles|applies\s+to|models?\s*:)\s*/i,
-    /^(?:not\s+applicable|does\s+not\s+apply|exclusions?|excluded\s+models?|procedure|service\s+procedure|correction|repair|warranty|parts|labor|symptom|condition)\b/i
+    /^(?:vehicle\s+)?(?:applicability|application|models?\s+affected|affected\s+vehicles|applies\s+to|valid\s+for|models?\s*:)\s*/i,
+    /^(?:not\s+applicable|does\s+not\s+apply|note:.*(?:does\s+not\s+apply|not\s+applicable)|exclusions?|excluded\s+models?|procedure|service\s+procedure|diagnostic\s+steps?|correction|repair|warranty|parts|labor|symptom|condition)\b/i
   );
+  for (const page of pages) {
+    for (const line of page.text.split(/\r?\n/)) {
+      const text = clean(line);
+      if (/\bUS\d{2}\+OBD\d{2}\b/i.test(text) &&
+          !applicability.some(item => item.sourcePage === page.page && item.text === text)) {
+        applicability.push({ text, sourcePage: page.page, excerpt: text });
+      }
+    }
+  }
+  const exclusionHeadingPattern = /^(?:exclusions?|not\s+applicable|does\s+not\s+apply|excluded\s+models?|this\s+bulletin\s+does\s+not\s+apply)\s*[:\-–—]?\s*/i;
   const exclusions = collectSection(
     pages,
-    /^(?:exclusions?|not\s+applicable|does\s+not\s+apply|excluded\s+models?|this\s+bulletin\s+does\s+not\s+apply)\s*[:\-–—]?\s*/i,
+    exclusionHeadingPattern,
     /^(?:procedure|service\s+procedure|correction|repair|warranty|parts|labor|applicability|application|models?\s+affected)\b/i
   );
-  const procedureHeadings = /^(?:service\s+)?(?:procedure|repair\s+procedure|service\s+procedure|diagnostic\s+procedure|instructions|correction|action\s+required|work\s+instructions)\b/i;
+  for (const page of pages) {
+    for (const line of page.text.split(/\r?\n/)) {
+      const text = clean(line);
+      if (/(?:does\s+not\s+apply\s+to|not\s+applicable\s+to|excluded\s+from)/i.test(text) &&
+          !exclusions.some(item => item.sourcePage === page.page && item.excerpt === text)) {
+        exclusions.push({ text, sourcePage: page.page, excerpt: text });
+      }
+    }
+  }
+  const procedureHeadings = /^(?:service\s+)?(?:procedure|repair\s+procedure|service\s+procedure|diagnostic\s+procedure|diagnostic\s+steps?(?:\s+for\s+.*)?|instructions|correction|action\s+required|work\s+instructions)\b/i;
   const procedureLines = collectSection(
     pages,
     procedureHeadings,
-    /^(?:warranty|labor\s+time|parts\s+(?:information|list)|revision\s+history|copyright|disclaimer|end\s+of\s+document)\b/i
+    /^(?:evaluate\s+the\s+results|rules\s+for\s+replacement|warranty|labor\s+time|parts\s+(?:information|list)|revision\s+history|copyright|disclaimer|related\s+links|end\s+of\s+document)\b/i
+  );
+  const evaluation = collectSection(
+    pages,
+    /^evaluate\s+(?:the\s+)?results?\s*[:\-–—]?\s*/i,
+    /^(?:rules\s+for\s+replacement|warranty|labor\s+time|parts\s+(?:information|list)|related\s+links|end\s+of\s+document)\b/i
+  );
+  const replacementRules = collectSection(
+    pages,
+    /^rules\s+for\s+replacement\s*[:\-–—]?\s*/i,
+    /^(?:related\s+links|warranty|labor\s+time|parts\s+(?:information|list)|end\s+of\s+document)\b/i
   );
   const procedureSteps = [];
   for (const item of procedureLines) {
@@ -96,11 +125,14 @@ export function parseBulletinIntelligence(extractedText, metadata = {}) {
       procedureSteps[procedureSteps.length - 1].sourceExcerpt += " " + item.excerpt;
     }
   }
-  const faultCodes = [...new Set((allText.match(/\bP[0-9A-F]{4}[0-9A-F]{0,2}\b/gi) || []).map(code => code.toUpperCase()))];
+  const faultCodes = [...new Set((allText.match(/\b[PU][0-9A-F]{4,6}\b/gi) || []).map(code => code.toUpperCase()))];
   const references = [];
   for (const page of pages) {
-    for (const match of page.text.matchAll(/\b(?:TSB|CBR|SB| bulletin|publication|document)\s*(?:No\.?|#|number)?\s*[:#-]?\s*([A-Z0-9][A-Z0-9-]{3,})/gi)) {
+    for (const match of page.text.matchAll(/\b(?:TSB|CBR|FSB|SB|bulletin|publication|document)\s*(?:No\.?|#|number)?\s*[:#-]?\s*([A-Z0-9][A-Z0-9-]{3,})/gi)) {
       references.push({ reference: clean(match[1]), sourcePage: page.page, sourceExcerpt: clean(match[0]) });
+    }
+    for (const match of page.text.matchAll(/\b(?:\d{3}-\d{3}|(?:CBR|TSB|FSB|SB)[ -]?\d{2,4}-\d{2,4})\b/gi)) {
+      references.push({ reference: clean(match[0]), sourcePage: page.page, sourceExcerpt: clean(match[0]) });
     }
   }
   const uniqueReferences = [...new Map(references.map(item => [item.reference.toUpperCase(), item])).values()];
@@ -131,6 +163,8 @@ export function parseBulletinIntelligence(extractedText, metadata = {}) {
     exclusions,
     faultCodes,
     procedureSteps,
+    evaluation,
+    replacementRules,
     references: uniqueReferences,
     warnings,
     source: {
