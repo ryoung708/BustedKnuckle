@@ -71,7 +71,7 @@ Deno.serve(async (req: Request) => {
       ["site:static.nhtsa.gov/odi/tsbs", manufacturer, code].join(" "),
     ])];
     const providerRuns = await Promise.all(queries.flatMap(query => [searchDuckDuckGo(query), searchBingRss(query)]));
-    const results = dedupeSearchResults(providerRuns.map(run => run.results));
+    const results = dedupeSearchResults(providerRuns.map(run => run.results), code);
     const successfulRequests = providerRuns.filter(run => run.ok).length;
     const providerDiagnostics = ["DuckDuckGo HTML", "Bing RSS"].map(provider => {
       const runs = providerRuns.filter(run => run.provider === provider);
