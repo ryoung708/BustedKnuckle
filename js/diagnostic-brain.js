@@ -327,6 +327,19 @@ function powertrainRecommendation(record, steps) {
       "Inspect both UQLS harness connector halves for damaged pins/wires, corrosion and water intrusion."
     );
   }
+  if(step.id==="p205b_connector"){
+    // This choice contains the words "corrosion" and "damage" as things
+    // explicitly NOT found. Resolve the clean-inspection branch before the
+    // broad abnormal-keyword matcher below.
+    if(/no pin, wire, corrosion or moisture damage found/i.test(choice)) {
+      return go(steps[index+1],"The UQLS connector and harness inspection found no visible damage.",
+        "Proceed to DEF quality verification with a clean sample and an appropriate DEF refractometer. Compare the reading with the current Mack specification and record the actual result.");
+    }
+    if(/damage, corrosion or water intrusion found/i.test(choice)) return hold(
+      "Physical damage or contamination was found at the UQLS connector or harness.",
+      "Stop the routine sequence. Photograph and localize the defect, inspect the affected terminals, seals and wiring, and follow the applicable Mack repair procedure before continuing."
+    );
+  }
   if(step.id==="p205b_result"){
     if(/returned active\/confirmed/.test(choice)) return {
       stepId:step.id,reason:"P205B64 returned active/confirmed after the prescribed repeat test.",
