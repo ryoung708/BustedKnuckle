@@ -114,4 +114,32 @@ const measuredNoChoice = analyzeDiagnosticCase({...noStartBase,currentStep:1,ent
 assert.equal(measuredNoChoice.recommendation.stepId,"codes");
 assert.equal(measuredNoChoice.recommendation.state,"hold");
 
+
+const p205bSteps=[
+ {id:"p205b_applicability",title:"Confirm Mack CBR applicability"},
+ {id:"p205b_connector",title:"Inspect UQLS connectors"},
+ {id:"p205b_quality",title:"Verify DEF quality"},
+ {id:"p205b_freeze",title:"Check frozen DEF"},
+ {id:"p205b_fill",title:"Verify fill level"},
+ {id:"p205b_cycle",title:"Run repeat test"},
+ {id:"p205b_result",title:"Evaluate result"}
+];
+const p205bBase={workflowId:"fault_guidance_p205b64",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},entries:{}};
+const p205bUnknown=analyzeDiagnosticCase({...p205bBase,entries:{p205b_applicability:{choice:"AN(4), PR(4), or emissions applicability unknown — stop"}}},p205bSteps);
+assert.equal(p205bUnknown.recommendation.stepId,"p205b_applicability");
+assert.equal(p205bUnknown.recommendation.state,"hold");
+assert.match(p205bUnknown.recommendation.action,/Stop this guided path/i);
+const p205bInactive=analyzeDiagnosticCase({...p205bBase,entries:{p205b_applicability:{choice:"Inactive / historic — no troubleshooting required"}}},p205bSteps);
+assert.equal(p205bInactive.recommendation.state,"review");
+assert.match(p205bInactive.recommendation.action,/Do not troubleshoot or replace/i);
+const p205bApplicable=analyzeDiagnosticCase({...p205bBase,entries:{p205b_applicability:{choice:"Active/confirmed and applicability verified"}}},p205bSteps);
+assert.equal(p205bApplicable.recommendation.stepId,"p205b_connector");
+assert.equal(p205bApplicable.recommendation.state,"next");
+const p205bReplace=analyzeDiagnosticCase({...p205bBase,entries:{p205b_applicability:{choice:"Active/confirmed and applicability verified"},p205b_connector:{choice:"No pin, wire, corrosion or moisture damage found"},p205b_quality:{choice:"DEF quality acceptable per Mack specification"},p205b_freeze:{choice:"Tank is not frozen"},p205b_fill:{choice:"Tank adequately filled per Mack procedure"},p205b_cycle:{choice:"Repeat sequence completed; P205B64 returned active/confirmed"},p205b_result:{choice:"P205B64 returned active/confirmed after repeat test"}}},p205bSteps);
+assert.equal(p205bReplace.recommendation.state,"review");
+assert.match(p205bReplace.recommendation.action,/UQLS replacement/i);
+const p205bNoReplace=analyzeDiagnosticCase({...p205bBase,entries:{p205b_applicability:{choice:"Active/confirmed and applicability verified"},p205b_cycle:{choice:"Repeat sequence completed; P205B64 did not return active"},p205b_result:{choice:"P205B64 did not return active after repeat test"}}},p205bSteps);
+assert.equal(p205bNoReplace.recommendation.state,"review");
+assert.match(p205bNoReplace.recommendation.action,/Do not replace the UQLS/i);
+
 console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");
