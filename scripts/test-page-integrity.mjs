@@ -147,6 +147,10 @@ try {
     "DCC must surface the method/location guidance from each diagnostic step");
   const dccWorkflowEngineText = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
   const aftertreatmentWorkflowText = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("aftertreatment_fault:"), dccWorkflowEngineText.indexOf("drivetrain_fault:"));
+  const drivetrainWorkflowText = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("drivetrain_fault:"), dccWorkflowEngineText.indexOf("light_inop:"));
+  assert.match(drivetrainWorkflowText, /id:"data"[\s\S]*?test:/);
+  assert.match(drivetrainWorkflowText, /id:"inspection"[\s\S]*?prompt:/);
+  assert.match(drivetrainWorkflowText, /id:"verify"[\s\S]*?terminal:true/);
   assert.match(aftertreatmentWorkflowText, /id:"codes"[\s\S]*?test:/);
   assert.match(aftertreatmentWorkflowText, /id:"data"[\s\S]*?prompt:/);
   assert.match(aftertreatmentWorkflowText, /id:"verify"[\s\S]*?terminal:true/);
