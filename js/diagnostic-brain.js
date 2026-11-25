@@ -338,13 +338,13 @@ function powertrainRecommendation(record, steps) {
     );
   }
   if(step.id==="p205b_result"){
-    if(/returned active\/confirmed/.test(choice)) return {
-      stepId:step.id,reason:"P205B64 returned active/confirmed after the prescribed repeat test.",
+    if(/one or more listed yellow UQLS faults returned active\/confirmed|returned active\/confirmed/.test(choice)) return {
+      stepId:step.id,reason:"One or more of the nine listed yellow UQLS faults returned active/confirmed after the prescribed repeat test.",
       action:"The applicable Mack CBR supports UQLS replacement at this point. Confirm the VIN/variant still matches the bulletin and use the current Mack Impact procedure plus TSB 258-040 for sensor replacement and wire routing. Record the before/after scan results.",
       state:"review"
     };
     if(/none of the nine listed yellow UQLS faults returned active|did not return active/.test(choice)) return {
-      stepId:step.id,reason:"P205B64 did not return active after the prescribed repeat test.",
+      stepId:step.id,reason:"None of the nine listed yellow UQLS faults returned active after the prescribed repeat test.",
       action:"Do not replace the UQLS under this procedure. Save the final scan report and release/continue service according to the shop's verification process.",
       state:"review"
     };
