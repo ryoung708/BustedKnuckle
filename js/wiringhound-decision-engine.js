@@ -166,6 +166,7 @@ export function recommendNextStep(caseRecord,steps){
         if(has(answer,"restored","feed repaired","supply present"))return go("protection","The upstream supply has been restored or confirmed.","Repeat the protection input/output test under the original operating condition.");
         return hold("The upstream supply is still missing or has not been isolated.","Trace the feed one documented segment at a time; do not bypass circuit protection.");
       case "protection_review":
+        if(has(answer,"downstream overload","short identified"))return hold("A downstream overload or short has been identified but not isolated.","Use the OEM-approved de-energized isolation method to separate downstream branches and identify the load or harness segment causing the protection event. Confirm the correct protection rating; never install a larger fuse or bypass the device.");
         if(has(answer,"fault found","defect found","repaired"))return go("control","A protection/feed issue has been identified for confirmation.","After the approved repair, verify protected output and continue to the control command.");
         if(has(answer,"no fault","no defect"))return go("upstream_feed","The protection device itself has not been shown to be the cause.","Investigate upstream supply and downstream short/overload conditions using the wiring diagram.");
         return hold("The protection device or downstream load has not been isolated.","Confirm rating, terminal condition and whether the circuit opens under load.");
@@ -174,6 +175,8 @@ export function recommendNextStep(caseRecord,steps){
         if(has(answer,"command present","command is present","changes correctly","reports output or protection fault","reports output fault"))return go("load","The control command or output state has been observed.","Test supply and ground at the load connector under the commanded operating condition.");
         return hold("The control strategy or command state is not established.","Identify whether the circuit is direct-switched, relayed or module-controlled.");
       case "control_inputs":
+        if(has(answer,"missing input","missing input / enable condition identified"))return hold("A required switch input or enable condition is missing.","Identify the exact input and source controller. Compare the signal at the switch/sensor and receiving controller using the OEM diagram; verify configured interlocks and repair the proven input path before repeating the command test.");
+        if(has(answer,"required data or procedure unavailable"))return hold("The command-input test cannot be completed with the available information.","Obtain the correct vehicle-specific control strategy, wiring diagram and expected input state. Do not assume a controller fault while the required input logic is unknown.");
         if(has(answer,"corrected","restored","input present","inputs and enables appear correct"))return go("control","The input/enable checks are complete or the missing condition has changed.","Repeat the control-command test and verify expected output.");
         return hold("The command input or enable condition remains unresolved.","Check documented switch inputs, interlocks, module power/ground and related faults.");
       case "load":
@@ -183,6 +186,7 @@ export function recommendNextStep(caseRecord,steps){
         if(has(answer,"connector"))return go("harness","Connector or terminal damage has been observed.","Inspect and localize the affected connector/branch.");
         return hold("The load-side result is incomplete.","Record actual voltage, reference point, connected load state and test pins.");
       case "drop":
+        if(has(answer,"reading changes when harness is moved"))return go("harness","The loaded voltage-drop reading changes when the harness is moved; localize the intermittent segment.","Divide the affected side at documented connectors/splices and monitor the same loaded measurement while moving one accessible harness section at a time.");
         if(has(answer,"excessive drop"))return go("harness","A voltage drop has been localized to a side of the circuit.","Divide that side at documented connectors/splices and identify the segment containing the drop.");
         if(has(answer,"both paths within"))return go("load_review","Both measured paths appear within the applicable specification under this test condition.","Verify the load, connector and operating command before considering a module issue.");
         return hold("A valid loaded voltage-drop result is not yet available.","Reproduce the load and record exact positive/ground measurement points and OEM limits.");
