@@ -120,8 +120,11 @@ export function parseBulletinIntelligence(extractedText, metadata = {}) {
       manufacturer,
       model,
       bulletinNumber: bulletinNumber?.value || metadata.source_reference || null,
+      bulletinNumberSource: bulletinNumber ? { sourcePage: bulletinNumber.sourcePage, excerpt: bulletinNumber.excerpt } : null,
       revision: revision?.value || metadata.revision || null,
+      revisionSource: revision ? { sourcePage: revision.sourcePage, excerpt: revision.excerpt } : null,
       publicationDate: publicationDate?.value || null,
+      publicationDateSource: publicationDate ? { sourcePage: publicationDate.sourcePage, excerpt: publicationDate.excerpt } : null,
       pageCount: metadata.pageCount ?? pages.length
     },
     applicability,
