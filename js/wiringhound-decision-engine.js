@@ -170,8 +170,8 @@ export function recommendNextStep(caseRecord,steps){
         if(has(answer,"no fault","no defect"))return go("upstream_feed","The protection device itself has not been shown to be the cause.","Investigate upstream supply and downstream short/overload conditions using the wiring diagram.");
         return hold("The protection device or downstream load has not been isolated.","Confirm rating, terminal condition and whether the circuit opens under load.");
       case "control":
-        if(has(answer,"command is not present"))return go("control_inputs","The expected output command is absent.","Check switch inputs, interlocks, enable conditions and controller data before suspecting the output device.");
-        if(has(answer,"command is present","changes correctly","reports output fault"))return go("load","The control command or output state has been observed.","Test supply and ground at the load connector under the commanded operating condition.");
+        if(has(answer,"command not present","command is not present"))return go("control_inputs","The expected output command is absent.","Check switch inputs, interlocks, enable conditions and controller data before suspecting the output device.");
+        if(has(answer,"command present","command is present","changes correctly","reports output or protection fault","reports output fault"))return go("load","The control command or output state has been observed.","Test supply and ground at the load connector under the commanded operating condition.");
         return hold("The control strategy or command state is not established.","Identify whether the circuit is direct-switched, relayed or module-controlled.");
       case "control_inputs":
         if(has(answer,"corrected","restored","input present","inputs and enables appear correct"))return go("control","The input/enable checks are complete or the missing condition has changed.","Repeat the control-command test and verify expected output.");
@@ -179,7 +179,7 @@ export function recommendNextStep(caseRecord,steps){
       case "load":
         if(has(answer,"supply missing"))return go("protection","Power is missing at the load.","Return upstream and trace the protected feed and control output.");
         if(has(answer,"ground path abnormal","collapses"))return go("drop","The load test suggests a supply or return path problem under load.","Measure positive-side and ground-side voltage drop separately under the same load.");
-        if(has(answer,"correct power and ground"))return go("load_review","Power and ground are present at the load connector; the load itself still needs proof.","Test the load using the approved method and inspect connector terminal fit.");
+        if(has(answer,"correct supply and ground present","correct power and ground"))return go("load_review","Power and ground are present at the load connector; the load itself still needs proof.","Test the load using the approved method and inspect connector terminal fit.");
         if(has(answer,"connector"))return go("harness","Connector or terminal damage has been observed.","Inspect and localize the affected connector/branch.");
         return hold("The load-side result is incomplete.","Record actual voltage, reference point, connected load state and test pins.");
       case "drop":
