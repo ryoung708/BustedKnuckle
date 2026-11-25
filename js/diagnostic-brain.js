@@ -311,6 +311,73 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // General complaint triage is a routing workflow, not a component-diagnosis shortcut.
+  if(record.workflowId==="complaint_triage"){
+    if(step.id==="complaint_baseline"){
+      if(/driver description needs clarification/i.test(choice)) return hold(
+        "The complaint is not specific enough to choose a reliable diagnostic path.",
+        "Clarify the observable symptom with the driver: what happens, when it happens, what still works, warning messages and exact operating conditions. Do not guess at a subsystem."
+      );
+      if(/unable to reproduce; no event data available/i.test(choice)) return hold(
+        "The complaint could not be reproduced and no event data is available.",
+        "Obtain a more precise driver description and operating conditions. Reproduce only when safe, then capture the event data; do not continue with unsupported assumptions."
+      );
+      if(/complaint reproduced and conditions documented|intermittent pattern documented but not reproduced|unable to reproduce; event data available/i.test(choice))
+        return go(steps.find(item=>item.id==="controller_scan"),"The complaint is sufficiently described or supported by stored event data.","Capture a complete scan of the relevant controllers and preserve exact codes, status and event data before selecting the next system.");
+    }
+    if(step.id==="controller_scan"){
+      if(/relevant active fault\(s\) identified; not yet reviewed/i.test(choice)) return hold(
+        "Relevant active faults have been found but have not been reviewed.",
+        "Attach each code with source controller, active/inactive status and event data. Use the applicable code-specific guided path or OEM fault tree before continuing generic triage."
+      );
+      if(/multiple unrelated faults; primary not identified/i.test(choice)) return hold(
+        "Multiple faults are present and the primary event has not been identified.",
+        "Compare occurrence counts, timestamps, source controllers and freeze-frame data. Separate primary faults from secondary/consequence codes and select the earliest or most directly related fault for focused diagnosis."
+      );
+      if(/scan incomplete|controller not communicating/i.test(choice)) return hold(
+        "The controller scan is incomplete.",
+        "Restore communication with the missing controller(s), verify diagnostic-tool connection and repeat the complete scan. Do not treat an incomplete scan as no-fault evidence."
+      );
+      if(/active faults reviewed; no primary cause established|only inactive \/ historic faults|no relevant faults found after complete scan/i.test(choice))
+        return go(steps.find(item=>item.id==="data_review"),"The available scan has been reviewed and no uninvestigated primary active fault remains.","Compare live data directly related to the complaint using the exact vehicle/engine/emissions specifications and original operating conditions.");
+    }
+    if(step.id==="data_review"){
+      if(/data points toward a specific subsystem/i.test(choice))
+        return go(steps.find(item=>item.id==="targeted_inspection"),"The measured data points toward a specific subsystem.","Select the dedicated workflow for that system and perform one discriminating OEM pinpoint test. Record the exact test location, value and applicable limit.");
+      if(/data is implausible or inconsistent/i.test(choice)) return hold(
+        "The live data is implausible or internally inconsistent.",
+        "Compare the suspect parameter with related sensors and known operating conditions. Verify sensor power, ground, signal and network data only as directed by the OEM procedure; do not condemn a sensor from a plausibility concern alone."
+      );
+      if(/values appear within applicable specification/i.test(choice))
+        return go(steps.find(item=>item.id==="targeted_inspection"),"The selected data appears within the applicable specification, but the complaint remains unresolved.","Inspect only the subsystem supported by the symptom and event history. If no subsystem is supported, return for more discriminating data rather than replacing parts.");
+      if(/more data or vehicle information required/i.test(choice)) return hold(
+        "The data review cannot be completed with the information available.",
+        "Identify the missing vehicle configuration, parameter, operating condition or OEM specification. Obtain that information before selecting a component or test."
+      );
+    }
+    if(step.id==="targeted_inspection"){
+      if(/specific subsystem isolated for focused diagnosis/i.test(choice))
+        return go(steps.find(item=>item.id==="triage_verify"),"A specific subsystem has been isolated for focused diagnosis.","Name the dedicated workflow or OEM fault tree and the next test. Preserve the supporting evidence and continue the focused diagnosis; this triage result does not prove a component failed.");
+      if(/physical evidence found; cause not yet confirmed/i.test(choice)) return hold(
+        "Physical evidence is present, but the cause has not been confirmed.",
+        "Perform the subsystem-specific pinpoint test that proves whether the observed condition caused the complaint. Record measurements and OEM limits before recommending repair."
+      );
+      if(/no subsystem isolated/i.test(choice)) return hold(
+        "The available evidence does not isolate a subsystem.",
+        "Return to the complaint conditions and gather a discriminating live-data measurement or event record. Do not choose a system or component by guesswork."
+      );
+      if(/vehicle-specific information still needed/i.test(choice)) return hold(
+        "Vehicle-specific information is still missing.",
+        "Confirm the VIN/build, engine, emissions family, system variant and applicable service-document revision before using a test procedure or specification."
+      );
+    }
+    if(step.id==="triage_verify"){
+      if(/more evidence required|complaint not reproduced; follow-up needed/i.test(choice)) return hold(
+        "The diagnostic direction is not yet supported by enough evidence.",
+        "Keep the case open, identify the missing measurement or reproduction condition and continue the focused OEM diagnostic path. Do not mark a component failed."
+      );
+    }
+  }
   // Engine low-power/derate is a powertrain path, separate from WiringHound vehicle power loss.
   if(record.workflowId==="engine_power_loss"){
     if(step.id==="conditions"){

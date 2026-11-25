@@ -237,6 +237,49 @@ assert.equal(p205Excluded.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Excluded.recommendation.state,"hold");
 assert.match(p205Excluded.recommendation.action,/Stop this guided path/i);
 
+// General complaint triage must route by evidence and hold on incomplete/ambiguous inputs.
+const triageSteps=workflows.complaint_triage.steps;
+const triageBase={workflowId:"complaint_triage",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"General engine complaint"};
+const triageVague=analyzeDiagnosticCase({...triageBase,entries:{complaint_baseline:{choice:"Driver description needs clarification"}}},triageSteps);
+assert.equal(triageVague.recommendation.stepId,"complaint_baseline");
+assert.equal(triageVague.recommendation.state,"hold");
+
+const triageNoEvent=analyzeDiagnosticCase({...triageBase,entries:{complaint_baseline:{choice:"Unable to reproduce; no event data available"}}},triageSteps);
+assert.equal(triageNoEvent.recommendation.state,"hold");
+
+const triageIntermittent=analyzeDiagnosticCase({...triageBase,entries:{complaint_baseline:{choice:"Intermittent pattern documented but not reproduced"}}},triageSteps);
+assert.equal(triageIntermittent.recommendation.stepId,"controller_scan");
+
+const triageActiveFault=analyzeDiagnosticCase({...triageBase,entries:{controller_scan:{choice:"Relevant active fault(s) identified; not yet reviewed"}}},triageSteps);
+assert.equal(triageActiveFault.recommendation.stepId,"controller_scan");
+assert.equal(triageActiveFault.recommendation.state,"hold");
+
+const triageScanIncomplete=analyzeDiagnosticCase({...triageBase,entries:{controller_scan:{choice:"Scan incomplete / controller not communicating"}}},triageSteps);
+assert.equal(triageScanIncomplete.recommendation.state,"hold");
+
+const triageScanClear=analyzeDiagnosticCase({...triageBase,entries:{controller_scan:{choice:"No relevant faults found after complete scan"}}},triageSteps);
+assert.equal(triageScanClear.recommendation.stepId,"data_review");
+
+const triageDataSubsystem=analyzeDiagnosticCase({...triageBase,entries:{data_review:{choice:"Data points toward a specific subsystem"}}},triageSteps);
+assert.equal(triageDataSubsystem.recommendation.stepId,"targeted_inspection");
+
+const triageDataImplausible=analyzeDiagnosticCase({...triageBase,entries:{data_review:{choice:"Data is implausible or inconsistent"}}},triageSteps);
+assert.equal(triageDataImplausible.recommendation.state,"hold");
+assert.match(triageDataImplausible.recommendation.action,/related sensors/i);
+
+const triageNoSubsystem=analyzeDiagnosticCase({...triageBase,entries:{targeted_inspection:{choice:"No subsystem isolated"}}},triageSteps);
+assert.equal(triageNoSubsystem.recommendation.stepId,"targeted_inspection");
+assert.equal(triageNoSubsystem.recommendation.state,"hold");
+
+const triageFocused=analyzeDiagnosticCase({...triageBase,entries:{targeted_inspection:{choice:"Specific subsystem isolated for focused diagnosis"}}},triageSteps);
+assert.equal(triageFocused.recommendation.stepId,"triage_verify");
+
+const triageUnresolved=analyzeDiagnosticCase({...triageBase,entries:{triage_verify:{choice:"More evidence required"}}},triageSteps);
+assert.equal(triageUnresolved.recommendation.state,"hold");
+
+const triageDone=analyzeDiagnosticCase({...triageBase,entries:{triage_verify:{choice:"Focused diagnostic direction established"}}},triageSteps);
+assert.equal(triageDone.recommendation.state,"review");
+
 // Engine low-power/derate path must not confuse powertrain faults with vehicle electrical power loss.
 const lowPowerSteps=workflows.engine_power_loss.steps;
 const lowPowerBase={workflowId:"engine_power_loss",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"Low power / derate under load"};
