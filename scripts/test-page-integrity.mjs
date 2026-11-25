@@ -146,6 +146,10 @@ try {
   assert.match(diagnostics, /WHERE \/ HOW TO CHECK/,
     "DCC must surface the method/location guidance from each diagnostic step");
   const dccWorkflowEngineText = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
+  const complaintTriageWorkflowText = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("complaint_triage:"), dccWorkflowEngineText.indexOf("j1939_dropout:"));
+  assert.match(complaintTriageWorkflowText, /id:"complaint_baseline"[\s\S]*?test:/);
+  assert.match(complaintTriageWorkflowText, /id:"controller_scan"[\s\S]*?prompt:/);
+  assert.match(complaintTriageWorkflowText, /id:"triage_verify"[\s\S]*?terminal:true/);
   const enginePowerLossWorkflowText = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("engine_power_loss:"), dccWorkflowEngineText.indexOf("aftertreatment_fault:"));
   assert.match(enginePowerLossWorkflowText, /id:"airfuel"[\s\S]*?test:/);
   assert.match(enginePowerLossWorkflowText, /id:"exhaust"[\s\S]*?prompt:/);
