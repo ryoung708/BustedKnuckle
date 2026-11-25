@@ -5,7 +5,7 @@
   "scripts": {
     "validate:faults": "node scripts/validate-fault-library.mjs && node scripts/validate-fault-catalog.mjs",
     "test:diagnostics": "node scripts/test-diagnostic-engine.mjs && node scripts/test-diagnostic-complaint-engine.mjs && node scripts/test-diagnostic-similar-cases.mjs && node scripts/test-diagnostic-unexpected-shutdown.mjs && node scripts/test-fault-guidance-routing.mjs",
-    "test:guided-tests": "node scripts/test-guided-test-library.mjs",
+    "test:guided-tests": "node scripts/test-guided-test-library.mjs && node scripts/test-oem-fault-guidance.mjs",
     "test:electrical": "node scripts/test-electrical-network.mjs",
     "test:decision": "node scripts/test-wiringhound-decision-engine.mjs && node scripts/test-wiringhound-complaint-engine.mjs",
     "test:training": "node scripts/test-training-regressions.mjs",
