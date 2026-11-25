@@ -23,7 +23,7 @@
       "confidence": "source-referenced",
       "source_title": "Mack DEF Level (UQLS) Sensor Troubleshooting Guide, CBR 2107-22 202601 (NHTSA manufacturer communication 11028032)",
       "source_url": "https://static.oemdtc.com/NHTSA-PDFs/MC-11028032-0001.pdf",
-      "caution": "Use only when the exact Mack chassis/emissions configuration is within CBR 2107-22. This bulletin excludes AN(4) and PR(4). An inactive/historic code alone does not establish a failed sensor. Follow the active/confirmed fault sequence and use the repeat-test result before considering UQLS replacement."
+      "caution": "Use only when the exact Mack chassis/emissions configuration is within CBR 2107-22. This bulletin excludes AN(4) and PR(4). An inactive code alone does not establish a failed sensor; a historic code also requires confirmation. Follow the active/confirmed fault sequence and use the repeat-test result before considering UQLS replacement."
     },
     {
       "manufacturer": "Mack",
