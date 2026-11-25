@@ -82,7 +82,7 @@ let sessions=load(),active=null,stepIndex=0;
 bindVehicleIdentity();
 applyVehiclePrefill();
 bindVehiclePrefillControls();
-function load(){try{return JSON.parse(localStorage.getItem(STORE)||"[]")}catch{return []}}
+function load(){try{const rows=JSON.parse(localStorage.getItem(STORE)||"[]");return Array.isArray(rows)?rows.map(row=>row?.workflowId==="power_loss"?{...row,workflowId:"engine_power_loss"}:row):[]}catch{return []}}
 function relatedDiagnosticCases(){let saved=[];try{const value=JSON.parse(localStorage.getItem("ironknuckle.wiringhound.cases.v2")||"[]");saved=Array.isArray(value)?value:[]}catch{}const cloud=window.IronKnuckleCloud?.getCases?.()||[];const all=[...sessions,...saved,...cloud];const unique=new Map();for(const item of all){if(item?.id)unique.set(item.id,item)}return [...unique.values()]}
 function persist(){localStorage.setItem(STORE,JSON.stringify(sessions));renderHistory()}
 function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
