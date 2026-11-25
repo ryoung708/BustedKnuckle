@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import {workflows,createSession,recordStep,evaluateSession,exportSession} from "../js/diagnostic-engine.js";
 
 assert.ok(Object.keys(workflows).length>=8);
+assert.ok(workflows.engine_power_loss,"DCC low-power/derate path must remain a powertrain workflow");
+assert.equal(workflows.power_loss,undefined,"The WiringHound whole-vehicle power-loss ID must not collide with DCC workflows");
 
 const s=createSession({workflowId:"j1939_dropout",make:"Example"});
 assert.equal(evaluateSession(s).status,"in-progress");
