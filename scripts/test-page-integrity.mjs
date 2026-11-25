@@ -87,6 +87,24 @@ try {
   assert.match(diagnostics, /not independently validated measurements/,
     "Recommendation evidence must retain the measurement-validation caution");
 
+  // The DCC must connect fault intake, source discovery and actionable test guidance.
+  assert.match(diagnostics, /function currentGuidedFault\(\)/,
+    "DCC must resolve the active fault while a fault-specific path is open");
+  assert.match(diagnostics, /searchPublicBulletinsForActiveFault\(\)/,
+    "DCC must automatically search public sources when a fault path launches");
+  assert.match(diagnostics, /faultResearchMarkup\(\)/,
+    "DCC must display source matches inside the active fault diagnosis");
+  assert.match(diagnostics, /CODE-SPECIFIC OEM REFERENCE/,
+    "DCC must distinguish a code-specific OEM reference from general search results");
+  assert.match(diagnostics, /POSSIBLE SOURCE MATCH — NOT YET VERIFIED/,
+    "DCC must label public search results as unverified leads");
+  assert.match(diagnostics, /WHAT TO CHECK \/ MEASURE/,
+    "DCC must surface the concrete check/test target from each diagnostic step");
+  assert.match(diagnostics, /WHERE \/ HOW TO CHECK/,
+    "DCC must surface the method/location guidance from each diagnostic step");
+  assert.doesNotMatch(diagnostics, /FIND PUBLIC OEM BULLETINS/,
+    "Public source discovery must not remain buried in the fault-entry accordion");
+
   // Guard the Learning Center's highest-risk interactive paths against silent regressions.
   const learning = await readFile(join(root, "learning.html"), "utf8");
   for (const system of ["electrical", "engine", "aftertreatment", "transmission", "differential", "summary"]) {
