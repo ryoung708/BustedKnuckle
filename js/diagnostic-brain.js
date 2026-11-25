@@ -117,7 +117,8 @@ function recommendationEvidence(record = {}, steps = [], recommendation = {}) {
       if (latest) explanation += " The latest saved details are shown below; they are not treated as a completed test result.";
     }
   } else if (recommendation.state === "review") {
-    explanation = "The recorded workflow has reached a review point. Confirm the physical cause, repair and repeat-test evidence before closing the case.";
+    explanation = clean(recommendation.action) ||
+      "The recorded workflow has reached a review point. Confirm the physical cause, repair and repeat-test evidence before closing the case.";
   } else if (latest) {
     explanation = "The latest recorded finding is from " + latest.stepTitle + ": " +
       (latest.observation || "details recorded without a selected observation") + "." +
@@ -338,13 +339,14 @@ function powertrainRecommendation(record, steps) {
     );
   }
   if(step.id==="p205b_result"){
-    if(/one or more listed yellow UQLS faults returned active\/confirmed|returned active\/confirmed/.test(choice)) return {
-      stepId:step.id,reason:"One or more of the nine listed yellow UQLS faults returned active/confirmed after the prescribed repeat test.",
-      action:"The applicable Mack CBR supports UQLS replacement at this point. Confirm the VIN/variant still matches the bulletin and use the current Mack Impact procedure plus TSB 258-040 for sensor replacement and wire routing. Record the before/after scan results.",
+    if(/(?:one or more|the) (?:of the )?(?:nine )?listed yellow UQLS faults returned active\\/confirmed|yellow faults returned|yellow UQLS faults returned/.test(choice)) return {
+      stepId:step.id,title:"Replace DEF Level / UQLS sensor",
+      reason:"One or more of the nine yellow UQLS faults returned after the prescribed repeat test.",
+      action:"RECOMMENDATION: Replace the DEF Level / UQLS sensor. The Mack CBR 2107-22 replacement criteria are met because a listed yellow UQLS fault returned active/confirmed after the prescribed repeat checks. Confirm the VIN, chassis variant and emissions generation remain within the bulletin scope. Follow the current Mack Impact replacement procedure and TSB 258-040 for sensor replacement and wire routing. Save the before-and-after scan results. This is a bulletin-directed repair recommendation; verify the repair with the prescribed post-repair checks.",
       state:"review"
     };
     if(/none of the nine listed yellow UQLS faults returned active|did not return active/.test(choice)) return {
-      stepId:step.id,reason:"None of the nine listed yellow UQLS faults returned active after the prescribed repeat test.",
+      stepId:step.id,title:"No UQLS replacement indicated",reason:"None of the nine listed yellow UQLS faults returned active after the prescribed repeat test.",
       action:"Do not replace the UQLS under this procedure. Save the final scan report and release/continue service according to the shop's verification process.",
       state:"review"
     };
@@ -415,7 +417,7 @@ export function analyzeDiagnosticCase(caseRecord = {}, steps = [], options = {})
     version:2,engine:"shared-core-with-specialist-adapters",system,
     specialist:specialistFor(system),status,workflowId:caseRecord.workflowId || "",
     recommendation:recommendation ? {
-      stepId:recommendation.stepId,stepTitle:current?.title || recommendation.stepId,
+      stepId:recommendation.stepId,stepTitle:recommendation.title || current?.title || recommendation.stepId,
       reason:recommendation.reason,action:recommendation.action,state:recommendation.state || "next",
       explanation:recommendationContext.explanation,latestFinding:recommendationContext.latestFinding,
       evidenceTrail:recommendationContext.evidenceTrail
