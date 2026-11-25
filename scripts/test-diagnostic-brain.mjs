@@ -137,13 +137,15 @@ assert.equal(measuredNoChoice.recommendation.state,"hold");
 const p016fCase = {
   workflowId:"fault_guidance_p016f",
   vehicle:{make:"Mack",model:"Anthem",year:"2020",engine:"MP8",emissions:"US17+OBD16"},
-  complaint:"P016F00 common-rail fuel pressure fault"
+  complaint:"P016F00 common-rail fuel pressure fault",
+  entries:{scan:{faultCodes:[{code:"P016F00",status:"active",controller:"EMS"}]}}
 };
 const p016fPlan = getP016F00Guidance({code:"P016F00"},p016fCase);
 assert.ok(p016fPlan);
 const lowSideFail = analyzeDiagnosticCase({
   ...p016fCase,
   entries:{
+    scan:{faultCodes:[{code:"P016F00",status:"active",controller:"EMS"}]},
     p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
     p016f_low_side:{choice:"Low-side pressure below OEM specification"}
   }
@@ -155,6 +157,7 @@ assert.match(lowSideFail.recommendation.action,/transfer-pump output/i);
 const lowSidePass = analyzeDiagnosticCase({
   ...p016fCase,
   entries:{
+    scan:{faultCodes:[{code:"P016F00",status:"active",controller:"EMS"}]},
     p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
     p016f_low_side:{choice:"Low-side pressure meets OEM specification under the fault conditions"}
   }
@@ -174,7 +177,7 @@ const lowSideRetestPass = analyzeDiagnosticCase({
 },p016fPlan.steps);
 assert.equal(lowSideRetestPass.recommendation.stepId,"p016f_high_side");
 
-const k010Codes = [{code:"P0087-00"},{code:"P016F-00"},{code:"P228F-00"}];
+const k010Codes = [{code:"P0087-00",status:"active"},{code:"P016F-00",status:"active"},{code:"P228F-00",status:"active"}];
 const k010EligibleCase = {
   ...p016fCase,
   vehicle:{...p016fCase.vehicle,model:"AN"},
@@ -189,9 +192,44 @@ const k010Ready = analyzeDiagnosticCase(k010EligibleCase,k010Plan.steps);
 assert.equal(k010Ready.recommendation.stepId,"p016f_cbr_filter");
 assert.equal(k010Ready.recommendation.state,"next");
 
+// The selected K010/non-K010 branch must agree with attached codes and their status.
+const p009bActiveCase={...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"active"},{code:"P009B-13",status:"active"}]},p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"}}};
+const p009bActiveDecision=analyzeDiagnosticCase(p009bActiveCase,getP016F00Guidance({code:"P016F00"},p009bActiveCase).steps);
+assert.equal(p009bActiveDecision.recommendation.stepId,"p016f_confirm");
+assert.equal(p009bActiveDecision.recommendation.state,"hold");
+assert.match(p009bActiveDecision.recommendation.reason,/diagnosed before continuing the related P016F pressure path/i);
+assert.match(p009bActiveDecision.recommendation.action,/do not apply K94743326 pinouts/i);
+
+const p009b2019Case={...p016fCase,vehicle:{...p016fCase.vehicle,year:"2019"},entries:{scan:{faultCodes:[{code:"P016F00",status:"active"},{code:"P009B-13",status:"active"}]},p016f_confirm:{choice:"P009B-13 is also active"}}};
+const p009b2019Decision=analyzeDiagnosticCase(p009b2019Case,getP016F00Guidance({code:"P016F00"},p009b2019Case).steps);
+assert.equal(p009b2019Decision.recommendation.state,"hold");
+assert.match(p009b2019Decision.recommendation.action,/K94743326 scope/i);
+
+const p009bUnattached=analyzeDiagnosticCase({...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"active"}]},p016f_confirm:{choice:"P009B-13 is also active"}}},p016fPlan.steps);
+assert.equal(p009bUnattached.recommendation.state,"hold");
+assert.match(p009bUnattached.recommendation.reason,/no attached P009B-13 fault/i);
+
+const p009bUnknownCase={...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"active"},{code:"P009B-13",status:"unknown"}]},p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"}}};
+const p009bUnknownDecision=analyzeDiagnosticCase(p009bUnknownCase,getP016F00Guidance({code:"P016F00"},p009bUnknownCase).steps);
+assert.equal(p009bUnknownDecision.recommendation.state,"hold");
+
+const p009bInactiveCase={...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"active"},{code:"P009B-13",status:"inactive"}]},p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"}}};
+const p009bInactiveDecision=analyzeDiagnosticCase(p009bInactiveCase,getP016F00Guidance({code:"P016F00"},p009bInactiveCase).steps);
+assert.equal(p009bInactiveDecision.recommendation.stepId,"p016f_low_side");
+
+const k010ContradictionCase={...k010EligibleCase,entries:{scan:{faultCodes:k010Codes},p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"}}};
+const k010Contradiction=analyzeDiagnosticCase(k010ContradictionCase,getP016F00Guidance({code:"P016F00"},k010ContradictionCase).steps);
+assert.equal(k010Contradiction.recommendation.stepId,"p016f_confirm");
+assert.equal(k010Contradiction.recommendation.state,"hold");
+
+const k010UnknownCase={...k010EligibleCase,entries:{scan:{faultCodes:k010Codes.map(item=>({...item,status:item.code==="P228F-00"?"unknown":"active"}))},p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}}};
+const k010Unknown=analyzeDiagnosticCase(k010UnknownCase,getP016F00Guidance({code:"P016F00"},k010UnknownCase).steps);
+assert.equal(k010Unknown.recommendation.stepId,"p016f_confirm");
+assert.equal(k010Unknown.recommendation.state,"hold");
+
 const missingCodesCase = {
   ...p016fCase,
-  entries:{p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}}
+  entries:{scan:{faultCodes:[{code:"P016F00",status:"active"}]},p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}}
 };
 const missingCodesPlan = getP016F00Guidance({code:"P016F00"},missingCodesCase);
 const missingCodesDecision = analyzeDiagnosticCase(missingCodesCase,missingCodesPlan.steps);

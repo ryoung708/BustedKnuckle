@@ -778,24 +778,66 @@ function powertrainRecommendation(record, steps) {
   // Mack P016F00 CBR gates: a coexisting P009B-13 takes priority; K010 filter checks
   // are only prescribed when the code combination and vehicle applicability are confirmed.
   if(step.id==="p016f_confirm"){
-    if(/P009B-13 is also active/i.test(choice)) return hold(
-      "P009B-13 is present with P016F00; Mack CBR K94743326 says diagnose the EPRV circuit fault first.",
-      "Pause this P016F00 sequence. Follow the applicable K94743326 procedure for the confirmed chassis/emissions: inspect the EMS EA-to-VC1-to-EPRV wiring and connector, perform the specified de-energized continuity checks, repair any open/high resistance, or follow the bulletin's replacement direction when no wiring issue is found. Then verify whether P016F00 remains."
+    const attachedFaults=Object.values(record.entries||{}).flatMap(item=>Array.isArray(item?.faultCodes)?item.faultCodes:[]);
+    const normalizeCode=value=>clean(value).toUpperCase().replace(/[^A-Z0-9]/g,"");
+    const statusesFor=code=>attachedFaults.filter(item=>normalizeCode(item.code)===code).map(item=>clean(item.status).toLowerCase());
+    const statusKnown=statuses=>statuses.length>0&&statuses.every(status=>["active","inactive","intermittent"].includes(status));
+    const statusActive=statuses=>statuses.some(status=>status==="active"||status==="intermittent");
+    const p016fStatuses=statusesFor("P016F00");
+    if(!statusKnown(p016fStatuses)) return hold(
+      "P016F-00 is not attached with a confirmed active/inactive status.",
+      "Attach P016F-00 to this case and set its status from the current scan report. Do not use the P016F-specific path while the code identity or status is unknown."
     );
+    if(!statusActive(p016fStatuses)) return hold(
+      "P016F-00 is only recorded as inactive/historic.",
+      "Confirm whether the original fault is still present or can be reproduced. Use the stored event data and current PTT Guided Diagnostics; do not treat a historic code as a current active fuel-pressure failure."
+    );
+    const p009bStatuses=statusesFor("P009B13");
+    if(p009bStatuses.length&&!statusKnown(p009bStatuses)) return hold(
+      "P009B-13 is attached, but its active/inactive status is unknown.",
+      "Verify P009B-13 status in the current controller scan before choosing the P016F path. If active or intermittent, diagnose the EPRV circuit first under the applicable K94743326 scope."
+    );
+    const p009bActive=statusActive(p009bStatuses);
+    const vehicle=record.vehicle||{};
+    const p009bYear=Number(vehicle.year||0);
+    const p009bEngine=[vehicle.engine,vehicle.engineModel,vehicle.engineMake].filter(Boolean).join(" ").toUpperCase();
+    const p009bEmissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
+    const k947Eligible=clean(vehicle.make).toLowerCase().includes("mack")&&p009bYear>=2018&&p009bYear<=2019&&/\b(?:MP7|MP8|11L|13L)\b/i.test(p009bEngine)&&/US17\+OBD(16|18)/.test(p009bEmissions);
+    const p009bHoldReason="P009B-13 is active/intermittent and must be diagnosed before continuing the related P016F pressure path.";
+    const p009bHoldAction=k947Eligible
+      ?"This vehicle appears to fit the historical Mack CBR K94743326 scope; verify VIN/build and exact emissions before using it. Follow its EPRV circuit procedure first, including the specified EMS EA-to-VC1-to-EPRV continuity checks. Do not continue directly to low-side or K010 filter checks."
+      :"Do not apply K94743326 pinouts or replacement instructions to this vehicle unless VIN/build confirms its 2018–2019, MP7/MP8 or 11L/13L, US17+OBD16/18 scope. Diagnose P009B-13 first using the current PTT Guided Diagnostics and the exact vehicle-specific procedure.";
+    if(p009bActive&&!/P009B-13 is also active/i.test(choice)) return hold(p009bHoldReason,p009bHoldAction);
+    if(/P009B-13 is also active/i.test(choice)){
+      if(!p009bActive) return hold(
+        "The selected result says P009B-13 is active, but no attached P009B-13 fault is confirmed active/intermittent.",
+        "Attach P009B-13 and verify its status in the current scan. If it is inactive/historic, do not select the active EPRV-precedence branch."
+      );
+      return hold(p009bHoldReason,p009bHoldAction);
+    }
     if(/vehicle, emissions or engine applicability unknown|outside listed cbr scope/i.test(choice))
       return hold("The Mack CBR applicability is not established.",
         "Stop before using the CBR-directed path. Confirm VIN, model, year, engine family/serial, common-rail configuration and emissions generation in PTT, then retrieve the current applicable Mack procedure.");
     if(/PTT version below 2\.7\.85|current guided diagnostics unavailable/i.test(choice))
       return hold("The published CBR guidance requires current Premium Tech Tool Guided Diagnostics.",
         "Update/confirm PTT 2.7.85 or newer as directed by K40914241, then load the latest guided diagnostic for the exact vehicle. Do not replace it with an invented generic pinpoint test.");
+    const k010Codes=["P008700","P016F00","P228F00"];
+    const k010Statuses=k010Codes.map(statusesFor);
+    const hasK010Combination=k010Statuses.every(statuses=>statuses.length>0);
+    const k010StatusesKnown=k010Statuses.every(statusKnown);
+    const k010Active=k010Statuses.every(statusActive);
     if(/P0087-00, P016F-00 and P228F-00 all present/i.test(choice)){
-      const attachedCodes = new Set(Object.values(record.entries || {}).flatMap(item =>
-        Array.isArray(item?.faultCodes) ? item.faultCodes.map(fault =>
-          clean(fault.code).toUpperCase().replace(/[^A-Z0-9]/g,"")) : []));
-      const hasK010Combination = ["P008700","P016F00","P228F00"].every(code=>attachedCodes.has(code));
       if(!hasK010Combination) return hold(
         "The selected CBR option says all three trigger codes are present, but the complete P0087-00 / P016F-00 / P228F-00 set is not attached to this case.",
         "Attach the full scan-report fault set and confirm each code's controller and active/inactive status. Do not use the K01029637 filter inspection path until all three trigger codes are documented."
+      );
+      if(!k010StatusesKnown) return hold(
+        "One or more K01029637 trigger codes have an unknown status.",
+        "Confirm the current active/inactive status of P0087-00, P016F-00 and P228F-00 in the full PTT scan before selecting the CBR combination."
+      );
+      if(!k010Active) return hold(
+        "The three K01029637 trigger codes are attached, but the complete combination is not confirmed active/intermittent.",
+        "Review the current PTT scan and event data. Do not apply the K01029637 inspection based on inactive/historic codes; use the current guided procedure for the active fault set."
       );
       const vehicle = record.vehicle || {};
       const modelText = clean(vehicle.model || vehicle.chassis).toUpperCase();
@@ -810,12 +852,20 @@ function powertrainRecommendation(record, steps) {
           "The vehicle details entered in the case do not establish K01029637 applicability.",
           "Before using the CBR filter inspection, verify the Mack model code, model year (2018 or newer), MP7/MP8 or 11L/13L engine family, and US17+OBD16/18/19 emissions from VIN/build data. If any item is outside scope or unknown, do not apply K01029637; use current PTT Guided Diagnostics and the correct vehicle-specific procedure."
         );
-      return go(steps.find(item=>item.id==="p016f_cbr_filter"),"The full K01029637 code combination is attached and the entered model/year/engine/emissions meet the bulletin's candidate scope; confirm common-rail configuration in the OEM build data.",
+      return go(steps.find(item=>item.id==="p016f_cbr_filter"),"The full K01029637 code combination is attached with active/intermittent status and the entered model/year/engine/emissions meet the bulletin's candidate scope; confirm common-rail configuration in the OEM build data.",
         "Follow CBR K01029637 only after the VIN/build confirms common-rail configuration and exact applicability: inspect the fuel-tank vent filter and both hose connections, then remove and inspect the secondary fuel-filter lip seal. Photograph the required locations and attach them to the eService case.");
     }
-    if(/P016F-00 present; K01029637 combination not present/i.test(choice))
-      return go(steps[steps.findIndex(item=>item.id==="p016f_low_side")],"P016F00 is confirmed but the K01029637 three-code trigger is not present.",
-        "Use the latest applicable PTT Guided Diagnostics (K40914241) for this engine and emissions configuration. Begin with the specified low-side supply checks; do not apply the K01029637 lip-seal CBR as though its code combination were met.");
+    if(/P016F-00 present; K01029637 combination not present/i.test(choice)){
+      if(hasK010Combination&&k010StatusesKnown&&k010Active) return hold(
+        "All three K01029637 trigger codes are attached with active/intermittent status, but the selected result says the combination is not present.",
+        "Review the complete scan and select the K01029637 applicability option if the VIN/build scope is confirmed. Do not bypass the CBR trigger combination by selecting the low-side-only path."
+      );
+      if(k010Statuses.some(statuses=>statuses.length&&!statusKnown(statuses))) return hold(
+        "At least one K01029637 trigger code is attached with unknown status.",
+        "Confirm the active/inactive status of each attached trigger code in the current scan before declaring the CBR combination absent."
+      );
+      return go(steps[steps.findIndex(item=>item.id==="p016f_low_side")],"P016F00 is confirmed active/intermittent and the K01029637 three-code trigger is not present as an active combination.","Use the latest applicable PTT Guided Diagnostics (K40914241) for this engine and emissions configuration. Begin with the specified low-side supply checks; do not apply the K01029637 lip-seal CBR as though its code combination were met.");
+    }
   }
   if(step.id==="p016f_cbr_filter"){
     if(/inspection or required photos|incomplete/i.test(choice))
