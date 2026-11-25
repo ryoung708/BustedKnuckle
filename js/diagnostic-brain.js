@@ -338,7 +338,7 @@ function powertrainRecommendation(record, steps) {
         "The controller scan is incomplete.",
         "Restore communication with the missing controller(s), verify diagnostic-tool connection and repeat the complete scan. Do not treat an incomplete scan as no-fault evidence."
       );
-      if(/active faults reviewed; no primary cause established|only inactive \\/ historic faults|no relevant faults found after complete scan/i.test(choice))
+      if(/active faults reviewed; no primary cause established|only inactive \/ historic faults|no relevant faults found after complete scan/i.test(choice))
         return go(steps.find(item=>item.id==="data_review"),"The available scan has been reviewed and no uninvestigated primary active fault remains.","Compare live data directly related to the complaint using the exact vehicle/engine/emissions specifications and original operating conditions.");
     }
     if(step.id==="data_review"){
