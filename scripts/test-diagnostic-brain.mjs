@@ -54,6 +54,22 @@ assert.deepEqual(missingVehicle.vehicleContext.missing,["make","model","engine"]
 assert.equal(missingVehicle.specialist.id,"wiringhound");
 assert.match(missingVehicle.limitations.join(" "),/Vehicle context is incomplete/);
 
+const engineLowPowerSystem = analyzeDiagnosticCase({
+  workflowId:"engine_power_loss",
+  vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},
+  complaint:"Low engine power under load with an engine derate",
+  entries:{}
+},powertrainSteps);
+assert.equal(engineLowPowerSystem.specialist.id,"powertrain");
+
+const vehiclePowerLossSystem = analyzeDiagnosticCase({
+  workflowId:"power_loss",
+  vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},
+  complaint:"Complete vehicle electrical power loss",
+  entries:{}
+},powertrainSteps);
+assert.equal(vehiclePowerLossSystem.specialist.id,"wiringhound");
+
 const powertrain = analyzeDiagnosticCase({
   workflowId:"crank_no_start",
   vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},

@@ -96,7 +96,7 @@ export const workflows = {
       {id:"verify",title:"Confirm root cause",instruction:"Document the confirmed cause, repair and successful restart verification. Preserve before/after measurements.",choices:["Cause and repair verified","Repair pending verification","Cause unconfirmed"],terminal:true}
     ]
   },
-  power_loss: {
+  engine_power_loss: {
     title:"Low power / derate",category:"Engine performance",
     caution:"Use engine-specific limits and OEM procedures. Do not substitute generic boost, fuel pressure or temperature thresholds.",
     steps:[

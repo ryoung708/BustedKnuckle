@@ -147,8 +147,8 @@ try {
     "DCC must surface the method/location guidance from each diagnostic step");
   assert.doesNotMatch(diagnostics, /FIND PUBLIC OEM BULLETINS/,
     "Public source discovery must not remain buried in the fault-entry accordion");
-  const diagnosticEngine = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
-  const celWorkflow = diagnosticEngine.slice(diagnosticEngine.indexOf("check_engine_light:"), diagnosticEngine.indexOf("\n  }", diagnosticEngine.indexOf("check_engine_light:")));
+  const dccWorkflowEngineText = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
+  const celWorkflow = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("check_engine_light:"), dccWorkflowEngineText.indexOf("\n  }", dccWorkflowEngineText.indexOf("check_engine_light:")));
   assert.match(celWorkflow, /Verify the Check Engine Light and attach fault codes/,
     "Check Engine Light workflow must begin by verifying the lamp and capturing faults");
   assert.match(celWorkflow, /add or import every relevant .*fault code/i,
@@ -186,6 +186,13 @@ try {
     "All known related OEM references must be visible in the fault research panel");
   assert.match(diagnostics, /Open broader web search/,
     "A zero-result public index search must provide a broader search fallback");
+
+  // DCC engine low-power and WiringHound whole-vehicle power loss must use distinct workflow IDs.
+  const dccComplaintEngineText = await readFile(join(root, "js/diagnostic-complaint-engine.js"), "utf8");
+  assert.match(dccWorkflowEngineText, /engine_power_loss:\s*\{/);
+  assert.match(dccComplaintEngineText, /workflowId:\s*"engine_power_loss"/);
+  assert.match(diagnostics, /row\?\.workflowId==="power_loss"\?\{\.\.\.row,workflowId:"engine_power_loss"\}/);
+  assert.match(diagnostics, /normalizeLegacyDcc=item=>item\?\.workflowId==="power_loss"&&item\.product!=="IronKnuckle WiringHound"/);
 
   // Public OEM source discovery must distinguish zero matches from provider failure and retain fallback diagnostics.
   const publicSearch = await readFile(join(root, "supabase/functions/public-oem-search/index.ts"), "utf8");
