@@ -51,4 +51,94 @@ const groundPass=analyzeDiagnosticCase({
 assert.equal(groundPass.recommendation.stepId,"engine_speed_timing_signal");
 assert.equal(groundPass.recommendation.state,"next");
 assert.match(groundPass.recommendation.action,/Monitor engine RPM/);
+// Explicit shutdown workflow branching: faults, signal dropouts and unverified repairs must hold.
+assert.ok(unexpectedShutdownWorkflow.steps.every(step=>step.test&&step.prompt),"Every unexpected-shutdown step needs a test and method/location instruction");
+
+const architectureUnknown=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{engine_architecture:{choice:"Engine identified; control architecture still unknown"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(architectureUnknown.recommendation.stepId,"engine_architecture");
+assert.equal(architectureUnknown.recommendation.state,"hold");
+
+const timingFault=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{shutdown_fault_scan:{choice:"Relevant engine speed / timing / synchronization fault"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(timingFault.recommendation.stepId,"shutdown_fault_scan");
+assert.equal(timingFault.recommendation.state,"hold");
+assert.match(timingFault.recommendation.action,/matching OEM fault tree/i);
+
+const ecmPowerFault=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{shutdown_fault_scan:{choice:"ECM power, ignition, voltage or communication fault"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(ecmPowerFault.recommendation.state,"hold");
+assert.match(ecmPowerFault.recommendation.action,/WiringHound General Electrical/i);
+
+const timingDropout=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{engine_speed_timing_signal:{choice:"RPM / timing / synchronization drops out or becomes implausible"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(timingDropout.recommendation.stepId,"engine_speed_timing_signal");
+assert.equal(timingDropout.recommendation.state,"hold");
+
+const timingStable=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{engine_speed_timing_signal:{choice:"Signal remains stable through the shutdown event"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(timingStable.recommendation.stepId,"fuel_control_delivery");
+
+const timingHarnessFound=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{engine_speed_timing_signal:{choice:"Connector, terminal or harness defect physically found"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(timingHarnessFound.recommendation.stepId,"engine_speed_timing_signal");
+assert.equal(timingHarnessFound.recommendation.state,"hold");
+
+const timingHarnessRepaired=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{engine_speed_timing_signal:{choice:"Connector / harness defect repaired; signal retest passes"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(timingHarnessRepaired.recommendation.stepId,"shutdown_repair_verification");
+
+const fuelControlDropout=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{fuel_control_delivery:{choice:"Fuel-control command / actuation drops out"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(fuelControlDropout.recommendation.stepId,"fuel_control_delivery");
+assert.equal(fuelControlDropout.recommendation.state,"hold");
+
+const fuelStable=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{fuel_control_delivery:{choice:"Fuel-control and delivery remain stable within applicable criteria"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(fuelStable.recommendation.stepId,"fuel_control_delivery");
+assert.equal(fuelStable.recommendation.state,"hold");
+
+const fuelRepaired=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{fuel_control_delivery:{choice:"Fuel-control/delivery defect isolated and repaired; retest passes"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(fuelRepaired.recommendation.stepId,"shutdown_repair_verification");
+
+const symptomStillOccurs=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{shutdown_repair_verification:{choice:"Symptom still occurs"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(symptomStillOccurs.recommendation.stepId,"shutdown_repair_verification");
+assert.equal(symptomStillOccurs.recommendation.state,"hold");
+
+const retestIncomplete=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{shutdown_repair_verification:{choice:"Retest incomplete / original conditions not repeated"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(retestIncomplete.recommendation.state,"hold");
+
+const shutdownVerified=analyzeDiagnosticCase({
+  workflowId:"unexpected_shutdown",
+  entries:{shutdown_repair_verification:{choice:"Original shutdown condition no longer occurs; repair verified"}}
+},unexpectedShutdownWorkflow.steps);
+assert.equal(shutdownVerified.recommendation.state,"review");
+
 console.log("Unexpected-shutdown workflow and evidence-driven recommendation tests passed.");
