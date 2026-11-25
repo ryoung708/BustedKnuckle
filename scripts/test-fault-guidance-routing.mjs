@@ -27,6 +27,7 @@ const p016f = getP016F00Guidance({code:"P016F-00"}, {
   entries:{codes:{faultCodes:[{code:"P0087-00"},{code:"P016F-00"},{code:"P228F-00"}]}}
 });
 assert.ok(p016f);
+assert.equal(p016f.caseFlags.k010Candidate,true,"Mack Anthem should resolve to the listed AN model family");
 assert.match(p016f.sourceReference,/K01029637/);
 assert.match(p016f.sourceUrl,/10153480/);
 assert.equal(p016f.steps[1].id,"p016f_cbr_filter");
