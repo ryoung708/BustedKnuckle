@@ -70,7 +70,7 @@ workflows.unexpected_shutdown=unexpectedShutdownWorkflow;
 import {findSimilarDiagnosticCases} from "./js/diagnostic-similar-cases.js";
 import {analyzeDiagnosticCase} from "./js/diagnostic-brain.js";
 import {interpretFaultCode,searchFaultSuggestions} from "./js/fault-interpreter.js";
-import {classifyFaultGuidanceSystem} from "./js/fault-guidance-routing.js";
+import {classifyFaultGuidanceSystem,getP016F00Guidance} from "./js/fault-guidance-routing.js";
 import {extractFaultReport,parseFaultReportText,findFaultDuplicates} from "./js/fault-report-importer.js";
 import {saveFaultSubmission,exportFaultSubmissions,getFaultSubmissionCount} from "./js/fault-submissions.js";
 import {bindVehicleIdentity} from "./js/vehicle-identity-ui.js";
@@ -221,7 +221,7 @@ $("work").addEventListener("click",async event=>{
  }
 });
 function faultGuidancePlan(fault){
- const specific=getMackP205B64Guidance(fault,active?.vehicle);if(specific)return specific;
+ const specific=getMackP205B64Guidance(fault,active?.vehicle);if(specific)return specific;const p016f=getP016F00Guidance(fault,active?.vehicle);if(p016f)return p016f;
  const code=String(fault.code||"").toUpperCase(),manufacturer=String(active?.vehicle?.make||"").trim(),routing=classifyFaultGuidanceSystem(fault,manufacturer),description=String(fault.description||routing.description||"").toLowerCase(),controller=String(fault.controller||"");
  const text=code+" "+description+" "+controller;
  let family,title,first,instruction,choices,second,secondInstruction,third,thirdInstruction;
