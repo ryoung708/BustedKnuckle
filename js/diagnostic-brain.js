@@ -321,7 +321,7 @@ function powertrainRecommendation(record, steps) {
       );
       if(/controllers not communicating|scan incomplete/i.test(choice)) return hold(
         "The controller scan is incomplete; the available fault list may be misleading.",
-        "Restore communication with the missing controller(s), verify diagnostic-tool connection and power/ground as applicable, then repeat the full scan. Do not proceed as though no relevant faults exist."
+        "Restore communication with the missing controller(s), verify diagnostic-tool connection and power/ground as applicable, then repeat the full scan. Do not advance as though no relevant faults exist."
       );
       if(/active faults reviewed; none explain no-start|no relevant faults found/i.test(choice))
         return go(steps.find(item=>item.id==="enable"),"The available controller scan is complete and no primary no-start fault remains to be evaluated.","Check the start-enable state, cranking engine-speed signal, cam/crank synchronization and only the interlocks fitted to this vehicle. Record the source controller and actual live-data values.");
