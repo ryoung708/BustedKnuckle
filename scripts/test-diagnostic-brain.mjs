@@ -237,6 +237,58 @@ assert.equal(p205Excluded.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Excluded.recommendation.state,"hold");
 assert.match(p205Excluded.recommendation.action,/Stop this guided path/i);
 
+// Engine low-power/derate path must not confuse powertrain faults with vehicle electrical power loss.
+const lowPowerSteps=workflows.engine_power_loss.steps;
+const lowPowerBase={workflowId:"engine_power_loss",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"Low power / derate under load"};
+const lowPowerNoEvent=analyzeDiagnosticCase({...lowPowerBase,entries:{conditions:{choice:"Complaint not reproduced; no event data available"}}},lowPowerSteps);
+assert.equal(lowPowerNoEvent.recommendation.stepId,"conditions");
+assert.equal(lowPowerNoEvent.recommendation.state,"hold");
+
+const lowPowerEvent=analyzeDiagnosticCase({...lowPowerBase,entries:{conditions:{choice:"Complaint not reproduced; event data available"}}},lowPowerSteps);
+assert.equal(lowPowerEvent.recommendation.stepId,"codes");
+
+const lowPowerDerate=analyzeDiagnosticCase({...lowPowerBase,entries:{codes:{choice:"Active derate request identified; reason not isolated"}}},lowPowerSteps);
+assert.equal(lowPowerDerate.recommendation.stepId,"codes");
+assert.equal(lowPowerDerate.recommendation.state,"hold");
+assert.match(lowPowerDerate.recommendation.action,/requesting controller/i);
+
+const lowPowerScanClear=analyzeDiagnosticCase({...lowPowerBase,entries:{codes:{choice:"No active faults found after complete scan"}}},lowPowerSteps);
+assert.equal(lowPowerScanClear.recommendation.stepId,"airfuel");
+
+const lowPowerAir=analyzeDiagnosticCase({...lowPowerBase,entries:{airfuel:{choice:"Air-path discrepancy"}}},lowPowerSteps);
+assert.equal(lowPowerAir.recommendation.state,"hold");
+assert.match(lowPowerAir.recommendation.action,/charge-air leak/i);
+
+const lowPowerFuel=analyzeDiagnosticCase({...lowPowerBase,entries:{airfuel:{choice:"Fuel delivery discrepancy"}}},lowPowerSteps);
+assert.equal(lowPowerFuel.recommendation.state,"hold");
+assert.match(lowPowerFuel.recommendation.action,/low-pressure supply or high-pressure rail/i);
+
+const lowPowerSensor=analyzeDiagnosticCase({...lowPowerBase,entries:{airfuel:{choice:"Sensor plausibility issue"}}},lowPowerSteps);
+assert.equal(lowPowerSensor.recommendation.state,"hold");
+assert.match(lowPowerSensor.recommendation.action,/sensor power, ground, signal/i);
+
+const lowPowerAirFuelPass=analyzeDiagnosticCase({...lowPowerBase,entries:{airfuel:{choice:"No discrepancy identified"}}},lowPowerSteps);
+assert.equal(lowPowerAirFuelPass.recommendation.stepId,"exhaust");
+
+const lowPowerAftertreatment=analyzeDiagnosticCase({...lowPowerBase,entries:{exhaust:{choice:"Aftertreatment issue supported by data"}}},lowPowerSteps);
+assert.equal(lowPowerAftertreatment.recommendation.stepId,"exhaust");
+assert.equal(lowPowerAftertreatment.recommendation.state,"hold");
+assert.match(lowPowerAftertreatment.recommendation.action,/Aftertreatment Fault workflow/i);
+
+const lowPowerRestriction=analyzeDiagnosticCase({...lowPowerBase,entries:{exhaust:{choice:"Exhaust restriction suspected"}}},lowPowerSteps);
+assert.equal(lowPowerRestriction.recommendation.state,"hold");
+assert.match(lowPowerRestriction.recommendation.action,/restriction test/i);
+
+const lowPowerUnresolved=analyzeDiagnosticCase({...lowPowerBase,entries:{exhaust:{choice:"Values within specification but power loss unresolved"}}},lowPowerSteps);
+assert.equal(lowPowerUnresolved.recommendation.state,"hold");
+
+const lowPowerVerifyPending=analyzeDiagnosticCase({...lowPowerBase,entries:{verify:{choice:"Verification pending"}}},lowPowerSteps);
+assert.equal(lowPowerVerifyPending.recommendation.stepId,"verify");
+assert.equal(lowPowerVerifyPending.recommendation.state,"hold");
+
+const lowPowerVerified=analyzeDiagnosticCase({...lowPowerBase,entries:{verify:{choice:"Repair verified under load"}}},lowPowerSteps);
+assert.equal(lowPowerVerified.recommendation.state,"review");
+
 // Drivetrain path: active codes, data mismatches, physical findings and road-test safety must branch.
 const driveSteps=workflows.drivetrain_fault.steps;
 const driveBase={workflowId:"drivetrain_fault",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"Harsh transmission shift"};
