@@ -158,7 +158,7 @@ $("work").addEventListener("click",async event=>{
   if(!target||!workflows[target]){const message=document.createElement("p");message.className="caution";message.textContent="The original investigation could not be restored. Your fault-guidance results remain saved."; $("work").prepend(message);return}
   active.workflowId=target;
   stepIndex=Math.max(0,Math.min(active.returnStepIndex||0,workflows[target].steps.length-1));
-  delete active.returnWorkflowId;delete active.returnStepIndex;
+  delete active.returnWorkflowId;delete active.returnStepIndex;delete active.activeFaultId;
   saveCurrent();renderWork();
  }
 });
@@ -251,7 +251,7 @@ function renderWork(){
  $("work").innerHTML=
  '<section class="case-summary"><div class="case-summary-top"><strong>ACTIVE INVESTIGATION</strong><span class="status">'+safe((active.status||"in-progress").replaceAll("-"," ").toUpperCase())+'</span></div><div class="case-meta">'+safe(vehicle)+' · '+safe(flow.title)+'</div>'+(active.workflowGeneratedFromComplaint?'<div class="workflow-recommendation"><strong>PATH GENERATED FROM COMPLAINT</strong> — '+safe(active.workflowReason||'Automatic complaint classification')+'</div>':'')+'<div class="case-complaint"><b>Complaint:</b> '+safe(active.complaint||"Not recorded")+'</div>'+caseFaultsMarkup()+'<div class="case-progress-label"><span>'+recorded+' of '+flow.steps.length+' stages recorded</span><span>'+progress+'%</span></div><div class="progress" style="margin:6px 0 0"><i style="width:'+progress+'%"></i></div></section>'+
  '<div class="stephead"><div><div class="eyebrow">'+safe(flow.category)+'</div><div class="step-status '+(entry.choice?"":"pending")+'">'+(entry.choice?"RESULT RECORDED":"CURRENT TEST · ACTION REQUIRED")+'</div></div><span class="counter">STEP '+(stepIndex+1)+' / '+flow.steps.length+'</span></div>'+
- '<section class="step-focus"><div class="eyebrow">CURRENT DIAGNOSTIC TEST</div><h2>'+safe(step.title)+'</h2><p class="instruction">'+safe(step.instruction)+'</p><div class="test-hint">Use the exact vehicle-specific procedure and specification. Change one variable at a time.</div><div class="workflow-recommendation"><strong>IRONKNUCKLE DECISION</strong><p>'+safe(recommendation.action||recommendation.reason||"Record the actual observation before proceeding.")+'</p><small>'+safe(recommendation.reason||"Evidence is required before the next decision.")+'</small></div></section>'+
+ '<section class="step-focus"><div class="eyebrow">CURRENT DIAGNOSTIC TEST</div><h2>'+safe(step.title)+'</h2><p class="instruction">'+safe(step.instruction)+'</p></section>'+
  '<section class="step-result"><h3>WHAT DID YOU FIND?</h3><div class="choice-list">'+step.choices.map((c,i)=>'<label class="choice"><input type="radio" name="choice" value="'+safe(c)+'" '+(entry.choice===c?"checked":"")+'><span>'+safe(c)+'</span></label>').join("")+'</div></section>'+
  '<section class="capture-card"><h3>RECORD THE ACTUAL RESULT</h3><div class="field"><label for="measurements">Measurement / test conditions</label><textarea id="measurements" rows="2" placeholder="Example: 18.2 psi at idle, engine at operating temperature; test point...">'+safe(measurementText)+'</textarea></div><div class="small">Include units, operating state, test points and the applicable specification when relevant.</div></section>'+
  '<details class="details-card"><summary>ADD FAULT CODES / SCAN DATA</summary><div class="details-inner">'+faultCodeMarkup(entry,step.id)+'</div></details>'+
