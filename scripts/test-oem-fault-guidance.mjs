@@ -43,7 +43,7 @@ const result=analyzeDiagnosticCase({...base,entries:{
  p205b_result:{choice:"One or more listed yellow UQLS faults returned active/confirmed after repeat test"}
 }},steps);
 assert.equal(result.recommendation.state,"review");
-assert.match(result.recommendation.action,/UQLS replacement/i);
+assert.match(result.recommendation.action,/Replace the DEF Level \/ UQLS sensor/i);
 assert.equal(result.recommendation.stepTitle,"Replace DEF Level / UQLS sensor");
 const exactUiChoice=analyzeDiagnosticCase({...base,entries:{
  p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
