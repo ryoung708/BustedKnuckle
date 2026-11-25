@@ -313,28 +313,38 @@ function powertrainRecommendation(record, steps) {
   // Explicit branches for the Mack P205B64 applicability gate and final repeat test.
   // These decisions remain inside the shared recommendation engine.
   if(step.id==="p205b_applicability"){
-    if(/inactive|historic/.test(choice)) return {
-      stepId:step.id,reason:"P205B64 is not active/confirmed.",
-      action:"Do not troubleshoot or replace the UQLS under this active-fault procedure. Save the scan report and investigate only if the fault becomes active or another symptom requires diagnosis.",
+    if(/none of the listed yellow|inactive|historic/.test(choice)) return {
+      stepId:step.id,reason:"No listed yellow UQLS fault is active/confirmed.",
+      action:"Do not troubleshoot or replace the UQLS under CBR 2107-22. Save the scan report and use applicable guided diagnostics for any green codes or other symptoms.",
       state:"review"
     };
-    if(/AN\(4\)|PR\(4\)|unknown|stop/.test(choice)) return hold(
+    if(/AN\\(4\\)|PR\\(4\\)|unknown|stop/.test(choice)) return hold(
       "The 2026 Mack CBR applicability has not been established or this variant is excluded.",
-      "Stop this guided path. Confirm the VIN, exact chassis variant and emissions generation, then retrieve the applicable Mack procedure. Do not carry on with the CBR 2107-22 sequence."
+      "Stop this guided path. Confirm the VIN, exact chassis variant and emissions generation, then retrieve the applicable Mack procedure. Do not carry on with CBR 2107-22."
     );
-    if(/active\/confirmed and applicability verified/.test(choice)) return go(
-      steps[index+1],"The fault is active/confirmed and the truck was confirmed within the bulletin scope.",
+    if(/at least one listed yellow UQLS fault active\\/confirmed and applicability verified/i.test(choice)) return go(
+      steps[index+1],"At least one listed yellow UQLS fault is active/confirmed and the truck was confirmed within the bulletin scope.",
       "Inspect both UQLS harness connector halves for damaged pins/wires, corrosion and water intrusion."
     );
   }
+  if(step.id==="p205b_connector"){
+    if(/no pin, wire, corrosion or moisture damage found/i.test(choice)) return go(
+      steps[index+1],"The UQLS connector and harness inspection found no visible damage.",
+      "Proceed to DEF quality verification with Mack refractometer part 88890105. Compare the reading with the current Mack specification and record the actual result."
+    );
+    if(/damage, corrosion or water intrusion found/i.test(choice)) return hold(
+      "Physical damage or contamination was found at the UQLS connector or harness.",
+      "Stop the routine sequence. Photograph and localize the defect, inspect the affected terminals, seals and wiring, and follow applicable Mack repair procedure TSB 258-040 if replacement is required."
+    );
+  }
   if(step.id==="p205b_result"){
-    if(/returned active\/confirmed/.test(choice)) return {
-      stepId:step.id,reason:"P205B64 returned active/confirmed after the prescribed repeat test.",
+    if(/one or more listed yellow UQLS faults returned active\/confirmed|returned active\/confirmed/.test(choice)) return {
+      stepId:step.id,reason:"One or more of the nine listed yellow UQLS faults returned active/confirmed after the prescribed repeat test.",
       action:"The applicable Mack CBR supports UQLS replacement at this point. Confirm the VIN/variant still matches the bulletin and use the current Mack Impact procedure plus TSB 258-040 for sensor replacement and wire routing. Record the before/after scan results.",
       state:"review"
     };
-    if(/did not return active/.test(choice)) return {
-      stepId:step.id,reason:"P205B64 did not return active after the prescribed repeat test.",
+    if(/none of the nine listed yellow UQLS faults returned active|did not return active/.test(choice)) return {
+      stepId:step.id,reason:"None of the nine listed yellow UQLS faults returned active after the prescribed repeat test.",
       action:"Do not replace the UQLS under this procedure. Save the final scan report and release/continue service according to the shop's verification process.",
       state:"review"
     };
