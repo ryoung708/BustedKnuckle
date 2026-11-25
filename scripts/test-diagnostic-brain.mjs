@@ -159,6 +159,7 @@ assert.equal(lowSideRetestPass.recommendation.stepId,"p016f_high_side");
 const k010Codes = [{code:"P0087-00"},{code:"P016F-00"},{code:"P228F-00"}];
 const k010EligibleCase = {
   ...p016fCase,
+  vehicle:{...p016fCase.vehicle,model:"AN"},
   entries:{
     scan:{faultCodes:k010Codes},
     p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}
