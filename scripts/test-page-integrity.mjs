@@ -148,9 +148,9 @@ try {
   const dccWorkflowEngineText = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
   const crankWorkflowText = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("crank_no_start:"), dccWorkflowEngineText.indexOf("engine_power_loss:"));
   assert.match(crankWorkflowText, /id:"codes"[\s\S]*?test:/);
-  assert.match(crankWorkflowText, /id:"fuel_isolation"[\\s\\S]*?optional:true/);
-  assert.match(crankWorkflowText, /id:"fuel_retest"[\\s\\S]*?optional:true/);
-  assert.match(crankWorkflowText, /id:"verify"[\\s\\S]*?terminal:true/);
+  assert.match(crankWorkflowText, /id:"fuel_isolation"[\s\S]*?optional:true/);
+  assert.match(crankWorkflowText, /id:"fuel_retest"[\s\S]*?optional:true/);
+  assert.match(crankWorkflowText, /id:"verify"[\s\S]*?terminal:true/);
   assert.doesNotMatch(diagnostics, /FIND PUBLIC OEM BULLETINS/,
     "Public source discovery must not remain buried in the fault-entry accordion");
   const celWorkflow = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("check_engine_light:"), dccWorkflowEngineText.indexOf("\n  }", dccWorkflowEngineText.indexOf("check_engine_light:")));
