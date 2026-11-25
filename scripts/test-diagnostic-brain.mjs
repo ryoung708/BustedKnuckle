@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { analyzeDiagnosticCase } from "../js/diagnostic-brain.js";
+import { getP016F00Guidance } from "../js/fault-guidance-routing.js";
 
 const electricalSteps = [
   {id:"baseline",title:"Baseline"},
@@ -113,5 +114,62 @@ assert.match(normalFuel.recommendation.action,/exact vehicle-specific procedure/
 const measuredNoChoice = analyzeDiagnosticCase({...noStartBase,currentStep:1,entries:{codes:{measurements:{actual:"Several codes stored"}}}},crankSteps);
 assert.equal(measuredNoChoice.recommendation.stepId,"codes");
 assert.equal(measuredNoChoice.recommendation.state,"hold");
+
+// Mack P016F00 low-side outcomes must branch into isolation and a mandatory retest.
+const p016fCase = {
+  workflowId:"fault_guidance_p016f",
+  vehicle:{make:"Mack",model:"Anthem",year:"2020",engine:"MP8",emissions:"US17+OBD16"},
+  complaint:"P016F00 common-rail fuel pressure fault"
+};
+const p016fPlan = getP016F00Guidance({code:"P016F00"},p016fCase);
+assert.ok(p016fPlan);
+const lowSideFail = analyzeDiagnosticCase({
+  ...p016fCase,
+  entries:{
+    p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
+    p016f_low_side:{choice:"Low-side pressure below OEM specification"}
+  }
+},p016fPlan.steps);
+assert.equal(lowSideFail.recommendation.stepId,"p016f_low_side_isolate");
+assert.equal(lowSideFail.recommendation.state,"next");
+assert.match(lowSideFail.recommendation.action,/transfer-pump output/i);
+
+const lowSidePass = analyzeDiagnosticCase({
+  ...p016fCase,
+  entries:{
+    p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
+    p016f_low_side:{choice:"Low-side pressure meets OEM specification under the fault conditions"}
+  }
+},p016fPlan.steps);
+assert.equal(lowSidePass.recommendation.stepId,"p016f_high_side");
+assert.equal(lowSidePass.recommendation.state,"next");
+
+const lowSideCorrected = analyzeDiagnosticCase({
+  ...p016fCase,
+  entries:{p016f_low_side_isolate:{choice:"Defect confirmed and corrected"}}
+},p016fPlan.steps);
+assert.equal(lowSideCorrected.recommendation.stepId,"p016f_low_side_retest");
+
+const lowSideRetestPass = analyzeDiagnosticCase({
+  ...p016fCase,
+  entries:{p016f_low_side_retest:{choice:"Low-side pressure meets OEM specification under the original fault conditions"}}
+},p016fPlan.steps);
+assert.equal(lowSideRetestPass.recommendation.stepId,"p016f_high_side");
+
+const lowSideIncomplete = analyzeDiagnosticCase({
+  ...p016fCase,
+  entries:{p016f_low_side:{choice:"Low-side test incomplete / specification unavailable"}}
+},p016fPlan.steps);
+assert.equal(lowSideIncomplete.recommendation.stepId,"p016f_low_side");
+assert.equal(lowSideIncomplete.recommendation.state,"hold");
+assert.match(lowSideIncomplete.recommendation.action,/Do not treat missing data as a pass/i);
+
+const pendingLowSideRepair = analyzeDiagnosticCase({
+  ...p016fCase,
+  entries:{p016f_low_side_isolate:{choice:"Defect identified; repair pending"}}
+},p016fPlan.steps);
+assert.equal(pendingLowSideRepair.recommendation.stepId,"p016f_low_side_isolate");
+assert.equal(pendingLowSideRepair.recommendation.state,"hold");
+assert.match(pendingLowSideRepair.recommendation.action,/Do not proceed to high-side testing/i);
 
 console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");
