@@ -121,7 +121,11 @@ try {
   assert.match(wiringPage, /clearVehiclePrefill/,
     "WiringHound must let technicians clear a prefilled vehicle");
   const wiringWorkspace = await readFile(join(root, "js/wiringhound-workspace.js"), "utf8");
-  assert.match(wiringWorkspace, /applyVehiclePrefill\(\)/,\n    "WiringHound must restore shared vehicle details on intake");\n  assert.match(wiringWorkspace, /rememberVehiclePrefill\(\)/,\n    "WiringHound must remember vehicle details for the next case");\n  assert.match(wiringWorkspace, /bindVehicleIdentity\(\)/,
+  assert.match(wiringWorkspace, /applyVehiclePrefill\(\)/,
+    "WiringHound must restore shared vehicle details on intake");
+  assert.match(wiringWorkspace, /rememberVehiclePrefill\(\)/,
+    "WiringHound must remember vehicle details for the next case");
+  assert.match(wiringWorkspace, /bindVehicleIdentity\(\)/,
     "WiringHound must initialize the shared vehicle and engine selectors");
   assert.match(diagnostics, /bindVehicleIdentity\(\)/,
     "DCC must initialize the same shared vehicle and engine selectors");
