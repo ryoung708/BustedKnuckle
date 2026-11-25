@@ -311,6 +311,37 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // Mack P016F00 CBR gates: a coexisting P009B-13 takes priority; K010 filter checks
+  // are only prescribed when the code combination and vehicle applicability are confirmed.
+  if(step.id==="p016f_confirm"){
+    if(/P009B-13 is also active/i.test(choice)) return hold(
+      "P009B-13 is present with P016F00; Mack CBR K94743326 says diagnose the EPRV circuit fault first.",
+      "Pause this P016F00 sequence. Follow the applicable K94743326 procedure for the confirmed chassis/emissions: inspect the EMS EA-to-VC1-to-EPRV wiring and connector, perform the specified de-energized continuity checks, repair any open/high resistance, or follow the bulletin's replacement direction when no wiring issue is found. Then verify whether P016F00 remains."
+    );
+    if(/vehicle, emissions or engine applicability unknown|outside listed cbr scope/i.test(choice))
+      return hold("The Mack CBR applicability is not established.",
+        "Stop before using the CBR-directed path. Confirm VIN, model, year, engine family/serial, common-rail configuration and emissions generation in PTT, then retrieve the current applicable Mack procedure.");
+    if(/PTT version below 2\.7\.85|current guided diagnostics unavailable/i.test(choice))
+      return hold("The published CBR guidance requires current Premium Tech Tool Guided Diagnostics.",
+        "Update/confirm PTT 2.7.85 or newer as directed by K40914241, then load the latest guided diagnostic for the exact vehicle. Do not replace it with an invented generic pinpoint test.");
+    if(/P0087-00, P016F-00 and P228F-00 all present/i.test(choice))
+      return go(steps[index+1],"The full K01029637 code combination and applicability were confirmed.",
+        "Follow CBR K01029637 now: inspect the fuel-tank vent filter and both hose connections, then remove and inspect the secondary fuel-filter lip seal. Photograph the required locations and attach them to the eService case.");
+    if(/P016F-00 present; K01029637 combination not present/i.test(choice))
+      return go(steps[steps.findIndex(item=>item.id==="p016f_low_side")],"P016F00 is confirmed but the K01029637 three-code trigger is not present.",
+        "Use the latest applicable PTT Guided Diagnostics (K40914241) for this engine and emissions configuration. Begin with the specified low-side supply checks; do not apply the K01029637 lip-seal CBR as though its code combination were met.");
+  }
+  if(step.id==="p016f_cbr_filter"){
+    if(/inspection or required photos|incomplete/i.test(choice))
+      return hold("The CBR inspection and documentation are incomplete.",
+        "Complete the vent-filter and connection inspection, inspect the secondary-filter lip seal, photograph both vent connections, filter top and date code, and attach findings to the eService case before proceeding.");
+    if(/restriction or damage found|lip seal damaged/i.test(choice))
+      return hold("A CBR inspection abnormality was found; the fuel supply/filter condition needs to be resolved and documented.",
+        "Record the exact defect and photos in the Mack eService case. Follow the CBR and current Mack parts/service direction for correction. After the repair, repeat the prescribed fuel-pressure diagnostics; do not assume the defect alone proves the entire cause.");
+    if(/both cbr inspection areas checked; no defect found/i.test(choice))
+      return go(steps[steps.findIndex(item=>item.id==="p016f_low_side")],"The CBR vent-filter and secondary-filter lip-seal inspections found no defect.",
+        "Continue with current PTT Guided Diagnostics. Verify low-side supply pressure under the fault conditions using the exact engine-specific specification.");
+  }
   // P016F00: a verified low-side pass must advance to high-side rail-pressure testing.
   if(step.id==="p016f_low_side"){
     if(/low-side pressure meets oem specification under the fault conditions/i.test(choice))
