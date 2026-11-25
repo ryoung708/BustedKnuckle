@@ -145,6 +145,7 @@ assert.ok(p016fPlan);
 const lowSideFail = analyzeDiagnosticCase({
   ...p016fCase,
   entries:{
+    scan:{faultCodes:[{code:"P016F00",status:"active",controller:"EMS"}]},
     p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
     p016f_low_side:{choice:"Low-side pressure below OEM specification"}
   }
@@ -156,6 +157,7 @@ assert.match(lowSideFail.recommendation.action,/transfer-pump output/i);
 const lowSidePass = analyzeDiagnosticCase({
   ...p016fCase,
   entries:{
+    scan:{faultCodes:[{code:"P016F00",status:"active",controller:"EMS"}]},
     p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
     p016f_low_side:{choice:"Low-side pressure meets OEM specification under the fault conditions"}
   }
@@ -197,7 +199,7 @@ assert.equal(p009bActiveDecision.recommendation.stepId,"p016f_confirm");
 assert.equal(p009bActiveDecision.recommendation.state,"hold");
 assert.match(p009bActiveDecision.recommendation.action,/diagnosed before the related P016F pressure path/i);
 
-const p009bUnattached=analyzeDiagnosticCase({...p016fCase,entries:{p016f_confirm:{choice:"P009B-13 is also active"}}},p016fPlan.steps);
+const p009bUnattached=analyzeDiagnosticCase({...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"active"}]},p016f_confirm:{choice:"P009B-13 is also active"}}},p016fPlan.steps);
 assert.equal(p009bUnattached.recommendation.state,"hold");
 assert.match(p009bUnattached.recommendation.action,/no attached P009B-13 fault/i);
 
