@@ -43,5 +43,22 @@ const result=analyzeDiagnosticCase({...base,entries:{
  p205b_result:{choice:"One or more listed yellow UQLS faults returned active/confirmed after repeat test"}
 }},steps);
 assert.equal(result.recommendation.state,"review");
-assert.match(result.recommendation.action,/UQLS replacement/i);
+assert.match(result.recommendation.action,/Replace the DEF Level \/ UQLS sensor/i);
+assert.equal(result.recommendation.stepTitle,"Replace DEF Level / UQLS sensor");
+const exactUiChoice=analyzeDiagnosticCase({...base,entries:{
+ p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
+ p205b_cycle:{choice:"Repeat sequence completed; one or more listed yellow UQLS faults returned active/confirmed"},
+ p205b_result:{choice:"The yellow faults returned"}
+}},steps);
+assert.equal(exactUiChoice.recommendation.state,"review");
+assert.equal(exactUiChoice.recommendation.stepTitle,"Replace DEF Level / UQLS sensor");
+assert.match(exactUiChoice.recommendation.action,/RECOMMENDATION: Replace the DEF Level \/ UQLS sensor/i);
+assert.match(exactUiChoice.recommendation.explanation,/RECOMMENDATION: Replace the DEF Level \/ UQLS sensor/i);
+const noYellowReturn=analyzeDiagnosticCase({...base,entries:{
+ p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
+ p205b_cycle:{choice:"Repeat sequence completed; none of the nine listed yellow UQLS faults returned active"},
+ p205b_result:{choice:"None of the yellow faults returned"}
+}},steps);
+assert.equal(noYellowReturn.recommendation.state,"review");
+assert.match(noYellowReturn.recommendation.action,/Do not replace the UQLS/i);
 console.log("Mack CBR 2107-22 all-nine-code workflow tests passed.");
