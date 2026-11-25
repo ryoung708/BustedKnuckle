@@ -49,7 +49,7 @@ export function applyVehiclePrefill() {
   let filled = 0;
   for (const [id,key] of Object.entries(FIELD_MAP)) {
     const field = document.getElementById(id);
-    if (field && !clean(field.value) && clean(profile[key])) { field.value = profile[key]; filled++; }
+    if (field && !clean(field.value) && clean(profile[key])) { field.value = profile[key]; field.dispatchEvent(new Event("input", {bubbles:true})); filled++; }
   }
   const note = document.getElementById("vehiclePrefillStatus");
   if (note) {
@@ -72,7 +72,7 @@ export function rememberVehiclePrefill() {
 export function bindVehiclePrefillControls() {
   const clear = document.getElementById("clearVehiclePrefill");
   clear?.addEventListener("click", () => {
-    for (const id of Object.keys(FIELD_MAP)) { const field=document.getElementById(id); if(field) field.value=""; }
+    for (const id of Object.keys(FIELD_MAP)) { const field=document.getElementById(id); if(field) { field.value=""; field.dispatchEvent(new Event("input", {bubbles:true})); } }
     try { localStorage.removeItem(STORAGE_KEY); } catch {}
     const note=document.getElementById("vehiclePrefillStatus");
     if(note) { note.textContent="Saved vehicle details cleared. Enter the current truck."; note.hidden=false; }
