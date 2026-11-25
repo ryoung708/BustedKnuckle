@@ -148,7 +148,7 @@ try {
   assert.doesNotMatch(diagnostics, /FIND PUBLIC OEM BULLETINS/,
     "Public source discovery must not remain buried in the fault-entry accordion");
   const dccWorkflowEngineText = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
-  const celWorkflow = diagnosticEngine.slice(diagnosticEngine.indexOf("check_engine_light:"), diagnosticEngine.indexOf("\n  }", diagnosticEngine.indexOf("check_engine_light:")));
+  const celWorkflow = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("check_engine_light:"), dccWorkflowEngineText.indexOf("\n  }", dccWorkflowEngineText.indexOf("check_engine_light:")));
   assert.match(celWorkflow, /Verify the Check Engine Light and attach fault codes/,
     "Check Engine Light workflow must begin by verifying the lamp and capturing faults");
   assert.match(celWorkflow, /add or import every relevant .*fault code/i,
@@ -188,7 +188,6 @@ try {
     "A zero-result public index search must provide a broader search fallback");
 
   // DCC engine low-power and WiringHound whole-vehicle power loss must use distinct workflow IDs.
-  const diagnosticEngine = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
   const dccComplaintEngineText = await readFile(join(root, "js/diagnostic-complaint-engine.js"), "utf8");
   assert.match(dccWorkflowEngineText, /engine_power_loss:\s*\{/);
   assert.match(dccComplaintEngineText, /workflowId:\s*"engine_power_loss"/);
