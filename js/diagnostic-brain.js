@@ -322,7 +322,7 @@ function powertrainRecommendation(record, steps) {
       "The 2026 Mack CBR applicability has not been established or this variant is excluded.",
       "Stop this guided path. Confirm the VIN, exact chassis variant and emissions generation, then retrieve the applicable Mack procedure. Do not carry on with CBR 2107-22."
     );
-    if(/at least one listed yellow UQLS fault active\\/confirmed and applicability verified/i.test(choice)) return go(
+    if(/at least one listed yellow UQLS fault active\/confirmed and applicability verified/i.test(choice)) return go(
       steps[index+1],"At least one listed yellow UQLS fault is active/confirmed and the truck was confirmed within the bulletin scope.",
       "Inspect both UQLS harness connector halves for damaged pins/wires, corrosion and water intrusion."
     );
