@@ -261,6 +261,8 @@ assert.equal(fuelRetestPass.recommendation.stepId,"air_exhaust");
 const fuelRetestFail = analyzeDiagnosticCase({...crankBase,entries:{fuel_retest:{choice:"Supply remains outside OEM specification"}}},crankPlan);
 assert.equal(fuelRetestFail.recommendation.stepId,"fuel_isolation");
 
+const airRepair = analyzeDiagnosticCase({...crankBase,entries:{air_exhaust:{choice:"Concern isolated and corrected; prerequisites now pass"}}},crankPlan);
+assert.equal(airRepair.recommendation.stepId,"verify");
 const noCause = analyzeDiagnosticCase({...crankBase,entries:{air_exhaust:{choice:"No abnormality identified"}}},crankPlan);
 assert.equal(noCause.recommendation.stepId,"air_exhaust");
 assert.equal(noCause.recommendation.state,"hold");
