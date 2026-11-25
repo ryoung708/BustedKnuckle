@@ -230,7 +230,7 @@ function faultGuidancePlan(fault){
  const code=String(fault.code||"").toUpperCase(),manufacturer=String(active?.vehicle?.make||"").trim(),routing=classifyFaultGuidanceSystem(fault,manufacturer),description=String(fault.description||routing.description||"").toLowerCase(),controller=String(fault.controller||"");
  const text=code+" "+description+" "+controller;
  let family,title,first,instruction,choices,secondChoices,second,secondInstruction,third,thirdInstruction;
- if(/SPN\\s*63[89]|U0[0-9A-F]{4}|communication|data link|message|update rate|erratic|intermittent/.test(text)){
+ if(/SPN\s*63[89]|U0[0-9A-F]{4}|communication|data link|message|update rate|erratic|intermittent/.test(text)){
   family="Network / communication";title="Communication or data integrity fault";
   first="Confirm the network complaint";instruction="Record which controllers are affected, exact active and inactive network faults, source addresses, key state and whether the issue is constant or intermittent. Identify recent add-on equipment or repairs.";
   choices=["Multiple controllers affected","One controller / branch affected","Intermittent or event-related","Fault is inactive / not currently present"];
