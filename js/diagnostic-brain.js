@@ -801,8 +801,8 @@ function powertrainRecommendation(record, steps) {
     const vehicle=record.vehicle||{};
     const p009bYear=Number(vehicle.year||0);
     const p009bEngine=[vehicle.engine,vehicle.engineModel,vehicle.engineMake].filter(Boolean).join(" ").toUpperCase();
-    const p009bEmissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\\s/g,"");
-    const k947Eligible=clean(vehicle.make).toLowerCase().includes("mack")&&p009bYear>=2018&&p009bYear<=2019&&/\\b(?:MP7|MP8|11L|13L)\\b/i.test(p009bEngine)&&/US17\\+OBD(16|18)/.test(p009bEmissions);
+    const p009bEmissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
+    const k947Eligible=clean(vehicle.make).toLowerCase().includes("mack")&&p009bYear>=2018&&p009bYear<=2019&&/\b(?:MP7|MP8|11L|13L)\b/i.test(p009bEngine)&&/US17\+OBD(16|18)/.test(p009bEmissions);
     const p009bHoldReason="P009B-13 is active/intermittent and must be diagnosed before continuing the related P016F pressure path.";
     const p009bHoldAction=k947Eligible
       ?"This vehicle appears to fit the historical Mack CBR K94743326 scope; verify VIN/build and exact emissions before using it. Follow its EPRV circuit procedure first, including the specified EMS EA-to-VC1-to-EPRV continuity checks. Do not continue directly to low-side or K010 filter checks."
