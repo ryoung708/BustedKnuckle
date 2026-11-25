@@ -219,6 +219,8 @@ function bulletinSummaryMarkup(data){
  '<div class="bulletin-item"><h3>Applicability · '+(data.applicability||[]).length+' extracted lines</h3><ul>'+((data.applicability||[]).map(line=>'<li>'+esc(line.text)+' <span class="muted">(p. '+esc(line.sourcePage??"?")+')</span></li>').join("")||"<li>Not identified</li>")+'</ul></div>'+
  '<div class="bulletin-item"><h3>Exclusions · '+(data.exclusions||[]).length+' extracted lines</h3><ul>'+((data.exclusions||[]).map(line=>'<li>'+esc(line.text)+' <span class="muted">(p. '+esc(line.sourcePage??"?")+')</span></li>').join("")||"<li>Not identified</li>")+'</ul></div>'+
  '<div class="bulletin-item" style="grid-column:1/-1"><h3>Procedure · '+(data.procedureSteps||[]).length+' extracted steps</h3><ol>'+steps+'</ol></div>'+
+ '<div class="bulletin-item" style="grid-column:1/-1"><h3>Results / decision criteria</h3><ul>'+((data.evaluation||[]).map(line=>'<li>'+esc(line.text)+' <span class="muted">(p. '+esc(line.sourcePage??"?")+')</span></li>').join("")||"<li>Not identified</li>")+'</ul></div>'+
+ '<div class="bulletin-item" style="grid-column:1/-1"><h3>Related references</h3><ul>'+((data.references||[]).map(ref=>'<li>'+esc(ref.reference)+' <span class="muted">(p. '+esc(ref.sourcePage??"?")+')</span></li>').join("")||"<li>None identified</li>")+'</ul></div>'+
  '<div class="bulletin-item" style="grid-column:1/-1"><h3>Warnings / review flags</h3>'+warnings+'</div>';
 }
 async function openBulletinReader(id){
