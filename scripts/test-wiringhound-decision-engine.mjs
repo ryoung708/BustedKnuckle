@@ -67,4 +67,27 @@ assert.equal(recommendNextStep(record("general_electrical","control","Command is
 assert.equal(recommendNextStep(record("general_electrical","load","Ground path abnormal"),lighting).stepId,"drop");
 assert.equal(recommendNextStep(record("general_electrical","load_review","Load passes with known-good feed"),lighting).stepId,"harness");
 
+// J1939 isolation and evidence gates: every branch must be completed or explicitly held.
+assert.equal(recommendNextStep(record("j1939_network","resistance","Resistance is unstable or changes with harness movement"),j1939).stepId,"segment");
+assert.equal(recommendNextStep(record("j1939_network","addon","No change when add-on devices are removed"),j1939).stepId,"module_isolation");
+assert.equal(recommendNextStep(record("j1939_network","addon_review","No issue found in add-on branch"),j1939).stepId,"module_isolation");
+assert.equal(recommendNextStep(record("j1939_network","module_isolation","Dropout remained / no clear change"),j1939).stepId,"all_isolated");
+assert.equal(recommendNextStep(record("j1939_network","module_branch_review","No branch fault / no defect"),j1939).stepId,"all_isolated");
+assert.equal(recommendNextStep(record("j1939_network","all_isolated","Unable to verify complete isolation"),j1939).state,"hold");
+assert.equal(recommendNextStep(record("j1939_network","segment","Unable to isolate clearly"),j1939).state,"hold");
+assert.equal(recommendNextStep(record("j1939_network","harness","Intermittent change; exact location not isolated"),j1939).state,"hold");
+assert.equal(recommendNextStep(record("j1939_network","verify","Repair not yet verified"),j1939).state,"hold");
+
+// Light INOP branch matrix: a pass, failed test and incomplete result must not share the same route.
+assert.equal(recommendNextStep(record("light_inop","protection","Protection output missing / device opens"),lighting).stepId,"protection_review");
+assert.equal(recommendNextStep(record("light_inop","protection","Input and output feed appear correct"),lighting).stepId,"control");
+assert.equal(recommendNextStep(record("light_inop","control","Command is present and changes correctly"),lighting).stepId,"load");
+assert.equal(recommendNextStep(record("light_inop","control_inputs","Input missing / incorrect state"),lighting).state,"hold");
+assert.equal(recommendNextStep(record("light_inop","load","Supply missing at load"),lighting).stepId,"protection");
+assert.equal(recommendNextStep(record("light_inop","load","Connector concern found"),lighting).stepId,"harness");
+assert.equal(recommendNextStep(record("light_inop","drop","Excessive drop on positive/ground path"),lighting).stepId,"harness");
+assert.equal(recommendNextStep(record("light_inop","drop","Both positive and ground paths within limits"),lighting).stepId,"load_review");
+assert.equal(recommendNextStep(record("light_inop","load_review","Load failed on known-good supply and ground"),lighting).stepId,"verify");
+assert.equal(recommendNextStep(record("light_inop","harness","No physical fault found"),lighting).stepId,"drop");
+
 console.log("WiringHound decision engine tests passed.");
