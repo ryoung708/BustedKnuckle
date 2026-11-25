@@ -4,7 +4,7 @@ import { parseDuckDuckGoResults, parseBingRssResults, dedupeSearchResults } from
 const ddg = `
 <div class="result">
   <a rel="nofollow" href="https://duckduckgo.com/l/?uddg=https%3A%2F%2Foemdtc.com%2Ftsb%2F10153480%2F" class="result__a">Mack CBR K01029637</a>
-  <a class="result__snippet">Common rail fuel pressure diagnostic bulletin</a>
+  <a class="result__snippet">Common rail fuel pressure diagnostic bulletin applies to P016F00</a>
 </div>`;
 const ddgResults = parseDuckDuckGoResults(ddg, "Mack P016F00");
 assert.equal(ddgResults.length, 1);
