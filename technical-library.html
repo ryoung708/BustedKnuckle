@@ -142,6 +142,17 @@ function renderDocuments(){
  box.querySelectorAll("[data-delete]").forEach(button=>button.addEventListener("click",()=>deleteDocument(button.dataset.delete)));
 }
 
+function pdfTextLines(items){
+ const lines=[];let current=[],lastY=null;
+ for(const item of items||[]){
+  const value=String(item.str||"").trim();if(!value)continue;
+  const y=Number(item.transform?.[5]);
+  if(current.length&&Number.isFinite(y)&&Number.isFinite(lastY)&&Math.abs(y-lastY)>3){lines.push(current.join(" "));current=[];}
+  current.push(value);if(Number.isFinite(y))lastY=y;
+ }
+ if(current.length)lines.push(current.join(" "));
+ return lines.join("\n");
+}
 async function extractFileText(file, onProgress=()=>{}){
  const type=file.type||"";
  const isPdf=type==="application/pdf"||file.name?.toLowerCase().endsWith(".pdf");
@@ -164,7 +175,7 @@ async function extractFileText(file, onProgress=()=>{}){
    let line="", method="text";
    if(isPdf){
     const page=await pdf.getPage(pageNo),content=await page.getTextContent();
-    line=content.items.map(item=>item.str||"").join(" ").replace(/\s+/g," ").trim();
+    line=pdfTextLines(content.items).trim();
     if(line.length<35){
      try{
       if(!worker)worker=await createWorker("eng",1,{logger:message=>{if(message.status==="recognizing text")onProgress("OCR page "+pageNo+" of "+pageCount+" · "+Math.round((message.progress||0)*100)+"%");}});
@@ -173,7 +184,7 @@ async function extractFileText(file, onProgress=()=>{}){
       canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
       await page.render({canvasContext:context,viewport}).promise;
       const recognized=await worker.recognize(canvas);
-      line=(recognized.data.text||"").replace(/\s+/g," ").trim();
+      line=(recognized.data.text||"").trim();
       method="ocr";ocrCount++;
       canvas.width=0;canvas.height=0;
       if(!line)failedOcr++;
