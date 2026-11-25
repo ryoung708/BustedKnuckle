@@ -191,8 +191,12 @@ try {
   const dccComplaintEngineText = await readFile(join(root, "js/diagnostic-complaint-engine.js"), "utf8");
   assert.match(dccWorkflowEngineText, /engine_power_loss:\s*\{/);
   assert.match(dccComplaintEngineText, /workflowId:\s*"engine_power_loss"/);
-  assert.match(diagnostics, /row\?\.workflowId==="power_loss"\?\{\.\.\.row,workflowId:"engine_power_loss"\}/);
-  assert.match(diagnostics, /normalizeLegacyDcc=item=>item\?\.workflowId==="power_loss"&&item\.product!=="IronKnuckle WiringHound"/);
+  assert.match(diagnostics, /function normalizeDccSession\(row\)/);
+  assert.match(diagnostics, /next\.workflowId==="power_loss"/);
+  assert.match(diagnostics, /normalizeLegacyDcc=item=>normalizeDccSession\(item\)/);
+  assert.match(diagnostics, /currentStep>=3\?currentStep\+2:currentStep/);
+  assert.match(diagnostics, /step\.optional\?"OPTIONAL BRANCH"/);
+  assert.match(diagnostics, /requiredSteps\.filter\(s=>active\.entries\[s\.id\]\?\.choice\)/);
 
   // Public OEM source discovery must distinguish zero matches from provider failure and retain fallback diagnostics.
   const publicSearch = await readFile(join(root, "supabase/functions/public-oem-search/index.ts"), "utf8");
