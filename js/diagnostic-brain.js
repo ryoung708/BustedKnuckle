@@ -321,7 +321,7 @@ function powertrainRecommendation(record, steps) {
       return go(steps.find(item=>item.id==="engine_architecture"),"The shutdown behavior has been characterized.","Identify the exact engine serial/model, fuel system and electronic or mechanical control architecture from the data plate and authorized service information.");
     }
     if(step.id==="engine_architecture"){
-      if(/engine and electronic control system positively identified|mechanical fuel\\/control architecture positively identified/i.test(choice))
+      if(/engine and electronic control system positively identified|mechanical fuel\/control architecture positively identified/i.test(choice))
         return go(steps.find(item=>item.id==="shutdown_fault_scan"),"The engine and control architecture are positively identified.","Scan the correct engine controller and relevant vehicle controllers before clearing any faults. Save event data and note whether the ECM remains online during shutdown.");
       if(/control architecture still unknown|service information unavailable/i.test(choice)) return hold(
         "The exact engine control architecture or authorized service information is not confirmed.",
@@ -329,7 +329,7 @@ function powertrainRecommendation(record, steps) {
       );
     }
     if(step.id==="shutdown_fault_scan"){
-      if(/relevant engine speed \\/ timing \\/ synchronization fault/i.test(choice)) return hold(
+      if(/relevant engine speed \/ timing \/ synchronization fault/i.test(choice)) return hold(
         "An engine speed/timing/synchronization fault is present and needs its own fault-specific diagnosis.",
         "Attach the exact code, controller, status and event data. Follow the matching OEM fault tree and correlate the fault timestamp with the shutdown before moving to power/ground or fuel tests."
       );
@@ -337,7 +337,7 @@ function powertrainRecommendation(record, steps) {
         "The ECM power/ignition/voltage/communication path is implicated.",
         "Use WiringHound General Electrical or J1939 Network as appropriate. Verify ECM power, grounds, switched feeds and communication at the exact boundaries under load; do not condemn the ECM before its feeds and network are proven."
       );
-      if(/fuel-control \\/ shutdown-device fault/i.test(choice)) return hold(
+      if(/fuel-control \/ shutdown-device fault/i.test(choice)) return hold(
         "A fuel-control or shutdown-device fault is present.",
         "Use the confirmed engine/fuel-system architecture and the matching OEM fault tree to test command, supply and actual device response. Never bypass the shutdown device."
       );
@@ -361,7 +361,7 @@ function powertrainRecommendation(record, steps) {
       );
     }
     if(step.id==="engine_speed_timing_signal"){
-      if(/rpm \\/ timing \\/ synchronization drops out or becomes implausible/i.test(choice)) return hold(
+      if(/rpm \/ timing \/ synchronization drops out or becomes implausible/i.test(choice)) return hold(
         "The engine speed/timing/synchronization signal drops out or becomes implausible during the event.",
         "Identify the exact sensor type and use the OEM signal test while monitoring the event. Inspect the connector/harness for pin fit, corrosion, oil/water intrusion, rub-through and heat damage; do not apply generic resistance or pinout values."
       );
@@ -371,7 +371,7 @@ function powertrainRecommendation(record, steps) {
         "A connector, terminal or harness defect is visible but has not yet been repaired and retested.",
         "Localize the exact terminal or harness damage, complete the approved repair and repeat the same signal test through the original shutdown conditions. Do not replace the sensor unless the OEM test proves it failed."
       );
-      if(/connector \\/ harness defect repaired; signal retest passes/i.test(choice))
+      if(/connector \/ harness defect repaired; signal retest passes/i.test(choice))
         return go(steps.find(item=>item.id==="shutdown_repair_verification"),"The timing-signal connector/harness defect was repaired and the signal retest passed.","Repeat the original shutdown conditions and verify the engine remains running, ECM communication stays stable and no relevant faults return.");
       if(/data unavailable or event not reproduced/i.test(choice)) return hold(
         "The timing/synchronization signal has not been evaluated through the shutdown event.",
@@ -379,7 +379,7 @@ function powertrainRecommendation(record, steps) {
       );
     }
     if(step.id==="fuel_control_delivery"){
-      if(/fuel-control command \\/ actuation drops out/i.test(choice)) return hold(
+      if(/fuel-control command \/ actuation drops out/i.test(choice)) return hold(
         "Fuel-control command or actual shutdown-device actuation drops out.",
         "Compare command and actual response at the device using the exact control architecture and wiring diagram. Verify its power, ground, command and mechanical response; never bypass a shutdown device."
       );
@@ -391,7 +391,7 @@ function powertrainRecommendation(record, steps) {
         "Fuel-control and delivery checks appear normal, but the shutdown cause remains unresolved.",
         "Do not advance to repair verification. Continue the exact OEM unexpected-shutdown pinpoint procedure using the event data and remaining engine-control/mechanical evidence; preserve what has been ruled out."
       );
-      if(/fuel-control\\/delivery defect isolated and repaired; retest passes/i.test(choice))
+      if(/fuel-control\/delivery defect isolated and repaired; retest passes/i.test(choice))
         return go(steps.find(item=>item.id==="shutdown_repair_verification"),"A fuel-control/delivery defect was isolated, repaired and retested successfully.","Repeat the original cold/warm and load conditions when safe, then confirm the shutdown does not recur and the controller scan remains clear.");
       if(/not tested|architecture or specification unavailable/i.test(choice)) return hold(
         "Fuel-control and delivery have not been tested using the confirmed system architecture.",
