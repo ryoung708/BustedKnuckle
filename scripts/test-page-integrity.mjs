@@ -164,6 +164,8 @@ try {
   assert.match(faultRouting, /Verify low-side fuel supply pressure/);
   assert.match(faultRouting, /compare commanded vs. actual rail pressure/i);
   assert.match(faultRouting, /Never loosen a high-pressure line/);
+  assert.match(diagnostics, /secondChoices=\["Supply pressure below Mack specification"/, "Fuel supply fault intake must retain its own first-step choices");
+  assert.match(diagnostics, /choices:secondChoices\|\|\[/, "Fuel supply follow-up choices must not overwrite the first step");
   assert.match(diagnostics, /getP016F00Guidance\(fault,active\)/,
     "Mack P016F00 must launch its staged fuel-pressure workflow");
   const diagnosticBrain = await readFile(join(root, "js/diagnostic-brain.js"), "utf8");
