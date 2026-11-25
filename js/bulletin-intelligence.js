@@ -68,6 +68,15 @@ export function parseBulletinIntelligence(extractedText, metadata = {}) {
     /^(?:vehicle\s+)?(?:applicability|application|models?\s+affected|affected\s+vehicles|applies\s+to|valid\s+for|models?\s*:)\s*/i,
     /^(?:not\s+applicable|does\s+not\s+apply|note:.*(?:does\s+not\s+apply|not\s+applicable)|exclusions?|excluded\s+models?|procedure|service\s+procedure|diagnostic\s+steps?|correction|repair|warranty|parts|labor|symptom|condition)\b/i
   );
+  for (const page of pages) {
+    for (const line of page.text.split(/\r?\n/)) {
+      const text = clean(line);
+      if (/\bUS\d{2}\+OBD\d{2}\b/i.test(text) &&
+          !applicability.some(item => item.sourcePage === page.page && item.text === text)) {
+        applicability.push({ text, sourcePage: page.page, excerpt: text });
+      }
+    }
+  }
   const exclusionHeadingPattern = /^(?:exclusions?|not\s+applicable|does\s+not\s+apply|excluded\s+models?|this\s+bulletin\s+does\s+not\s+apply)\s*[:\-–—]?\s*/i;
   const exclusions = collectSection(
     pages,
@@ -116,7 +125,7 @@ export function parseBulletinIntelligence(extractedText, metadata = {}) {
       procedureSteps[procedureSteps.length - 1].sourceExcerpt += " " + item.excerpt;
     }
   }
-  const faultCodes = [...new Set((allText.match(/\bP[0-9A-F]{4}[0-9A-F]{0,2}\b/gi) || []).map(code => code.toUpperCase()))];
+  const faultCodes = [...new Set((allText.match(/\b[PU][0-9A-F]{4,6}\b/gi) || []).map(code => code.toUpperCase()))];
   const references = [];
   for (const page of pages) {
     for (const match of page.text.matchAll(/\b(?:TSB|CBR|FSB|SB|bulletin|publication|document)\s*(?:No\.?|#|number)?\s*[:#-]?\s*([A-Z0-9][A-Z0-9-]{3,})/gi)) {
