@@ -314,6 +314,8 @@ function powertrainRecommendation(record, steps) {
   // After-treatment paths must distinguish fault priority, data anomalies and repair verification.
   if(record.workflowId==="aftertreatment_fault"){
     if(step.id==="complaint"){
+      if(/complaint not currently present; event data available/i.test(choice))
+        return go(steps.find(item=>item.id==="codes"),"The symptom is not active now, but stored event data is available for diagnosis.","Use the stored event/freeze-frame data and the operating conditions when the fault occurred. Capture the complete controller scan and correlate fault timestamps before selecting live tests.");
       if(/complaint not currently present/i.test(choice)) return hold(
         "The after-treatment complaint is not currently active or reproducible.",
         "Preserve the event/freeze-frame data, driver message and conditions when the fault occurred. Do not force a regeneration or advance on an unverified symptom; reproduce the complaint only under the OEM-approved conditions."
