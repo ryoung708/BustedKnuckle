@@ -10,7 +10,7 @@ const cases = [
   ["DPF regeneration will not complete and DEF warning is on", "dcc", "aftertreatment_fault"],
   ["Transmission is stuck in gear and will not shift", "dcc", "drivetrain_fault"],
   ["Engine cranks but will not start", "dcc", "crank_no_start"],
-  ["Low engine power under load with a derate", "dcc", "power_loss"],
+  ["Low engine power under load with a derate", "dcc", "engine_power_loss"],
   ["Check engine light is on with an active SPN/FMI", "dcc", "check_engine_light"],
   ["Driver reports an unusual engine noise", "dcc", "complaint_triage"],
   ["Truck will not start; cranking behavior is not known", "dcc", "complaint_triage"]
