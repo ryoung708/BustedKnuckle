@@ -102,8 +102,26 @@ try {
     "Changing engine manufacturer must clear a model that belongs to another manufacturer");
   assert.match(vehicleIdentity, /Select engine manufacturer first/,
     "Engine model intake must prompt for manufacturer before suggesting models");
+  const vehiclePrefill = await readFile(join(root, "js/vehicle-intake-prefill.js"), "utf8");
+  assert.match(vehiclePrefill, /ironknuckle\.vehicle-intake\.last\.v1/,
+    "DCC and WiringHound must share one local vehicle profile");
+  assert.match(vehiclePrefill, /function latestSavedCase\(\)/,
+    "Vehicle intake must be able to recover identity from saved diagnostic cases");
+  assert.match(vehiclePrefill, /function fromQuery\(\)/,
+    "Vehicle details passed between workspaces must be restored from the URL");
+  assert.match(vehiclePrefill, /field\.dispatchEvent\(new Event\("input"/,
+    "Prefilled values must refresh dependent engine suggestions and identity validation");
+  assert.match(diagnostics, /applyVehiclePrefill\(\)/);
+  assert.match(diagnostics, /rememberVehiclePrefill\(\)/);
+  assert.match(diagnostics, /vehiclePrefillStatus/);
+  assert.match(diagnostics, /clearVehiclePrefill/);
+  const wiringPage = await readFile(join(root, "wiringhound.html"), "utf8");
+  assert.match(wiringPage, /vehiclePrefillStatus/,
+    "WiringHound must explain when vehicle details were prefilled");
+  assert.match(wiringPage, /clearVehiclePrefill/,
+    "WiringHound must let technicians clear a prefilled vehicle");
   const wiringWorkspace = await readFile(join(root, "js/wiringhound-workspace.js"), "utf8");
-  assert.match(wiringWorkspace, /bindVehicleIdentity\(\)/,
+  assert.match(wiringWorkspace, /applyVehiclePrefill\(\)/,\n    "WiringHound must restore shared vehicle details on intake");\n  assert.match(wiringWorkspace, /rememberVehiclePrefill\(\)/,\n    "WiringHound must remember vehicle details for the next case");\n  assert.match(wiringWorkspace, /bindVehicleIdentity\(\)/,
     "WiringHound must initialize the shared vehicle and engine selectors");
   assert.match(diagnostics, /bindVehicleIdentity\(\)/,
     "DCC must initialize the same shared vehicle and engine selectors");
