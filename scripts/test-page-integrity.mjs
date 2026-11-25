@@ -105,6 +105,25 @@ try {
   assert.doesNotMatch(diagnostics, /FIND PUBLIC OEM BULLETINS/,
     "Public source discovery must not remain buried in the fault-entry accordion");
 
+  // The Technical Library must OCR scanned sources and expose a reviewable, page-cited bulletin draft.
+  const technicalLibrary = await readFile(join(root, "technical-library.html"), "utf8");
+  assert.match(technicalLibrary, /tesseract\.js@5/,
+    "Technical Library must use open-source browser OCR for scanned pages");
+  assert.match(technicalLibrary, /worker\.recognize\(canvas\)/,
+    "Scanned PDF pages must be rendered and passed to OCR");
+  assert.match(technicalLibrary, /\[Page \"\+pageNo/,
+    "Extracted text must preserve page markers");
+  assert.match(technicalLibrary, /parseBulletinIntelligence\(/,
+    "Technical Library must create structured bulletin extraction drafts");
+  assert.match(technicalLibrary, /data-bulletin=/,
+    "Technical bulletin records must expose the bulletin reader");
+  assert.match(technicalLibrary, /bulletin_intelligence/,
+    "Bulletin review drafts must be saved in the private review table");
+  assert.match(technicalLibrary, /sourcePage/,
+    "Bulletin steps must retain their source page references");
+  assert.match(technicalLibrary, /Approve verified bulletin/,
+    "Bulletin approval must require an explicit reviewer action");
+
   // Guard the Learning Center's highest-risk interactive paths against silent regressions.
   const learning = await readFile(join(root, "learning.html"), "utf8");
   for (const system of ["electrical", "engine", "aftertreatment", "transmission", "differential", "summary"]) {
