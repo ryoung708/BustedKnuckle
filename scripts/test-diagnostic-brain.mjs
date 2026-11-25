@@ -237,6 +237,67 @@ assert.equal(p205Excluded.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Excluded.recommendation.state,"hold");
 assert.match(p205Excluded.recommendation.action,/Stop this guided path/i);
 
+// After-treatment path: active faults, data anomalies, inspection and verification must branch explicitly.
+const afterSteps=workflows.aftertreatment_fault.steps;
+const afterBase={workflowId:"aftertreatment_fault",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"After-treatment derate"};
+const afterComplaintMissing=analyzeDiagnosticCase({...afterBase,entries:{complaint:{choice:"Complaint not currently present"}}},afterSteps);
+assert.equal(afterComplaintMissing.recommendation.stepId,"complaint");
+assert.equal(afterComplaintMissing.recommendation.state,"hold");
+
+const afterHistoricalData=analyzeDiagnosticCase({...afterBase,entries:{complaint:{choice:"Complaint not currently present; event data available"}}},afterSteps);
+assert.equal(afterHistoricalData.recommendation.stepId,"codes");
+const afterNoHistoricalData=analyzeDiagnosticCase({...afterBase,entries:{complaint:{choice:"Complaint not currently present; no event data available"}}},afterSteps);
+assert.equal(afterNoHistoricalData.recommendation.stepId,"complaint");
+assert.equal(afterNoHistoricalData.recommendation.state,"hold");
+
+const afterActiveCodes=analyzeDiagnosticCase({...afterBase,entries:{codes:{choice:"Active after-treatment fault(s) present; not yet diagnosed"}}},afterSteps);
+assert.equal(afterActiveCodes.recommendation.stepId,"codes");
+assert.equal(afterActiveCodes.recommendation.state,"hold");
+assert.match(afterActiveCodes.recommendation.action,/code-specific guided diagnostic/i);
+
+const afterScanIncomplete=analyzeDiagnosticCase({...afterBase,entries:{codes:{choice:"Scan incomplete / controller not communicating"}}},afterSteps);
+assert.equal(afterScanIncomplete.recommendation.state,"hold");
+assert.match(afterScanIncomplete.recommendation.action,/repeat the complete/i);
+
+const afterScanClear=analyzeDiagnosticCase({...afterBase,entries:{codes:{choice:"No relevant faults found after complete scan"}}},afterSteps);
+assert.equal(afterScanClear.recommendation.stepId,"data");
+
+const afterSensorConcern=analyzeDiagnosticCase({...afterBase,entries:{data:{choice:"Sensor or data plausibility concern"}}},afterSteps);
+assert.equal(afterSensorConcern.recommendation.stepId,"data");
+assert.equal(afterSensorConcern.recommendation.state,"hold");
+assert.match(afterSensorConcern.recommendation.action,/related sensors/i);
+
+const afterPressureConcern=analyzeDiagnosticCase({...afterBase,entries:{data:{choice:"Pressure / restriction evidence"}}},afterSteps);
+assert.equal(afterPressureConcern.recommendation.state,"hold");
+assert.match(afterPressureConcern.recommendation.action,/pressure tubes/i);
+
+const afterDosingConcern=analyzeDiagnosticCase({...afterBase,entries:{data:{choice:"Dosing / DEF system concern"}}},afterSteps);
+assert.equal(afterDosingConcern.recommendation.state,"hold");
+assert.match(afterDosingConcern.recommendation.action,/DEF\/dosing pinpoint procedure/i);
+
+const afterDataPass=analyzeDiagnosticCase({...afterBase,entries:{data:{choice:"Values appear within specification"}}},afterSteps);
+assert.equal(afterDataPass.recommendation.stepId,"inspection");
+
+const afterDefectFound=analyzeDiagnosticCase({...afterBase,entries:{inspection:{choice:"Electrical or connector concern found"}}},afterSteps);
+assert.equal(afterDefectFound.recommendation.stepId,"inspection");
+assert.equal(afterDefectFound.recommendation.state,"hold");
+assert.match(afterDefectFound.recommendation.action,/Localize the exact defect/i);
+
+const afterDefectCorrected=analyzeDiagnosticCase({...afterBase,entries:{inspection:{choice:"Defect isolated and corrected per OEM procedure"}}},afterSteps);
+assert.equal(afterDefectCorrected.recommendation.stepId,"verify");
+
+const afterNoDefect=analyzeDiagnosticCase({...afterBase,entries:{inspection:{choice:"No physical defect confirmed"}}},afterSteps);
+assert.equal(afterNoDefect.recommendation.stepId,"inspection");
+assert.equal(afterNoDefect.recommendation.state,"hold");
+
+const afterVerifyPending=analyzeDiagnosticCase({...afterBase,entries:{verify:{choice:"Repair complete; verification pending"}}},afterSteps);
+assert.equal(afterVerifyPending.recommendation.stepId,"verify");
+assert.equal(afterVerifyPending.recommendation.state,"hold");
+assert.match(afterVerifyPending.recommendation.action,/never force a regeneration/i);
+
+const afterVerified=analyzeDiagnosticCase({...afterBase,entries:{verify:{choice:"Repair and verification complete"}}},afterSteps);
+assert.equal(afterVerified.recommendation.state,"review");
+
 // Real crank/no-start workflow: explicit outcome routing and optional fuel branch stages.
 const crankPlan = workflows.crank_no_start.steps;
 const crankBase = {workflowId:"crank_no_start",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"Cranks but will not start"};

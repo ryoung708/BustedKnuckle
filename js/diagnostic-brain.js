@@ -311,6 +311,80 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // After-treatment paths must distinguish fault priority, data anomalies and repair verification.
+  if(record.workflowId==="aftertreatment_fault"){
+    if(step.id==="complaint"){
+      if(/complaint not currently present; event data available/i.test(choice))
+        return go(steps.find(item=>item.id==="codes"),"The symptom is not active now, but stored event data is available for diagnosis.","Use the stored event/freeze-frame data and the operating conditions when the fault occurred. Capture the complete controller scan and correlate fault timestamps before selecting live tests.");
+      if(/complaint not currently present/i.test(choice)) return hold(
+        "The after-treatment complaint is not currently active or reproducible.",
+        "Preserve the event/freeze-frame data, driver message and conditions when the fault occurred. Do not force a regeneration or advance on an unverified symptom; reproduce the complaint only under the OEM-approved conditions."
+      );
+      return go(steps.find(item=>item.id==="codes"),"The after-treatment complaint is defined and ready for controller-fault review.","Capture the complete scan, reporting controller, active/inactive status, occurrence count and freeze-frame/event data. Identify primary faults before selecting component tests.");
+    }
+    if(step.id==="codes"){
+      if(/active after-treatment fault\(s\) present; not yet diagnosed/i.test(choice)) return hold(
+        "Primary active after-treatment faults have not yet been evaluated.",
+        "Attach every relevant SPN/FMI or OEM code with controller and status. Run the matching code-specific guided diagnostic or current OEM fault tree before continuing this generic path. Do not treat active codes as a routine pass."
+      );
+      if(/multiple related faults; primary not identified/i.test(choice)) return hold(
+        "Multiple related faults are present and the primary fault has not been identified.",
+        "Review event order, occurrence counts, controller source and freeze-frame data. Separate primary faults from consequence codes and diagnose the primary code first; preserve all related codes in the case."
+      );
+      if(/scan incomplete|controller not communicating/i.test(choice)) return hold(
+        "The after-treatment fault picture is incomplete.",
+        "Restore communication with the missing controller(s), verify the diagnostic-tool connection and repeat the complete OEM-designated scan. Do not infer that no relevant faults exist from an incomplete scan."
+      );
+      if(/active faults reviewed; no primary cause established|only inactive \/ historic faults|no relevant faults found after complete scan/i.test(choice))
+        return go(steps.find(item=>item.id==="data"),"The complete scan has been reviewed and no uninvestigated primary active fault remains.","Compare the applicable sensor, pressure, dosing and regeneration data under the exact operating conditions and calibration-specific limits.");
+    }
+    if(step.id==="data"){
+      if(/sensor or data plausibility concern/i.test(choice)) return hold(
+        "One or more after-treatment sensor values may be implausible.",
+        "Compare the suspect value with related sensors and ambient/engine conditions using the OEM plausibility test. Verify the sensor's wiring, connector, supply and ground only as directed by the wiring diagram; record actual values and limits before considering replacement."
+      );
+      if(/pressure \/ restriction evidence/i.test(choice)) return hold(
+        "The data indicates a possible exhaust or after-treatment restriction.",
+        "Verify the differential-pressure sensor and both pressure tubes/ports for blockage, damage, leaks or incorrect routing. Compare the measured pressure with the exact OEM limit at the specified engine speed/load and regeneration state; do not condemn the DPF from a single reading."
+      );
+      if(/dosing \/ def system concern/i.test(choice)) return hold(
+        "The dosing/DEF data indicates a possible supply, quality or control concern.",
+        "Follow the engine-specific DEF/dosing pinpoint procedure. Verify fluid quality and level, tank temperature where relevant, commanded dosing, supply pressure and electrical control using OEM limits. Do not command a dosing test or replace the doser unless the procedure authorizes it."
+      );
+      if(/values appear within specification/i.test(choice))
+        return go(steps.find(item=>item.id==="inspection"),"The reviewed data is within the applicable specification, but the complaint still needs a physical/evidence check.","Inspect only the subsystem implicated by the original codes and event data. Look for exhaust leaks, tube/port issues, connector or harness damage, DEF supply condition or other documented evidence.");
+      if(/more data required/i.test(choice)) return hold(
+        "The after-treatment data review is incomplete.",
+        "Identify the missing parameter, operating condition or OEM specification. Capture the correct commanded/actual values and event data before moving to physical inspection."
+      );
+    }
+    if(step.id==="inspection"){
+      if(/defect isolated and corrected per oem procedure/i.test(choice))
+        return go(steps.find(item=>item.id==="verify"),"The indicated defect was isolated and corrected using the OEM procedure.","Perform only the authorized post-repair routine. Re-scan the relevant controllers and repeat the original operating conditions to confirm the fault does not return.");
+      if(/physical defect found|leak \/ restriction evidence found|electrical or connector concern found/i.test(choice)) return hold(
+        "A physical, leak/restriction or electrical concern has been observed but is not yet isolated and verified.",
+        "Localize the exact defect with the relevant OEM pinpoint test. Record the location, measurement and evidence; repair only the confirmed defect, then select the corrected option after the repair is complete. Do not replace a component based on a broad inspection finding."
+      );
+      if(/no physical defect confirmed/i.test(choice)) return hold(
+        "The inspection did not confirm a physical cause while the after-treatment complaint remains unresolved.",
+        "Do not close the case or replace parts by elimination. Return to the primary DTC's current OEM fault tree and complete the next discriminating test using the correct calibration-specific limits."
+      );
+      if(/inspection incomplete/i.test(choice)) return hold(
+        "The indicated subsystem inspection is incomplete.",
+        "Complete the OEM-directed inspection and record the actual location, condition and test result. An incomplete inspection is not a pass."
+      );
+    }
+    if(step.id==="verify"){
+      if(/post-repair fault remains active/i.test(choice)) return hold(
+        "The original or a related after-treatment fault remains active after repair.",
+        "Do not close the case as repaired. Preserve the post-repair scan and event data, then return to the applicable code-specific OEM diagnostic path to identify why the fault remains."
+      );
+      if(/repair complete; verification pending|cause remains unconfirmed|procedure inhibited \/ not authorized/i.test(choice)) return hold(
+        "The after-treatment repair has not been fully verified or the required service procedure is inhibited.",
+        "Keep the case open. Confirm all OEM enable conditions and complete the authorized post-repair verification; never force a regeneration or bypass an inhibit. Record the remaining unknowns."
+      );
+    }
+  }
   // Crank/no-start is a staged powertrain path. Failed checks stay focused;
   // optional fuel isolation/retest stages are required only when the low side fails.
   if(record.workflowId==="crank_no_start"){
