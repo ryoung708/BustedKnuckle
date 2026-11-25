@@ -55,28 +55,28 @@ const TECHNICAL_SOURCE_DOMAINS = [
   "wabco-customercentre.com", "meritor.com"
 ];
 function isTechnicalSourceHost(host=""){
-  const normalized=host.toLowerCase().replace(/^www\\./,"");
+  const normalized=host.toLowerCase().replace(/^www\./,"");
   return TECHNICAL_SOURCE_DOMAINS.some(domain=>normalized===domain||normalized.endsWith("."+domain));
 }
 function hasFaultCodeEvidence(item, code=""){
   const normalizedCode=String(code).toUpperCase().replace(/[^A-Z0-9]/g,"");
   if(!normalizedCode)return false;
-  const baseCode=normalizedCode.replace(/(\\d{2})$/,"");
+  const baseCode=normalizedCode.replace(/(\d{2})$/,"");
   const haystack=[item.title,item.snippet,item.url].join(" ").toUpperCase().replace(/[^A-Z0-9]/g," ");
-  const tokens=haystack.split(/\\s+/).filter(Boolean);
+  const tokens=haystack.split(/\s+/).filter(Boolean);
   return tokens.some(token=>token===normalizedCode||token===baseCode);
 }
 export function dedupeSearchResults(groups=[], code=""){
   const seen=new Set(),out=[];
   for(const item of groups.flat()){
     if(!item?.url)continue;
-    let host="";try{host=new URL(item.url).hostname.replace(/^www\\./,"");}catch{}
+    let host="";try{host=new URL(item.url).hostname.replace(/^www\./,"");}catch{}
     // Only technical-source domains with evidence of the requested fault code qualify.
     if(!isTechnicalSourceHost(host)||!hasFaultCodeEvidence(item,code))continue;
     const canonicalUrl=item.url.split("#")[0];
     if(seen.has(canonicalUrl))continue;
     seen.add(canonicalUrl);
-    const sourceType=/nhtsa\\.gov$/i.test(host)?"NHTSA-hosted":/oemdtc\\.com$/i.test(host)?"Public bulletin index":"Official OEM / supplier source";
+    const sourceType=/nhtsa\.gov$/i.test(host)?"NHTSA-hosted":/oemdtc\.com$/i.test(host)?"Public bulletin index":"Official OEM / supplier source";
     out.push({...item,url:canonicalUrl,host,sourceType});
   }
   return out.slice(0,12);
