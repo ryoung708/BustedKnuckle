@@ -147,6 +147,16 @@ try {
     "DCC must surface the method/location guidance from each diagnostic step");
   assert.doesNotMatch(diagnostics, /FIND PUBLIC OEM BULLETINS/,
     "Public source discovery must not remain buried in the fault-entry accordion");
+  const diagnosticEngine = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
+  const celWorkflow = diagnosticEngine.slice(diagnosticEngine.indexOf("check_engine_light:"), diagnosticEngine.indexOf("\n  }", diagnosticEngine.indexOf("check_engine_light:")));
+  assert.match(celWorkflow, /Verify the Check Engine Light and attach fault codes/,
+    "Check Engine Light workflow must begin by verifying the lamp and capturing faults");
+  assert.match(celWorkflow, /add or import every relevant .*fault code/i,
+    "First Check Engine Light step must direct technicians to attach or import fault codes");
+  assert.doesNotMatch(celWorkflow, /id:"codes",title:"Retrieve and document fault codes"/,
+    "Check Engine Light workflow must not repeat fault retrieval as a separate second step");
+  assert.match(diagnostics, /active\.workflowId==="check_engine_light"&&step\.id==="complaint"\?"open":""/,
+    "Fault code capture panel must open automatically on the first Check Engine Light step");
 
   // The Technical Library must OCR scanned sources and expose a reviewable, page-cited bulletin draft.
   const technicalLibrary = await readFile(join(root, "technical-library.html"), "utf8");
