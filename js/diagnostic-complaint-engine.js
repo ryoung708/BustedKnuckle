@@ -20,7 +20,7 @@ export function classifyDiagnosticComplaint(complaint = "") {
     return { route: "dcc", workflowId: "crank_no_start", label: "Cranks but will not start", reason: "The complaint describes a crank/no-start or difficult-start condition." };
   }
   if (match(/low power|lack of power|loss of engine power|engine derate|derate|poor acceleration|low boost|reduced torque|engine runs weak/)) {
-    return { route: "dcc", workflowId: "power_loss", label: "Low power / derate", reason: "The complaint describes reduced engine output, a derate or a power-under-load concern." };
+    return { route: "dcc", workflowId: "engine_power_loss", label: "Low power / derate", reason: "The complaint describes reduced engine output, a derate or a power-under-load concern." };
   }
   if (match(/check engine|engine warning|malfunction indicator|\bmil\b|\bcel\b|\bspn\b|\bfmi\b|engine fault code|active engine fault|inactive engine fault/)) {
     return { route: "dcc", workflowId: "check_engine_light", label: "Check Engine Light", reason: "The complaint identifies an engine warning or fault-code investigation." };
