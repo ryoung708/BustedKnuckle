@@ -17,48 +17,89 @@ export function classifyFaultGuidanceSystem(fault = {}, manufacturer = "") {
 }
 
 
-// Mack P016F00: evidence-first fuel-pressure progression. This is not an OEM
-// pinpoint test; exact engine, calibration, pressure limits and test points must
-// be confirmed in the applicable Mack/Volvo service information.
-export function getP016F00Guidance(fault = {}, vehicle = {}) {
+// Mack P016F00: CBR-aware common-rail fuel pressure guidance.
+// The public CBRs below are case-history / repair-information references;
+// current PTT Guided Diagnostics and exact vehicle applicability remain authoritative.
+export function getP016F00Guidance(fault = {}, caseRecord = {}) {
   const code = String(fault.code || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const vehicle = caseRecord.vehicle || {};
   const make = String(vehicle.make || "").trim().toLowerCase();
   if (code !== "P016F00" || !make.includes("mack")) return null;
+
+  const allFaults = Object.values(caseRecord.entries || {})
+    .flatMap(entry => Array.isArray(entry?.faultCodes) ? entry.faultCodes : []);
+  const codes = new Set(allFaults.map(item => String(item.code || "").toUpperCase().replace(/[^A-Z0-9]/g, "")));
+  codes.add(code);
+  const has = value => codes.has(value);
+  const hasEprvPrecursor = has("P009B13");
+  const hasK010Combination = has("P008700") && has("P016F00") && has("P228F00");
+  const year = Number(vehicle.year || 0);
+  const emissions = String(vehicle.emissions || vehicle.emissionsFamily || "").toUpperCase().replace(/\\s/g, "");
+  const supportedEmissions = /US17\\+OBD(16|18|19)/.test(emissions);
+  const k010Candidate = year >= 2018 && supportedEmissions;
   return {
-    title: "Diagnose P016F00 · Closed-loop fuel pressure too low",
-    category: "Fuel system · pressure control",
+    title: "Mack P016F00 · Common-rail fuel pressure diagnosis",
+    category: "Fuel system · common rail",
     faultGuidance: true,
     faultSpecific: true,
-    caution: "P016F00 is recorded here as 'Closed Loop Fuel Pressure Control At Limit - Pressure Too Low'. This case-derived description is not a complete OEM fault tree. Confirm the exact engine family, serial number, emissions/calibration and current Mack/Volvo procedure. Do not use generic pressure limits or condemn a component from the code alone. Never loosen high-pressure fuel lines while the engine is running or pressurized.",
+    sourceTitle: "Mack CBR K01029637 / K40914241 · Common Rail Fuel System",
+    sourceReference: "K01029637 (2019) · K40914241 (2019; updated PTT guidance noted January 2020)",
+    sourceUrl: "https://oemdtc.com/tsb/10153480/",
+    applicability: "K01029637: model year 2018 and newer, US17+OBD16 and newer common-rail configurations; confirm exact model, engine and emissions. K40914241: 2018–2020, US17+OBD16/18/19, Mack/Volvo listed models, 11L/13L, MP7/MP8. K94743326 applies only when P009B-13 is also present and its own vehicle/emissions scope is met.",
+    caution: "Public Mack CBR references are historical repair information, not a replacement for current PTT Guided Diagnostics. Confirm VIN, engine serial, emissions/calibration and current Tech Tool version. Do not assume the CBR applies to every P016F00 case. Never loosen high-pressure fuel lines while the system is running or pressurized.",
+    relatedSources: [
+      {title:"K01029637 · damaged secondary fuel-filter lip seal",url:"https://oemdtc.com/tsb/10153480/"},
+      {title:"K40914241 · common-rail fuel-system fault family",url:"https://static.nhtsa.gov/odi/tsbs/2019/MC-10170139-9999.pdf"},
+      {title:"K94743326 · P009B-13 EPRV circuit open",url:"https://static.nhtsa.gov/odi/tsbs/2019/MC-10160190-9999.pdf"}
+    ],
     steps: [
       {
         id: "p016f_confirm",
-        title: "Confirm P016F00 and capture the failure conditions",
-        instruction: "Confirm the reporting controller is EMS and the code is currently Active/Confirmed. Save the complete scan and freeze-frame/event data. Record engine family/serial, engine speed, load, temperature and when the code sets. Verify the exact Mack/Volvo procedure for this engine before pressure testing.",
-        test: "P016F00 status, EMS event data and exact engine configuration",
-        prompt: "Use the scan tool and engine data plate. Do not assume every Mack AN uses the same engine calibration or pressure specifications.",
-        choices: ["P016F00 active and failure conditions captured", "Fault inactive / not currently present", "Engine configuration or event data unavailable"]
+        title: "Confirm vehicle applicability, related codes and PTT version",
+        instruction: "Confirm Mack model, model year, engine family/serial, common-rail configuration and emissions generation from VIN/build data. Save the complete EMS readout and event data. Check for P0087-00, P016F-00, P228F-00 and P009B-13. CBR K40914241 lists the common-rail fault family and directs technicians to current PTT Guided Diagnostics; its published update specifies PTT 2.7.85 or newer. If P009B-13 is also active, diagnose it first under applicable CBR K94743326 before troubleshooting the related pressure codes. Do not assume K01029637 applies unless its code combination and emissions/year scope are met.",
+        test: "VIN/build applicability, emissions, engine family, full DTC readout and PTT version",
+        prompt: "Use vehicle product details in PTT and the current Mack service portal. CBR K01029637 applies to P0087-00 + P016F-00 + P228F-00 combination; K40914241 lists the common-rail fault family.",
+        choices: [
+          "P009B-13 is also active; diagnose EPRV circuit first",
+          "P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed",
+          "P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed",
+          "Vehicle, emissions or engine applicability unknown / outside listed CBR scope",
+          "PTT version below 2.7.85 or current guided diagnostics unavailable"
+        ]
+      },
+      {
+        id: "p016f_cbr_filter",
+        title: "Inspect the CBR fuel-tank vent filter and secondary-filter lip seal",
+        instruction: "For the applicable P0087-00 + P016F-00 + P228F-00 combination, follow CBR K01029637: verify the fuel-tank vent filter is present and not clogged; inspect the vent-filter hose connections at the filter housing and fuel tank; remove the secondary fuel filter and inspect its lip seal for damage. Photograph both vent-filter connections, the top of the secondary filter showing the lip seal, and the filter canister date code. Attach the photos and findings to the Mack eService case as directed. A damaged lip seal can allow unfiltered fuel to bypass the filter and enter the high-pressure system. Do not treat a visual pass as proof of correct fuel pressure.",
+        test: "Fuel tank vent filter presence/condition and hose connections; secondary fuel-filter lip seal and date code",
+        prompt: "Follow the inspection and photo requirements in Mack CBR K01029637. Do not substitute a different filter or assume a seal defect without inspecting the actual part.",
+        choices: [
+          "Vent filter / connection restriction or damage found",
+          "Secondary fuel-filter lip seal damaged",
+          "Both CBR inspection areas checked; no defect found",
+          "Inspection or required photos / eService documentation incomplete"
+        ]
       },
       {
         id: "p016f_low_side",
         title: "Verify low-side fuel supply pressure",
-        instruction: "Test the low-pressure supply at the OEM-specified test point(s) and under the operating condition that sets the fault. Record actual pressure, units, engine speed/load, test location and the exact specification. Evaluate the applicable supply/transfer pump, filters, tank pickup, restriction and air ingress only as directed by the engine-specific procedure. Do not call the low side good from a visual inspection or an idle-only reading if the fault occurs under load.",
+        instruction: "Use current PTT Guided Diagnostics and the exact engine/serial-specific procedure to test low-pressure supply at the specified test point(s) and under the operating condition that sets the fault. Record actual pressure, units, engine speed/load, test location and exact specification. Evaluate the applicable supply/transfer pump, filters, tank pickup, restriction and air ingress only as directed. Do not call the low side good from a visual inspection or idle-only reading if the fault occurs under load.",
         test: "Low-side supply pressure and stability under the fault conditions",
-        prompt: "Use the Mack/Volvo procedure for the exact engine and serial number to identify the test port, adapter, operating condition and pressure limits.",
+        prompt: "Use the correct Mack/Volvo procedure for the exact engine and serial number to identify the test port, adapter, operating condition and pressure limits.",
         choices: ["Low-side pressure meets OEM specification under the fault conditions", "Low-side pressure below OEM specification", "Pressure unstable or air / restriction evidence found", "Low-side test incomplete / specification unavailable"]
       },
       {
         id: "p016f_high_side",
         title: "If low side passes, compare commanded vs. actual rail pressure",
-        instruction: "Because low-side supply has been verified within specification, move to the high-pressure system. Monitor commanded and actual rail pressure together during the same crank / idle / loaded condition that sets P016F00. Record both values, units, engine speed/load and the applicable OEM limits. Determine whether actual rail pressure follows the commanded target. If actual pressure falls behind, continue with the engine-specific high-pressure generation/control and leakage tests. If the values track but the fault remains, investigate pressure-sensor plausibility, signal integrity and intermittent conditions using the OEM procedure. Never loosen a high-pressure line to check for flow.",
+        instruction: "Because low-side supply has been verified within specification, move to the high-pressure system. Monitor commanded and actual rail pressure together during the same crank / idle / loaded condition that sets P016F00. Record both values, units, engine speed/load and applicable OEM limits. Determine whether actual rail pressure follows the commanded target. If actual pressure falls behind, continue with the current engine-specific PTT high-pressure generation/control and leakage tests. If values track but the fault remains, investigate sensor plausibility, signal integrity and intermittent conditions using the OEM procedure. Never loosen a high-pressure line to check for flow.",
         test: "Commanded vs. actual fuel rail pressure under the fault conditions",
-        prompt: "Use the scan tool's rail-pressure target and actual-pressure parameters, plus the correct Mack/Volvo service procedure for test conditions and limits.",
+        prompt: "Use PTT live data and the correct Mack/Volvo service procedure for test conditions and limits.",
         choices: ["Actual rail pressure falls below commanded / cannot track target", "Actual rail pressure tracks commanded within OEM specification", "Rail-pressure data is implausible or sensor / circuit concern exists", "High-side test incomplete / specification unavailable"]
       },
       {
         id: "p016f_high_side_isolate",
         title: "Isolate the high-pressure control or delivery fault",
-        instruction: "Use the exact engine-specific pinpoint test to distinguish high-pressure pump output, metering/pressure-control components, rail pressure control and injector return/leakage. Check only components and test ports identified by the OEM procedure. Record each commanded state, measured response and specification. If rail-pressure sensor data is implausible, verify its supply, ground and signal with the correct wiring diagram and test method before considering the sensor.",
+        instruction: "Use the exact engine-specific PTT pinpoint test to distinguish high-pressure pump output, metering/pressure-control components, rail pressure control and injector return/leakage. Check only components and test ports identified by the OEM procedure. Record each commanded state, measured response and specification. If rail-pressure sensor data is implausible, verify its supply, ground and signal with the correct wiring diagram and test method before considering the sensor.",
         test: "OEM high-pressure pump / control / leakage pinpoint tests",
         prompt: "Follow the correct engine-family and serial-number-specific diagnostic tree. Do not substitute generic pinouts, resistance values or pressure thresholds.",
         choices: ["A specific high-pressure control / delivery fault is isolated", "Sensor signal or circuit fault is isolated", "No abnormality found during the prescribed tests", "OEM pinpoint test or specification unavailable"]
@@ -66,12 +107,13 @@ export function getP016F00Guidance(fault = {}, vehicle = {}) {
       {
         id: "p016f_verify",
         title: "Confirm the cause and verify fuel-pressure control",
-        instruction: "Document the confirmed failure with measurements and the applicable specification, repair only the supported cause, then repeat the original operating conditions. Compare commanded and actual rail pressure, rescan EMS and confirm whether P016F00 returns. Keep the outcome unconfirmed if the original failure conditions were not reproduced.",
+        instruction: "Document the confirmed failure with measurements and applicable specification, repair only the supported cause, then repeat the original operating conditions. Compare commanded and actual rail pressure, rescan EMS and confirm whether P016F00 returns. Keep the outcome unconfirmed if the original failure conditions were not reproduced.",
         test: "Before / after fuel-pressure data and repeat scan",
-        prompt: "Repeat the same conditions captured in the first step and preserve the before-and-after scan reports.",
+        prompt: "Repeat the same conditions captured in the first step and preserve before-and-after scan reports.",
         choices: ["Cause and repair verified under original conditions", "Repair complete; verification pending", "Cause remains unconfirmed"],
         terminal: true
       }
-    ]
+    ],
+    caseFlags: {hasEprvPrecursor,hasK010Combination,k010Candidate}
   };
 }
