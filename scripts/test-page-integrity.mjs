@@ -158,6 +158,21 @@ try {
   assert.match(diagnostics, /active\.workflowId==="check_engine_light"&&step\.id==="complaint"\?"open":""/,
     "Fault code capture panel must open automatically on the first Check Engine Light step");
 
+  // P016F00 must progress from a proven low-side pass to commanded-vs-actual rail pressure.
+  const faultRouting = await readFile(join(root, "js/fault-guidance-routing.js"), "utf8");
+  assert.match(faultRouting, /export function getP016F00Guidance/);
+  assert.match(faultRouting, /Verify low-side fuel supply pressure/);
+  assert.match(faultRouting, /compare commanded vs. actual rail pressure/i);
+  assert.match(faultRouting, /Never loosen a high-pressure line/);
+  assert.match(diagnostics, /getP016F00Guidance\(fault,active\?\.vehicle\)/,
+    "Mack P016F00 must launch its staged fuel-pressure workflow");
+  const diagnosticBrain = await readFile(join(root, "js/diagnostic-brain.js"), "utf8");
+  assert.match(diagnosticBrain, /step\.id==="p016f_low_side"/);
+  assert.match(diagnosticBrain, /low-side pressure meets oem specification under the fault conditions/i,
+    "A verified low-side pass must advance to high-side rail-pressure testing");
+  assert.match(diagnosticBrain, /step\.id==="p016f_high_side"/,
+    "High-side commanded-versus-actual rail pressure must have explicit outcome branches");
+
   // The Technical Library must OCR scanned sources and expose a reviewable, page-cited bulletin draft.
   const technicalLibrary = await readFile(join(root, "technical-library.html"), "utf8");
   assert.match(technicalLibrary, /tesseract\.js@5/,
