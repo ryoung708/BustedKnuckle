@@ -156,6 +156,41 @@ const lowSideRetestPass = analyzeDiagnosticCase({
 },p016fPlan.steps);
 assert.equal(lowSideRetestPass.recommendation.stepId,"p016f_high_side");
 
+const k010Codes = [{code:"P0087-00"},{code:"P016F-00"},{code:"P228F-00"}];
+const k010EligibleCase = {
+  ...p016fCase,
+  entries:{
+    scan:{faultCodes:k010Codes},
+    p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}
+  }
+};
+const k010Plan = getP016F00Guidance({code:"P016F00"},k010EligibleCase);
+assert.equal(k010Plan.caseFlags.k010Candidate,true);
+const k010Ready = analyzeDiagnosticCase(k010EligibleCase,k010Plan.steps);
+assert.equal(k010Ready.recommendation.stepId,"p016f_cbr_filter");
+assert.equal(k010Ready.recommendation.state,"next");
+
+const missingCodesCase = {
+  ...p016fCase,
+  entries:{p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}}
+};
+const missingCodesPlan = getP016F00Guidance({code:"P016F00"},missingCodesCase);
+const missingCodesDecision = analyzeDiagnosticCase(missingCodesCase,missingCodesPlan.steps);
+assert.equal(missingCodesDecision.recommendation.stepId,"p016f_confirm");
+assert.equal(missingCodesDecision.recommendation.state,"hold");
+assert.match(missingCodesDecision.recommendation.action,/full scan-report fault set/i);
+
+const incompleteApplicabilityCase = {
+  ...k010EligibleCase,
+  vehicle:{make:"Mack",model:"AN",year:"2020",engine:"MP8",emissions:""}
+};
+const incompleteApplicabilityPlan = getP016F00Guidance({code:"P016F00"},incompleteApplicabilityCase);
+assert.equal(incompleteApplicabilityPlan.caseFlags.k010Candidate,false);
+const incompleteApplicabilityDecision = analyzeDiagnosticCase(incompleteApplicabilityCase,incompleteApplicabilityPlan.steps);
+assert.equal(incompleteApplicabilityDecision.recommendation.stepId,"p016f_confirm");
+assert.equal(incompleteApplicabilityDecision.recommendation.state,"hold");
+assert.match(incompleteApplicabilityDecision.recommendation.action,/do not apply K01029637/i);
+
 const lowSideIncomplete = analyzeDiagnosticCase({
   ...p016fCase,
   entries:{p016f_low_side:{choice:"Low-side test incomplete / specification unavailable"}}
