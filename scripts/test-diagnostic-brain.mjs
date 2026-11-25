@@ -244,6 +244,12 @@ const afterComplaintMissing=analyzeDiagnosticCase({...afterBase,entries:{complai
 assert.equal(afterComplaintMissing.recommendation.stepId,"complaint");
 assert.equal(afterComplaintMissing.recommendation.state,"hold");
 
+const afterHistoricalData=analyzeDiagnosticCase({...afterBase,entries:{complaint:{choice:"Complaint not currently present; event data available"}}},afterSteps);
+assert.equal(afterHistoricalData.recommendation.stepId,"codes");
+const afterNoHistoricalData=analyzeDiagnosticCase({...afterBase,entries:{complaint:{choice:"Complaint not currently present; no event data available"}}},afterSteps);
+assert.equal(afterNoHistoricalData.recommendation.stepId,"complaint");
+assert.equal(afterNoHistoricalData.recommendation.state,"hold");
+
 const afterActiveCodes=analyzeDiagnosticCase({...afterBase,entries:{codes:{choice:"Active after-treatment fault(s) present; not yet diagnosed"}}},afterSteps);
 assert.equal(afterActiveCodes.recommendation.stepId,"codes");
 assert.equal(afterActiveCodes.recommendation.state,"hold");
