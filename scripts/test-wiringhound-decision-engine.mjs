@@ -63,9 +63,9 @@ assert.match(recommendNextStep(record("power_loss","scope","Engine shuts off but
 
 // General Electrical uses the same electrical decision tree as Light INOP; exercise it explicitly.
 assert.equal(recommendNextStep(record("general_electrical","protection","No power at protection input"),lighting).stepId,"upstream_feed");
-assert.equal(recommendNextStep(record("general_electrical","control","Command is not present"),lighting).stepId,"control_inputs");
+assert.equal(recommendNextStep(record("general_electrical","control","Command not present"),lighting).stepId,"control_inputs");
 assert.equal(recommendNextStep(record("general_electrical","load","Ground path abnormal"),lighting).stepId,"drop");
-assert.equal(recommendNextStep(record("general_electrical","load_review","Load passes with known-good feed"),lighting).stepId,"harness");
+assert.equal(recommendNextStep(record("general_electrical","load_review","Load passes approved test"),lighting).stepId,"harness");
 
 // J1939 isolation and evidence gates: every branch must be completed or explicitly held.
 assert.equal(recommendNextStep(record("j1939_network","resistance","Resistance is unstable or changes with harness movement"),j1939).stepId,"segment");
