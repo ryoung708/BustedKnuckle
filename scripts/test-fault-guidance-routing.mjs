@@ -34,10 +34,10 @@ assert.equal(p016f.steps[1].id,"p016f_cbr_filter");
 assert.match(p016f.steps[1].instruction,/secondary fuel filter/i);
 assert.equal(getP016F00Guidance({code:"P016F-00"},{vehicle:{make:"Volvo"}}),null);
 const pBase={workflowId:"fault_guidance_p016f",vehicle:{make:"Mack",model:"Anthem",year:"2020",engine:"MP8",emissions:"US17+OBD16"}};
-const precursor=analyzeDiagnosticCase({...pBase,entries:{p016f_confirm:{choice:"P009B-13 is also active; diagnose EPRV circuit first"}}},p016f.steps);
+const precursor=analyzeDiagnosticCase({...pBase,entries:{codes:{faultCodes:[{code:"P016F-00",status:"active"},{code:"P009B-13",status:"active"}]},p016f_confirm:{choice:"P009B-13 is also active; diagnose EPRV circuit first"}}},p016f.steps);
 assert.equal(precursor.recommendation.state,"hold");
-assert.match(precursor.recommendation.action,/K94743326/);
-const p016fTriggerCodes=[{code:"P0087-00"},{code:"P016F-00"},{code:"P228F-00"}];
+assert.match(precursor.recommendation.action,/do not apply K94743326 pinouts/i);
+const p016fTriggerCodes=[{code:"P0087-00",status:"active"},{code:"P016F-00",status:"active"},{code:"P228F-00",status:"active"}];
 const combo=analyzeDiagnosticCase({...pBase,entries:{codes:{faultCodes:p016fTriggerCodes},p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}}},p016f.steps);
 assert.equal(combo.recommendation.stepId,"p016f_cbr_filter");
 const filterPass=analyzeDiagnosticCase({...pBase,entries:{
