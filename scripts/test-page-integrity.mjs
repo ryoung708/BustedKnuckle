@@ -193,6 +193,7 @@ try {
   assert.match(diagnosticEngine, /engine_power_loss:\s*\{/);
   assert.match(complaintEngine, /workflowId:\s*"engine_power_loss"/);
   assert.match(diagnostics, /row\?\.workflowId==="power_loss"\?\{\.\.\.row,workflowId:"engine_power_loss"\}/);
+  assert.match(diagnostics, /normalizeLegacyDcc=item=>item\?\.workflowId==="power_loss"&&item\.product!=="IronKnuckle WiringHound"/);
 
   // Public OEM source discovery must distinguish zero matches from provider failure and retain fallback diagnostics.
   const publicSearch = await readFile(join(root, "supabase/functions/public-oem-search/index.ts"), "utf8");
