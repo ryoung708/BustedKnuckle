@@ -235,7 +235,7 @@ const p205Excluded=analyzeDiagnosticCase({
 },p205Plan.steps);
 assert.equal(p205Excluded.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Excluded.recommendation.state,"hold");
-assert.match(p205Excluded.recommendation.action,/stop before using/i);
+assert.match(p205Excluded.recommendation.action,/Stop this guided path/i);
 
 // Real crank/no-start workflow: explicit outcome routing and optional fuel branch stages.
 const crankPlan = workflows.crank_no_start.steps;
