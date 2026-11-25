@@ -174,6 +174,18 @@ try {
     "A verified low-side pass must advance to high-side rail-pressure testing");
   assert.match(diagnosticBrain, /step\.id==="p016f_high_side"/,
     "High-side commanded-versus-actual rail pressure must have explicit outcome branches");
+  assert.match(faultRouting, /id: "p016f_low_side_isolate"/,
+    "A failed low-side pressure test must lead to a dedicated isolation stage");
+  assert.match(faultRouting, /id: "p016f_low_side_retest"/,
+    "A corrected low-side fault must be retested before high-side diagnosis");
+  assert.match(diagnosticBrain, /step\.id==="p016f_low_side_isolate"/);
+  assert.match(diagnosticBrain, /step\.id==="p016f_low_side_retest"/);
+  assert.match(diagnosticBrain, /return go\(steps\.find\(item=>item\.id==="p016f_high_side"\)/,
+    "A proven low-side pass must route directly to high-side rail-pressure testing");
+  assert.match(diagnostics, /flow\.relatedSources\)\?flow\.relatedSources\.map/,
+    "All known related OEM references must be visible in the fault research panel");
+  assert.match(diagnostics, /Open broader web search/,
+    "A zero-result public index search must provide a broader search fallback");
 
   // The Technical Library must OCR scanned sources and expose a reviewable, page-cited bulletin draft.
   const technicalLibrary = await readFile(join(root, "technical-library.html"), "utf8");
