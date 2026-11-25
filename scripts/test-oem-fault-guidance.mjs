@@ -1,0 +1,17 @@
+import assert from "node:assert/strict";
+import {getMackP205B64Guidance} from "../js/oem-fault-guidance.js";
+const plan=getMackP205B64Guidance({code:"P205B64"},{make:"Mack",model:"Anthem",year:"2022",emissions:"US17+OBD16"});
+assert.ok(plan);
+assert.equal(plan.steps.length,7);
+assert.match(plan.applicability,/excludes AN\(4\) and PR\(4\)/);
+assert.match(plan.steps[0].instruction,/Active or Confirmed/i);
+assert.match(plan.steps[1].instruction,/both connector halves/i);
+assert.match(plan.steps[2].instruction,/refractometer/i);
+assert.match(plan.steps[3].instruction,/frozen/i);
+assert.match(plan.steps[4].instruction,/adequately filled/i);
+assert.match(plan.steps[5].instruction,/2 minutes at 1,000 rpm or higher/i);
+assert.match(plan.steps[5].instruction,/15 seconds/i);
+assert.match(plan.steps[6].instruction,/258-040/i);
+assert.equal(getMackP205B64Guidance({code:"P205B64"},{make:"Volvo"}),null);
+assert.equal(getMackP205B64Guidance({code:"P205A13"},{make:"Mack"}),null);
+console.log("Mack P205B64 fault-specific guided workflow tests passed.");
