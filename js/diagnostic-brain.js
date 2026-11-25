@@ -311,6 +311,84 @@ function powertrainRecommendation(record, steps) {
   const hold=(reason,action)=>({stepId:step.id,reason,action,state:"hold"});
   const next=steps[index+1];
   const go=(target,reason,action)=>({stepId:target.id,reason,action,state:"next"});
+  // Transmission/drivetrain decisions require measured evidence and safe verification.
+  if(record.workflowId==="drivetrain_fault"){
+    if(step.id==="complaint"){
+      if(/complaint not reproduced; event data available/i.test(choice))
+        return go(steps.find(item=>item.id==="codes"),"The symptom is intermittent, but stored event data is available.","Use the event record to identify the gear, speed, load and temperature at the time of failure. Capture the full transmission and related-controller scan before attempting a live test.");
+      if(/complaint not reproduced; no event data available/i.test(choice)) return hold(
+        "The reported drivetrain complaint is not present and no event data is available.",
+        "Do not guess at a transmission fault. Obtain the operating details from the driver and reproduce the concern only when safe and under the OEM test conditions; capture event data when it occurs."
+      );
+      return go(steps.find(item=>item.id==="codes"),"The operating complaint is defined and ready for fault review.","Scan the transmission and related controllers. Record active/inactive status, event data and any torque or shift inhibits before choosing a component test.");
+    }
+    if(step.id==="codes"){
+      if(/relevant active fault\(s\) found; not yet diagnosed/i.test(choice)) return hold(
+        "Relevant active transmission/drivetrain faults have not yet been evaluated.",
+        "Attach the complete codes with reporting controller, status and event data. Follow the applicable code-specific OEM diagnostic path first; do not treat an active fault as a routine pass."
+      );
+      if(/related controller data unavailable/i.test(choice)) return hold(
+        "The controller data needed to understand the event is unavailable.",
+        "Restore communication with the missing controller, verify the diagnostic-tool connection and repeat the scan. Confirm whether a torque/shift inhibit or related controller fault is present before continuing."
+      );
+      if(/active faults reviewed; no primary cause established|only inactive \/ historic faults|no relevant faults retrieved after complete scan/i.test(choice))
+        return go(steps.find(item=>item.id==="data"),"The complete scan has been reviewed and no uninvestigated primary active fault remains.","Compare commanded and actual gear, input/output speed, clutch state, torque request/inhibit and applicable pressure/temperature data under the original event conditions.");
+    }
+    if(step.id==="data"){
+      if(/command and actual state disagree/i.test(choice)) return hold(
+        "The transmission is not achieving the commanded operating state.",
+        "Record the requested gear, actual gear, shift state and torque/shift inhibit source. Follow the exact transmission OEM pinpoint procedure to verify the relevant input signals, enable conditions and control outputs; do not condemn the TCM from a command/actual mismatch alone."
+      );
+      if(/speed \/ ratio evidence abnormal/i.test(choice)) return hold(
+        "Input/output speed or gear-ratio evidence is abnormal.",
+        "Compare input and output speed against the OEM ratio chart for the commanded gear and exact operating conditions. Verify the relevant speed-sensor signals and circuits using the correct diagram; do not apply a generic ratio or RPM threshold."
+      );
+      if(/pressure \/ temperature evidence abnormal/i.test(choice)) return hold(
+        "Pressure or temperature data is outside the expected operating range.",
+        "Use the exact transmission model/calibration procedure to verify the pressure or temperature measurement at the specified test point and operating state. Confirm sensor plausibility and fluid temperature; do not infer an internal failure from one data value."
+      );
+      if(/data agrees with expected operation/i.test(choice))
+        return go(steps.find(item=>item.id==="inspection"),"The recorded commanded/actual data agrees with the expected operation, but the reported complaint still needs a targeted physical inspection.","Inspect only the subsystem implicated by the complaint and event history. Check fluid/leaks, external wiring/connectors, mounts and driveline components before considering internal transmission tests.");
+      if(/more data required/i.test(choice)) return hold(
+        "The transmission operating data is incomplete.",
+        "Identify the missing commanded/actual parameter, operating condition or OEM specification. Capture the correct data under the original event conditions before moving to physical inspection."
+      );
+    }
+    if(step.id==="inspection"){
+      if(/defect isolated and corrected per oem procedure/i.test(choice))
+        return go(steps.find(item=>item.id==="verify"),"The indicated driveline/transmission defect was isolated and corrected using the OEM procedure.","Complete the required setup/relearn if applicable, then verify operation under the original conditions when safe. Preserve before/after values and the post-repair scan.");
+      if(/leak \/ fluid issue found/i.test(choice)) return hold(
+        "A fluid or leak concern has been observed but is not yet isolated.",
+        "Verify fluid type, level and condition using the exact transmission temperature and fill/check procedure. Locate the leak source and repair only the confirmed issue; do not overfill or substitute fluid."
+      );
+      if(/mechanical driveline defect found/i.test(choice)) return hold(
+        "A mechanical driveline concern has been observed but is not yet localized.",
+        "Secure the vehicle and isolate the affected joint, shaft, mount, bearing or driveline component using the OEM inspection procedure. Record the physical evidence and measurements before recommending repair."
+      );
+      if(/control \/ electrical issue indicated/i.test(choice)) return hold(
+        "The evidence points to a transmission control or electrical issue.",
+        "Use the correct wiring diagram and pinpoint test to verify module power/ground, network communication, relevant inputs and commanded outputs under load. Do not replace a controller until its feeds, grounds and inputs are proven."
+      );
+      if(/internal transmission concern supported/i.test(choice)) return hold(
+        "The evidence may indicate an internal transmission concern, but it is not yet confirmed.",
+        "Complete the OEM hydraulic, clutch or internal pinpoint tests for this transmission model and calibration. Record measured values and limits; do not recommend unit replacement from a symptom or generic data mismatch."
+      );
+      if(/no defect confirmed/i.test(choice)) return hold(
+        "The inspection did not confirm a physical cause while the drivetrain complaint remains unresolved.",
+        "Return to the primary fault/event data and complete the next discriminating OEM test. Do not close the case or recommend transmission replacement by elimination."
+      );
+    }
+    if(step.id==="verify"){
+      if(/post-repair fault remains active/i.test(choice)) return hold(
+        "A related transmission/drivetrain fault remains active after repair.",
+        "Keep the case open. Preserve the post-repair scan and return to the applicable OEM code-specific diagnostic path to determine why the fault remains."
+      );
+      if(/repair complete; verification pending|cause remains unconfirmed|road test \/ verification not yet safe/i.test(choice)) return hold(
+        "The repair has not been verified under the original conditions or the vehicle is not safe for a road test.",
+        "Do not mark the repair complete. Resolve the safety concern or obtain the approved stationary verification method, then complete the OEM post-repair checks and document any deferred test."
+      );
+    }
+  }
   // After-treatment paths must distinguish fault priority, data anomalies and repair verification.
   if(record.workflowId==="aftertreatment_fault"){
     if(step.id==="complaint"){
