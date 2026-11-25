@@ -339,13 +339,13 @@ function powertrainRecommendation(record, steps) {
     );
   }
   if(step.id==="p205b_result"){
-    if(/(?:one or more|the) (?:of the )?(?:nine )?listed yellow UQLS faults returned active\\/confirmed|yellow faults returned|yellow UQLS faults returned/.test(choice)) return {
+    if(/(?:one or more|the) (?:of the )?(?:nine )?listed yellow UQLS faults returned active\/confirmed|yellow faults returned|yellow UQLS faults returned/.test(choice)) return {
       stepId:step.id,title:"Replace DEF Level / UQLS sensor",
       reason:"One or more of the nine yellow UQLS faults returned after the prescribed repeat test.",
       action:"RECOMMENDATION: Replace the DEF Level / UQLS sensor. The Mack CBR 2107-22 replacement criteria are met because a listed yellow UQLS fault returned active/confirmed after the prescribed repeat checks. Confirm the VIN, chassis variant and emissions generation remain within the bulletin scope. Follow the current Mack Impact replacement procedure and TSB 258-040 for sensor replacement and wire routing. Save the before-and-after scan results. This is a bulletin-directed repair recommendation; verify the repair with the prescribed post-repair checks.",
       state:"review"
     };
-    if(/none of the nine listed yellow UQLS faults returned active|did not return active/.test(choice)) return {
+    if(/none .*yellow.*faults.*returned|none of the nine listed yellow UQLS faults returned active|did not return active|yellow faults did not return/i.test(choice)) return {
       stepId:step.id,title:"No UQLS replacement indicated",reason:"None of the nine listed yellow UQLS faults returned active after the prescribed repeat test.",
       action:"Do not replace the UQLS under this procedure. Save the final scan report and release/continue service according to the shop's verification process.",
       state:"review"
