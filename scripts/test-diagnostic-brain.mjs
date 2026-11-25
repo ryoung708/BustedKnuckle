@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { analyzeDiagnosticCase } from "../js/diagnostic-brain.js";
 import { getP016F00Guidance } from "../js/fault-guidance-routing.js";
+import { getMackP205B64Guidance } from "../js/oem-fault-guidance.js";
 import { workflows, createSession, recordStep, evaluateSession } from "../js/diagnostic-engine.js";
 
 const electricalSteps = [
@@ -224,6 +225,17 @@ const pendingLowSideRepair = analyzeDiagnosticCase({
 assert.equal(pendingLowSideRepair.recommendation.stepId,"p016f_low_side_isolate");
 assert.equal(pendingLowSideRepair.recommendation.state,"hold");
 assert.match(pendingLowSideRepair.recommendation.action,/Do not proceed to high-side testing/i);
+
+// Mack UQLS CBR must hard-stop excluded AN(4) / PR(4) variants.
+const p205Plan=getMackP205B64Guidance({code:"P205B64"},{make:"Mack",model:"AN(4)"});
+const p205Excluded=analyzeDiagnosticCase({
+  workflowId:"fault_guidance_p205b",
+  vehicle:{make:"Mack",model:"AN(4)",engine:"MP8"},
+  entries:{p205b_applicability:{choice:"AN(4), PR(4), or emissions applicability unknown — stop"}}
+},p205Plan.steps);
+assert.equal(p205Excluded.recommendation.stepId,"p205b_applicability");
+assert.equal(p205Excluded.recommendation.state,"hold");
+assert.match(p205Excluded.recommendation.action,/stop before using/i);
 
 // Real crank/no-start workflow: explicit outcome routing and optional fuel branch stages.
 const crankPlan = workflows.crank_no_start.steps;
