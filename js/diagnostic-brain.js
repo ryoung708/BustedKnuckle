@@ -798,19 +798,22 @@ function powertrainRecommendation(record, steps) {
       "Verify P009B-13 status in the current controller scan before choosing the P016F path. If active or intermittent, diagnose the EPRV circuit first under the applicable K94743326 scope."
     );
     const p009bActive=statusActive(p009bStatuses);
-    if(p009bActive&&!/P009B-13 is also active/i.test(choice)) return hold(
-      "P009B-13 is attached as active/intermittent and must be diagnosed before the related P016F pressure path.",
-      "Follow the applicable Mack CBR K94743326 EPRV circuit procedure first. Do not skip the EPRV precursor and continue directly to low-side or K010 filter checks."
-    );
+    const vehicle=record.vehicle||{};
+    const p009bYear=Number(vehicle.year||0);
+    const p009bEngine=[vehicle.engine,vehicle.engineModel,vehicle.engineMake].filter(Boolean).join(" ").toUpperCase();
+    const p009bEmissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\\s/g,"");
+    const k947Eligible=clean(vehicle.make).toLowerCase().includes("mack")&&p009bYear>=2018&&p009bYear<=2019&&/\\b(?:MP7|MP8|11L|13L)\\b/i.test(p009bEngine)&&/US17\\+OBD(16|18)/.test(p009bEmissions);
+    const p009bHoldReason="P009B-13 is active/intermittent and must be diagnosed before continuing the related P016F pressure path.";
+    const p009bHoldAction=k947Eligible
+      ?"This vehicle appears to fit the historical Mack CBR K94743326 scope; verify VIN/build and exact emissions before using it. Follow its EPRV circuit procedure first, including the specified EMS EA-to-VC1-to-EPRV continuity checks. Do not continue directly to low-side or K010 filter checks."
+      :"Do not apply K94743326 pinouts or replacement instructions to this vehicle unless VIN/build confirms its 2018–2019, MP7/MP8 or 11L/13L, US17+OBD16/18 scope. Diagnose P009B-13 first using the current PTT Guided Diagnostics and the exact vehicle-specific procedure.";
+    if(p009bActive&&!/P009B-13 is also active/i.test(choice)) return hold(p009bHoldReason,p009bHoldAction);
     if(/P009B-13 is also active/i.test(choice)){
       if(!p009bActive) return hold(
         "The selected result says P009B-13 is active, but no attached P009B-13 fault is confirmed active/intermittent.",
         "Attach P009B-13 and verify its status in the current scan. If it is inactive/historic, do not select the active EPRV-precedence branch."
       );
-      return hold(
-        "P009B-13 is present with P016F00; Mack CBR K94743326 says diagnose the EPRV circuit fault first.",
-        "Pause this P016F00 sequence. Follow the applicable K94743326 procedure for the confirmed chassis/emissions: inspect the EMS EA-to-VC1-to-EPRV wiring and connector, perform the specified de-energized continuity checks, repair any open/high resistance, or follow the bulletin's replacement direction when no wiring issue is found. Then verify whether P016F00 remains."
-      );
+      return hold(p009bHoldReason,p009bHoldAction);
     }
     if(/vehicle, emissions or engine applicability unknown|outside listed cbr scope/i.test(choice))
       return hold("The Mack CBR applicability is not established.",
