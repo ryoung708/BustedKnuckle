@@ -237,6 +237,51 @@ assert.equal(p205Excluded.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Excluded.recommendation.state,"hold");
 assert.match(p205Excluded.recommendation.action,/Stop this guided path/i);
 
+// Check Engine Light: require attached DTCs, primary-fault review and confirmed repair before review.
+const celSteps=workflows.check_engine_light.steps;
+const celBase={workflowId:"check_engine_light",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"Check Engine Light"};
+const celNoCodes=analyzeDiagnosticCase({...celBase,entries:{complaint:{choice:"Check Engine Light confirmed on; fault code(s) retrieved and attached"}}},celSteps);
+assert.equal(celNoCodes.recommendation.stepId,"complaint");
+assert.equal(celNoCodes.recommendation.state,"hold");
+assert.match(celNoCodes.recommendation.action,/actual codes/i);
+
+const celWithCodes=analyzeDiagnosticCase({...celBase,entries:{complaint:{choice:"Check Engine Light confirmed on; fault code(s) retrieved and attached",faultCodes:[{code:"P016F00"}]}}},celSteps);
+assert.equal(celWithCodes.recommendation.stepId,"prioritize");
+
+const celNoFaults=analyzeDiagnosticCase({...celBase,entries:{complaint:{choice:"Check Engine Light on; scan attempted but no fault codes retrieved"}}},celSteps);
+assert.equal(celNoFaults.recommendation.stepId,"complaint");
+assert.equal(celNoFaults.recommendation.state,"hold");
+
+const celNoLamp=analyzeDiagnosticCase({...celBase,entries:{complaint:{choice:"Check Engine Light not illuminated; complaint or warning not reproduced"}}},celSteps);
+assert.equal(celNoLamp.recommendation.state,"hold");
+
+const celPrimary=analyzeDiagnosticCase({...celBase,entries:{prioritize:{choice:"One fault clearly leads the investigation"}}},celSteps);
+assert.equal(celPrimary.recommendation.stepId,"test");
+
+const celRelated=analyzeDiagnosticCase({...celBase,entries:{prioritize:{choice:"Several faults appear related"}}},celSteps);
+assert.equal(celRelated.recommendation.stepId,"prioritize");
+assert.equal(celRelated.recommendation.state,"hold");
+
+const celElectrical=analyzeDiagnosticCase({...celBase,entries:{prioritize:{choice:"Fault data points to shared power / ground / network issue"}}},celSteps);
+assert.equal(celElectrical.recommendation.state,"hold");
+assert.match(celElectrical.recommendation.action,/WiringHound General Electrical/i);
+
+const celTestPass=analyzeDiagnosticCase({...celBase,entries:{test:{choice:"Test results are within specification"}}},celSteps);
+assert.equal(celTestPass.recommendation.stepId,"test");
+assert.equal(celTestPass.recommendation.state,"hold");
+
+const celDifferentSystem=analyzeDiagnosticCase({...celBase,entries:{test:{choice:"Test points to a different system"}}},celSteps);
+assert.equal(celDifferentSystem.recommendation.state,"hold");
+
+const celRepaired=analyzeDiagnosticCase({...celBase,entries:{test:{choice:"Fault isolated and repaired per OEM procedure"}}},celSteps);
+assert.equal(celRepaired.recommendation.stepId,"verify");
+
+const celPending=analyzeDiagnosticCase({...celBase,entries:{verify:{choice:"Repair complete; verification pending"}}},celSteps);
+assert.equal(celPending.recommendation.state,"hold");
+
+const celVerified=analyzeDiagnosticCase({...celBase,entries:{verify:{choice:"Repair verified under original conditions"}}},celSteps);
+assert.equal(celVerified.recommendation.state,"review");
+
 // General complaint triage must route by evidence and hold on incomplete/ambiguous inputs.
 const triageSteps=workflows.complaint_triage.steps;
 const triageBase={workflowId:"complaint_triage",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},complaint:"General engine complaint"};

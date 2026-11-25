@@ -146,6 +146,17 @@ try {
   assert.match(diagnostics, /WHERE \/ HOW TO CHECK/,
     "DCC must surface the method/location guidance from each diagnostic step");
   const dccWorkflowEngineText = await readFile(join(root, "js/diagnostic-engine.js"), "utf8");
+  const celStart = dccWorkflowEngineText.indexOf("check_engine_light:");
+  const celWorkflowText = dccWorkflowEngineText.slice(celStart, dccWorkflowEngineText.indexOf("\n};", celStart));
+  assert.match(celWorkflowText, /id:"complaint"[\s\S]*?test:/);
+  assert.match(celWorkflowText, /id:"prioritize"[\s\S]*?prompt:/);
+  assert.match(celWorkflowText, /id:"verify"[\s\S]*?terminal:true/);
+  assert.match(diagnostics, /active\.workflowId==="check_engine_light"&&step\.id==="complaint"\)\{renderWork\(\);return\}/,
+    "The CEL intake must allow all scan codes to be attached before opening one code-specific path");
+  assert.match(diagnostics, /data-diagnose-fault/,
+    "Each attached CEL fault must remain individually openable for guided diagnostics");
+  assert.ok(diagnostics.includes("split(/[;,\\n]+/)"),"Intake must split fault codes on commas, semicolons and newlines");
+  assert.ok(diagnostics.includes("SPN\\s*63[89]"),"SPN classification must accept whitespace before 638/639");
   const complaintTriageWorkflowText = dccWorkflowEngineText.slice(dccWorkflowEngineText.indexOf("complaint_triage:"), dccWorkflowEngineText.indexOf("j1939_dropout:"));
   assert.match(complaintTriageWorkflowText, /id:"complaint_baseline"[\s\S]*?test:/);
   assert.match(complaintTriageWorkflowText, /id:"controller_scan"[\s\S]*?prompt:/);
