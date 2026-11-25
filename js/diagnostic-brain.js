@@ -379,6 +379,8 @@ function powertrainRecommendation(record, steps) {
       );
     }
     if(step.id==="air_exhaust"){
+      if(/concern isolated and corrected; prerequisites now pass/i.test(choice))
+        return go(steps.find(item=>item.id==="verify"),"The indicated air/exhaust/mechanical concern was isolated and corrected; confirm the original no-start is resolved.","Record the confirmed physical cause and repair, then repeat the original crank/start conditions. Save the post-repair scan and the measurements that proved the prerequisite now passes.");
       if(/restriction or mechanical concern found/i.test(choice)) return hold(
         "An intake, exhaust or mechanical abnormality is indicated but has not been isolated.",
         "Use the engine-specific OEM pinpoint test to identify whether the concern is intake restriction, exhaust restriction, valve/compression/timing or another supported mechanical issue. Record the exact measurement and limit; do not condemn a turbocharger or engine from a broad symptom."
