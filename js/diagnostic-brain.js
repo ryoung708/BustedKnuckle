@@ -13,12 +13,15 @@ function mackUqlsScope(vehicle = {}) {
   const make=lower(vehicle.make);
   const model=clean(vehicle.model||vehicle.chassis).toUpperCase();
   const emissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
+  const year=Number.parseInt(clean(vehicle.year),10);
   const excluded=/\b(?:AN|PR)\s*\(\s*4\s*\)/.test(model);
-  const supportedEmissions=/^US17\+OBD(?:16|18|19)$/.test(emissions) ||
-    /^US20\+OBD20$/.test(emissions) ||
-    /^US21\+OBD21$/.test(emissions) ||
-    /^US22\+OBD2023$/.test(emissions);
-  return {valid:make.includes("mack")&&populated(model)&&!excluded&&supportedEmissions,make,model,emissions,excluded,supportedEmissions};
+  const emissionMatch=emissions.match(/^US(\d{2})\+OBD(\d{2}|\d{4})$/);
+  const usGeneration=emissionMatch?Number(emissionMatch[1]):NaN;
+  const obdYear=emissionMatch?(emissionMatch[2].length===4?Number(emissionMatch[2]):2000+Number(emissionMatch[2])):NaN;
+  const supportedEmissions=Number.isFinite(usGeneration)&&Number.isFinite(obdYear)&&
+    usGeneration>=17&&usGeneration<=22&&obdYear>=2016&&obdYear<=2023;
+  const supportedModelYear=Number.isFinite(year)&&year>=2017&&year<=2024;
+  return {valid:make.includes("mack")&&populated(model)&&!excluded&&supportedEmissions&&supportedModelYear,make,model,emissions,year,excluded,supportedEmissions,supportedModelYear};
 }
 const mackUqlsCodes = new Set(Object.keys(MACK_UQLS_YELLOW_CODES));
 function hasActiveMackUqlsFault(record = {}) {
@@ -987,7 +990,7 @@ function powertrainRecommendation(record, steps) {
       );
       if(!scope.valid) return hold(
         "The entered vehicle identity does not establish the Mack CBR 2107-22 scope.",
-        "Confirm the exact Mack model/chassis variant and emissions generation from VIN/build data. AN(4) and PR(4) are excluded; accepted emissions families are US17+OBD16/18/19, US20+OBD20, US21+OBD21 and US22+OBD2023. Do not continue this CBR path with missing or out-of-scope vehicle data."
+        "Confirm the exact Mack model/chassis variant and emissions generation from VIN/build data. AN(4) and PR(4) are excluded; valid scope is model year 2017–2024 and US17–US22 with OBD2016–OBD2023. Do not continue this CBR path with missing or out-of-scope vehicle data."
       );
       return go(steps[index+1],"At least one listed yellow UQLS fault is active/confirmed and the entered vehicle identity fits the CBR scope.",
         "Inspect both UQLS harness connector halves for damaged pins/wires, corrosion and water intrusion.");
