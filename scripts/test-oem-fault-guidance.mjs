@@ -31,7 +31,7 @@ const cleanConnector=analyzeDiagnosticCase({...base,entries:{...base.entries,
 }},steps);
 assert.equal(cleanConnector.recommendation.stepId,"p205b_quality");
 assert.equal(cleanConnector.recommendation.state,"next");
-const damagedConnector=analyzeDiagnosticCase({...base,entries:{
+const damagedConnector=analyzeDiagnosticCase({...base,entries:{...base.entries,
  p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
  p205b_connector:{choice:"Damage, corrosion or water intrusion found"}
 }},steps);
@@ -52,7 +52,7 @@ const result=analyzeDiagnosticCase({...base,entries:{...base.entries,
 assert.equal(result.recommendation.state,"review");
 assert.match(result.recommendation.action,/Replace the DEF Level \/ UQLS sensor/i);
 assert.equal(result.recommendation.stepTitle,"Replace DEF Level / UQLS sensor");
-const exactUiChoice=analyzeDiagnosticCase({...base,entries:{
+const exactUiChoice=analyzeDiagnosticCase({...base,entries:{...base.entries,
  ...completedPrerequisites,
  p205b_cycle:{choice:"Repeat sequence completed; one or more listed yellow UQLS faults returned active/confirmed"},
  p205b_result:{choice:"The yellow faults returned"}
@@ -61,7 +61,7 @@ assert.equal(exactUiChoice.recommendation.state,"review");
 assert.equal(exactUiChoice.recommendation.stepTitle,"Replace DEF Level / UQLS sensor");
 assert.match(exactUiChoice.recommendation.action,/RECOMMENDATION: Replace the DEF Level \/ UQLS sensor/i);
 assert.match(exactUiChoice.recommendation.explanation,/RECOMMENDATION: Replace the DEF Level \/ UQLS sensor/i);
-const noYellowReturn=analyzeDiagnosticCase({...base,entries:{
+const noYellowReturn=analyzeDiagnosticCase({...base,entries:{...base.entries,
  ...completedPrerequisites,
  p205b_cycle:{choice:"Repeat sequence completed; none of the nine listed yellow UQLS faults returned active"},
  p205b_result:{choice:"None of the yellow faults returned"}
