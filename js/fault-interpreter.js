@@ -47,7 +47,7 @@ function findOemRecord(raw, parsed) {
     const codeMatch = recordCode === normalize(queryCode) || recordCode === supplied;
     if (!codeMatch) return false;
     const manufacturer = normalize(record.manufacturer);
-    const manufacturerWasSpecified = oemRecords.some(item => item.manufacturer && supplied.includes(normalize(item.manufacturer)));
+    const manufacturerWasSpecified = ["mack","volvo","isuzu","hino","cummins","allison","freightliner","westernstar","international","navistar","paccar","detroit","meritor","bendix","eaton","wabco"].some(name=>supplied.includes(normalize(name))) || oemRecords.some(item => item.manufacturer && supplied.includes(normalize(item.manufacturer)));
     return !manufacturer || !manufacturerWasSpecified || supplied.includes(manufacturer);
   });
   if (candidates.length === 1 && candidates[0].manufacturer && !manufacturerWasSpecified) {
