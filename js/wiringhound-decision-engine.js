@@ -6,6 +6,12 @@ function explicitlyAbnormal(value=""){
   const text=String(value||"").toLowerCase()
     .replace(/not\s+(?:excessive|abnormal|too high|too low|out of spec)/g,"")
     .replace(/no\s+(?:excessive|abnormal)\s+(?:drop|reading|condition)/g,"");
+  // Compare only explicit voltage-drop readings and stated voltage maxima in the same entry.
+  const pair=text.match(/(\d+(?:\.\d+)?)\s*(mv|v)\s+drop\b[^;\n]*;\s*spec(?:ification)?\s+max(?:imum)?\s+(\d+(?:\.\d+)?)\s*(mv|v)\b/i);
+  if(pair){
+    const volts=(n,u)=>Number(n)*(u.toLowerCase()==="mv"?0.001:1);
+    if(volts(pair[1],pair[2])>volts(pair[3],pair[4]))return true;
+  }
   return /out of spec|outside (?:the )?spec|above (?:the )?(?:spec|limit)|below (?:the )?(?:spec|limit)|excessive|abnormal|too high|too low|large voltage drop|high voltage drop|fails? (?:the )?spec|voltage drop.{0,24}(?:excessive|too high)/i.test(text);
 }
 function inspectionAction(stepId){
