@@ -29,6 +29,8 @@ assert.match(bareOem.caution, /manufacturer-specific definition withheld/i);
 const mackOem = interpretFaultCode("Mack P205B64");
 assert.equal(mackOem.status, "source-referenced");
 assert.match(mackOem.description, /Reductant tank temperature/i);
+const wrongMake = interpretFaultCode("Volvo P205B64");
+assert.equal(wrongMake.status, "not-found", "A Mack-only definition must not be shown for a Volvo");
 
 const compactCaseP = interpretFaultCode("P245213");
 assert.equal(compactCaseP.status, "manufacturer-required");
