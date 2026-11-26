@@ -853,7 +853,7 @@ function powertrainRecommendation(record, steps) {
         "Follow CBR K01029637 only after the VIN/build confirms common-rail configuration and exact applicability: inspect the fuel-tank vent filter and both hose connections, then remove and inspect the secondary fuel-filter lip seal. Photograph the required locations and attach them to the eService case.");
     }
     if(/P016F-00 present; K01029637 combination not present/i.test(choice)){
-      if(hasK010Combination&&k010StatusesKnown&&k010Active) return hold(
+      if(hasK010Combination&&k010Statuses.every(statuses=>statuses.length>0&&statuses.every(status=>status==="active"||status==="intermittent"))) return hold(
         "All three K01029637 trigger codes are attached with active/intermittent status, but the selected result says the combination is not present.",
         "Review the complete scan and select the K01029637 applicability option if the VIN/build scope is confirmed. Do not bypass the CBR trigger combination by selecting the low-side-only path."
       );
