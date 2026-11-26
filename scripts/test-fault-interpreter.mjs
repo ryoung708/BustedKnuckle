@@ -34,27 +34,27 @@ const compactCaseP = interpretFaultCode("P245213");
 assert.equal(compactCaseP.status, "manufacturer-required");
 assert.match(compactCaseP.description, /DPF pressure sensor A circuit open/i);
 
-const caseP = interpretFaultCode("P2452-13");
-assert.equal(caseP.status, "manufacturer-required");
+const caseP = interpretFaultCode("Mack P2452-13");
+assert.equal(caseP.status, "case-derived-unverified");
 assert.match(caseP.description, /DPF pressure sensor A circuit open/i);
 assert.equal(caseP.confidence, "case-derived-unverified");
 
-const caseU = interpretFaultCode("U0100-87");
-assert.equal(caseU.status, "manufacturer-required");
+const caseU = interpretFaultCode("Mack U0100-87");
+assert.equal(caseU.status, "case-derived-unverified");
 assert.match(caseU.description, /Lost communication with EMS/i);
 
-const caseSpn = interpretFaultCode("11/790/9");
-assert.equal(caseSpn.status, "manufacturer-required");
+const caseSpn = interpretFaultCode("Mack 11/790/9");
+assert.equal(caseSpn.status, "case-derived-unverified");
 assert.match(caseSpn.description, /Wheel speed axle 1 right/i);
 
-const casePsid = interpretFaultCode("PSID 14 FMI 3");
-assert.equal(casePsid.status, "manufacturer-required");
+const casePsid = interpretFaultCode("Mack PSID 14 FMI 3");
+assert.equal(casePsid.status, "case-derived-unverified");
 assert.match(casePsid.description, /Right-front turn signal/i);
 const compactPsid = interpretFaultCode("PSID14FMI3");
-assert.equal(compactPsid.status, "oem-documented");
+assert.equal(compactPsid.status, "manufacturer-required");
 
-const casePid = interpretFaultCode("PID 84 FMI 9");
-assert.equal(casePid.status, "manufacturer-required");
+const casePid = interpretFaultCode("Mack PID 84 FMI 9");
+assert.equal(casePid.status, "case-derived-unverified");
 assert.match(casePid.description, /Vehicle speed/i);
 
 
