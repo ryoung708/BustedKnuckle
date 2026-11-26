@@ -1,13 +1,10 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
+import { supabase as client } from "./supabase-client.js";
 import { createCaseRecord } from "./case-schema.js";
 
-const SUPABASE_URL = "https://wpxvaqmzxhxlrutklypm.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8Dhvi0M8P31FLB9kH5-RiA_5qyq9A0O";
 const BUCKET = "ironknuckle-case-files";
 const LOCAL_STORE = "ironknuckle.sessions.v1";
 const MAP_STORE = "ironknuckle.cloud-case-map.v1";
 const $ = id => document.getElementById(id);
-const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 let user = null;
 let selectedCloudCase = null;
 let cloudRows = [];
