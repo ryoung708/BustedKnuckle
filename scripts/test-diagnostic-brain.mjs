@@ -726,6 +726,6 @@ assert.match(p205Conflicting.recommendation.reason,/does not confirm that outcom
 const p205NoneReturned=analyzeDiagnosticCase({...p205Base,entries:{...p205Prerequisites,p205b_cycle:{choice:"Repeat sequence completed; none of the nine listed yellow UQLS faults returned active"},p205b_result:{choice:"None of the nine listed yellow UQLS faults returned active after repeat test"}}},p205Steps);
 assert.equal(p205NoneReturned.recommendation.stepId,"p205b_result");
 assert.equal(p205NoneReturned.recommendation.state,"review");
-assert.match(p205NoneReturned.recommendation.title,/No UQLS replacement indicated/i);
+assert.match(p205NoneReturned.recommendation.stepTitle,/No UQLS replacement indicated/i);
 
 console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");
