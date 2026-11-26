@@ -6,7 +6,7 @@ function explicitlyAbnormal(value=""){
   const text=String(value||"").toLowerCase()
     .replace(/not\s+(?:excessive|abnormal|too high|too low|out of spec)/g,"")
     .replace(/no\s+(?:excessive|abnormal)\s+(?:drop|reading|condition)/g,"");
-  return /out of spec|outside (?:the )?spec|above (?:the )?(?:spec|limit)|below (?:the )?(?:spec|limit)|spec(?:ification)?\s+(?:max(?:imum)?|limit)|excessive|abnormal|too high|too low|large voltage drop|high voltage drop|fails? (?:the )?spec|voltage drop.{0,24}(?:excessive|too high)/i.test(text);
+  return /out of spec|outside (?:the )?spec|above (?:the )?(?:spec|limit)|below (?:the )?(?:spec|limit)|excessive|abnormal|too high|too low|large voltage drop|high voltage drop|fails? (?:the )?spec|voltage drop.{0,24}(?:excessive|too high)/i.test(text);
 }
 function inspectionAction(stepId){
   const actions={
@@ -62,7 +62,7 @@ export function recommendNextStep(caseRecord,steps){
   }
 
   if(id==="verify"){
-    if(has(answer,"repair verified","no longer occurs"))return result("verify","The technician recorded a successful verification.","Review original complaint conditions, before/after evidence and related faults before closing.","review");
+    if(["repair verified","repair verified under original conditions","failure no longer occurs"].includes(answer.trim()))return result("verify","The technician recorded a successful verification.","Review original complaint conditions, before/after evidence and related faults before closing.","review");
     return hold("The cause or repair has not been fully verified.","Keep the case open and identify the missing proof or repeat the original failure conditions.");
   }
 
@@ -128,16 +128,16 @@ export function recommendNextStep(caseRecord,steps){
         if(has(answer,"no change","no add-on"))return go("module_isolation","Add-on equipment did not explain the symptom.","Continue controlled one-at-a-time module/branch isolation using the vehicle-specific procedure.");
         return hold("The add-on isolation result is inconclusive.","Repeat the same test and record exactly what was disconnected and the before/after readings.");
       case "addon_review":
+        if(has(answer,"no issue","no fault","no damage","no defect"))return go("module_isolation","The add-on branch did not reveal a confirmed defect.","Continue with controlled module/branch isolation.");
         if(has(answer,"fault found","damage found","defect confirmed"))return go("verify","A physical issue has been identified in the add-on branch.","Document the actual defect and repair, then repeat the original network tests.");
-        if(has(answer,"no issue","no fault"))return go("module_isolation","The add-on branch did not reveal a confirmed defect.","Continue with controlled module/branch isolation.");
         return hold("The add-on branch has not been conclusively evaluated.","Record connector, wiring, power/ground and installation findings.");
       case "module_isolation":
         if(has(answer,"returned when a particular module"))return go("module_branch_review","Communication recovered after one module was disconnected. The module itself is not yet proven faulty.","Inspect that module's branch, connector, power and ground; repeat isolation to confirm.");
         if(has(answer,"dropout remained","no clear change"))return go("all_isolated","No single module isolation restored communication.","Establish a fully isolated network baseline using the vehicle-specific procedure.");
         return hold("Module isolation was not completed safely or the result is unclear.","Confirm topology and the approved isolation procedure before disconnecting more modules.");
       case "module_branch_review":
+        if(has(answer,"no branch fault","no defect","no fault","no damage"))return go("all_isolated","The module branch did not reveal a confirmed wiring, connector, power or ground defect.","Continue network isolation; do not condemn the module without its required checks.");
         if(has(answer,"fault found","damage found","abnormal power","ground fault","connector fault"))return go("verify","A branch-level defect has been identified for confirmation.","Document physical evidence and repair, then repeat the original communication tests.");
-        if(has(answer,"no branch fault","no defect"))return go("all_isolated","The module branch did not reveal a confirmed wiring, connector, power or ground defect.","Continue network isolation; do not condemn the module without its required checks.");
         return hold("The isolated module branch still needs evidence.","Capture connector, power/ground checks and symptom repeatability.");
       case "all_isolated":
         if(has(answer,"unable"))return hold("Complete network isolation has not been confirmed.","Verify OEM network layout, terminator locations and safe disconnect procedure.");
@@ -195,8 +195,8 @@ export function recommendNextStep(caseRecord,steps){
         if(has(answer,"load passes","known-good load"))return go("harness","The load itself passed the approved check.","Return to the wiring diagram and isolate the harness/connector path.");
         return hold("The load has not been independently proven.","Use an approved component test or known-good comparison; do not infer failure from missing operation alone.");
       case "harness":
-        if(has(answer,"isolated to a segment","found","damage"))return go("verify","A physical or circuit defect has been localized.","Document the exact finding and repair, then repeat the original loaded test.");
         if(has(answer,"no physical fault"))return go("drop","No physical defect was found in the inspected area.","Return to loaded voltage-drop testing and divide the circuit into smaller documented segments.");
+        if(has(answer,"isolated to a segment","found","damage"))return go("verify","A physical or circuit defect has been localized.","Document the exact finding and repair, then repeat the original loaded test.");
         return hold("The circuit fault has not been localized.","Record branch boundaries, connector/pin references and the measurement that changes.");
     }
   }
@@ -297,7 +297,5 @@ export function recommendNextStep(caseRecord,steps){
     }
   }
 
-  const nextIndex=latest.index+1;
-  if(nextIndex<steps.length)return result(steps[nextIndex].id,"No specialized branch rule matched this observation.","Continue with the next stage, preserving evidence and changing one variable at a time.");
   return hold("No validated branch is available for this result.","Review the evidence and obtain the vehicle-specific service procedure before proceeding.");
 }
