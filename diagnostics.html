@@ -16,12 +16,12 @@
 /* Fault report import / local extraction review */
 .fault-importer{margin-top:12px;border:1px solid #78bfff55;border-radius:9px;background:#78bfff08;padding:11px}.fault-importer>summary{cursor:pointer;color:var(--blue);font-size:10px;font-weight:900;letter-spacing:.1em}.fault-import-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;margin-top:10px}.fault-import-controls input{width:100%;min-width:0;padding:10px;background:#0b1117;border:1px solid var(--line);border-radius:7px;color:var(--text)}.fault-import-review{display:grid;gap:7px;margin-top:10px}.fault-import-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;padding:10px;border:1px solid var(--line);border-radius:8px;background:#0d131a}.fault-import-row.duplicate{border-color:#a85e16}.fault-import-row input[type=checkbox]{accent-color:var(--amber);margin-top:3px}.fault-import-row input[type=text],.fault-import-row textarea,.fault-import-row select{width:100%;min-width:0;padding:8px;margin-top:5px;background:#090e13;border:1px solid var(--line);border-radius:6px;color:var(--text);font:inherit;font-size:11px}.fault-import-row textarea{min-height:42px;resize:vertical}.fault-import-row .row-meta{font-size:9px;color:var(--muted);margin-top:4px}.fault-import-status{font-size:10px;color:var(--muted);line-height:1.5;margin-top:8px}.fault-import-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}@media(max-width:560px){.fault-import-controls{grid-template-columns:1fr}.fault-import-actions .btn{flex:1}}
 
-.guided-test-card{margin:12px 0;border-color:#78bfff66;background:#78bfff08}.guided-test-card> b{color:var(--blue);letter-spacing:.12em}.guided-test-card .guided-test-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.guided-test-card .guided-test-grid>div{min-width:0;padding:9px;border:1px solid var(--line);border-radius:7px;background:#0b1117}.guided-test-card .guided-test-grid strong{display:block;color:var(--amber);font-size:10px;letter-spacing:.06em;margin-bottom:5px}.guided-test-card ul{margin:5px 0;padding-left:18px}.guided-test-card li{font-size:10px;line-height:1.5;color:#d2dce6;margin:3px 0}.guided-test-card .guided-test-stop{border-color:#ff9f1c66}.guided-test-card .small{margin-top:10px}@media(max-width:600px){.guided-test-card .guided-test-grid{grid-template-columns:1fr}}
+
 
 .case-faults{margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:8px}.case-fault-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--line)}.case-fault-row small{color:var(--muted)}
 </style>  <link rel="stylesheet" href="./mobile-ergonomics.css">
 <link rel="stylesheet" href="./vehicle-architecture.css">
-</head><body><div class="wrap">
+</head><body class="ik-guided"><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span><small>DIAGNOSTIC COMMAND CENTER // BETA</small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a href="./oem-specification-assistant.html">OEM SPEC ASSISTANT</a><a href="./case-vault.html">CASE VAULT</a><a href="./index.html">← MAIN WORKSPACE</a></div></header>
 <section class="hero"><div class="eyebrow">Powertrain diagnostic workspace</div><h1>Engine. After-treatment. Drivetrain.</h1><p>Investigate engine, after-treatment, transmission and drivetrain faults. Record evidence, compare operating data and verify the repair.</p></section>
 <div class="guard"><b>SAFETY & ACCURACY:</b> Confirm the exact vehicle configuration and OEM specifications before testing. Generic values are not universal pass/fail limits. Use WiringHound for electrical, harness and network faults.</div>
@@ -36,7 +36,7 @@
 <p class="small" style="margin-top:12px">Private to your account. New cases sync when signed in; local copies remain on this browser. Remove customer identifiers, full VINs and confidential or restricted material before uploading.</p>
 </section></details>
 <div class="layout">
-<aside class="panel"><h2>New investigation</h2><p class="muted">Describe the complaint first. Add vehicle details when available to help guide the next tests.</p>
+<aside class="panel"><details class="ik-case-tools" open><summary>Case setup & saved cases</summary><h2>New investigation</h2><p class="muted">Describe the complaint first. Add vehicle details when available to help guide the next tests.</p>
 <div class="field"><label for="complaint">Customer complaint / symptoms</label><textarea id="complaint" placeholder="What is the truck doing? When does it happen?"></textarea></div>
 <div class="field"><label for="intakeFaultCodes">Fault code(s) (optional)</label><input id="intakeFaultCodes" type="text" autocomplete="off" placeholder="SPN 5246 FMI 0, P20EE"><p class="small">Separate multiple codes with commas. Codes help rank similar saved cases; verify them against the truck.</p></div>
 <div class="field"><label for="workflow">Diagnostic path</label><select id="workflow"><option value="auto">Automatic — build path from complaint</option></select><p class="small workflow-recommendation" id="workflowRecommendation" aria-live="polite">Enter the customer complaint and IronKnuckle will recommend a focused diagnostic path. You can override it when needed.</p></div>
@@ -59,7 +59,7 @@
 <div class="library-list" id="history"></div>
 <div class="actions"><button class="btn" id="exportAll">Export library JSON</button><button class="btn" id="importAll">Import cases JSON</button><input id="importFile" type="file" accept="application/json,.json" hidden><button class="btn" id="clearAll">Delete local records</button></div>
 <p class="small">Library is local to this browser profile. Export regular backups. Imported cases are added without replacing existing records with matching IDs.</p>
-</div></details></aside>
+</div></details></details></aside>
 <main class="panel" id="work"><div class="empty">No active investigation.<br>Choose a diagnostic path and start a new case.</div></main>
 </div>
 <div class="footer">IronKnuckle Diagnostic Engine v1 · Rule-based guidance · Local-only prototype · Verify every procedure against approved service information.</div>
