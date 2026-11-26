@@ -25,7 +25,7 @@ function renderMessage(host, title, message, tone = "muted") {
 function renderResults(host, identity, rows) {
   if (!rows.length) {
     renderMessage(host, "No published architecture matches this truck yet.",
-      "The architecture catalog is new and currently has no published vehicle records. IronKnuckle will not substitute another model year, engine, or chassis architecture. Existing diagnostic workflows remain available.");
+      "The architecture catalog is new and currently has no published vehicle records. Never substitute another model year, engine, or chassis architecture. Existing diagnostic workflows remain available.");
     return;
   }
   host.innerHTML = '<div class="ik-architecture-match"><b>'+esc(identity.platformName)+' · '+esc(identity.modelYear)+' '+esc(identity.model)+'</b><span>Published vehicle architecture</span></div>'+
