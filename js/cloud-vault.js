@@ -161,11 +161,13 @@ async function syncLocalCases() {
   for (const raw of local) {
     try {
       let cloudId = map[raw.id];
+      const caseRecord = createCaseRecord(raw, "diagnostic_command_center");
       const payload = {
         owner_id: user.id,
         title: titleFor(raw),
         status: ["draft","submitted","in_review","reviewed","archived"].includes(raw.status) ? raw.status : "submitted",
-        raw_case: createCaseRecord(raw, "diagnostic_command_center"),
+        raw_case: caseRecord,
+        vehicle_context: caseRecord.caseEnvelope.vehicleContext,
         updated_at: new Date().toISOString()
       };
       let result;
@@ -201,11 +203,13 @@ async function saveCase(raw) {
   const previous = saveQueues.get(raw.id) || Promise.resolve();
   const next = previous.catch(() => {}).then(async () => {
     const map = caseMap();
+    const caseRecord = createCaseRecord(raw, "diagnostic_command_center");
     const payload = {
       owner_id: user.id,
       title: titleFor(raw),
       status: cloudStatus(raw),
-      raw_case: raw,
+      raw_case: caseRecord,
+      vehicle_context: caseRecord.caseEnvelope.vehicleContext,
       updated_at: new Date().toISOString()
     };
     let cloudId = map[raw.id];
