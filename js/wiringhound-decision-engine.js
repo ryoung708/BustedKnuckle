@@ -289,6 +289,7 @@ export function recommendNextStep(caseRecord,steps){
       case "manipulate":
         if(has(answer,"repeatable change at one location","connector movement changes symptom"))return go("isolate","A repeatable change has narrowed the suspected location.","Use the wiring diagram to separate the affected segment, connector and load. Confirm the same response at a documented boundary.");
         if(has(answer,"no change","location remains broad"))return hold("Harness manipulation did not isolate a repeatable location.","Continue monitored capture across upstream/downstream reference points and vary one condition at a time. Do not replace a component from a broad correlation.");
+        return hold("The controlled manipulation result is not recognized or is inconclusive.","Record the exact monitored signal, location, conditions and whether the symptom changed. Do not proceed to branch isolation until the observation is clear.");
       case "isolate":
         if(has(answer,"defect repaired; ready for verification"))return go("verify","The intermittent defect has been localized and repaired.","Repeat the original temperature, vibration, moisture, load and duration conditions as safely as possible. Record the monitoring period and result.");
         if(has(answer,"specific segment isolated","specific connector isolated"))return hold("The intermittent fault is localized but not yet recorded as repaired.","Document the exact connector/segment and repeatable evidence. Complete the approved repair, then select the repaired outcome.");
