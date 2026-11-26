@@ -46,3 +46,8 @@ recordStep(unconfirmed,last,{choice:"Cause remains unconfirmed"});
 assert.equal(evaluateSession(unconfirmed).status,"needs-more-evidence");
 
 console.log("Diagnostic engine tests passed.");
+
+for (const choice of ["Repair not verified","Cause unverified","Repair verified incorrectly"]) {
+  recordStep(s,last,{choice});
+  assert.equal(evaluateSession(s).status,"needs-more-evidence",choice);
+}

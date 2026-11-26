@@ -143,3 +143,10 @@ assert.equal(recommendNextStep(record("intermittent","isolate","Defect repaired;
 assert.equal(recommendNextStep(record("intermittent","verify","Failure reduced but still present"),intermittent).state,"hold");
 
 console.log("WiringHound decision engine tests passed.");
+
+for (const choice of ["Repair verified incorrectly","Repair not verified","Failure no longer occurs except under load"]) assert.equal(recommendNextStep(record("j1939_network","verify",choice),j1939).state,"hold",choice);
+for (const choice of ["No fault found","No damage found","No defect confirmed"]) assert.equal(recommendNextStep(record("j1939_network","addon_review",choice),j1939).stepId,"module_isolation",choice);
+assert.equal(recommendNextStep(record("j1939_network","module_branch_review","No damage found"),j1939).stepId,"all_isolated");
+
+const withinLimit=recommendNextStep({workflowId:"power_loss",currentStep:3,entries:{main_disconnect:{choice:"Switch path remains stable during event",measurements:{actual:"0.1 V drop across closed switch; spec maximum 0.2 V"}}}},powerLoss);
+assert.equal(withinLimit.stepId,"main_distribution");
