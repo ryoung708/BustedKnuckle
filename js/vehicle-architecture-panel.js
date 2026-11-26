@@ -28,7 +28,7 @@ function renderResults(host, identity, rows) {
       "The architecture catalog is new and currently has no published vehicle records. Never substitute another model year, engine, or chassis architecture. Existing diagnostic workflows remain available.");
     return;
   }
-  host.innerHTML = '<div class="ik-architecture-match"><b>'+esc(identity.platformName)+' · '+esc(identity.modelYear)+' '+esc(identity.model)+'</b><span>Published vehicle architecture</span></div>'+
+  host.innerHTML = '<div class="ik-architecture-match"><b>'+esc(identity.platformName)+' · '+esc(identity.modelYear)+' '+esc(identity.model)+'</b><span>Published architecture candidates — confirm exact build applicability</span></div>'+
     rows.map(row => {
       const cfg = row.configuration, arch = row.architecture;
       const controllers = row.controllers || [], networks = row.networks || [], power = row.power || [], connectors = row.connectors || [];
@@ -47,12 +47,12 @@ async function loadPublishedArchitecture(host, button) {
   const vehicle = vehicleFromForm();
   const identity = architectureQueryIdentity(vehicle);
   if (!identity.normalizedMake || !identity.model || !identity.modelYear) {
-    renderMessage(host,"Vehicle details needed","Enter the truck manufacturer, model and model year first. Add engine manufacturer/model to narrow applicability.");
+    renderMessage(host,"Vehicle details needed","Enter the truck manufacturer, model and model year first. Enter engine, transmission and emissions details to narrow applicability.");
     return;
   }
   button.disabled = true;
   button.textContent = "CHECKING CATALOG…";
-  renderMessage(host,"Checking exact vehicle applicability…","Only published architecture records matching the selected vehicle will be shown.");
+  renderMessage(host,"Checking vehicle architecture candidates…","Only published records matching entered details will be shown. Confirm exact build and configuration before using service information.");
   try {
     const {data:sessionData,error:sessionError} = await supabase.auth.getSession();
     if (sessionError) throw sessionError;

@@ -50,3 +50,6 @@ assert.doesNotMatch(workspace, /createClient\(/);
 assert.doesNotMatch(vault, /createClient\(/);
 
 console.log("Vehicle architecture DCC/WiringHound integration checks passed.");
+
+assert.match(panel, /Published architecture candidates — confirm exact build applicability/);
+assert.doesNotMatch(panel, /Checking exact vehicle applicability/);

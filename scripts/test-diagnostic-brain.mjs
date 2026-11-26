@@ -714,6 +714,11 @@ assert.equal(p205Bypass.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Bypass.recommendation.state,"hold");
 
 const p205ActiveCodeEvidence={scan:{faultCodes:[{code:"P205B64",controller:"EMS",status:"active"}]}};
+for (const status of ["not active","previously active","not confirmed","inactive","unknown","active / inactive"]) {
+  const result=analyzeDiagnosticCase({...p205Base,entries:{p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified",faultCodes:[{code:"P205B64",controller:"EMS",status}]}}},p205Steps);
+  assert.equal(result.recommendation.stepId,"p205b_applicability",status);
+  assert.match(result.recommendation.reason,/No attached listed yellow UQLS fault/i,status);
+}
 const p205Prerequisites={
   p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
   p205b_connector:{choice:"No pin, wire, corrosion or moisture damage found"},
