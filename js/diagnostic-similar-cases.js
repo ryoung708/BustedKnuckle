@@ -54,7 +54,7 @@ function candidateSystem(record, workflows = {}) {
 }
 function vehicleOf(record = {}) {
   const v = record.vehicle || {};
-  return {make:text(v.make || record.make || record.truckMake),model:text(v.model || record.model || record.truckModel),engine:text(v.engine || record.engine || record.engineModel),year:text(v.year || record.year || record.modelYear)};
+  return {make:text(v.make || record.make || record.truckMake),model:text(v.model || record.model || record.truckModel),engineMake:text(v.engineMake || v.engineManufacturer || record.engineMake || record.engineManufacturer),engine:text(v.engineModel || v.engine || record.engine || record.engineModel),transmissionMake:text(v.transmissionMake || v.transmissionManufacturer),transmission:text(v.transmissionModel || v.transmission),emissions:text(v.emissionsFamily || v.emissions),year:text(v.year || record.year || record.modelYear)};
 }
 function complaintOf(record = {}) { return text(record.complaint || record.symptom || record.customerComplaint || record.description); }
 function verified(record = {}) { return record.verification === "verified" || record.status === "confirmed"; }
@@ -76,15 +76,23 @@ export function findSimilarDiagnosticCases(current = {}, candidates = [], workfl
     const vehicle = vehicleOf(candidate);
     const sameMake = Boolean(currentVehicle.make && norm(currentVehicle.make) === norm(vehicle.make));
     const sameModel = Boolean(currentVehicle.model && norm(currentVehicle.model) === norm(vehicle.model));
+    const sameEngineMake = Boolean(currentVehicle.engineMake && norm(currentVehicle.engineMake) === norm(vehicle.engineMake));
     const sameEngine = Boolean(currentVehicle.engine && norm(currentVehicle.engine) === norm(vehicle.engine));
+    const sameYear = Boolean(currentVehicle.year && vehicle.year && norm(currentVehicle.year) === norm(vehicle.year));
+    const sameTransmission = Boolean(currentVehicle.transmissionMake && currentVehicle.transmission && norm(currentVehicle.transmissionMake) === norm(vehicle.transmissionMake) && norm(currentVehicle.transmission) === norm(vehicle.transmission));
+    const sameEmissions = Boolean(currentVehicle.emissions && vehicle.emissions && norm(currentVehicle.emissions) === norm(vehicle.emissions));
     const sameVehicle = sameMake && sameModel;
     const thresholdMet = faultMatches.length > 0 || (sharedTerms.length >= 2 && (sameEngine || sameVehicle)) || sharedTerms.length >= 4;
     if (!thresholdMet) return null;
     const bestFaultScore = faultMatches.reduce((best, item) => Math.max(best, item.score), 0);
-    const score = bestFaultScore + sharedTerms.length * 8 + (sameMake ? 5 : 0) + (sameModel ? 8 : 0) + (sameEngine ? 10 : 0) + (verified(candidate) && hasUsefulOutcome(candidate) ? 15 : 0);
+    const score = bestFaultScore + sharedTerms.length * 8 + (sameMake ? 5 : 0) + (sameModel ? 8 : 0) + (sameEngineMake ? 5 : 0) + (sameEngine ? 10 : 0) + (sameYear ? 5 : 0) + (sameTransmission ? 4 : 0) + (sameEmissions ? 4 : 0) + (verified(candidate) && hasUsefulOutcome(candidate) ? 15 : 0);
     const cause = text(candidate.rootCause || candidate.confirmedCause || candidate.cause);
     const repair = text(candidate.repairPerformed || candidate.repair || candidate.resolution);
     const faultReason = faultMatches.length ? "Matching SPN/code: " + faultMatches.map(item => [item.code, item.fmi ? "FMI " + item.fmi + (item.fmiConfirmed ? "" : " (not recorded on both cases)") : "FMI not recorded", item.controller ? item.controller + (item.controllerConfirmed ? "" : " (not recorded on both cases)") : "controller not recorded"].join(" · ")).join(", ") : "";
-    return {id:String(candidate.id),title:[vehicle.year,vehicle.make,vehicle.model,vehicle.engine].filter(Boolean).join(" ") || candidateComplaint.slice(0,80) || "Saved diagnostic case",complaint:candidateComplaint,rootCause:cause,repairPerformed:repair,verified:verified(candidate) && hasUsefulOutcome(candidate),sharedTerms:sharedTerms.slice(0,6),faultMatches,matchReason:faultReason || sharedTerms.length + " shared symptom terms" + ((sameVehicle || sameEngine) ? " with matching vehicle / engine context." : "."),score};
+    const sameVehicleGeneration = sameMake && sameModel && sameYear;
+    const vehicleMatch = {sameMake,sameModel,sameYear,sameEngineMake,sameEngine,sameTransmission,sameEmissions,sameVehicleGeneration};
+    const contextReason = [sameVehicleGeneration && "same make/model/year",sameMake && sameModel && !sameYear && "same make/model; model year differs or is missing",sameEngineMake && sameEngine && "same engine family",sameTransmission && "same transmission",sameEmissions && "same emissions family"].filter(Boolean).join(", ");
+    const crossVehicleCaveat = faultMatches.length && !sameVehicleGeneration ? " Cross-vehicle code match only; verify exact platform, engine, emissions and source applicability before using the case." : "";
+    return {id:String(candidate.id),title:[vehicle.year,vehicle.make,vehicle.model,vehicle.engine].filter(Boolean).join(" ") || candidateComplaint.slice(0,80) || "Saved diagnostic case",complaint:candidateComplaint,rootCause:cause,repairPerformed:repair,verified:verified(candidate) && hasUsefulOutcome(candidate),sharedTerms:sharedTerms.slice(0,6),faultMatches,vehicleMatch,matchReason:(faultReason || sharedTerms.length + " shared symptom terms") + (contextReason ? " Vehicle context: "+contextReason+"." : ".") + crossVehicleCaveat,score};
   }).filter(Boolean).sort((a,b) => b.score-a.score).slice(0,5);
 }
