@@ -201,6 +201,102 @@ export function recommendNextStep(caseRecord,steps){
     }
   }
 
+  // Dedicated short-to-ground path: a branch finding is not a repair or verification.
+  if(workflow==="short_ground"){
+    switch(id){
+      case "scope":
+        return go("powerdown","The affected circuit and failure condition have been identified.","Use the exact vehicle diagram and approved isolation procedure. Do not apply power to an unknown circuit.");
+      case "powerdown":
+        if(has(answer,"circuit confirmed de-energized"))return go("loads","The circuit is confirmed de-energized for isolation testing.","Separate loads and branch connectors one at a time. Record the exact isolation point and whether the abnormal condition changes.");
+        return hold("The circuit has not been proven safe for resistance or continuity testing.","Stop. Follow the OEM power-down/isolation procedure and confirm absence of voltage before disconnecting loads or using resistance mode.");
+      case "loads":
+        if(has(answer,"not safely isolated"))return hold("The affected circuit has not been safely isolated.","Do not continue probing or disconnecting components. Obtain the correct diagram and approved isolation procedure, then verify the circuit is de-energized.");
+        return go("segment","Load and branch isolation has provided a direction for the next physical inspection.","Inspect the implicated branch for chafing, pinched wiring, moisture, connector damage and unintended ground contact. Confirm any continuity path against the exact schematic.");
+      case "segment":
+        if(has(answer,"defect repaired; ready for verification"))return go("verify","The isolated short-to-ground defect has been repaired and is ready for verification.","Restore connectors and protection, then repeat the original circuit operating condition and confirm the fuse/load operates normally.");
+        if(has(answer,"physical contact","damage found","unexpected continuity"))return hold("A possible short-to-ground path has been found, but the defect is not yet documented as repaired.","Record the exact harness location, connector/branch boundary and confirming de-energized test. Repair only the proven defect using the approved method, then select the repaired outcome.");
+        return hold("The short-to-ground path has not been isolated to a confirmed repair.","If the abnormality was not reproduced, repeat the OEM-approved test under the original conditions. If circuit information is missing, obtain the exact diagram and legitimate ground-path details before proceeding.");
+    }
+  }
+
+  // Dedicated short-to-power path: distinguish normal backfeed from a true cross-contact.
+  if(workflow==="short_power"){
+    switch(id){
+      case "scope":
+        return go("isolate","The circuit and unexpected-voltage condition have been scoped.","Identify normal shared feeds and module connections from the wiring diagram, then isolate connected devices one at a time using the approved procedure.");
+      case "isolate":
+        if(has(answer,"isolation incomplete"))return hold("The connected devices and branches have not been fully isolated.","Complete the OEM-approved isolation sequence and record each device disconnected and the voltage response.");
+        return go("branches","The device-isolation result is recorded; the affected circuit path now needs segmentation.","Separate the circuit at documented connectors and compare each segment. Account for normal backfeed and shared-feed behavior before calling it a short.");
+      case "branches":
+        if(has(answer,"one branch contains unexpected voltage"))return go("inspect","Unexpected voltage has been localized to one branch.","Inspect that branch for melted insulation, connector bridging, moisture and aftermarket splices. Confirm the suspected cross-contact with the exact circuit diagram and approved test.");
+        if(has(answer,"multiple branches affected","no branch isolated"))return hold("The unexpected voltage has not been localized to one branch.","Recheck shared feeds, module paths and approved branch boundaries. Change one connection at a time and record where the voltage remains; do not assume harness damage.");
+        return hold("The observed voltage may be normal shared-feed or backfeed behavior, but the complaint is not yet explained.","Compare the expected circuit state with the OEM diagram and controller strategy. Verify whether the voltage is a designed shared feed before continuing.");
+      case "inspect":
+        if(has(answer,"defect repaired; ready for verification"))return go("verify","The confirmed cross-contact/connector defect has been repaired.","Restore the circuit and verify voltage behavior in every original operating state. Confirm all related functions and rescan if the OEM procedure requires it.");
+        if(has(answer,"physical cross-contact found","connector contamination found"))return hold("A cross-contact or connector contamination finding needs to be localized and repaired before verification.","Photograph the defect, identify the exact conductors/terminals and follow the approved repair procedure. Do not advance based on a visual finding alone.");
+        return hold("The suspected short-to-power has not been confirmed or repaired.","Continue the approved pinpoint tests for shared feeds, backfeed, moisture and harness cross-contact. Keep the cause unconfirmed until the abnormal voltage is isolated.");
+    }
+  }
+
+  // Open-circuit path: missing supply/ground is a lead, not proof of a broken conductor.
+  if(workflow==="open_circuit"){
+    switch(id){
+      case "scope":
+        return go("supply","The failed load and operating condition have been identified.","Verify supply and ground at the specified points under the prescribed load. Record actual values and conditions.");
+      case "supply":
+        if(has(answer,"not tested yet"))return hold("Power and ground have not been tested under the required load.","Perform the specified loaded checks and record the actual values, test points and OEM limits.");
+        return go("connectors","The supply/ground result has been recorded; connector and terminal condition is the next discriminator.","Inspect terminal retention, pin fit, corrosion, water intrusion and fretting with approved terminal test tools.");
+      case "connectors":
+        if(has(answer,"not yet inspected"))return hold("Connector and terminal inspection has not been completed.","Inspect both connector halves and verify terminal fit using the approved tools; do not spread terminals with improvised probes.");
+        return go("segment","The connector inspection is complete or has identified an area for focused circuit segmentation.","Use the diagram to test progressively between documented connectors and components. Confirm the open/high-resistance boundary before repair.");
+      case "segment":
+        if(has(answer,"defect repaired; ready for verification"))return go("verify","The isolated open/high-resistance defect has been repaired.","Repeat loaded operation and the original symptom test. Confirm the circuit can carry its required load, not merely pass continuity.");
+        if(has(answer,"open isolated","high resistance localized"))return hold("The failed circuit segment has been localized but is not yet recorded as repaired.","Record exact endpoints and loaded/continuity results, repair the confirmed conductor or connection using the approved method, then select the repaired outcome.");
+        return hold("The open-circuit boundary remains unproven.","If no abnormality was reproduced, repeat the test under the original load/conditions. If segment boundaries are unknown, obtain the correct diagram and identify approved connector breakpoints.");
+    }
+  }
+
+  // Voltage-drop path: passing one side does not clear the other; abnormal results
+  // stay at the affected side until repair and a repeat test are recorded.
+  if(workflow==="voltage_drop"){
+    switch(id){
+      case "conditions":
+        if(has(answer,"failure reproduced under load"))return go("positive","The failure is reproduced under load and the test conditions are recorded.","Measure positive-side voltage drop across documented segments while the circuit is loaded. Record the applicable OEM limit.");
+        return hold("A valid loaded voltage-drop test condition has not been established.","Reproduce the original load safely. If the load cannot be applied safely or the failure is absent, obtain an approved controlled test method or capture the event with secured logging.");
+      case "positive":
+        if(has(answer,"positive path within specification"))return go("ground","The positive path passed under the recorded load; the return path still needs its own test.","Measure ground-side voltage drop under the same load and compare with the exact circuit specification.");
+        if(has(answer,"positive-path defect repaired; retest passed"))return go("ground","The positive-side defect was repaired and the repeat loaded test passed.","Continue by testing the ground return under the same load; preserve the positive-side before/after readings.");
+        return hold("The positive-side voltage-drop result is abnormal, ambiguous or incomplete.","Localize the exact positive-side segment using documented endpoints. Repair only a confirmed defect and repeat the same loaded test before moving to the ground path.");
+      case "ground":
+        if(has(answer,"ground path within specification"))return go("repair","The ground path passed under the same load; both sides have been checked.","Review the recorded positive and ground results. If no defect is confirmed, do not replace a component; gather a more discriminating test for the original complaint.");
+        if(has(answer,"ground-path defect repaired; retest passed"))return go("repair","The ground-side defect was repaired and the repeat loaded test passed.","Review both before/after sides and document the exact connection repair before final verification.");
+        return hold("The ground-side voltage-drop result is abnormal, ambiguous or incomplete.","Localize the exact ground segment and inspect its terminal, cable, strap or chassis attachment. Repair only the confirmed defect and repeat the same loaded test.");
+      case "repair":
+        if(has(answer,"repair completed; retest pending"))return go("verify","A confirmed connection repair is complete; final loaded verification remains.","Repeat the original load test at the same positive and ground test points. Confirm both drops meet the applicable OEM limits and the complaint is resolved.");
+        if(has(answer,"connection defect found"))return hold("A connection defect has been found but repair completion is not recorded.","Document the exact terminal/cable/splice and supporting voltage-drop result. Complete the approved repair, then select the repair-completed outcome.");
+        return hold("No voltage-drop defect has been confirmed for repair.","Do not replace a connection or component by elimination. Recheck the load, test points, operating conditions and OEM limits; obtain further evidence if both paths passed.");
+    }
+  }
+
+  // Intermittent path: no repeatable location means keep capturing evidence, not verify.
+  if(workflow==="intermittent"){
+    switch(id){
+      case "pattern":
+        return go("baseline","The reported intermittent pattern has been documented or identified as not yet repeatable.","Capture stable and failed-state measurements at the relevant circuit points. Preserve temperature, vibration, moisture, load and timing.");
+      case "baseline":
+        if(has(answer,"baseline captured","failure state captured"))return go("manipulate","A baseline or failed-state measurement has been recorded.","Monitor the same signal while safely checking one accessible harness/connector section at a time. Do not disturb the baseline before documenting it.");
+        return hold("The intermittent fault has not been captured in a measurable state.","Continue event logging or reproduce only under safe controlled conditions. Record the original trigger conditions before manipulating the harness.");
+      case "manipulate":
+        if(has(answer,"repeatable change at one location","connector movement changes symptom"))return go("isolate","A repeatable change has narrowed the suspected location.","Use the wiring diagram to separate the affected segment, connector and load. Confirm the same response at a documented boundary.");
+        if(has(answer,"no change","location remains broad"))return hold("Harness manipulation did not isolate a repeatable location.","Continue monitored capture across upstream/downstream reference points and vary one condition at a time. Do not replace a component from a broad correlation.");
+        return hold("The controlled manipulation result is not recognized or is inconclusive.","Record the exact monitored signal, location, conditions and whether the symptom changed. Do not proceed to branch isolation until the observation is clear.");
+      case "isolate":
+        if(has(answer,"defect repaired; ready for verification"))return go("verify","The intermittent defect has been localized and repaired.","Repeat the original temperature, vibration, moisture, load and duration conditions as safely as possible. Record the monitoring period and result.");
+        if(has(answer,"specific segment isolated","specific connector isolated"))return hold("The intermittent fault is localized but not yet recorded as repaired.","Document the exact connector/segment and repeatable evidence. Complete the approved repair, then select the repaired outcome.");
+        return hold("The intermittent fault has not been isolated to a repairable boundary.","Obtain the correct vehicle-specific diagram or continue event logging and controlled testing until one segment/connector is repeatably implicated.");
+    }
+  }
+
   const nextIndex=latest.index+1;
   if(nextIndex<steps.length)return result(steps[nextIndex].id,"No specialized branch rule matched this observation.","Continue with the next stage, preserving evidence and changing one variable at a time.");
   return hold("No validated branch is available for this result.","Review the evidence and obtain the vehicle-specific service procedure before proceeding.");
