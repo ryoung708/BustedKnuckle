@@ -705,6 +705,7 @@ const p205Bypass=analyzeDiagnosticCase({...p205Base,entries:{p205b_result:{choic
 assert.equal(p205Bypass.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Bypass.recommendation.state,"hold");
 
+const p205ActiveCodeEvidence={scan:{faultCodes:[{code:"P205B64",controller:"EMS",status:"active"}]}};
 const p205Prerequisites={
   p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
   p205b_connector:{choice:"No pin, wire, corrosion or moisture damage found"},
@@ -713,17 +714,20 @@ const p205Prerequisites={
   p205b_fill:{choice:"Tank adequately filled per Mack procedure"},
   p205b_cycle:{choice:"Repeat sequence completed; one or more listed yellow UQLS faults returned active/confirmed"}
 };
-const p205Eligible=analyzeDiagnosticCase({...p205Base,entries:{...p205Prerequisites,p205b_result:{choice:p205FinalChoice}}},p205Steps);
+const p205NoAttachedCode=analyzeDiagnosticCase({...p205Base,entries:{...p205Prerequisites,p205b_cycle:{choice:"Repeat sequence completed; one or more listed yellow UQLS faults returned active/confirmed"},p205b_result:{choice:p205FinalChoice}}},p205Steps);
+assert.equal(p205NoAttachedCode.recommendation.stepId,"p205b_applicability");
+assert.equal(p205NoAttachedCode.recommendation.state,"hold");
+const p205Eligible=analyzeDiagnosticCase({...p205Base,entries:{...p205ActiveCodeEvidence,...p205Prerequisites,p205b_result:{choice:p205FinalChoice}}},p205Steps);
 assert.equal(p205Eligible.recommendation.stepId,"p205b_result");
 assert.equal(p205Eligible.recommendation.state,"review");
 assert.match(p205Eligible.recommendation.action,/RECOMMENDATION: Replace the DEF Level \/ UQLS sensor/i);
 
-const p205Conflicting=analyzeDiagnosticCase({...p205Base,entries:{...p205Prerequisites,p205b_cycle:{choice:"Repeat sequence completed; none of the nine listed yellow UQLS faults returned active"},p205b_result:{choice:p205FinalChoice}}},p205Steps);
+const p205Conflicting=analyzeDiagnosticCase({...p205Base,entries:{...p205ActiveCodeEvidence,...p205Prerequisites,p205b_cycle:{choice:"Repeat sequence completed; none of the nine listed yellow UQLS faults returned active"},p205b_result:{choice:p205FinalChoice}}},p205Steps);
 assert.equal(p205Conflicting.recommendation.stepId,"p205b_cycle");
 assert.equal(p205Conflicting.recommendation.state,"hold");
 assert.match(p205Conflicting.recommendation.reason,/does not confirm that outcome/i);
 
-const p205NoneReturned=analyzeDiagnosticCase({...p205Base,entries:{...p205Prerequisites,p205b_cycle:{choice:"Repeat sequence completed; none of the nine listed yellow UQLS faults returned active"},p205b_result:{choice:"None of the nine listed yellow UQLS faults returned active after repeat test"}}},p205Steps);
+const p205NoneReturned=analyzeDiagnosticCase({...p205Base,entries:{...p205ActiveCodeEvidence,...p205Prerequisites,p205b_cycle:{choice:"Repeat sequence completed; none of the nine listed yellow UQLS faults returned active"},p205b_result:{choice:"None of the nine listed yellow UQLS faults returned active after repeat test"}}},p205Steps);
 assert.equal(p205NoneReturned.recommendation.stepId,"p205b_result");
 assert.equal(p205NoneReturned.recommendation.state,"review");
 assert.match(p205NoneReturned.recommendation.stepTitle,/No UQLS replacement indicated/i);
