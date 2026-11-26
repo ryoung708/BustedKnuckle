@@ -215,7 +215,7 @@ export function evaluateSession(session) {
   else result.nextActions.push("Continue to the next workflow stage. Change one variable at a time and record actual readings and test conditions.");
   if(completedRequired.length===requiredSteps.length && latest.terminal) {
     const finalAnswer=String(session.entries[latest.id]?.choice||"").toLowerCase();
-    const verified=finalAnswer.includes("verified") || finalAnswer.includes("no longer occurs");
+    const verified=["repair verified","repair verified under original conditions","failure no longer occurs","cause and repair verified","repair verified under load","repair and verification complete"].includes(finalAnswer.trim());
     result.status=verified ? "ready-for-review" : "needs-more-evidence";
     result.headline=verified ? "Repair verification recorded — technician review required" : "Investigation complete — cause or repair still unconfirmed";
     result.nextActions=verified
