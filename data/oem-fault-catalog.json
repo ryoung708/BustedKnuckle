@@ -835,10 +835,10 @@
       "manufacturer": "Mack",
       "engine_family": "",
       "vehicle_scope": "Case-derived from one Mack AN diagnostic report. Model year, engine family, emissions generation and calibration were not identified in the supplied report. Historical report snapshot only; confirm VIN, controller and exact vehicle configuration before applying.",
-      "confidence": "case-derived-unverified",
-      "source_title": "IronKnuckle case evidence: Mack AN diagnostic fault report exported 2026-11-23",
-      "source_url": "",
-      "caution": "Transcribed/paraphrased from one historical diagnostic report, not independently verified as a universal Volvo definition. The report lists this DTC as inactive at the time of the snapshot. Preserve the reporting controller and MID context; confirm current status and exact vehicle applicability with authorized service information before diagnosis or parts replacement.",
+      "confidence": "public-oem-reference",
+      "source_title": "Mack CBR K40914241 (updated January 7, 2020) — Common Rail Fuel System fault-code definitions",
+      "source_url": "https://static.nhtsa.gov/odi/tsbs/2019/MC-10170161-9999.pdf",
+      "caution": "The P016F definition is explicitly listed in public Mack CBR K40914241. The accompanying Mack AN scan-report metadata is a historical snapshot and its inactive status is not the current status of another vehicle. K40914241 covers listed 2018–2020 Mack/Volvo common-rail applications with US17+OBD16/18/19 and 11L/13L, MP7/MP8 engines; confirm VIN/build, controller, emissions and current PTT Guided Diagnostics. The code identifies closed-loop fuel-pressure control reaching its lower limit; it does not identify a failed component.",
       "case_metadata": {
         "vehicle": "Mack AN",
         "mileage": 339061.3,
@@ -850,7 +850,7 @@
         "occurrence_window": "first 2020-07-25 16:21:43; last 2020-08-18 09:13:34"
       },
       "code": "P016F00",
-      "description": "Closed Loop Fuel Pressure Control At Limit - Pressure Too Low, No additional information",
+      "description": "Closed Loop Fuel Pressure Control At Limit - Pressure Too Low",
       "controller": "EMS",
       "report_status": "inactive",
       "occurrence_count": 8
