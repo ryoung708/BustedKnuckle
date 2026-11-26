@@ -122,7 +122,7 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
         instruction: "Use the exact engine-specific OEM pinpoint test (PTT or authorized service procedure) to distinguish high-pressure pump output, metering/pressure-control components, rail pressure control and injector return/leakage. Check only components and test ports identified by the OEM procedure. Record each commanded state, measured response and specification. If rail-pressure sensor data is implausible, verify its supply, ground and signal with the correct wiring diagram and test method before considering the sensor.",
         test: "OEM high-pressure pump / control / leakage pinpoint tests",
         prompt: "Follow the correct engine-family and serial-number-specific OEM diagnostic tree. Do not substitute generic pinouts, resistance values or pressure thresholds.",
-        choices: ["A specific high-pressure control / delivery fault is isolated", "Sensor signal or circuit fault is isolated", "No abnormality found during the prescribed tests", "OEM pinpoint test or specification unavailable"]
+        choices: ["A specific high-pressure control / delivery fault is isolated", "Sensor signal or circuit fault is isolated", "Specific high-pressure fault repaired", "Sensor circuit repaired", "Repair pending", "No abnormality found during the prescribed tests", "OEM pinpoint test or specification unavailable"]
       },
       {
         id: "p016f_verify",
