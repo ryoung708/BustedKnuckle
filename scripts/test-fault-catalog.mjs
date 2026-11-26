@@ -55,19 +55,19 @@ const unknownSpn = interpretFaultCode("SPN 999999 FMI 4");
 assert.equal(unknownSpn.status,"generic-fmi-only");
 assert.match(unknownSpn.detail,/Voltage is lower than expected/i);
 
-const oem = interpretFaultCode("P205B-64");
-assert.equal(oem.status,"oem-documented");
+const oem = interpretFaultCode("Mack P205B-64");
+assert.equal(oem.status,"source-referenced");
 assert.match(oem.description,/Reductant tank temperature/i);
 
-const imported = interpretFaultCode("P2452-13");
-assert.equal(imported.status,"oem-documented");
+const imported = interpretFaultCode("Mack P2452-13");
+assert.equal(imported.status,"case-derived-unverified");
 assert.match(imported.description,/DPF pressure sensor A circuit open/i);
 assert.equal(imported.confidence,"case-derived-unverified");
 
-assert.equal(interpretFaultCode("PSID 14 FMI 3").status,"oem-documented");
-assert.equal(interpretFaultCode("PID 84 FMI 9").status,"oem-documented");
-assert.equal(interpretFaultCode("11/790/9").status,"oem-documented");
-assert.equal(interpretFaultCode("U0100-87").status,"oem-documented");
+assert.equal(interpretFaultCode("PSID 14 FMI 3").status,"manufacturer-required");
+assert.equal(interpretFaultCode("PID 84 FMI 9").status,"manufacturer-required");
+assert.equal(interpretFaultCode("11/790/9").status,"manufacturer-required");
+assert.equal(interpretFaultCode("U0100-87").status,"manufacturer-required");
 
 const unknown = interpretFaultCode("P0000-00");
 assert.equal(unknown.status,"not-found");

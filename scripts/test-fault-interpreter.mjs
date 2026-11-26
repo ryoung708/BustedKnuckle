@@ -8,8 +8,8 @@ const narrowSuggestions = searchFaultSuggestions("P205B", 8);
 assert.ok(narrowSuggestions.some(item => item.code === "P205B64"));
 assert.equal(searchFaultSuggestions("", 8).length, 0);
 
-const knownP = interpretFaultCode("P205B-64");
-assert.equal(knownP.status, "oem-documented");
+const knownP = interpretFaultCode("Mack P205B-64");
+assert.equal(knownP.status, "source-referenced");
 assert.match(knownP.description, /Reductant/i);
 assert.match(knownP.source, /UQLS/i);
 assert.match(knownP.caution, /inactive code alone/i);
@@ -24,39 +24,44 @@ assert.equal(partialP.status, "incomplete");
 assert.match(partialP.title, /Keep typing/i);
 
 const bareOem = interpretFaultCode("P205B64");
-assert.equal(bareOem.status, "oem-documented");
-assert.match(bareOem.description, /Reductant tank temperature/i);
+assert.equal(bareOem.status, "manufacturer-required");
+assert.match(bareOem.caution, /manufacturer-specific definition withheld/i);
+const mackOem = interpretFaultCode("Mack P205B64");
+assert.equal(mackOem.status, "source-referenced");
+assert.match(mackOem.description, /Reductant tank temperature/i);
+const wrongMake = interpretFaultCode("Volvo P205B64");
+assert.equal(wrongMake.status, "not-found", "A Mack-only definition must not be shown for a Volvo");
 
 const compactCaseP = interpretFaultCode("P245213");
-assert.equal(compactCaseP.status, "oem-documented");
-assert.match(compactCaseP.description, /DPF pressure sensor A circuit open/i);
+assert.equal(compactCaseP.status, "manufacturer-required");
+assert.match(compactCaseP.caution, /manufacturer-specific definition withheld/i);
 
-const caseP = interpretFaultCode("P2452-13");
-assert.equal(caseP.status, "oem-documented");
+const caseP = interpretFaultCode("Mack P2452-13");
+assert.equal(caseP.status, "case-derived-unverified");
 assert.match(caseP.description, /DPF pressure sensor A circuit open/i);
 assert.equal(caseP.confidence, "case-derived-unverified");
 
-const caseU = interpretFaultCode("U0100-87");
-assert.equal(caseU.status, "oem-documented");
+const caseU = interpretFaultCode("Mack U0100-87");
+assert.equal(caseU.status, "case-derived-unverified");
 assert.match(caseU.description, /Lost communication with EMS/i);
 
-const caseSpn = interpretFaultCode("11/790/9");
-assert.equal(caseSpn.status, "oem-documented");
+const caseSpn = interpretFaultCode("Mack 11/790/9");
+assert.equal(caseSpn.status, "case-derived-unverified");
 assert.match(caseSpn.description, /Wheel speed axle 1 right/i);
 
-const casePsid = interpretFaultCode("PSID 14 FMI 3");
-assert.equal(casePsid.status, "oem-documented");
+const casePsid = interpretFaultCode("Mack PSID 14 FMI 3");
+assert.equal(casePsid.status, "case-derived-unverified");
 assert.match(casePsid.description, /Right-front turn signal/i);
 const compactPsid = interpretFaultCode("PSID14FMI3");
-assert.equal(compactPsid.status, "oem-documented");
+assert.equal(compactPsid.status, "manufacturer-required");
 
-const casePid = interpretFaultCode("PID 84 FMI 9");
-assert.equal(casePid.status, "oem-documented");
+const casePid = interpretFaultCode("Mack PID 84 FMI 9");
+assert.equal(casePid.status, "case-derived-unverified");
 assert.match(casePid.description, /Vehicle speed/i);
 
 
 const mackP008A00 = interpretFaultCode("Mack P008A00");
-assert.equal(mackP008A00.status, "oem-documented");
+assert.equal(mackP008A00.status, "case-derived-unverified");
 assert.match(mackP008A00.description, /Low Pressure Fuel System Pressure/i);
 assert.equal(mackP008A00.confidence, "case-derived-unverified");
 assert.match(mackP008A00.scope, /Mack AN/);
@@ -78,13 +83,13 @@ for (const [code, phrase] of [
   ["Mack PSID 230 FMI 9", /Critical MSW Error/i]
 ]) {
   const result = interpretFaultCode(code);
-  assert.equal(result.status, "oem-documented", code);
+  assert.equal(result.status, code==="Mack P016F00" ? "source-referenced" : "case-derived-unverified", code);
   assert.match(result.description, phrase, code);
   assert.equal(result.confidence, code==="Mack P016F00" ? "public-oem-reference" : "case-derived-unverified", code);
 }
 
 const mackP016fDefinition = interpretFaultCode("Mack P016F-00");
-assert.equal(mackP016fDefinition.status, "oem-documented");
+assert.equal(mackP016fDefinition.status, "source-referenced");
 assert.equal(mackP016fDefinition.description, "Closed Loop Fuel Pressure Control At Limit - Pressure Too Low");
 assert.match(mackP016fDefinition.source, /K40914241/);
 assert.match(mackP016fDefinition.sourceUrl, /MC-10170161-9999\.pdf/);

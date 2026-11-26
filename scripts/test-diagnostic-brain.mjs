@@ -169,6 +169,39 @@ const lowSidePass = analyzeDiagnosticCase({
 assert.equal(lowSidePass.recommendation.stepId,"p016f_high_side");
 assert.equal(lowSidePass.recommendation.state,"next");
 
+// Lack of PTT must not strand the technician. Use an authorized alternate OEM
+// service procedure, while preserving the K010 CBR inspection when its full
+// trigger-code and vehicle candidate scope are present.
+const noPttCase={
+  ...p016fCase,
+  entries:{
+    scan:{faultCodes:[{code:"P016F00",status:"active",controller:"EMS"}]},
+    p016f_confirm:{choice:"PTT unavailable or below 2.7.85; use alternate OEM service information"}
+  }
+};
+const noPttDecision=analyzeDiagnosticCase(noPttCase,p016fPlan.steps);
+assert.equal(noPttDecision.recommendation.stepId,"p016f_low_side");
+assert.equal(noPttDecision.recommendation.state,"next");
+assert.match(noPttDecision.recommendation.action,/authorized current Mack\/Volvo service procedure/i);
+assert.match(noPttDecision.recommendation.action,/Do not use generic pressure limits/i);
+
+const noPttK010Case={
+  ...p016fCase,
+  vehicle:{...p016fCase.vehicle,model:"AN"},
+  entries:{
+    scan:{faultCodes:[
+      {code:"P0087-00",status:"active",controller:"EMS"},
+      {code:"P016F-00",status:"active",controller:"EMS"},
+      {code:"P228F-00",status:"active",controller:"EMS"}
+    ]},
+    p016f_confirm:{choice:"PTT unavailable or below 2.7.85; use alternate OEM service information"}
+  }
+};
+const noPttK010Decision=analyzeDiagnosticCase(noPttK010Case,p016fPlan.steps);
+assert.equal(noPttK010Decision.recommendation.stepId,"p016f_cbr_filter");
+assert.equal(noPttK010Decision.recommendation.state,"next");
+assert.match(noPttK010Decision.recommendation.action,/K01029637 physical inspection/i);
+
 const lowSideCorrected = analyzeDiagnosticCase({
   ...p016fCase,
   entries:{p016f_low_side_isolate:{choice:"Defect confirmed and corrected"}}

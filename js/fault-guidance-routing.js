@@ -59,7 +59,7 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
     steps: [
       {
         id: "p016f_confirm",
-        title: "Confirm vehicle applicability, related codes and PTT version",
+        title: "Confirm vehicle applicability, related codes and diagnostic access",
         instruction: "Confirm Mack model, model year, engine family/serial, common-rail configuration and emissions generation from VIN/build data. Save the complete EMS readout and event data. Check for P0087-00, P016F-00, P228F-00 and P009B-13. CBR K40914241 lists the common-rail fault family and directs technicians to current PTT Guided Diagnostics; its published update specifies PTT 2.7.85 or newer. If P009B-13 is also active, diagnose it first under applicable CBR K94743326 before troubleshooting the related pressure codes. Do not assume K01029637 applies unless its code combination and emissions/year scope are met.",
         test: "VIN/build applicability, emissions, engine family, full DTC readout and PTT version",
         prompt: "Use vehicle product details in PTT and the current Mack service portal. CBR K01029637 applies to P0087-00 + P016F-00 + P228F-00 combination; K40914241 lists the common-rail fault family.",
@@ -68,7 +68,7 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
           "P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed",
           "P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed",
           "Vehicle, emissions or engine applicability unknown / outside listed CBR scope",
-          "PTT version below 2.7.85 or current guided diagnostics unavailable"
+          "PTT unavailable or below 2.7.85; use alternate OEM service information"
         ]
       },
       {
@@ -87,41 +87,41 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
       {
         id: "p016f_low_side",
         title: "Verify low-side fuel supply pressure",
-        instruction: "Use current PTT Guided Diagnostics and the exact engine/serial-specific procedure to test low-pressure supply at the specified test point(s) and under the operating condition that sets the fault. Record actual pressure, units, engine speed/load, test location and exact specification. Evaluate the applicable supply/transfer pump, filters, tank pickup, restriction and air ingress only as directed. Do not call the low side good from a visual inspection or idle-only reading if the fault occurs under load.",
+        instruction: "Use current PTT Guided Diagnostics when available. If PTT is unavailable, use an authorized current Mack/Volvo service procedure for the exact engine family and serial number. Test low-pressure supply at the specified test point(s) and under the operating condition that sets the fault. Record actual pressure, units, engine speed/load, test location and exact specification. Evaluate the applicable supply/transfer pump, filters, tank pickup, restriction and air ingress only as directed. Do not call the low side good from a visual inspection or idle-only reading if the fault occurs under load.",
         test: "Low-side supply pressure and stability under the fault conditions",
-        prompt: "Use the correct Mack/Volvo procedure for the exact engine and serial number to identify the test port, adapter, operating condition and pressure limits.",
+        prompt: "Use PTT or an authorized current Mack/Volvo service procedure for the exact engine and serial number to identify the test port, adapter, operating condition and pressure limits. If neither is available, do not guess a test point or pressure limit.",
         choices: ["Low-side pressure meets OEM specification under the fault conditions", "Low-side pressure below OEM specification", "Pressure unstable or air / restriction evidence found", "Low-side test incomplete / specification unavailable"]
       },
       {
         id: "p016f_low_side_isolate",
         title: "Isolate the low-side supply abnormality",
-        instruction: "The low-side pressure did not meet the applicable OEM specification or was unstable. Use current PTT Guided Diagnostics for the exact engine family and serial number to distinguish supply/transfer-pump output, filter or line restriction, tank pickup/vent restriction and air ingress. Follow the prescribed test order and test points. Change one condition at a time and record commanded state, actual pressure, operating conditions and specification. A pressure result alone does not prove which component failed.",
+        instruction: "The low-side pressure did not meet the applicable OEM specification or was unstable. Use current PTT Guided Diagnostics or an authorized current Mack/Volvo service procedure for the exact engine family and serial number to distinguish supply/transfer-pump output, filter or line restriction, tank pickup/vent restriction and air ingress. Follow the prescribed test order and test points. Change one condition at a time and record commanded state, actual pressure, operating conditions and specification. A pressure result alone does not prove which component failed.",
         test: "Engine-specific low-pressure supply pinpoint tests",
-        prompt: "Use the current Mack/Volvo PTT procedure for this engine and serial number. Do not use generic pressure limits, pinouts or replacement assumptions.",
+        prompt: "Use PTT or the authorized current Mack/Volvo service procedure for this engine and serial number. Do not use generic pressure limits, pinouts or replacement assumptions.",
         choices: ["Defect confirmed and corrected", "Defect identified; repair pending", "No low-side cause isolated", "Low-side isolation procedure / specification unavailable"]
       },
       {
         id: "p016f_low_side_retest",
         title: "Repeat low-side pressure test after correction",
-        instruction: "Repeat the original low-side pressure test using the same test point, equipment, operating state and fault conditions. Record actual pressure, units, engine speed/load and the exact engine/serial-specific limit. Compare the result with the original failed reading. Do not move to high-side diagnosis unless low-side supply now passes.",
+        instruction: "Repeat the original low-side pressure test using the same OEM-authorized procedure, test point, equipment, operating state and fault conditions. Record actual pressure, units, engine speed/load and the exact engine/serial-specific limit. Compare the result with the original failed reading. Do not move to high-side diagnosis unless low-side supply now passes.",
         test: "Before / after low-side supply pressure under original fault conditions",
-        prompt: "Repeat the exact PTT low-pressure test used before the repair; retain both readings and test conditions.",
+        prompt: "Repeat the exact OEM-authorized low-pressure test used before the repair; retain both readings and test conditions.",
         choices: ["Low-side pressure meets OEM specification under the original fault conditions", "Low-side pressure remains below OEM specification", "Pressure remains unstable or air / restriction evidence remains", "Repeat test incomplete / original fault conditions not reproduced"]
       },
       {
         id: "p016f_high_side",
         title: "If low side passes, compare commanded vs. actual rail pressure",
-        instruction: "Because low-side supply has been verified within specification, move to the high-pressure system. Monitor commanded and actual rail pressure together during the same crank / idle / loaded condition that sets P016F00. Record both values, units, engine speed/load and applicable OEM limits. Determine whether actual rail pressure follows the commanded target. If actual pressure falls behind, continue with the current engine-specific PTT high-pressure generation/control and leakage tests. If values track but the fault remains, investigate sensor plausibility, signal integrity and intermittent conditions using the OEM procedure. Never loosen a high-pressure line to check for flow.",
+        instruction: "Because low-side supply has been verified within specification, move to the high-pressure system. Use PTT or another scan tool that supports the required engine parameters to monitor commanded and actual rail pressure together during the same crank / idle / loaded condition that sets P016F00. Record both values, units, engine speed/load and applicable OEM limits. Determine whether actual rail pressure follows the commanded target. If actual pressure falls behind, continue with the current engine-specific PTT high-pressure generation/control and leakage tests. If values track but the fault remains, investigate sensor plausibility, signal integrity and intermittent conditions using the OEM procedure. Never loosen a high-pressure line to check for flow.",
         test: "Commanded vs. actual fuel rail pressure under the fault conditions",
-        prompt: "Use PTT live data and the correct Mack/Volvo service procedure for test conditions and limits.",
+        prompt: "Use supported scan-tool live data and the correct Mack/Volvo service procedure for test conditions and limits.",
         choices: ["Actual rail pressure falls below commanded / cannot track target", "Actual rail pressure tracks commanded within OEM specification", "Rail-pressure data is implausible or sensor / circuit concern exists", "High-side test incomplete / specification unavailable"]
       },
       {
         id: "p016f_high_side_isolate",
         title: "Isolate the high-pressure control or delivery fault",
-        instruction: "Use the exact engine-specific PTT pinpoint test to distinguish high-pressure pump output, metering/pressure-control components, rail pressure control and injector return/leakage. Check only components and test ports identified by the OEM procedure. Record each commanded state, measured response and specification. If rail-pressure sensor data is implausible, verify its supply, ground and signal with the correct wiring diagram and test method before considering the sensor.",
+        instruction: "Use the exact engine-specific OEM pinpoint test (PTT or authorized service procedure) to distinguish high-pressure pump output, metering/pressure-control components, rail pressure control and injector return/leakage. Check only components and test ports identified by the OEM procedure. Record each commanded state, measured response and specification. If rail-pressure sensor data is implausible, verify its supply, ground and signal with the correct wiring diagram and test method before considering the sensor.",
         test: "OEM high-pressure pump / control / leakage pinpoint tests",
-        prompt: "Follow the correct engine-family and serial-number-specific diagnostic tree. Do not substitute generic pinouts, resistance values or pressure thresholds.",
+        prompt: "Follow the correct engine-family and serial-number-specific OEM diagnostic tree. Do not substitute generic pinouts, resistance values or pressure thresholds.",
         choices: ["A specific high-pressure control / delivery fault is isolated", "Sensor signal or circuit fault is isolated", "No abnormality found during the prescribed tests", "OEM pinpoint test or specification unavailable"]
       },
       {

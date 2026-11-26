@@ -36,6 +36,7 @@ export function parseFaultInput(raw) {
 
 function findOemRecord(raw, parsed) {
   const supplied = normalize(raw);
+  const manufacturerWasSpecified = ["mack","volvo","isuzu","hino","cummins","allison","freightliner","westernstar","international","navistar","paccar","detroit","meritor","bendix","eaton","wabco"].some(name=>supplied.includes(normalize(name))) || oemRecords.some(item => item.manufacturer && supplied.includes(normalize(item.manufacturer)));
   const candidates = oemRecords.filter(record => {
     const queryCode = parsed.proprietaryType
       ? parsed.proprietaryType + parsed.proprietaryNumber + (parsed.fmi !== null ? "FMI" + parsed.fmi : "")
@@ -47,9 +48,11 @@ function findOemRecord(raw, parsed) {
     const codeMatch = recordCode === normalize(queryCode) || recordCode === supplied;
     if (!codeMatch) return false;
     const manufacturer = normalize(record.manufacturer);
-    const manufacturerWasSpecified = oemRecords.some(item => item.manufacturer && supplied.includes(normalize(item.manufacturer)));
     return !manufacturer || !manufacturerWasSpecified || supplied.includes(manufacturer);
   });
+  if (candidates.length === 1 && candidates[0].manufacturer && !manufacturerWasSpecified) {
+    return { manufacturerRequired:true, count:1 };
+  }
   return candidates.length === 1 ? {record:candidates[0]} : {ambiguous:candidates.length > 1, count:candidates.length};
 }
 function legacyMatch(parsed) {
@@ -82,13 +85,21 @@ export function interpretFaultCode(raw) {
     "Add the manufacturer and reporting controller to narrow the lookup.",
     "IronKnuckle OEM catalog", "Do not select a definition until the manufacturer/controller context is known.",
     {confidence:"ambiguous",codeType:"oem"});
+  if (oemMatch.manufacturerRequired) return result("manufacturer-required","Manufacturer required for this code",
+    "A matching entry exists only in a manufacturer-specific catalog. The code alone does not establish that it applies to this vehicle.",
+    "Select the truck manufacturer and reporting controller, then interpret the code again. Do not use a manufacturer-specific definition without confirming vehicle context.",
+    "IronKnuckle OEM catalog", "Manufacturer-specific definition withheld until vehicle make is known.",
+    {confidence:"unverified",codeType:"oem"});
   if (oemMatch.record) {
     const record=oemMatch.record;
-    return result("oem-documented",record.code,record.description,
+    const confidence=String(record.confidence||"unverified").toLowerCase();
+    const status=["oem-verified","verified"].includes(confidence) ? "oem-documented"
+      : confidence==="case-derived-unverified" ? "case-derived-unverified" : "source-referenced";
+    return result(status,record.code,record.description,
       [record.manufacturer,record.controller,record.engine_family].filter(Boolean).join(" · "),
       record.source_title || record.source_url || "OEM catalog source",
       record.caution || "Confirm model year, emissions generation and calibration applicability before acting.",
-      {confidence:record.confidence||"unverified",sourceUrl:record.source_url||"",scope:record.vehicle_scope||"OEM-specific applicability",codeType:"oem"});
+      {confidence,sourceUrl:record.source_url||"",scope:record.vehicle_scope||"OEM-specific applicability",codeType:"oem"});
   }
 
   // An unsuffixed P-code is eligible for the standardized OBD-II table.
