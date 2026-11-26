@@ -74,3 +74,25 @@ Only after the new path passes regression and technician testing, remove duplica
 - Mack UQLS behavior remains correct for all nine yellow codes and does not apply the yellow procedure to green codes.
 - Existing manually authored Mack guidance remains available until the approved-record integration is verified.
 - No paid AI API is required for extraction, review, routing, or the initial integration.
+
+
+## Public OEM source collection — initial Mack / Volvo registry
+
+The initial curated source inventory is maintained in `data/public-oem-document-registry.json`. It records manufacturer-hosted manuals, wiring indexes, official training/resource portals and a small number of NHTSA-hosted dealer-bulletin records for discovery.
+
+The registry is **not** a document mirror or a source of approved diagnostic procedures:
+
+- Public OEM body-builder PDFs and wiring pages are indexed as `link-out-only` because the publications reserve reproduction/storage rights.
+- Mack and Volvo eMedia/emissions service portals are marked `license-review-required`; an ordinary technician subscription is not proof of commercial SaaS display or redistribution rights.
+- NHTSA-hosted dealer bulletins carrying a confidential / limited-distribution marking are recorded as `restricted-no-ingestion`. Public hosting does not remove those restrictions.
+- Registry entries are source leads only. They cannot populate DCC steps, specifications or OEM-verified catalog entries without authorized content, exact applicability, review and permission evidence.
+
+### Initial collection priorities
+
+1. Mack current VECU5 electrical section and model/build-specific wiring index.
+2. Volvo current VNL electrical section, legacy VECU4 reference and wiring index.
+3. Engine and aftertreatment sections for each supported vehicle generation.
+4. Transmission / mDRIVE / I-Shift material and authorized service procedures.
+5. eMedia access and commercial integration permissions for VIN-specific repair procedures, wiring diagrams, specifications, CBR and TSB content.
+
+Keep original authorized documents in the existing private Technical Library. Use Bulletin Intelligence for page-level extraction and review; use OEM Specification Assistant for individual approved measurements; keep DCC as the presentation/decision layer. Do not create a second document store or a second diagnostic brain.
