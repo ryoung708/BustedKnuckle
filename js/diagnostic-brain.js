@@ -830,7 +830,7 @@ function powertrainRecommendation(record, steps) {
       const engineText=[vehicle.engine,vehicle.engineModel,vehicle.engineMake].filter(Boolean).join(" ").toUpperCase();
       const year=Number(vehicle.year||0);
       const emissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
-      const modelEligible=/\b(?:TE|LR|MRU|AN|CHU|CXU|GR|GU|PI)(?:\\b|[0-9])|\\b(?:ANTHEM|GRANITE|PINNACLE|TERRAPRO)\b/i.test(modelText);
+      const modelEligible=/\b(?:TE|LR|MRU|AN|CHU|CXU|GR|GU|PI)(?:\b|[0-9])|\b(?:ANTHEM|GRANITE|PINNACLE|TERRAPRO)\b/i.test(modelText);
       const engineEligible=/\b(?:MP7|MP8|11L|13L)\b/i.test(engineText);
       const emissionsEligible=/US17\+OBD(16|18|19)/.test(emissions);
       if(triggerSetAttached&&triggerSetNotInactive&&year>=2018&&modelEligible&&engineEligible&&emissionsEligible)
