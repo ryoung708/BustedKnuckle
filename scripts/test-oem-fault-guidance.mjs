@@ -17,7 +17,7 @@ assert.equal(getMackP205B64Guidance({code:"P203A13"},{make:"Volvo"}),null);
 assert.equal(getMackP205B64Guidance({code:"P205A13"},{make:"Mack"}).steps[0].choices[0],"At least one listed yellow UQLS fault active/confirmed and applicability verified");
 const plan=getMackP205B64Guidance({code:"P205B64"},{make:"Mack"});
 const steps=plan.steps;
-const base={workflowId:"fault_guidance_p205b64",vehicle:{make:"Mack",model:"Anthem",engine:"MP8"},entries:{}};
+const base={workflowId:"fault_guidance_p205b64",vehicle:{make:"Mack",model:"Anthem",engine:"MP8",emissions:"US17+OBD16"},entries:{}};
 const stopped=analyzeDiagnosticCase({...base,entries:{p205b_applicability:{choice:"AN(4), PR(4), or emissions applicability unknown — stop"}}},steps);
 assert.equal(stopped.recommendation.state,"hold");
 assert.match(stopped.recommendation.action,/Stop this guided path/i);
@@ -37,8 +37,15 @@ const damagedConnector=analyzeDiagnosticCase({...base,entries:{
 }},steps);
 assert.equal(damagedConnector.recommendation.stepId,"p205b_connector");
 assert.equal(damagedConnector.recommendation.state,"hold");
-const result=analyzeDiagnosticCase({...base,entries:{
+const completedPrerequisites={
  p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
+ p205b_connector:{choice:"No pin, wire, corrosion or moisture damage found"},
+ p205b_quality:{choice:"DEF quality acceptable per Mack specification"},
+ p205b_freeze:{choice:"Tank is not frozen"},
+ p205b_fill:{choice:"Tank adequately filled per Mack procedure"}
+};
+const result=analyzeDiagnosticCase({...base,entries:{
+ ...completedPrerequisites,
  p205b_cycle:{choice:"Repeat sequence completed; one or more listed yellow UQLS faults returned active/confirmed"},
  p205b_result:{choice:"One or more listed yellow UQLS faults returned active/confirmed after repeat test"}
 }},steps);
@@ -46,7 +53,7 @@ assert.equal(result.recommendation.state,"review");
 assert.match(result.recommendation.action,/Replace the DEF Level \/ UQLS sensor/i);
 assert.equal(result.recommendation.stepTitle,"Replace DEF Level / UQLS sensor");
 const exactUiChoice=analyzeDiagnosticCase({...base,entries:{
- p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
+ ...completedPrerequisites,
  p205b_cycle:{choice:"Repeat sequence completed; one or more listed yellow UQLS faults returned active/confirmed"},
  p205b_result:{choice:"The yellow faults returned"}
 }},steps);
@@ -55,7 +62,7 @@ assert.equal(exactUiChoice.recommendation.stepTitle,"Replace DEF Level / UQLS se
 assert.match(exactUiChoice.recommendation.action,/RECOMMENDATION: Replace the DEF Level \/ UQLS sensor/i);
 assert.match(exactUiChoice.recommendation.explanation,/RECOMMENDATION: Replace the DEF Level \/ UQLS sensor/i);
 const noYellowReturn=analyzeDiagnosticCase({...base,entries:{
- p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
+ ...completedPrerequisites,
  p205b_cycle:{choice:"Repeat sequence completed; none of the nine listed yellow UQLS faults returned active"},
  p205b_result:{choice:"None of the yellow faults returned"}
 }},steps);
