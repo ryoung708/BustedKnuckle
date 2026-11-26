@@ -5,6 +5,10 @@ const wh=createCaseRecord(raw,"wiringhound");
 assert.equal(wh.caseEnvelope.schema,"ironknuckle.case");
 assert.equal(wh.caseEnvelope.sourceApp,"wiringhound");
 assert.equal(wh.caseEnvelope.vehicle.engine,"MP8");
+assert.equal(wh.caseEnvelope.vehicleContext.identity.make,"Mack");
+assert.equal(wh.caseEnvelope.vehicleContext.identity.engineModel,"MP8");
+assert.equal(wh.caseEnvelope.vehicleContext.identityStatus,"incomplete");
+assert.equal(wh.caseEnvelope.vehicleContext.applicabilityStatus,"unverified");
 assert.equal(wh.caseEnvelope.vehicle.engineModel,"MP8");
 assert.equal(wh.caseEnvelope.vehicle.vinLast6,"");
 assert.equal(wh.caseEnvelope.vehicle.engineModel,"MP8","Legacy engine field remains available as engineModel.");
@@ -26,6 +30,9 @@ assert.equal("vin" in expanded.caseEnvelope.vehicle,false,"Full VIN must not be 
 assert.equal(expanded.caseEnvelope.vehicle.transmissionManufacturer,"Detroit");
 assert.equal(expanded.caseEnvelope.vehicle.transmissionModel,"DT12");
 assert.equal(expanded.caseEnvelope.vehicle.emissionsFamily,"EPA 2024");
+assert.equal(expanded.caseEnvelope.vehicleContext.identityStatus,"identified");
+assert.equal(expanded.caseEnvelope.vehicleContext.identity.engineManufacturer,"Detroit Diesel");
+assert.equal(expanded.caseEnvelope.vehicleContext.identity.vinLast6,"A1B2C3");
 
 const dcc=createCaseRecord({...raw,verification:"unconfirmed"},"diagnostic_command_center");
 assert.equal(dcc.caseEnvelope.sourceApp,"diagnostic_command_center");
