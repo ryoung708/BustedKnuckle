@@ -29,7 +29,7 @@ function hasActiveMackUqlsFault(record = {}) {
     Array.isArray(entry?.faultCodes) && entry.faultCodes.some(fault => {
       const code=clean(fault?.code).toUpperCase().replace(/[^A-Z0-9]/g,"");
       const status=lower(fault?.status);
-      return mackUqlsCodes.has(code) && /\\b(?:active|confirmed)\\b/.test(status);
+      return mackUqlsCodes.has(code) && /\b(?:active|confirmed)\b/.test(status);
     })
   );
 }
