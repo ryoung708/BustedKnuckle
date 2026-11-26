@@ -8,6 +8,17 @@ import { workflows as powertrainWorkflows } from "./diagnostic-engine.js";
 const clean = value => String(value ?? "").trim();
 const lower = value => clean(value).toLowerCase();
 const populated = value => clean(value).length > 0;
+function mackUqlsScope(vehicle = {}) {
+  const make=lower(vehicle.make);
+  const model=clean(vehicle.model||vehicle.chassis).toUpperCase();
+  const emissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
+  const excluded=/\b(?:AN|PR)\s*\(\s*4\s*\)/.test(model);
+  const supportedEmissions=/^US17\+OBD(?:16|18|19)$/.test(emissions) ||
+    /^US20\+OBD20$/.test(emissions) ||
+    /^US21\+OBD21$/.test(emissions) ||
+    /^US22\+OBD2023$/.test(emissions);
+  return {valid:make.includes("mack")&&populated(model)&&!excluded&&supportedEmissions,make,model,emissions,excluded,supportedEmissions};
+}
 const electricalWorkflowIds = new Set([
   "j1939_network","j1939_dropout","light_inop","general_electrical",
   "short_ground","short_power","open_circuit","voltage_drop","intermittent","power_loss"
@@ -957,10 +968,15 @@ function powertrainRecommendation(record, steps) {
       "The 2026 Mack CBR applicability has not been established or this variant is excluded.",
       "Stop this guided path. Confirm the VIN, exact chassis variant and emissions generation, then retrieve the applicable Mack procedure. Do not carry on with CBR 2107-22."
     );
-    if(/at least one listed yellow UQLS fault active\/confirmed and applicability verified/i.test(choice)) return go(
-      steps[index+1],"At least one listed yellow UQLS fault is active/confirmed and the truck was confirmed within the bulletin scope.",
-      "Inspect both UQLS harness connector halves for damaged pins/wires, corrosion and water intrusion."
-    );
+    if(/at least one listed yellow UQLS fault active\/confirmed and applicability verified/i.test(choice)) {
+      const scope=mackUqlsScope(record.vehicle||{});
+      if(!scope.valid) return hold(
+        "The entered vehicle identity does not establish the Mack CBR 2107-22 scope.",
+        "Confirm the exact Mack model/chassis variant and emissions generation from VIN/build data. AN(4) and PR(4) are excluded; accepted emissions families are US17+OBD16/18/19, US20+OBD20, US21+OBD21 and US22+OBD2023. Do not continue this CBR path with missing or out-of-scope vehicle data."
+      );
+      return go(steps[index+1],"At least one listed yellow UQLS fault is active/confirmed and the entered vehicle identity fits the CBR scope.",
+        "Inspect both UQLS harness connector halves for damaged pins/wires, corrosion and water intrusion.");
+    }
   }
   if(step.id==="p205b_connector"){
     if(/no pin, wire, corrosion or moisture damage found/i.test(choice)) return go(
@@ -973,6 +989,8 @@ function powertrainRecommendation(record, steps) {
     );
   }
   if(step.id==="p205b_result"){
+    const scope=mackUqlsScope(record.vehicle||{});
+    if(!scope.valid) return {stepId:"p205b_applicability",reason:"The entered vehicle identity does not establish the Mack CBR 2107-22 scope.",action:"Confirm the exact Mack model/chassis variant and emissions generation from VIN/build data. AN(4) and PR(4) are excluded; accepted emissions families are US17+OBD16/18/19, US20+OBD20, US21+OBD21 and US22+OBD2023. Do not make a CBR replacement decision with missing or out-of-scope vehicle data.",state:"hold"};
     // The final CBR decision is gated by every required preceding stage. A direct
     // final-step selection cannot stand in for the applicability and repeat-test evidence.
     const required=[
