@@ -797,10 +797,8 @@ function powertrainRecommendation(record, steps) {
       "Confirm whether the original fault is still present or can be reproduced. Use the stored event data and current PTT Guided Diagnostics; do not treat a historic code as a current active fuel-pressure failure."
     );
     const p009bStatuses=statusesFor("P009B13");
-    if(p009bStatuses.length&&!statusKnown(p009bStatuses)) return hold(
-      "P009B-13 is attached, but its active/inactive status is unknown.",
-      "Verify P009B-13 status in the current controller scan before choosing the P016F path. If active or intermittent, diagnose the EPRV circuit first under the applicable K94743326 scope."
-    );
+    // An attached related code with unknown status is not a reason to stop the primary P016F path.
+    // Only take the P009B precedence branch when the technician confirms it is active/intermittent.
     const p009bActive=statusActive(p009bStatuses);
     const vehicle=record.vehicle||{};
     const p009bYear=Number(vehicle.year||0);
@@ -828,20 +826,15 @@ function powertrainRecommendation(record, steps) {
     const k010Codes=["P008700","P016F00","P228F00"];
     const k010Statuses=k010Codes.map(statusesFor);
     const hasK010Combination=k010Statuses.every(statuses=>statuses.length>0);
-    const k010StatusesKnown=k010Statuses.every(statusKnown);
-    const k010Active=k010Statuses.every(statusActive);
+    const k010ExplicitlyInactive=k010Statuses.some(statuses=>statuses.some(status=>status==="inactive"));
     if(/P0087-00, P016F-00 and P228F-00 all present/i.test(choice)){
       if(!hasK010Combination) return hold(
         "The selected CBR option says all three trigger codes are present, but the complete P0087-00 / P016F-00 / P228F-00 set is not attached to this case.",
         "Attach the full scan-report fault set and confirm each code's controller and active/inactive status. Do not use the K01029637 filter inspection path until all three trigger codes are documented."
       );
-      if(!k010StatusesKnown) return hold(
-        "One or more K01029637 trigger codes have an unknown status.",
-        "Confirm the current active/inactive status of P0087-00, P016F-00 and P228F-00 in the full PTT scan before selecting the CBR combination."
-      );
-      if(!k010Active) return hold(
-        "The three K01029637 trigger codes are attached, but the complete combination is not confirmed active/intermittent.",
-        "Review the current PTT scan and event data. Do not apply the K01029637 inspection based on inactive/historic codes; use the current guided procedure for the active fault set."
+      if(k010ExplicitlyInactive) return hold(
+        "At least one K01029637 trigger code is marked inactive/historic.",
+        "The selected CBR option says all three codes are present, but one is marked inactive. Recheck the current scan and select the correct branch; unknown related-code status does not need to be changed to active."
       );
       const vehicle = record.vehicle || {};
       const modelText = clean(vehicle.model || vehicle.chassis).toUpperCase();
@@ -860,14 +853,12 @@ function powertrainRecommendation(record, steps) {
         "Follow CBR K01029637 only after the VIN/build confirms common-rail configuration and exact applicability: inspect the fuel-tank vent filter and both hose connections, then remove and inspect the secondary fuel-filter lip seal. Photograph the required locations and attach them to the eService case.");
     }
     if(/P016F-00 present; K01029637 combination not present/i.test(choice)){
-      if(hasK010Combination&&k010StatusesKnown&&k010Active) return hold(
+      if(hasK010Combination&&k010Statuses.every(statuses=>statuses.length>0&&statuses.every(status=>status==="active"||status==="intermittent"))) return hold(
         "All three K01029637 trigger codes are attached with active/intermittent status, but the selected result says the combination is not present.",
         "Review the complete scan and select the K01029637 applicability option if the VIN/build scope is confirmed. Do not bypass the CBR trigger combination by selecting the low-side-only path."
       );
-      if(k010Statuses.some(statuses=>statuses.length&&!statusKnown(statuses))) return hold(
-        "At least one K01029637 trigger code is attached with unknown status.",
-        "Confirm the active/inactive status of each attached trigger code in the current scan before declaring the CBR combination absent."
-      );
+      // The technician's explicit scan review is sufficient here; unknown statuses on
+      // supporting codes must not block the P016F low-side diagnostic path.
       return go(steps[steps.findIndex(item=>item.id==="p016f_low_side")],"P016F00 is confirmed active/intermittent and the K01029637 three-code trigger is not present as an active combination.","Use the latest applicable PTT Guided Diagnostics (K40914241) for this engine and emissions configuration. Begin with the specified low-side supply checks; do not apply the K01029637 lip-seal CBR as though its code combination were met.");
     }
   }

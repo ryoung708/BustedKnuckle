@@ -38,12 +38,16 @@ const precursor=analyzeDiagnosticCase({...pBase,entries:{codes:{faultCodes:[{cod
 assert.equal(precursor.recommendation.state,"hold");
 assert.match(precursor.recommendation.action,/do not apply K94743326 pinouts/i);
 const p016fTriggerCodes=[{code:"P0087-00",status:"active"},{code:"P016F-00",status:"active"},{code:"P228F-00",status:"active"}];
-const unknownStatusHold=analyzeDiagnosticCase({...pBase,entries:{
- codes:{faultCodes:[{code:"P0087-00",status:"unknown"},{code:"P016F-00",status:"unknown"},{code:"P228F-00",status:"unknown"}]},
+const unknownRelatedStatuses=analyzeDiagnosticCase({...pBase,entries:{
+ codes:{faultCodes:[{code:"P0087-00",status:"unknown"},{code:"P016F-00",status:"active"},{code:"P228F-00",status:"unknown"}]},
  p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}
 }},p016f.steps);
-assert.equal(unknownStatusHold.recommendation.state,"hold");
-assert.match(unknownStatusHold.recommendation.action,/inline.*Confirm related fault status/i);
+assert.equal(unknownRelatedStatuses.recommendation.stepId,"p016f_cbr_filter","Unknown supporting-code statuses must not block the explicitly confirmed CBR combination");
+const unknownP009b=analyzeDiagnosticCase({...pBase,entries:{
+ codes:{faultCodes:[{code:"P016F-00",status:"active"},{code:"P009B-13",status:"unknown"}]},
+ p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"}
+}},p016f.steps);
+assert.equal(unknownP009b.recommendation.stepId,"p016f_low_side","Unknown P009B status must not block primary P016F diagnosis");
 const combo=analyzeDiagnosticCase({...pBase,entries:{codes:{faultCodes:p016fTriggerCodes},p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}}},p016f.steps);
 assert.equal(combo.recommendation.stepId,"p016f_cbr_filter");
 const filterPass=analyzeDiagnosticCase({...pBase,entries:{

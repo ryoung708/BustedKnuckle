@@ -211,7 +211,7 @@ assert.match(p009bUnattached.recommendation.reason,/no attached P009B-13 fault/i
 
 const p009bUnknownCase={...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"active"},{code:"P009B-13",status:"unknown"}]},p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"}}};
 const p009bUnknownDecision=analyzeDiagnosticCase(p009bUnknownCase,getP016F00Guidance({code:"P016F00"},p009bUnknownCase).steps);
-assert.equal(p009bUnknownDecision.recommendation.state,"hold");
+assert.equal(p009bUnknownDecision.recommendation.stepId,"p016f_low_side","Unknown P009B status must not block the primary P016F path");
 
 const p009bInactiveCase={...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"active"},{code:"P009B-13",status:"inactive"}]},p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"}}};
 const p009bInactiveDecision=analyzeDiagnosticCase(p009bInactiveCase,getP016F00Guidance({code:"P016F00"},p009bInactiveCase).steps);
@@ -224,8 +224,7 @@ assert.equal(k010Contradiction.recommendation.state,"hold");
 
 const k010UnknownCase={...k010EligibleCase,entries:{scan:{faultCodes:k010Codes.map(item=>({...item,status:item.code==="P228F-00"?"unknown":"active"}))},p016f_confirm:{choice:"P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed"}}};
 const k010Unknown=analyzeDiagnosticCase(k010UnknownCase,getP016F00Guidance({code:"P016F00"},k010UnknownCase).steps);
-assert.equal(k010Unknown.recommendation.stepId,"p016f_confirm");
-assert.equal(k010Unknown.recommendation.state,"hold");
+assert.equal(k010Unknown.recommendation.stepId,"p016f_cbr_filter","Unknown P228F status must not block an explicitly confirmed K01029637 combination");
 
 const missingCodesCase = {
   ...p016fCase,
