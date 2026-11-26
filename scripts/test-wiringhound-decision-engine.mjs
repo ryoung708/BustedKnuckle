@@ -136,6 +136,7 @@ assert.equal(recommendNextStep(record("voltage_drop","repair","Repair completed;
 const intermittent=[{id:"pattern"},{id:"baseline"},{id:"manipulate"},{id:"isolate"},{id:"verify"}];
 assert.equal(recommendNextStep(record("intermittent","baseline","Cannot reproduce"),intermittent).state,"hold");
 assert.equal(recommendNextStep(record("intermittent","manipulate","No change"),intermittent).state,"hold");
+assert.equal(recommendNextStep(record("intermittent","manipulate","Unexpected / unclear observation"),intermittent).state,"hold");
 assert.equal(recommendNextStep(record("intermittent","isolate","No segment isolated"),intermittent).state,"hold");
 assert.equal(recommendNextStep(record("intermittent","isolate","Specific connector isolated"),intermittent).state,"hold");
 assert.equal(recommendNextStep(record("intermittent","isolate","Defect repaired; ready for verification"),intermittent).stepId,"verify");
