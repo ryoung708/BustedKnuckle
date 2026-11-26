@@ -32,7 +32,9 @@ export function buildVehicleContext(vehicle = {}) {
     transmissionManufacturer:Boolean(identity.transmissionManufacturer), transmissionModel:Boolean(identity.transmissionModel),
     emissionsFamily:Boolean(identity.emissionsFamily), vinLast6:Boolean(identity.vinLast6)
   };
-  const missing = Object.entries(completeness).filter(([,present])=>!present).map(([field])=>field);
+  const requiredFields = ["make","model","modelYear","engineManufacturer","engineModel"];
+  const missing = requiredFields.filter(field=>!completeness[field]);
+  const optionalMissing = Object.keys(completeness).filter(field=>!requiredFields.includes(field)&&!completeness[field]);
   const identityKey = [
     identity.make,identity.model,identity.year,identity.engineManufacturer,
     identity.engineModel,identity.transmissionManufacturer,identity.transmissionModel,identity.emissionsFamily
@@ -47,8 +49,9 @@ export function buildVehicleContext(vehicle = {}) {
     engineFamilyId:resolved.engine.familyId,
     completeness,
     missing,
+    optionalMissing,
     warnings:[...resolved.warnings],
-    identityStatus:missing.length===0 ? (resolved.platformId==="unmapped" ? "unmapped" : "identified") : "incomplete",
+    identityStatus:resolved.platformId==="unmapped" ? "unmapped" : (missing.length===0 ? "identified" : "incomplete"),
     applicabilityStatus:"unverified",
     applicabilityNote:"Vehicle identity is not proof that a specific OEM architecture, procedure, bulletin or specification applies. Confirm exact build/VIN, serial range, emissions and source scope before use.",
     provenance:"technician-entered"
