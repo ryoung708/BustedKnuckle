@@ -125,6 +125,10 @@ function faultResearchMarkup(){
  const found=currentGuidedFault();if(!found)return "";
  const {fault}=found,flow=workflows[active.workflowId]||{};
  const research=active.faultResearch?.[fault.id]||{};
+ const normalizeFaultCode=value=>String(value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+ const isMackP016F=normalizeFaultCode(fault.code)==="P016F00"&&String(active?.vehicle?.make||"").toLowerCase().includes("mack");
+ const relatedStatusFaults=Object.values(active.entries||{}).flatMap(record=>Array.isArray(record?.faultCodes)?record.faultCodes:[]).filter(item=>["P016F00","P008700","P228F00","P009B13"].includes(normalizeFaultCode(item.code)));
+ const statusEditor=isMackP016F?'<article class="case-card"><b>CONFIRM RELATED FAULT STATUS FROM THE CURRENT SCAN</b><p>IronKnuckle will hold the CBR branch until the attached fuel-pressure codes have known active/inactive status. Update each code here; you do not need to leave this diagnostic step.</p>'+relatedStatusFaults.map(item=>'<div class="field"><label>'+safe(item.code)+' · '+safe(item.controller||"Controller not specified")+'</label><select data-guided-fault-status="'+safe(item.id||"")+'"><option value="unknown" '+((item.status||"unknown")==="unknown"?"selected":"")+'>Unknown — verify from scan</option><option value="active" '+(item.status==="active"?"selected":"")+'>Active</option><option value="intermittent" '+(item.status==="intermittent"?"selected":"")+'>Intermittent</option><option value="inactive" '+(item.status==="inactive"?"selected":"")+'>Inactive / historic</option></select></div>').join("")+'</article>':"";
  const relatedLinks=Array.isArray(flow.relatedSources)?flow.relatedSources.map(source=>'<li><a href="'+safe(source.url)+'" target="_blank" rel="noopener noreferrer">'+safe(source.title||"Open related OEM reference")+' ↗</a></li>').join(""):"";
  const sourceLinks=relatedLinks?'<ul>'+relatedLinks+'</ul>':(flow.sourceUrl?'<p><a class="btn" href="'+safe(flow.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Open original bulletin ↗</a></p>':"");
  const known=flow.sourceTitle?'<article class="case-card"><b>CODE-SPECIFIC OEM REFERENCES</b><p>'+safe(flow.sourceTitle)+'</p><p>'+safe(flow.sourceReference||"Source reference recorded in IronKnuckle")+'</p>'+(flow.applicability?'<p><b>Applicability:</b> '+safe(flow.applicability)+'</p>':'')+(flow.caution?'<p class="caution">'+safe(flow.caution)+'</p>':'')+sourceLinks+'<p class="small">These references are linked to this fault in IronKnuckle. Verify the VIN, emissions family, chassis variant, revision and exclusions before using a procedure.</p></article>':"";
@@ -137,7 +141,7 @@ function faultResearchMarkup(){
  const providerDetails=(research.providerDiagnostics||[]).map(item=>'<p class="small">'+safe(item.provider)+': '+Number(item.successful||0)+'/'+Number(item.attempted||0)+' requests successful; '+Number(item.resultCount||0)+' results.</p>').join("");
  const fallback=research.status==="complete"&&!(research.results||[]).length&&research.fallbackSearchUrl?'<p class="caution">The automated index returned no matches. Try a broader web search; zero results do not mean no bulletin exists.</p><p><a class="btn" href="'+safe(research.fallbackSearchUrl)+'" target="_blank" rel="noopener noreferrer">Open broader web search ↗</a></p>':"";
  const definition=fault.description?'<p>'+safe(fault.description)+'</p>':'<p class="small">No confirmed code definition is stored. Confirm the OEM definition before choosing a component.</p>';
- return '<section class="step-focus" id="fault-research"><div class="eyebrow">FAULT RESEARCH · AUTOMATIC SOURCE MATCHING</div><h2>'+safe(fault.code)+' · '+safe(fault.status||"status unknown").toUpperCase()+'</h2>'+definition+(fault.controller?'<p class="small">Reporting controller: '+safe(fault.controller)+'</p>':'')+(known||"")+'<div class="case-card"><b>PUBLIC OEM SOURCE SEARCH</b>'+state+providerDetails+(matches||'<p class="small">No possible public matches are displayed yet. A missing search result does not mean no bulletin exists.</p>')+fallback+'<button class="btn" type="button" id="retryFaultSourceSearch">Search public sources again</button></div></section>';
+ return '<section class="step-focus" id="fault-research"><div class="eyebrow">FAULT RESEARCH · AUTOMATIC SOURCE MATCHING</div><h2>'+safe(fault.code)+' · '+safe(fault.status||"status unknown").toUpperCase()+'</h2>'+definition+(fault.controller?'<p class="small">Reporting controller: '+safe(fault.controller)+'</p>':'')+(known||"")+statusEditor+'<div class="case-card"><b>PUBLIC OEM SOURCE SEARCH</b>'+state+providerDetails+(matches||'<p class="small">No possible public matches are displayed yet. A missing search result does not mean no bulletin exists.</p>')+fallback+'<button class="btn" type="button" id="retryFaultSourceSearch">Search public sources again</button></div></section>';
 }
 async function searchPublicBulletinsForActiveFault(force=false){
  const found=currentGuidedFault();if(!found)return;
@@ -163,6 +167,14 @@ function launchFaultGuidanceFor(stepId,faultIndex){
  const list=active?.entries?.[stepId]?.faultCodes||[],fault=list[faultIndex];
  if(!fault)throw new Error("Fault is no longer attached to this case.");
  if(!fault.id)fault.id="fault-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+ const manufacturer=String(active?.vehicle?.make||"").trim();
+ const catalogDefinition=interpretFaultCode((manufacturer?manufacturer+" ":"")+fault.code);
+ if(catalogDefinition.status==="oem-documented"&&(!fault.description||/no additional information/i.test(fault.description))){
+  fault.description=catalogDefinition.description;
+  fault.confidence=catalogDefinition.confidence||"unverified";
+  fault.source=catalogDefinition.source||"";
+  fault.sourceUrl=catalogDefinition.sourceUrl||"";
+ }
  const flowId="fault_guidance_"+String(fault.id).replace(/[^a-z0-9]+/gi,"_");
  const plan=getMackP205B64Guidance(fault,active?.vehicle)||faultGuidancePlan(fault);
  active.guidedFaultFlows=active.guidedFaultFlows||{};
@@ -177,6 +189,16 @@ function launchFaultGuidance(button){
  const current=workflows[active?.workflowId]?.steps?.[stepIndex];
  launchFaultGuidanceFor(button.dataset.faultStep||current?.id,Number(button.dataset.diagnoseFault));
 }
+$("work").addEventListener("change",event=>{
+ const statusSelect=event.target.closest("[data-guided-fault-status]");
+ if(!statusSelect)return;
+ const id=statusSelect.dataset.guidedFaultStatus;
+ const fault=Object.values(active?.entries||{}).flatMap(record=>Array.isArray(record?.faultCodes)?record.faultCodes:[]).find(item=>item.id===id);
+ if(!fault)return;
+ fault.status=statusSelect.value;
+ saveCurrent();
+ renderWork();
+});
 $("work").addEventListener("click",async event=>{
  const uploadBulletin=event.target.closest("#uploadActiveBulletin");
  if(uploadBulletin){
@@ -492,7 +514,8 @@ const faultPreview=()=>{const result=interpretFaultCode($("faultCode").value);$(
  const code=$("faultCode").value.trim();
  if(!code){alert("Enter a fault code first.");$("faultCode").focus();return}
  const list=Array.isArray(active.entries[step.id]?.faultCodes)?active.entries[step.id].faultCodes:[];
- const interpreted=interpretFaultCode(code),prior=editingFaultIndex===null?null:list[editingFaultIndex];
+ const manufacturer=String(active?.vehicle?.make||"").trim();
+ const interpreted=interpretFaultCode((manufacturer?manufacturer+" ":"")+code),prior=editingFaultIndex===null?null:list[editingFaultIndex];
  const item={...(prior||{}),id:prior?.id||"fault-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8),code,description:interpreted.description||"",controller:$("faultController").value.trim(),status:$("faultStatus").value,confidence:interpreted.confidence||"unverified",source:interpreted.source||"",sourceUrl:interpreted.sourceUrl||""};
  const targetIndex=editingFaultIndex===null?list.length:editingFaultIndex;
  if(editingFaultIndex===null)list.push(item);else list[editingFaultIndex]=item;

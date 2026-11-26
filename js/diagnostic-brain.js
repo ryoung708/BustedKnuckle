@@ -785,8 +785,12 @@ function powertrainRecommendation(record, steps) {
     const statusActive=statuses=>statuses.some(status=>status==="active"||status==="intermittent");
     const p016fStatuses=statusesFor("P016F00");
     if(!statusKnown(p016fStatuses)) return hold(
-      "P016F-00 is not attached with a confirmed active/inactive status.",
-      "Attach P016F-00 to this case and set its status from the current scan report. Do not use the P016F-specific path while the code identity or status is unknown."
+      p016fStatuses.length
+        ? "P016F-00 is attached, but its current active/inactive status is still unknown."
+        : "P016F-00 has not been attached to this case.",
+      p016fStatuses.length
+        ? "Use the inline “Confirm related fault status from the current scan” controls above this test to mark P016F-00 active, intermittent or inactive. Then save the test result again; do not guess the status."
+        : "Attach P016F-00 from the current controller scan, identify its reporting controller and set its active/inactive status. Do not use the P016F-specific path while code identity or status is unknown."
     );
     if(!statusActive(p016fStatuses)) return hold(
       "P016F-00 is only recorded as inactive/historic.",
