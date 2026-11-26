@@ -78,6 +78,7 @@ create table if not exists public.architecture_sources (
   publication_date date,
   page_reference text,
   source_url text,
+  status text not null default 'draft' check (status in ('draft','reviewed','published','retired')),
   rights_status text not null default 'review_required'
     check (rights_status in ('licensed','public_reference','link_out_only','user_authorized','review_required','prohibited')),
   validation_level text not null default 'unverified'
@@ -91,6 +92,7 @@ create table if not exists public.architecture_sources (
 create table if not exists public.architecture_controllers (
   id uuid primary key default gen_random_uuid(),
   architecture_id uuid not null references public.electrical_architectures(id) on delete cascade,
+  status text not null default 'draft' check (status in ('draft','reviewed','published','retired')),
   controller_code text not null,
   controller_name text not null,
   manufacturer text,
@@ -108,6 +110,7 @@ create table if not exists public.architecture_controllers (
 create table if not exists public.architecture_network_segments (
   id uuid primary key default gen_random_uuid(),
   architecture_id uuid not null references public.electrical_architectures(id) on delete cascade,
+  status text not null default 'draft' check (status in ('draft','reviewed','published','retired')),
   network_name text not null,
   protocol text not null,
   data_rate text,
@@ -125,6 +128,7 @@ create table if not exists public.architecture_network_segments (
 create table if not exists public.architecture_controller_connections (
   id uuid primary key default gen_random_uuid(),
   architecture_id uuid not null references public.electrical_architectures(id) on delete cascade,
+  status text not null default 'draft' check (status in ('draft','reviewed','published','retired')),
   network_segment_id uuid not null references public.architecture_network_segments(id) on delete cascade,
   controller_id uuid not null references public.architecture_controllers(id) on delete cascade,
   connection_role text,
@@ -138,6 +142,7 @@ create table if not exists public.architecture_controller_connections (
 create table if not exists public.architecture_power_distributions (
   id uuid primary key default gen_random_uuid(),
   architecture_id uuid not null references public.electrical_architectures(id) on delete cascade,
+  status text not null default 'draft' check (status in ('draft','reviewed','published','retired')),
   distribution_name text not null,
   distribution_type text not null check (distribution_type in ('battery','fuse_box','relay_center','power_feed','ground_point','splice','other')),
   voltage_system text,
@@ -156,6 +161,7 @@ create table if not exists public.architecture_connectors (
   id uuid primary key default gen_random_uuid(),
   architecture_id uuid not null references public.electrical_architectures(id) on delete cascade,
   controller_id uuid references public.architecture_controllers(id) on delete cascade,
+  status text not null default 'draft' check (status in ('draft','reviewed','published','retired')),
   connector_designation text not null,
   connector_location text,
   pin_count integer,
