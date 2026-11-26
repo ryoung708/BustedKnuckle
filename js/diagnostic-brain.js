@@ -928,6 +928,23 @@ function powertrainRecommendation(record, steps) {
     if(/incomplete|specification unavailable/.test(choice))
       return hold("High-side rail-pressure performance has not been established.","Obtain the correct commanded/actual rail-pressure parameters, test conditions and engine-specific limits. Do not infer a high-pressure failure without those values.");
   }
+  if(step.id==="p016f_high_side_isolate"){
+    if(/a specific high-pressure control \/ delivery fault is isolated|sensor signal or circuit fault is isolated/i.test(choice))
+      return hold(
+        "A high-pressure or sensor-circuit fault has been isolated, but the repair is not yet documented as complete.",
+        "Record the exact failed OEM pinpoint test, component/circuit, measured result and applicable specification. Complete the authorized repair first, then select the repaired outcome. Do not advance to final verification merely because a fault was isolated."
+      );
+    if(/specific high-pressure fault repaired|sensor circuit repaired/i.test(choice))
+      return go(steps.find(item=>item.id==="p016f_verify"),
+        "The isolated high-pressure or sensor-circuit defect has been repaired and is ready for verification.",
+        "Repeat the original commanded-versus-actual rail-pressure test under the same operating conditions, compare before/after values with the exact OEM limits, and rescan EMS for P016F00. Preserve the repair evidence.");
+    if(/repair pending/i.test(choice))
+      return hold("The isolated high-pressure or sensor-circuit fault is awaiting repair.",
+        "Complete the authorized repair and document the part/circuit, OEM procedure and supporting measurements before selecting the repaired outcome.");
+    if(/no abnormality found/i.test(choice))
+      return hold("The prescribed high-pressure pinpoint tests did not isolate a fault, but the original P016F00 concern remains unresolved.",
+        "Do not move to repair verification. Recheck whether the original fault conditions were reproduced, preserve event data and continue the current engine/serial-specific OEM diagnostic tree for intermittent rail-pressure control, sensor plausibility and leakage causes. Keep the cause unconfirmed until a discriminating test supports it.");
+  }
   // Explicit branches for the Mack P205B64 applicability gate and final repeat test.
   // These decisions remain inside the shared recommendation engine.
   if(step.id==="p205b_applicability"){
