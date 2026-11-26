@@ -34,7 +34,7 @@ assert.equal(wrongMake.status, "not-found", "A Mack-only definition must not be 
 
 const compactCaseP = interpretFaultCode("P245213");
 assert.equal(compactCaseP.status, "manufacturer-required");
-assert.match(compactCaseP.description, /DPF pressure sensor A circuit open/i);
+assert.match(compactCaseP.caution, /manufacturer-specific definition withheld/i);
 
 const caseP = interpretFaultCode("Mack P2452-13");
 assert.equal(caseP.status, "case-derived-unverified");
