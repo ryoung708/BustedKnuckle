@@ -1,4 +1,4 @@
-name: IronKnuckle Regression Gate
+name: IronKnuckle CI / Quality Gate
 
 on:
   pull_request:
@@ -10,14 +10,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: ironknuckle-regression-${{ github.workflow }}-${{ github.ref }}
+  group: ironknuckle-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  regression:
-    name: Full regression suite
+  quality:
+    name: Full regression, page integrity and data validation
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -25,5 +25,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Run all regression and page-integrity tests
+      - name: Run full regression and page-integrity suite
         run: npm test
+      - name: Validate complete fault library and catalog
+        run: npm run validate:faults
