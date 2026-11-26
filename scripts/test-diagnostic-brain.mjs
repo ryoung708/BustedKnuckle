@@ -630,4 +630,46 @@ assert.equal(branchedCrankResult.status,"ready-for-review");
 assert.equal(branchedCrankResult.completed,5);
 assert.equal(branchedCrankResult.total,5);
 
+
+// High-side isolation must not be mistaken for a completed repair.
+// The isolated fault and pending-repair outcomes stay on the current stage;
+// only an explicitly repaired outcome advances to final verification.
+const highSideIsolated=analyzeDiagnosticCase({...p016fCase,entries:{
+  p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
+  p016f_low_side:{choice:"Low-side pressure meets OEM specification under the fault conditions"},
+  p016f_high_side:{choice:"Actual rail pressure falls below commanded / cannot track target"},
+  p016f_high_side_isolate:{choice:"A specific high-pressure control / delivery fault is isolated"}
+}},p016fPlan.steps);
+assert.equal(highSideIsolated.recommendation.stepId,"p016f_high_side_isolate");
+assert.equal(highSideIsolated.recommendation.state,"hold");
+assert.match(highSideIsolated.recommendation.action,/Complete the authorized repair first/i);
+
+const highSideRepairPending=analyzeDiagnosticCase({...p016fCase,entries:{
+  p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
+  p016f_low_side:{choice:"Low-side pressure meets OEM specification under the fault conditions"},
+  p016f_high_side:{choice:"Actual rail pressure falls below commanded / cannot track target"},
+  p016f_high_side_isolate:{choice:"Repair pending"}
+}},p016fPlan.steps);
+assert.equal(highSideRepairPending.recommendation.stepId,"p016f_high_side_isolate");
+assert.equal(highSideRepairPending.recommendation.state,"hold");
+
+const highSideRepaired=analyzeDiagnosticCase({...p016fCase,entries:{
+  p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
+  p016f_low_side:{choice:"Low-side pressure meets OEM specification under the fault conditions"},
+  p016f_high_side:{choice:"Actual rail pressure falls below commanded / cannot track target"},
+  p016f_high_side_isolate:{choice:"Specific high-pressure fault repaired"}
+}},p016fPlan.steps);
+assert.equal(highSideRepaired.recommendation.stepId,"p016f_verify");
+assert.equal(highSideRepaired.recommendation.state,"next");
+
+const highSideNoCause=analyzeDiagnosticCase({...p016fCase,entries:{
+  p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"},
+  p016f_low_side:{choice:"Low-side pressure meets OEM specification under the fault conditions"},
+  p016f_high_side:{choice:"Actual rail pressure falls below commanded / cannot track target"},
+  p016f_high_side_isolate:{choice:"No abnormality found during the prescribed tests"}
+}},p016fPlan.steps);
+assert.equal(highSideNoCause.recommendation.stepId,"p016f_high_side_isolate");
+assert.equal(highSideNoCause.recommendation.state,"hold");
+assert.match(highSideNoCause.recommendation.action,/Do not move to repair verification/i);
+
 console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");
