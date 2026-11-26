@@ -877,7 +877,7 @@ function powertrainRecommendation(record, steps) {
       );
       // The technician's explicit scan review is sufficient here; unknown statuses on
       // supporting codes must not block the P016F low-side diagnostic path.
-      return go(steps[steps.findIndex(item=>item.id==="p016f_low_side")],"P016F00 is confirmed active/intermittent and the K01029637 three-code trigger is not present as an active combination.","Use the latest applicable PTT Guided Diagnostics (K40914241) for this engine and emissions configuration. Begin with the specified low-side supply checks; do not apply the K01029637 lip-seal CBR as though its code combination were met.");
+      return go(steps[steps.findIndex(item=>item.id==="p016f_low_side")],"P016F00 is confirmed active/intermittent and the K01029637 three-code trigger is not present as an active combination.","Use current PTT Guided Diagnostics or an authorized current Mack/Volvo service procedure for this exact engine and emissions configuration. Begin with the specified low-side supply checks; do not apply the K01029637 lip-seal CBR as though its code combination were met.");
     }
   }
   if(step.id==="p016f_cbr_filter"){
@@ -889,14 +889,14 @@ function powertrainRecommendation(record, steps) {
         "Record the exact defect and photos in the Mack eService case. Follow the CBR and current Mack parts/service direction for correction. After the repair, repeat the prescribed fuel-pressure diagnostics; do not assume the defect alone proves the entire cause.");
     if(/both cbr inspection areas checked; no defect found/i.test(choice))
       return go(steps[steps.findIndex(item=>item.id==="p016f_low_side")],"The CBR vent-filter and secondary-filter lip-seal inspections found no defect.",
-        "Continue with current PTT Guided Diagnostics. Verify low-side supply pressure under the fault conditions using the exact engine-specific specification.");
+        "Continue with PTT or an authorized current engine/serial-specific OEM service procedure. Verify low-side supply pressure under the fault conditions using the exact specification.");
   }
   // P016F00: a verified low-side pass must advance to high-side rail-pressure testing.
   if(step.id==="p016f_low_side"){
     if(/low-side pressure meets oem specification under the fault conditions/i.test(choice))
       return go(steps.find(item=>item.id==="p016f_high_side"),"Low-side supply pressure was verified within the applicable OEM specification under the conditions that set the fault.","The low side has passed. Move to the high-pressure system: compare commanded and actual rail pressure together under the same operating conditions. Record both values, units and OEM limits.");
     if(/below oem specification|pressure unstable|air \/ restriction evidence/i.test(choice))
-      return go(steps.find(item=>item.id==="p016f_low_side_isolate"),"The low-side supply has not passed; a supply-side abnormality must be isolated before high-side conclusions.","Stay on the low side. Follow the exact engine-specific PTT pinpoint procedure to separate supply/transfer-pump output, filter or line restriction, tank pickup/vent restriction and air ingress. Change one condition at a time and record the measured response; do not replace a pump or filter from the pressure result alone.");
+      return go(steps.find(item=>item.id==="p016f_low_side_isolate"),"The low-side supply has not passed; a supply-side abnormality must be isolated before high-side conclusions.","Stay on the low side. Follow the exact engine-specific PTT or authorized OEM pinpoint procedure to separate supply/transfer-pump output, filter or line restriction, tank pickup/vent restriction and air ingress. Change one condition at a time and record the measured response; do not replace a pump or filter from the pressure result alone.");
     if(/incomplete|specification unavailable/.test(choice))
       return hold("Low-side pressure has not been proven within specification.","Obtain the correct engine/serial-specific pressure specification and test point, then repeat the low-side test under the conditions that set P016F00. Do not treat missing data as a pass.");
   }
@@ -906,13 +906,13 @@ function powertrainRecommendation(record, steps) {
     if(/defect identified; repair pending|component or restriction identified but not corrected/i.test(choice))
       return hold("A low-side defect has been identified but has not been corrected.","Complete the approved repair first. Do not proceed to high-side testing until the low-side supply is repaired and rechecked under the original fault conditions.");
     if(/no low-side cause isolated/i.test(choice))
-      return hold("The low-side pressure is abnormal, but the cause has not been isolated.","Continue the applicable PTT low-pressure pinpoint tests. Verify test equipment and connections, supply/transfer-pump command and output, filter condition, tank pickup/vent, line restriction and air ingress only as prescribed for this engine. Record each result; do not guess or replace parts.");
+      return hold("The low-side pressure is abnormal, but the cause has not been isolated.","Continue the applicable PTT or authorized OEM low-pressure pinpoint tests. Verify test equipment and connections, supply/transfer-pump command and output, filter condition, tank pickup/vent, line restriction and air ingress only as prescribed for this engine. Record each result; do not guess or replace parts.");
     if(/incomplete|procedure unavailable|specification unavailable/i.test(choice))
       return hold("The low-side isolation procedure is incomplete or unavailable.","Obtain current engine/serial-specific Mack service information and complete the prescribed low-pressure pinpoint tests. Keep the case open; do not infer a failed component.");
   }
   if(step.id==="p016f_low_side_retest"){
     if(/low-side pressure meets oem specification under the original fault conditions/i.test(choice))
-      return go(steps.find(item=>item.id==="p016f_high_side"),"The repaired low-side supply now meets the OEM specification under the original fault conditions.","Proceed to commanded-versus-actual rail-pressure testing. Preserve the before/after low-side readings and continue with the exact PTT high-pressure procedure.");
+      return go(steps.find(item=>item.id==="p016f_high_side"),"The repaired low-side supply now meets the OEM specification under the original fault conditions.","Proceed to commanded-versus-actual rail-pressure testing. Preserve the before/after low-side readings and continue with the exact engine-specific OEM high-pressure procedure.");
     if(/below oem specification|pressure unstable|air \/ restriction evidence/i.test(choice))
       return go(steps.find(item=>item.id==="p016f_low_side_isolate"),"The repeat test still shows an abnormal low-side supply.","Return to the low-side pinpoint tests. The repair has not restored the specified supply pressure; isolate the remaining restriction, delivery or air-ingress cause before proceeding.");
     if(/incomplete|specification unavailable|original fault conditions not reproduced/i.test(choice))
