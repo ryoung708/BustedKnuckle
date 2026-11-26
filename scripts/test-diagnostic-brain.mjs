@@ -21,6 +21,10 @@ assert.equal(empty.status,"ready-to-start");
 assert.equal(empty.recommendation.stepId,"baseline");
 assert.equal(empty.specialist.id,"wiringhound");
 assert.equal(empty.evidence.stagesWithObservations,0);
+assert.equal(empty.vehicleContext.platformId,"mack-volvo");
+assert.equal(empty.vehicleContext.engineFamilyId,"mack-mp8");
+assert.equal(empty.vehicleContext.applicabilityStatus,"unverified");
+assert.ok(empty.vehicleContext.missingIdentityFields.includes("engineManufacturer"));
 
 const measuredOnly = analyzeDiagnosticCase({...base,currentStep:0,entries:{baseline:{measurements:{actual:"0.4 V",condition:"Key ON"}}}},electricalSteps);
 assert.equal(measuredOnly.status,"evidence-needed");

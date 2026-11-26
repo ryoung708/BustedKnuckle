@@ -42,4 +42,16 @@ assert.equal(matches[0].verified,true);
 assert.equal(matches[1].id,"c");
 assert.equal(matches[1].verified,false);
 assert.equal(findSimilarDiagnosticCases({...current,complaint:"noise"},candidates,workflows).length,0);
+const generationMatches=findSimilarDiagnosticCases({complaint:"Intermittent power loss and network dropout",system:"electrical",vehicle:{year:"2022",make:"Mack",model:"Anthem",engineMake:"Mack",engine:"MP8",transmissionMake:"Mack",transmissionModel:"mDRIVE",emissions:"US17"}},[
+  {id:"same-generation",complaint:"Intermittent power loss and network dropout",workflowId:"j1939_network",vehicle:{year:"2022",make:"Mack",model:"Anthem",engineMake:"Mack",engine:"MP8",transmissionMake:"Mack",transmissionModel:"mDRIVE",emissions:"US17"}},
+  {id:"other-year",complaint:"Intermittent power loss and network dropout",workflowId:"j1939_network",vehicle:{year:"2018",make:"Mack",model:"Anthem",engineMake:"Mack",engine:"MP8"}},
+  {id:"same-badge-other-engine",complaint:"Intermittent power loss and network dropout",workflowId:"j1939_network",vehicle:{year:"2022",make:"Mack",model:"Anthem",engineMake:"Cummins",engine:"X15"}}
+],workflows);
+assert.equal(generationMatches[0].id,"same-generation");
+assert.equal(generationMatches[0].vehicleMatch.sameVehicleGeneration,true);
+const crossVehicle=findSimilarDiagnosticCases({system:"electrical",faultCodes:["SPN 168 FMI 0"],vehicle:{year:"2022",make:"Mack",model:"Anthem",engineMake:"Mack",engine:"MP8"}},[
+ {id:"cross-platform",workflowId:"j1939_network",vehicle:{year:"2024",make:"Freightliner",model:"Cascadia",engineMake:"Detroit Diesel",engine:"DD15"},entries:{scan:{faultCodes:[{code:"SPN 168 FMI 0"}]}}}
+],workflows);
+assert.equal(crossVehicle.length,1);
+assert.match(crossVehicle[0].matchReason,/Cross-vehicle code match only/i);
 console.log("Complaint-intake similar-case tests passed.");
