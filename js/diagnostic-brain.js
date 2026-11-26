@@ -1,6 +1,7 @@
 // IronKnuckle Diagnostic Brain v2
 // One shared reasoning core with system-specific specialist adapters.
 // Evidence-first rules only. Cross-system cues are prompts to investigate, never causal diagnoses.
+import { buildVehicleContext } from "./vehicle-context.js";
 import { recommendNextStep } from "./wiringhound-decision-engine.js";
 import { workflows as powertrainWorkflows } from "./diagnostic-engine.js";
 
@@ -994,6 +995,7 @@ export function analyzeDiagnosticCase(caseRecord = {}, steps = [], options = {})
   const evidence = summarizeEvidence(entries);
   const vehicle = caseRecord.vehicle || {};
   const missingVehicle = ["make","model","engine"].filter(key => !populated(vehicle[key]));
+  const canonicalVehicleContext = buildVehicleContext(vehicle);
   const system = getSystem(caseRecord);
   const recommendation = recommendationFor(caseRecord, steps, system);
   const current = steps.find(step => step.id === recommendation?.stepId) || null;
@@ -1022,7 +1024,7 @@ export function analyzeDiagnosticCase(caseRecord = {}, steps = [], options = {})
       evidenceTrail:recommendationContext.evidenceTrail
     } : null,
     evidence,evidenceQuality:evidenceQuality(caseRecord,evidence),
-    vehicleContext:{make:clean(vehicle.make),model:clean(vehicle.model),engine:clean(vehicle.engine),missing:missingVehicle},
+    vehicleContext:{...canonicalVehicleContext,make:clean(vehicle.make),model:clean(vehicle.model),engine:clean(vehicle.engine),missing:missingVehicle,missingIdentityFields:canonicalVehicleContext.missing},
     crossSystemSignals:crossSystemSignals(caseRecord,system),
     verifiedCaseMatches:matches,
     knowledgePolicy:"Only technician-marked verified cases with a recorded cause and repair can appear as references. References never override current evidence or OEM procedures.",
