@@ -1,5 +1,6 @@
 import { createCaseRecord } from "./case-schema.js";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
+import { supabase as client } from "./supabase-client.js";
+import { mountVehicleArchitecturePanel } from "./vehicle-architecture-panel.js";
 import { analyzeDiagnosticCase } from "./diagnostic-brain.js";
 import { classifyComplaint, powerLossSteps } from "./wiringhound-complaint-engine.js";
 import { extractFaultReport, parseFaultReportText, findFaultDuplicates } from "./fault-report-importer.js";
@@ -8,16 +9,14 @@ import { bindVehicleIdentity } from "./vehicle-identity-ui.js";
 import { applyVehiclePrefill, rememberVehiclePrefill, bindVehiclePrefillControls } from "./vehicle-intake-prefill.js";
 import {renderGuidedTestMarkup} from "./guided-test-library.js";
 
-const SUPABASE_URL = "https://wpxvaqmzxhxlrutklypm.supabase.co";
-const SUPABASE_KEY = "sb_publishable_8Dhvi0M8P31FLB9kH5-RiA_5qyq9A0O";
 const BUCKET = "ironknuckle-case-files";
 const STORE = "ironknuckle.wiringhound.cases.v2";
 const MAP_STORE = "ironknuckle.wiringhound.cloud-map.v1";
 const KNOWLEDGE_MAP = "ironknuckle.wiringhound.knowledge-map.v1";
 const LOCAL_FAULT_CATALOG = "ironknuckle.wiringhound.fault-catalog.v1";
 const $ = id => document.getElementById(id);
-const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 bindVehicleIdentity();
+mountVehicleArchitecturePanel("vehicleArchitecturePanel");
 applyVehiclePrefill();
 bindVehiclePrefillControls();
 
