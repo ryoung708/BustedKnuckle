@@ -75,7 +75,7 @@ function updateCase(){if(!active)return;active.updatedAt=new Date().toISOString(
 function loadLocalFaultCatalog(){try{const rows=JSON.parse(localStorage.getItem(LOCAL_FAULT_CATALOG)||"[]");return Array.isArray(rows)?rows:[]}catch{return []}}
 function saveLocalFaultCatalog(rows){localStorage.setItem(LOCAL_FAULT_CATALOG,JSON.stringify(rows.slice(-1500)))}
 function registerFault(item){
- const interpretation=interpretFaultCode(item.code);
+ const interpretation=interpretFaultCode((active?.vehicle?.make?active.vehicle.make+" ":"")+item.code);
  const row={code:item.code,normalized:String(item.code||"").toUpperCase().replace(/[^A-Z0-9]/g,""),controller:item.controller||"",description:item.description||interpretation.description||"",codeType:item.codeType||interpretation.codeType||"",confidence:interpretation.confidence||"unverified",source:item.source||interpretation.source||"Technician entry",lastSeen:new Date().toISOString()};
  const catalog=loadLocalFaultCatalog(),key=row.normalized+"|"+row.controller.toUpperCase();
  const index=catalog.findIndex(x=>(x.normalized+"|"+String(x.controller||"").toUpperCase())===key);
