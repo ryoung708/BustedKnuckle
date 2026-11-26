@@ -701,6 +701,14 @@ const p205UnknownEmissions=analyzeDiagnosticCase({...p205Base,vehicle:{...p205Ba
 assert.equal(p205UnknownEmissions.recommendation.stepId,"p205b_applicability");
 assert.equal(p205UnknownEmissions.recommendation.state,"hold");
 
+const p205IntermediateEmissions=analyzeDiagnosticCase({...p205Base,vehicle:{...p205Base.vehicle,emissions:"US18+OBD18"},entries:{p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified",faultCodes:[{code:"P205B64",controller:"EMS",status:"active"}]}}},p205Steps);
+assert.equal(p205IntermediateEmissions.recommendation.stepId,"p205b_connector");
+assert.equal(p205IntermediateEmissions.recommendation.state,"next");
+
+const p205OutOfYear=analyzeDiagnosticCase({...p205Base,vehicle:{...p205Base.vehicle,year:"2025"},entries:{p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified",faultCodes:[{code:"P205B64",controller:"EMS",status:"active"}]}}},p205Steps);
+assert.equal(p205OutOfYear.recommendation.stepId,"p205b_applicability");
+assert.equal(p205OutOfYear.recommendation.state,"hold");
+
 const p205Bypass=analyzeDiagnosticCase({...p205Base,entries:{p205b_result:{choice:p205FinalChoice}}},p205Steps);
 assert.equal(p205Bypass.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Bypass.recommendation.state,"hold");
