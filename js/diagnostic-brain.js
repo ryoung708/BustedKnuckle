@@ -8,6 +8,17 @@ import { workflows as powertrainWorkflows } from "./diagnostic-engine.js";
 const clean = value => String(value ?? "").trim();
 const lower = value => clean(value).toLowerCase();
 const populated = value => clean(value).length > 0;
+function mackUqlsScope(vehicle = {}) {
+  const make=lower(vehicle.make);
+  const model=clean(vehicle.model||vehicle.chassis).toUpperCase();
+  const emissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
+  const excluded=/\b(?:AN|PR)\s*\(\s*4\s*\)/.test(model);
+  const supportedEmissions=/^US17\+OBD(?:16|18|19)$/.test(emissions) ||
+    /^US20\+OBD20$/.test(emissions) ||
+    /^US21\+OBD21$/.test(emissions) ||
+    /^US22\+OBD2023$/.test(emissions);
+  return {valid:make.includes("mack")&&populated(model)&&!excluded&&supportedEmissions,make,model,emissions,excluded,supportedEmissions};
+}
 const electricalWorkflowIds = new Set([
   "j1939_network","j1939_dropout","light_inop","general_electrical",
   "short_ground","short_power","open_circuit","voltage_drop","intermittent","power_loss"
@@ -957,10 +968,15 @@ function powertrainRecommendation(record, steps) {
       "The 2026 Mack CBR applicability has not been established or this variant is excluded.",
       "Stop this guided path. Confirm the VIN, exact chassis variant and emissions generation, then retrieve the applicable Mack procedure. Do not carry on with CBR 2107-22."
     );
-    if(/at least one listed yellow UQLS fault active\/confirmed and applicability verified/i.test(choice)) return go(
-      steps[index+1],"At least one listed yellow UQLS fault is active/confirmed and the truck was confirmed within the bulletin scope.",
-      "Inspect both UQLS harness connector halves for damaged pins/wires, corrosion and water intrusion."
-    );
+    if(/at least one listed yellow UQLS fault active\/confirmed and applicability verified/i.test(choice)) {
+      const scope=mackUqlsScope(record.vehicle||{});
+      if(!scope.valid) return hold(
+        "The entered vehicle identity does not establish the Mack CBR 2107-22 scope.",
+        "Confirm the exact Mack model/chassis variant and emissions generation from VIN/build data. AN(4) and PR(4) are excluded; accepted emissions families are US17+OBD16/18/19, US20+OBD20, US21+OBD21 and US22+OBD2023. Do not continue this CBR path with missing or out-of-scope vehicle data."
+      );
+      return go(steps[index+1],"At least one listed yellow UQLS fault is active/confirmed and the entered vehicle identity fits the CBR scope.",
+        "Inspect both UQLS harness connector halves for damaged pins/wires, corrosion and water intrusion.");
+    }
   }
   if(step.id==="p205b_connector"){
     if(/no pin, wire, corrosion or moisture damage found/i.test(choice)) return go(
@@ -973,17 +989,47 @@ function powertrainRecommendation(record, steps) {
     );
   }
   if(step.id==="p205b_result"){
-    if(/^(?!.*\b(?:none|no|did not)\b).*(?:listed yellow UQLS faults returned active\/confirmed|yellow faults returned|yellow UQLS faults returned)/i.test(choice)) return {
-      stepId:step.id,title:"Replace DEF Level / UQLS sensor",
-      reason:"One or more of the nine yellow UQLS faults returned after the prescribed repeat test.",
-      action:"RECOMMENDATION: Replace the DEF Level / UQLS sensor. The Mack CBR 2107-22 replacement criteria are met because a listed yellow UQLS fault returned active/confirmed after the prescribed repeat checks. Confirm the VIN, chassis variant and emissions generation remain within the bulletin scope. Follow the current Mack Impact replacement procedure and TSB 258-040 for sensor replacement and wire routing. Save the before-and-after scan results. This is a bulletin-directed repair recommendation; verify the repair with the prescribed post-repair checks.",
-      state:"review"
+    const scope=mackUqlsScope(record.vehicle||{});
+    if(!scope.valid) return {stepId:"p205b_applicability",reason:"The entered vehicle identity does not establish the Mack CBR 2107-22 scope.",action:"Confirm the exact Mack model/chassis variant and emissions generation from VIN/build data. AN(4) and PR(4) are excluded; accepted emissions families are US17+OBD16/18/19, US20+OBD20, US21+OBD21 and US22+OBD2023. Do not make a CBR replacement decision with missing or out-of-scope vehicle data.",state:"hold"};
+    // The final CBR decision is gated by every required preceding stage. A direct
+    // final-step selection cannot stand in for the applicability and repeat-test evidence.
+    const required=[
+      {id:"p205b_applicability",pattern:/at least one listed yellow UQLS fault active\/confirmed and applicability verified/i,reason:"The bulletin applicability and at least one active/confirmed yellow UQLS fault have not been established.",action:"Confirm the exact Mack VIN/chassis variant and emissions scope, then attach the full scan showing at least one listed yellow UQLS fault active/confirmed. Do not use the CBR replacement decision until this gate passes."},
+      {id:"p205b_connector",pattern:/no pin, wire, corrosion or moisture damage found/i,reason:"The required UQLS connector and harness inspection has not passed.",action:"Inspect both UQLS connector halves and visible harness using the approved procedure. Photograph and repair any confirmed defect before continuing."},
+      {id:"p205b_quality",pattern:/DEF quality acceptable per Mack specification/i,reason:"DEF quality has not been confirmed acceptable.",action:"Test a clean DEF sample with the specified Mack refractometer and compare the actual reading with the current Mack acceptance specification. Correct contamination/quality concerns and repeat the check."},
+      {id:"p205b_freeze",pattern:/tank is not frozen/i,reason:"The DEF tank has not been confirmed free of freezing.",action:"Verify tank condition using the approved Mack service method. If frozen or suspected frozen, stop and follow the approved thaw/service procedure; do not use improvised heat."},
+      {id:"p205b_fill",pattern:/tank adequately filled per Mack procedure/i,reason:"The DEF tank fill level has not been confirmed adequate.",action:"Verify the fill level using the current Mack procedure for this configuration and record how it was checked."}
+    ];
+    for(const requiredStage of required){
+      const prior=entries[requiredStage.id]||{};
+      if(!requiredStage.pattern.test(clean(prior.choice))) return {
+        stepId:requiredStage.id,reason:requiredStage.reason,action:requiredStage.action,state:"hold"
+      };
+    }
+    const cycleChoice=clean(entries.p205b_cycle?.choice);
+    const returned=/repeat sequence completed; one or more listed yellow UQLS faults returned active\/confirmed/i.test(cycleChoice);
+    const noneReturned=/repeat sequence completed; none of the nine listed yellow UQLS faults returned active/i.test(cycleChoice);
+    if(!returned&&!noneReturned) return {
+      stepId:"p205b_cycle",reason:"The prescribed two-cycle repeat-fault check has not been completed and documented.",
+      action:"Complete both Mack-prescribed high-idle runs, the 15-second key-off interval and a fresh scan. Record the final status of all nine listed yellow UQLS faults before making a replacement decision.",state:"hold"
     };
-    if(/none .*yellow.*faults.*returned|none of the nine listed yellow UQLS faults returned active|did not return active|yellow faults did not return/i.test(choice)) return {
-      stepId:step.id,title:"No UQLS replacement indicated",reason:"None of the nine listed yellow UQLS faults returned active after the prescribed repeat test.",
-      action:"Do not replace the UQLS under this procedure. Save the final scan report and release/continue service according to the shop's verification process.",
-      state:"review"
-    };
+    if(/^(?!.*\b(?:none|no|did not)\b).*(?:listed yellow UQLS faults returned active\/confirmed|yellow faults returned|yellow UQLS faults returned)/i.test(choice)){
+      if(!returned) return {stepId:"p205b_cycle",reason:"The final selection says a yellow fault returned, but the recorded repeat-test result does not confirm that outcome.",action:"Reconcile the final scan with the repeat-test entry. Record each listed yellow code's actual active/confirmed status and select the matching final result.",state:"hold"};
+      return {
+        stepId:step.id,title:"Replace DEF Level / UQLS sensor",
+        reason:"One or more of the nine yellow UQLS faults returned after the prescribed repeat test.",
+        action:"RECOMMENDATION: Replace the DEF Level / UQLS sensor. The Mack CBR 2107-22 replacement criteria are met because a listed yellow UQLS fault returned active/confirmed after the prescribed repeat checks. Confirm the VIN, chassis variant and emissions generation remain within the bulletin scope. Follow the current Mack Impact replacement procedure and TSB 258-040 for sensor replacement and wire routing. Save the before-and-after scan results. This is a bulletin-directed repair recommendation; verify the repair with the prescribed post-repair checks.",
+        state:"review"
+      };
+    }
+    if(/none .*yellow.*faults.*returned|none of the nine listed yellow UQLS faults returned active|did not return active|yellow faults did not return/i.test(choice)){
+      if(!noneReturned) return {stepId:"p205b_cycle",reason:"The final selection says no yellow faults returned, but the recorded repeat-test result reports an active/confirmed yellow fault.",action:"Reconcile the final selection with the fresh scan and repeat-test record. Do not suppress a returned active/confirmed fault.",state:"hold"};
+      return {
+        stepId:step.id,title:"No UQLS replacement indicated",reason:"None of the nine listed yellow UQLS faults returned active after the prescribed repeat test.",
+        action:"Do not replace the UQLS under this procedure. Save the final scan report and release/continue service according to the shop's verification process.",
+        state:"review"
+      };
+    }
     if(/uncertain|another fault/.test(choice)) return hold(
       "The repeat-test result is not conclusive.",
       "Do not replace the UQLS yet. Record the remaining active codes and repeat/complete the applicable diagnostic procedure."
