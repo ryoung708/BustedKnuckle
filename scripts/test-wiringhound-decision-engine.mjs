@@ -99,4 +99,46 @@ assert.equal(recommendNextStep(record("light_inop","drop","Both paths within spe
 assert.equal(recommendNextStep(record("light_inop","load_review","Load failed on known-good supply and ground"),lighting).stepId,"verify");
 assert.equal(recommendNextStep(record("light_inop","harness","No physical fault isolated"),lighting).stepId,"drop");
 
+
+// Short-to-ground: an unsafe isolation or unresolved continuity must not advance.
+const shortGround=[{id:"scope"},{id:"powerdown"},{id:"loads"},{id:"segment"},{id:"verify"}];
+assert.equal(recommendNextStep(record("short_ground","scope","Fuse opens immediately"),shortGround).stepId,"powerdown");
+assert.equal(recommendNextStep(record("short_ground","powerdown","Voltage remains / isolation incomplete"),shortGround).state,"hold");
+assert.equal(recommendNextStep(record("short_ground","loads","Not safely isolated"),shortGround).state,"hold");
+assert.equal(recommendNextStep(record("short_ground","segment","Unexpected continuity remains"),shortGround).state,"hold");
+assert.equal(recommendNextStep(record("short_ground","segment","Defect repaired; ready for verification"),shortGround).stepId,"verify");
+
+// Short-to-power: a possible cross-contact requires isolation/repair before verification.
+const shortPower=[{id:"scope"},{id:"isolate"},{id:"branches"},{id:"inspect"},{id:"verify"}];
+assert.equal(recommendNextStep(record("short_power","isolate","Isolation incomplete"),shortPower).state,"hold");
+assert.equal(recommendNextStep(record("short_power","branches","No branch isolated"),shortPower).state,"hold");
+assert.equal(recommendNextStep(record("short_power","inspect","Connector contamination found"),shortPower).state,"hold");
+assert.equal(recommendNextStep(record("short_power","inspect","Defect repaired; ready for verification"),shortPower).stepId,"verify");
+
+// Open circuit: a localized open/high-resistance segment is not yet a completed repair.
+const openCircuit=[{id:"scope"},{id:"supply"},{id:"connectors"},{id:"segment"},{id:"verify"}];
+assert.equal(recommendNextStep(record("open_circuit","supply","Not tested yet"),openCircuit).state,"hold");
+assert.equal(recommendNextStep(record("open_circuit","connectors","Connector appears sound"),openCircuit).stepId,"segment");
+assert.equal(recommendNextStep(record("open_circuit","segment","Open isolated to one segment"),openCircuit).state,"hold");
+assert.equal(recommendNextStep(record("open_circuit","segment","Defect repaired; ready for verification"),openCircuit).stepId,"verify");
+
+// Voltage drop: both sides are independently tested, and abnormal readings stay local.
+const voltageDrop=[{id:"conditions"},{id:"positive"},{id:"ground"},{id:"repair"},{id:"verify"}];
+assert.equal(recommendNextStep(record("voltage_drop","conditions","Failure not reproduced"),voltageDrop).state,"hold");
+assert.equal(recommendNextStep(record("voltage_drop","positive","Drop localized to positive segment"),voltageDrop).state,"hold");
+assert.equal(recommendNextStep(record("voltage_drop","positive","Positive path within specification"),voltageDrop).stepId,"ground");
+assert.equal(recommendNextStep(record("voltage_drop","ground","Drop localized to ground segment"),voltageDrop).state,"hold");
+assert.equal(recommendNextStep(record("voltage_drop","ground","Ground path within specification"),voltageDrop).stepId,"repair");
+assert.equal(recommendNextStep(record("voltage_drop","repair","No defect confirmed"),voltageDrop).state,"hold");
+assert.equal(recommendNextStep(record("voltage_drop","repair","Repair completed; retest pending"),voltageDrop).stepId,"verify");
+
+// Intermittent: failure capture and a repeatable location are required before repair verification.
+const intermittent=[{id:"pattern"},{id:"baseline"},{id:"manipulate"},{id:"isolate"},{id:"verify"}];
+assert.equal(recommendNextStep(record("intermittent","baseline","Cannot reproduce"),intermittent).state,"hold");
+assert.equal(recommendNextStep(record("intermittent","manipulate","No change"),intermittent).state,"hold");
+assert.equal(recommendNextStep(record("intermittent","isolate","No segment isolated"),intermittent).state,"hold");
+assert.equal(recommendNextStep(record("intermittent","isolate","Specific connector isolated"),intermittent).state,"hold");
+assert.equal(recommendNextStep(record("intermittent","isolate","Defect repaired; ready for verification"),intermittent).stepId,"verify");
+assert.equal(recommendNextStep(record("intermittent","verify","Failure reduced but still present"),intermittent).state,"hold");
+
 console.log("WiringHound decision engine tests passed.");
