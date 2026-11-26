@@ -80,8 +80,15 @@ for (const [code, phrase] of [
   const result = interpretFaultCode(code);
   assert.equal(result.status, "oem-documented", code);
   assert.match(result.description, phrase, code);
-  assert.equal(result.confidence, "case-derived-unverified", code);
+  assert.equal(result.confidence, code==="Mack P016F00" ? "public-oem-reference" : "case-derived-unverified", code);
 }
+
+const mackP016fDefinition = interpretFaultCode("Mack P016F-00");
+assert.equal(mackP016fDefinition.status, "oem-documented");
+assert.equal(mackP016fDefinition.description, "Closed Loop Fuel Pressure Control At Limit - Pressure Too Low");
+assert.match(mackP016fDefinition.source, /K40914241/);
+assert.match(mackP016fDefinition.sourceUrl, /MC-10170161-9999\\.pdf/);
+assert.equal(mackP016fDefinition.confidence, "public-oem-reference");
 
 const generic = interpretFaultCode("SPN 999999 FMI 4");
 assert.equal(generic.status, "generic-fmi-only");
