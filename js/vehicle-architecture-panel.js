@@ -69,11 +69,16 @@ async function loadPublishedArchitecture(host, button) {
     if(platformError)throw platformError;
     const platformIds=(platforms||[]).filter(p=>(p.model_year_start==null||Number(identity.modelYear)>=p.model_year_start)&&(p.model_year_end==null||Number(identity.modelYear)<=p.model_year_end)).map(p=>p.id);
     if(!platformIds.length){renderResults(host,identity,[]);return;}
-    const {data:configs,error:configError}=await supabase.from("vehicle_configurations").select("id,platform_id,model_name,model_year,engine_manufacturer,engine_model,transmission_manufacturer,transmission_model,emissions_family,applicability_notes").in("platform_id",platformIds).eq("status","published").eq("model_year",Number(identity.modelYear)).ilike("model_name",identity.model);
+    const {data:configs,error:configError}=await supabase.from("vehicle_configurations").select("id,platform_id,model_name,model_year,engine_manufacturer,engine_model,transmission_manufacturer,transmission_model,emissions_family,applicability_notes").in("platform_id",platformIds).eq("status","published").eq("model_year",Number(identity.modelYear));
     if(configError)throw configError;
+    const normalize = value => String(value || "").toLowerCase().replace(/[^a-z0-9]+/g,"");
     const matches=(configs||[]).filter(c=>
-      (!vehicle.engineMake||!c.engine_manufacturer||c.engine_manufacturer.toLowerCase()===vehicle.engineMake.toLowerCase())&&
-      (!vehicle.engineModel||!c.engine_model||c.engine_model.toLowerCase()===vehicle.engineModel.toLowerCase())
+      normalize(c.model_name)===normalize(identity.model) &&
+      (!vehicle.engineMake || (c.engine_manufacturer && normalize(c.engine_manufacturer)===normalize(vehicle.engineMake))) &&
+      (!vehicle.engineModel || (c.engine_model && normalize(c.engine_model)===normalize(vehicle.engineModel))) &&
+      (!vehicle.transmissionMake || (c.transmission_manufacturer && normalize(c.transmission_manufacturer)===normalize(vehicle.transmissionMake))) &&
+      (!vehicle.transmissionModel || (c.transmission_model && normalize(c.transmission_model)===normalize(vehicle.transmissionModel))) &&
+      (!vehicle.emissionsFamily || (c.emissions_family && normalize(c.emissions_family)===normalize(vehicle.emissionsFamily)))
     );
     if(!matches.length){renderResults(host,identity,[]);return;}
     const results=[];
