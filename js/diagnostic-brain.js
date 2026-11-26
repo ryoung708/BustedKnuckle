@@ -821,9 +821,26 @@ function powertrainRecommendation(record, steps) {
     if(/vehicle, emissions or engine applicability unknown|outside listed cbr scope/i.test(choice))
       return hold("The Mack CBR applicability is not established.",
         "Stop before using the CBR-directed path. Confirm VIN, model, year, engine family/serial, common-rail configuration and emissions generation in PTT, then retrieve the current applicable Mack procedure.");
-    if(/PTT version below 2\.7\.85|current guided diagnostics unavailable/i.test(choice))
-      return hold("The published CBR guidance requires current Premium Tech Tool Guided Diagnostics.",
-        "Update/confirm PTT 2.7.85 or newer as directed by K40914241, then load the latest guided diagnostic for the exact vehicle. Do not replace it with an invented generic pinpoint test.");
+    if(/PTT version below 2\.7\.85|current guided diagnostics unavailable|PTT unavailable or below 2\.7\.85/i.test(choice)){
+      const triggerCodes=["P008700","P016F00","P228F00"];
+      const triggerStatuses=triggerCodes.map(statusesFor);
+      const triggerSetAttached=triggerStatuses.every(statuses=>statuses.length>0);
+      const triggerSetNotInactive=triggerStatuses.every(statuses=>!statuses.some(status=>status==="inactive"));
+      const modelText=clean(vehicle.model||vehicle.chassis).toUpperCase();
+      const engineText=[vehicle.engine,vehicle.engineModel,vehicle.engineMake].filter(Boolean).join(" ").toUpperCase();
+      const year=Number(vehicle.year||0);
+      const emissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\\s/g,"");
+      const modelEligible=/\\b(?:TE|LR|MRU|AN|CHU|CXU|GR|GU|PI)(?:\\b|[0-9])|\\b(?:ANTHEM|GRANITE|PINNACLE|TERRAPRO)\\b/i.test(modelText);
+      const engineEligible=/\\b(?:MP7|MP8|11L|13L)\\b/i.test(engineText);
+      const emissionsEligible=/US17\\+OBD(16|18|19)/.test(emissions);
+      if(triggerSetAttached&&triggerSetNotInactive&&year>=2018&&modelEligible&&engineEligible&&emissionsEligible)
+        return go(steps.find(item=>item.id==="p016f_cbr_filter"),
+          "PTT is unavailable, but the three K01029637 trigger codes are attached and the entered Mack model/year/engine/emissions meet its candidate scope.",
+          "Continue with the K01029637 physical inspection and required photo documentation. Confirm common-rail configuration and exact VIN/build applicability before using the bulletin. After the inspection, use an authorized current engine/serial-specific OEM service procedure for pressure testing; do not invent a substitute for PTT.");
+      return go(steps.find(item=>item.id==="p016f_low_side"),
+        "PTT is unavailable or below the version specified in the historical CBR update. The PTT-only branch is skipped; the diagnosis can continue using an equivalent authorized OEM procedure.",
+        "Use an authorized current Mack/Volvo service procedure from the applicable service-information portal for this exact engine family and serial number. If you do not have an equivalent procedure, record that limitation and obtain it before pressure testing. Do not use generic pressure limits, guessed test ports or high-pressure line loosening.");
+    }
     const k010Codes=["P008700","P016F00","P228F00"];
     const k010Statuses=k010Codes.map(statusesFor);
     const hasK010Combination=k010Statuses.every(statuses=>statuses.length>0);
