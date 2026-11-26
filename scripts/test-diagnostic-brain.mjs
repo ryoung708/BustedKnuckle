@@ -677,6 +677,30 @@ assert.match(highSideNoCause.recommendation.action,/Do not move to repair verifi
 const p205Steps=p205Plan.steps;
 const p205Base={workflowId:"fault_guidance_p205b",vehicle:{make:"Mack",model:"Anthem",year:"2020",engine:"MP8",emissions:"US17+OBD16"}};
 const p205FinalChoice="One or more listed yellow UQLS faults returned active/confirmed after repeat test";
+const p205ExcludedModel=analyzeDiagnosticCase({...p205Base,vehicle:{...p205Base.vehicle,model:"AN(4)"},entries:{
+  p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
+  p205b_connector:{choice:"No pin, wire, corrosion or moisture damage found"},
+  p205b_quality:{choice:"DEF quality acceptable per Mack specification"},
+  p205b_freeze:{choice:"Tank is not frozen"},
+  p205b_fill:{choice:"Tank adequately filled per Mack procedure"},
+  p205b_cycle:{choice:"Repeat sequence completed; one or more listed yellow UQLS faults returned active/confirmed"},
+  p205b_result:{choice:p205FinalChoice}
+}},p205Steps);
+assert.equal(p205ExcludedModel.recommendation.stepId,"p205b_applicability");
+assert.equal(p205ExcludedModel.recommendation.state,"hold");
+
+const p205UnknownEmissions=analyzeDiagnosticCase({...p205Base,vehicle:{...p205Base.vehicle,emissions:""},entries:{
+  p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
+  p205b_connector:{choice:"No pin, wire, corrosion or moisture damage found"},
+  p205b_quality:{choice:"DEF quality acceptable per Mack specification"},
+  p205b_freeze:{choice:"Tank is not frozen"},
+  p205b_fill:{choice:"Tank adequately filled per Mack procedure"},
+  p205b_cycle:{choice:"Repeat sequence completed; one or more listed yellow UQLS faults returned active/confirmed"},
+  p205b_result:{choice:p205FinalChoice}
+}},p205Steps);
+assert.equal(p205UnknownEmissions.recommendation.stepId,"p205b_applicability");
+assert.equal(p205UnknownEmissions.recommendation.state,"hold");
+
 const p205Bypass=analyzeDiagnosticCase({...p205Base,entries:{p205b_result:{choice:p205FinalChoice}}},p205Steps);
 assert.equal(p205Bypass.recommendation.stepId,"p205b_applicability");
 assert.equal(p205Bypass.recommendation.state,"hold");
