@@ -23,9 +23,9 @@ assert.equal(stopped.recommendation.state,"hold");
 assert.match(stopped.recommendation.action,/Stop this guided path/i);
 const inactive=analyzeDiagnosticCase({...base,entries:{scan:{faultCodes:[{code:"P205B64",controller:"EMS",status:"inactive"}]},p205b_applicability:{choice:"None of the listed yellow UQLS faults active/confirmed — no troubleshooting required"}}},steps);
 assert.equal(inactive.recommendation.state,"review");
-const active=analyzeDiagnosticCase({...base,entries:{p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"}}},steps);
+const active=analyzeDiagnosticCase({...base,entries:{...base.entries,p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"}}},steps);
 assert.equal(active.recommendation.stepId,"p205b_connector");
-const cleanConnector=analyzeDiagnosticCase({...base,entries:{
+const cleanConnector=analyzeDiagnosticCase({...base,entries:{...base.entries,
  p205b_applicability:{choice:"At least one listed yellow UQLS fault active/confirmed and applicability verified"},
  p205b_connector:{choice:"No pin, wire, corrosion or moisture damage found"}
 }},steps);
@@ -44,7 +44,7 @@ const completedPrerequisites={
  p205b_freeze:{choice:"Tank is not frozen"},
  p205b_fill:{choice:"Tank adequately filled per Mack procedure"}
 };
-const result=analyzeDiagnosticCase({...base,entries:{
+const result=analyzeDiagnosticCase({...base,entries:{...base.entries,
  ...completedPrerequisites,
  p205b_cycle:{choice:"Repeat sequence completed; one or more listed yellow UQLS faults returned active/confirmed"},
  p205b_result:{choice:"One or more listed yellow UQLS faults returned active/confirmed after repeat test"}
