@@ -42,3 +42,23 @@
 @media (max-height: 520px) and (orientation: landscape) and (max-width: 900px) {
   .case-summary { position: static; }
 }
+
+/* Shared guided diagnostic presentation, desktop and mobile. */
+.ik-guided .guided-test-card{margin:12px 0;border-color:#78bfff66;background:#78bfff08}
+.ik-guided .guided-test-card>b{color:var(--blue);letter-spacing:.12em}
+.ik-guided .guided-test-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.ik-guided .guided-test-grid>div{min-width:0;padding:9px;border:1px solid var(--line);border-radius:7px;background:#0b1117}
+.ik-guided .guided-test-grid strong{display:block;color:var(--amber);font-size:12px;margin-bottom:5px}
+.ik-guided .guided-test-grid ul{margin:5px 0;padding-left:18px}
+.ik-guided .guided-test-grid li{font-size:13px;line-height:1.5;color:#d2dce6;margin:3px 0}
+.ik-guided .guided-test-stop{border-color:#ff9f1c66}
+.ik-guided .ik-case-tools>summary,.ik-guided main details>summary,.ik-guided #workspace details>summary{cursor:pointer;padding:12px;min-height:44px;line-height:1.5;font-size:14px}
+.ik-guided.case-active .layout{grid-template-columns:minmax(0,1fr);max-width:1000px;margin-inline:auto}
+.ik-guided.case-active .layout>main{grid-row:1}
+.ik-guided.case-active .case-summary{position:static}
+.ik-guided .choice{font-size:16px;min-height:48px;padding:14px;align-items:center}
+.ik-guided .instruction,.ik-guided .step-copy,.ik-guided .testbox p{font-size:15px;line-height:1.6}
+.ik-guided #observation{font-size:16px;min-height:48px}
+.ik-guided #next,.ik-guided #nextStep{min-height:48px;font-size:15px}
+.ik-guided main{overflow-wrap:anywhere;min-width:0}
+@media(max-width:680px){.ik-guided .guided-test-grid{grid-template-columns:1fr}.ik-guided #next,.ik-guided #nextStep{width:100%}.ik-guided .two{grid-template-columns:1fr}.ik-guided .workspace-head{flex-wrap:wrap}}

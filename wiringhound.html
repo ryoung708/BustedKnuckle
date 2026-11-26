@@ -24,17 +24,17 @@ header{display:flex;align-items:center;justify-content:space-between;gap:16px;pa
 @media(max-width:600px){.wrap{padding:13px 11px 30px}.panel{padding:13px}.two,.fault-form{grid-template-columns:1fr 1fr}.fault-form button{grid-column:1/-1}.workspace-head{flex-direction:column}.step-title{font-size:20px}.brand strong{font-size:14px}}
 :focus-visible{outline:2px solid var(--amber);outline-offset:2px}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 
-.guided-test-card{margin:12px 0;border-color:#78bfff66;background:#78bfff08}.guided-test-card> b{color:var(--blue);letter-spacing:.12em}.guided-test-card .guided-test-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.guided-test-card .guided-test-grid>div{min-width:0;padding:9px;border:1px solid var(--line);border-radius:7px;background:#0b1117}.guided-test-card .guided-test-grid strong{display:block;color:var(--amber);font-size:10px;letter-spacing:.06em;margin-bottom:5px}.guided-test-card ul{margin:5px 0;padding-left:18px}.guided-test-card li{font-size:10px;line-height:1.5;color:#d2dce6;margin:3px 0}.guided-test-card .guided-test-stop{border-color:#ff9f1c66}.guided-test-card .small{margin-top:10px}@media(max-width:600px){.guided-test-card .guided-test-grid{grid-template-columns:1fr}}
+
 </style>
   <link rel="stylesheet" href="./mobile-ergonomics.css">
 <link rel="stylesheet" href="./vehicle-architecture.css">
 </head>
-<body><div class="wrap">
+<body class="ik-guided"><div class="wrap">
 <header><div class="brand"><div class="hound-mark">⌁</div><div><strong>WIRINGHOUND</strong><small>IRONKNUCKLE // ELECTRICAL DIAGNOSTICS</small></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="back" href="./oem-specification-assistant.html">OEM SPEC ASSISTANT</a><a class="back" href="./case-vault.html">CASE VAULT</a><a class="back" href="./index.html">← MAIN WORKSPACE</a></div></header>
 <section class="hero"><div><div class="eyebrow">Electrical diagnostic workspace</div><h1>Find the fault.<br>Follow the circuit.</h1><p>Trace lighting, power, ground, harness, sensor, module and J1939/CAN faults. Record measurements and findings as you test.</p></div><div class="beta">● FIELD WORKFLOW // BETA</div></section>
 <div class="guard"><b>TECHNICAL GUARDRAIL:</b> This is an evidence-first reasoning aid, not an OEM-specific procedure. Confirm vehicle topology, approved test points, isolation steps and specifications for the exact vehicle. Never use resistance mode on an energized circuit. A measurement or similar case does not prove a component has failed.</div>
 <div class="layout">
-<aside class="stack">
+<aside class="stack"><details class="ik-case-tools" open><summary>Case setup & saved cases</summary>
 <section class="panel"><h2>Start a new hunt</h2><p class="sub">Record the complaint first. Add vehicle details when available.</p>
 <div class="two"><div class="field"><label for="year">Model year</label><input id="year" inputmode="numeric" placeholder="2024"></div><div class="field"><label for="make">Truck manufacturer</label><input id="make" list="truckMakes" placeholder="Freightliner, Mack, Peterbilt…"></div></div>
 <div class="two"><div class="field"><label for="model">Truck model</label><input id="model" placeholder="Cascadia, 579, Anthem…"></div><div class="field"><label for="engineMake">Engine manufacturer</label><input id="engineMake" list="engineMakes" placeholder="Detroit Diesel, Cummins, Mack…"></div></div>
@@ -49,7 +49,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:16px;pa
 </section>
 <section class="panel"><h2>Case intelligence library</h2><p class="sub">Search cases by symptom, code, measurement, finding or vehicle.</p><input class="search" id="librarySearch" type="search" placeholder="Search cases, SPN/FMI, symptom, repair..."><div class="case-list" id="caseList"><p class="notice">No saved cases yet.</p></div><div class="actions"><button class="btn" id="exportAll">Export local library</button><input id="importFile" type="file" accept=".json,application/json" class="hidden"></div><div class="actions"><button class="btn" id="importButton">Import case backup</button></div></section>
 <section class="panel"><div class="cloud"><div class="cloud-head"><b>PRIVATE CLOUD CASE VAULT</b><span class="cloud-state" id="cloudState">OFFLINE</span></div><p id="cloudMessage">Sign in to save cases across devices and securely attach evidence. Local cases remain on this browser.</p><div id="cloudLogin"><input id="cloudEmail" type="email" placeholder="Authorized account email"><div class="actions"><button class="btn" id="cloudSignIn">SEND SIGN-IN LINK</button></div></div><div id="cloudActions" class="hidden"><div class="actions"><button class="btn" id="cloudSync">SYNC LOCAL CASES</button><button class="btn" id="cloudRefresh">REFRESH VAULT</button><button class="btn" id="cloudSignOut">SIGN OUT</button></div></div></div></section>
-</aside>
+</details></aside>
 <main class="stack">
 <section class="panel" id="workspace"><div class="empty">No active WiringHound case.<br>Start a new diagnostic hunt or open a saved case from the library.</div></section>
 <section class="panel" id="similarPanel"><h2>Related case intelligence</h2><p class="sub">Similar local and private-cloud cases will appear here when a hunt is active.</p><div id="similarCases" class="notice">No active case selected.</div></section>
