@@ -20,6 +20,7 @@
 
 .case-faults{margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:8px}.case-fault-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--line)}.case-fault-row small{color:var(--muted)}
 </style>  <link rel="stylesheet" href="./mobile-ergonomics.css">
+<link rel="stylesheet" href="./vehicle-architecture.css">
 </head><body><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span><small>DIAGNOSTIC COMMAND CENTER // BETA</small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a href="./oem-specification-assistant.html">OEM SPEC ASSISTANT</a><a href="./case-vault.html">CASE VAULT</a><a href="./index.html">← MAIN WORKSPACE</a></div></header>
 <section class="hero"><div class="eyebrow">Powertrain diagnostic workspace</div><h1>Engine. After-treatment. Drivetrain.</h1><p>Investigate engine, after-treatment, transmission and drivetrain faults. Record evidence, compare operating data and verify the repair.</p></section>
@@ -47,6 +48,7 @@
 <div class="field"><label for="vin">VIN last 6 (optional)</label><input id="vin" maxlength="6" inputmode="text" placeholder="Never enter full VIN"></div>
 <datalist id="truckMakes"></datalist><datalist id="engineMakes"></datalist><datalist id="engineModels"></datalist><datalist id="transmissionMakes"></datalist>
 <p class="small" id="vehicleIdentityStatus" aria-live="polite">Vehicle identity is optional at intake. Add the truck and engine details you know.</p><div class="small" id="vehiclePrefillStatus" hidden></div><button class="btn" type="button" id="clearVehiclePrefill" hidden>Clear prefilled vehicle</button>
+<section class="ik-architecture-panel" id="vehicleArchitecturePanel" aria-label="Vehicle electrical architecture"></section>
 
 <div class="actions"><button class="btn primary" id="start">Start investigation</button><button class="btn" id="openWiring">Send complaint to WiringHound ↗</button></div>
 <div class="footer">Cases stay in this browser and sync to your private vault when signed in. Do not enter customer personal information, full VINs, credentials or confidential employer/OEM material.</div>
@@ -74,12 +76,14 @@ import {classifyFaultGuidanceSystem,getP016F00Guidance} from "./js/fault-guidanc
 import {extractFaultReport,parseFaultReportText,findFaultDuplicates} from "./js/fault-report-importer.js";
 import {saveFaultSubmission,exportFaultSubmissions,getFaultSubmissionCount} from "./js/fault-submissions.js";
 import {bindVehicleIdentity} from "./js/vehicle-identity-ui.js";
+import {mountVehicleArchitecturePanel} from "./js/vehicle-architecture-panel.js";
 import {applyVehiclePrefill,rememberVehiclePrefill,bindVehiclePrefillControls} from "./js/vehicle-intake-prefill.js";
 import {renderGuidedTestMarkup} from "./js/guided-test-library.js";
 import {getMackP205B64Guidance} from "./js/oem-fault-guidance.js";
 const $=id=>document.getElementById(id), STORE="ironknuckle.sessions.v1";
 let sessions=load(),active=null,stepIndex=0;
 bindVehicleIdentity();
+mountVehicleArchitecturePanel("vehicleArchitecturePanel");
 applyVehiclePrefill();
 bindVehiclePrefillControls();
 function normalizeDccSession(row){if(!row||row.product==="IronKnuckle WiringHound")return row;let next=row;if(next.workflowId==="power_loss")next={...next,workflowId:"engine_power_loss"};if(next.workflowId==="crank_no_start"&&Number(next.workflowVersion||0)<2){const currentStep=Number(next.currentStep)||0;next={...next,currentStep:currentStep>=3?currentStep+2:currentStep,workflowVersion:2}}return next}
