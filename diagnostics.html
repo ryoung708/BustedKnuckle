@@ -21,7 +21,7 @@
 .case-faults{margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:8px}.case-fault-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--line)}.case-fault-row small{color:var(--muted)}
 </style>  <link rel="stylesheet" href="./mobile-ergonomics.css">
 <link rel="stylesheet" href="./vehicle-architecture.css">
-</head><body class="ik-guided"><div class="wrap">
+<style>.ik-guided .choice{min-height:48px;display:flex;align-items:center;gap:12px;font-size:15px}.ik-guided .choice:has(input:checked){border-color:#ff9f1c;background:#382a19}.ik-guided .step-focus .instruction{font-size:15px}.ik-guided .step-focus .case-card{margin-top:8px}</style></head><body class="ik-guided"><div class="wrap">
 <header class="top"><div class="brand">IRON<span>KNUCKLE</span><small>DIAGNOSTIC COMMAND CENTER // BETA</small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a href="./oem-specification-assistant.html">OEM SPEC ASSISTANT</a><a href="./case-vault.html">CASE VAULT</a><a href="./index.html">← MAIN WORKSPACE</a></div></header>
 <section class="hero"><div class="eyebrow">Powertrain diagnostic workspace</div><h1>Engine. After-treatment. Drivetrain.</h1><p>Investigate engine, after-treatment, transmission and drivetrain faults. Record evidence, compare operating data and verify the repair.</p></section>
 <div class="guard"><b>SAFETY & ACCURACY:</b> Confirm the exact vehicle configuration and OEM specifications before testing. Generic values are not universal pass/fail limits. Use WiringHound for electrical, harness and network faults.</div>
@@ -78,7 +78,7 @@ import {saveFaultSubmission,exportFaultSubmissions,getFaultSubmissionCount} from
 import {bindVehicleIdentity} from "./js/vehicle-identity-ui.js";
 import {mountVehicleArchitecturePanel} from "./js/vehicle-architecture-panel.js";
 import {applyVehiclePrefill,rememberVehiclePrefill,bindVehiclePrefillControls} from "./js/vehicle-intake-prefill.js";
-import {renderGuidedTestMarkup} from "./js/guided-test-library.js";
+import {renderGuidedTestMarkup,renderTestVisual} from "./js/guided-test-library.js";
 import {getMackP205B64Guidance} from "./js/oem-fault-guidance.js";
 const $=id=>document.getElementById(id), STORE="ironknuckle.sessions.v1";
 let sessions=load(),active=null,stepIndex=0;
