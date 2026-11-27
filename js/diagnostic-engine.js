@@ -208,7 +208,11 @@ export function evaluateSession(session) {
   const completed=flow.steps.filter(step=>session.entries[step.id]?.choice);
   const requiredSteps=flow.steps.filter(step=>!step.optional);
   const completedRequired=requiredSteps.filter(step=>session.entries[step.id]?.choice);
-  const latest=completed.at(-1);
+  const latest=completed.slice().sort((a,b)=>{
+    const ta=Date.parse(session.entries[a.id]?.updatedAt||session.entries[a.id]?.recordedAt||"");
+    const tb=Date.parse(session.entries[b.id]?.updatedAt||session.entries[b.id]?.recordedAt||"");
+    return Number.isFinite(ta)&&Number.isFinite(tb)&&ta!==tb?ta-tb:flow.steps.indexOf(a)-flow.steps.indexOf(b);
+  }).at(-1);
   const result={status:"in-progress",headline:"Evidence collection in progress",completed:completedRequired.length,total:requiredSteps.length,nextActions:[],cautions:[flow.caution],evidence:[]};
   if(!latest) {
     result.nextActions.push("Begin with: "+flow.steps[0].title);

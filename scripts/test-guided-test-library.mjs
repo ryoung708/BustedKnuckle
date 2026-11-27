@@ -35,3 +35,7 @@ assert.match(renderTestVisual({id:"sensor_supply"},"sensor_circuit"),/supply vol
 assert.match(renderTestVisual({id:"sensor_signal"},"sensor_circuit"),/signal voltage measured to documented sensor return/i);
 assert.equal(renderTestVisual({id:"sensor_supply"},"unknown"),"");
 assert.equal(renderTestVisual({id:"sensor_identity"},"sensor_circuit"),"");
+
+assert.doesNotMatch(JSON.stringify(getGuidedTest({id:"load"},"general_electrical")),/lamp commanded|command lamp|lamp specification|lamp type/i);
+assert.match(getGuidedTest({id:"load"},"light_inop").conditions,/lamp/i);
+assert.notEqual(getGuidedTest({id:"airfuel"},"engine_power_loss").objective,getGuidedTest({id:"airfuel"},"unknown").objective);

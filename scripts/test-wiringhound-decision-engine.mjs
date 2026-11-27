@@ -150,3 +150,8 @@ assert.equal(recommendNextStep(record("j1939_network","module_branch_review","No
 
 const withinLimit=recommendNextStep({workflowId:"power_loss",currentStep:3,entries:{main_disconnect:{choice:"Switch path remains stable during event",measurements:{actual:"0.1 V drop across closed switch; spec maximum 0.2 V"}}}},powerLoss);
 assert.equal(withinLimit.stepId,"main_distribution");
+
+for(const workflowId of ["general_electrical","light_inop"]){
+ assert.equal(recommendNextStep(record(workflowId,"control","Switch / relay changes state correctly"),lighting).stepId,"load");
+ assert.equal(recommendNextStep(record(workflowId,"load_review","Connector / terminal defect found"),lighting).stepId,"verify");
+}

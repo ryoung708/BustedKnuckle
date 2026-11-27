@@ -27,3 +27,7 @@ for (const [complaint, route, workflowId] of cases) {
 }
 
 console.log("Diagnostic complaint routing tests passed.");
+
+assert.equal(classifyDiagnosticComplaint("Starter cranks normally but will not start").workflowId,"crank_no_start");
+assert.equal(classifyDiagnosticComplaint("Normal crank but no start; battery tested").workflowId,"crank_no_start");
+assert.equal(classifyDiagnosticComplaint("No-crank complaint").route,"wiringhound");
