@@ -35,7 +35,8 @@ assert.match(p016f.steps[1].instruction,/secondary fuel filter/i);
 assert.equal(getP016F00Guidance({code:"P016F-00"},{vehicle:{make:"Volvo"}}),null);
 const pBase={workflowId:"fault_guidance_p016f",vehicle:{make:"Mack",model:"Anthem",year:"2020",engine:"MP8",emissions:"US17+OBD16"}};
 const precursor=analyzeDiagnosticCase({...pBase,entries:{codes:{faultCodes:[{code:"P016F-00",status:"active"},{code:"P009B-13",status:"active"}]},p016f_confirm:{choice:"P009B-13 is also active; diagnose EPRV circuit first"}}},p016f.steps);
-assert.equal(precursor.recommendation.state,"hold");
+assert.equal(precursor.recommendation.state,"next");
+assert.equal(precursor.recommendation.stepId,"p016f_eprv_scope");
 assert.match(precursor.recommendation.action,/do not apply K94743326 pinouts/i);
 assert.match(precursor.recommendation.action,/85156544/);
 assert.match(precursor.recommendation.action,/85156014/);
@@ -66,3 +67,6 @@ const lowPass=analyzeDiagnosticCase({...pBase,entries:{
 assert.equal(lowPass.recommendation.stepId,"p016f_high_side");
 console.log("FAULT GUIDANCE ROUTING AND MACK P016F CBR TESTS PASSED");
 
+
+assert.ok(p016f.relatedSources.some(x=>x.url.includes("MC-10195320")));
+assert.ok(p016f.relatedSources.some(x=>x.url.includes("MC-10243451")));
