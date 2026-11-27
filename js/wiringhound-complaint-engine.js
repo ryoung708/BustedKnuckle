@@ -8,6 +8,7 @@ export function classifyComplaint(complaint="") {
   if(matches(/no[ -]?crank|will not crank|won\x27t crank|starter|slow crank|no[ -]?start|will not start|won\x27t start/)) return {id:"starting_system",label:"Starting system",reason:"Distinguish starter engagement, cranking speed and engine no-start."};
   if(matches(/j1939|can\s*(bus|high|low|h|l)|data.?link|communication loss|network dropout|controllers? offline/))
     return {id:"j1939_network",label:"J1939 communication / network",reason:"The complaint mentions data-link communication or controller availability."};
+  if(matches(/(?:sensor|transducer).{0,45}(?:circuit|reference|signal|voltage|ground|open|short)|(?:reference voltage|sensor ground|sensor signal|sensor circuit)/)) return {id:"sensor_circuit",label:"Sensor circuit",reason:"Identify sensor architecture, then test supply, return and signal without guessing pinouts."};
   if(matches(/light|lamp|headlamp|headlight|turn signal|marker light|lighting/))
     return {id:"light_inop",label:"Lighting circuit",reason:"The complaint identifies an inoperative or intermittent lighting function."};
   if(matches(/no.?crank|will not crank|won't crank|no.?start|will not start|won't start|starter|charging|alternator|battery|low voltage|voltage drop|power feed|ground/))
@@ -45,4 +46,21 @@ export function startingRecommendation(record,steps=startingSteps){
  if(target==="review")return {stepId:s.id,state:"review",reason:"Verification observation recorded.",action:"Document cause and repair; review evidence."};
  const next=steps.find(x=>x.id===target);
  return next?{stepId:next.id,state:"next",reason:choice,action:next.copy}:{stepId:s.id,state:"hold",reason:choice||"Select the actual observation.",action:actions[target]||"Record what happened."};
+}
+
+export const sensorSteps=[
+ stage("sensor_identity","Identify the sensor and circuit type","Use the exact wiring diagram and component procedure. Identify supply, return, signal and operating principle; do not assume a three-wire analog sensor.",["Powered analog sensor confirmed","Other sensor architecture","Circuit type unknown"],["sensor_supply","hold","hold"]),
+ stage("sensor_supply","Check sensor supply and return","Use approved back-probing with the sensor connected where specified. Compare supply to its documented return; check return integrity by the OEM method. Never apply battery voltage to a reference circuit.",["Supply and return meet OEM criteria","Supply or return abnormal","Test incomplete"],["sensor_signal","sensor_supply_isolate","hold"]),
+ stage("sensor_supply_isolate","Isolate the supply or return fault","Trace documented shared reference branches, connectors and return paths. Isolate only as prescribed; do not short or jumper reference circuits.",["Defect corrected","Cause not isolated","Procedure unavailable"],["sensor_supply","hold","hold"]),
+ stage("sensor_signal","Compare signal and scan data","Observe the documented signal and receiving-controller data at known input conditions. Compare with the applicable transfer function; do not force an unsafe operating condition.",["Signal and data meet OEM criteria","Signal or data abnormal","Test incomplete"],["sensor_review","sensor_signal_isolate","hold"]),
+ stage("sensor_signal_isolate","Isolate signal discrepancy","Compare the signal at approved sensor and controller points under the same conditions. Inspect terminals and signal wiring; use the specified component test before condemning a sensor.",["Defect corrected","Cause not isolated","Procedure unavailable"],["sensor_signal","hold","hold"]),
+ stage("sensor_review","Recheck original symptom","Repeat the original test and fault scan. Document a confirmed defect and repair, or retain an unresolved case.",["Repair verified under original conditions","Symptom remains","No confirmed cause or repair"],["review","sensor_identity","hold"])
+].map(s=>({...s,kicker:"SENSOR CIRCUIT"}));
+export function sensorRecommendation(record,steps=sensorSteps){
+ const s=steps[record.currentStep||0]||steps[0],choice=record.entries?.[s.id]?.choice;
+ const target=s.targets[s.choices.indexOf(choice)];
+ const next=steps.find(x=>x.id===target);
+ if(target==="review")return {stepId:s.id,state:"review",reason:"Verification observation recorded.",action:"Document the confirmed cause, repair and before/after evidence."};
+ if(next)return {stepId:next.id,state:"next",reason:choice,action:next.copy};
+ return {stepId:s.id,state:"hold",reason:choice||"Select the actual observation.",action:s.id==="sensor_identity"?"Obtain the architecture-specific OEM sensor procedure; analog voltage checks are not universal.":"Complete the applicable OEM test or isolate the remaining cause before continuing."};
 }
