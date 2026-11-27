@@ -42,3 +42,9 @@ assert.equal(suggestEmissions("2019","Mack","X15"),"");
 assert.equal(suggestEmissions("2024","Volvo","D13"),"");
 assert.equal(suggestEmissions("2019","Freightliner","DD15"),"");
 assert.deepEqual(vinLookupFields({ModelYear:"2019",Make:"MACK",Model:"AN",VIN:"secret"}),{year:"2019",make:"MACK",model:"AN",engineMake:"",engine:""});
+
+import {classifyComplaint,startingSteps,startingRecommendation} from "../js/wiringhound-complaint-engine.js";
+assert.equal(classifyComplaint("no crank/ no start").id,"starting_system");
+assert.equal(classifyComplaint("headlamp inoperative").id,"light_inop");
+for(const [currentStep,s] of startingSteps.entries())for(const [i,choice] of s.choices.entries()){const d=startingRecommendation({currentStep,entries:{[s.id]:{choice}}});assert.ok(["hold","next","review"].includes(d.state));assert.ok(startingSteps.some(x=>x.id===d.stepId));if(startingSteps.some(x=>x.id===s.targets[i]))assert.equal(d.stepId,s.targets[i]);}
+assert.equal(startingRecommendation({currentStep:0,entries:{}}).state,"hold");
