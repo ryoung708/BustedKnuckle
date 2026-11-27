@@ -37,6 +37,9 @@ const pBase={workflowId:"fault_guidance_p016f",vehicle:{make:"Mack",model:"Anthe
 const precursor=analyzeDiagnosticCase({...pBase,entries:{codes:{faultCodes:[{code:"P016F-00",status:"active"},{code:"P009B-13",status:"active"}]},p016f_confirm:{choice:"P009B-13 is also active; diagnose EPRV circuit first"}}},p016f.steps);
 assert.equal(precursor.recommendation.state,"hold");
 assert.match(precursor.recommendation.action,/do not apply K94743326 pinouts/i);
+assert.match(precursor.recommendation.action,/85156544/);
+assert.match(precursor.recommendation.action,/85156014/);
+assert.match(precursor.recommendation.action,/Confirm exact build date/);
 const p016fTriggerCodes=[{code:"P0087-00",status:"active"},{code:"P016F-00",status:"active"},{code:"P228F-00",status:"active"}];
 const unknownRelatedStatuses=analyzeDiagnosticCase({...pBase,entries:{
  codes:{faultCodes:[{code:"P0087-00",status:"unknown"},{code:"P016F-00",status:"active"},{code:"P228F-00",status:"unknown"}]},
