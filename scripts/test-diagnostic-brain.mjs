@@ -576,8 +576,8 @@ assert.equal(activeFaults.recommendation.state,"hold");
 assert.match(activeFaults.recommendation.action,/attach every relevant code/i);
 
 const enableMissing = analyzeDiagnosticCase({...crankBase,entries:{enable:{choice:"Start enable missing"}}},crankPlan);
-assert.equal(enableMissing.recommendation.stepId,"enable");
-assert.equal(enableMissing.recommendation.state,"hold");
+assert.equal(enableMissing.recommendation.stepId,"enable_isolate");
+assert.equal(enableMissing.recommendation.state,"next");
 assert.match(enableMissing.recommendation.action,/inhibit reason/i);
 
 const enableValid = analyzeDiagnosticCase({...crankBase,entries:{enable:{choice:"Enable and sync appear valid"}}},crankPlan);
@@ -590,7 +590,7 @@ const fuelCorrected = analyzeDiagnosticCase({...crankBase,entries:{fuel_isolatio
 assert.equal(fuelCorrected.recommendation.stepId,"fuel_retest");
 
 const fuelRetestPass = analyzeDiagnosticCase({...crankBase,entries:{fuel_retest:{choice:"Fuel supply meets OEM specification under cranking conditions"}}},crankPlan);
-assert.equal(fuelRetestPass.recommendation.stepId,"air_exhaust");
+assert.equal(fuelRetestPass.recommendation.stepId,"injection_check");
 
 const fuelRetestFail = analyzeDiagnosticCase({...crankBase,entries:{fuel_retest:{choice:"Supply remains outside OEM specification"}}},crankPlan);
 assert.equal(fuelRetestFail.recommendation.stepId,"fuel_isolation");
@@ -746,3 +746,5 @@ assert.equal(p205NoneReturned.recommendation.state,"review");
 assert.match(p205NoneReturned.recommendation.stepTitle,/No UQLS replacement indicated/i);
 
 console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");
+
+for(const [id,choice,target] of [["enable","Engine speed / sync data abnormal","sync_isolate"],["enable_isolate","Inhibit cause corrected","enable"],["sync_isolate","Speed or synchronization cause corrected","enable"],["injection_check","Injection delivery or authorization abnormal","injection_isolate"],["injection_isolate","Injection defect corrected","injection_check"],["injection_check","Injection delivery and authorization meet OEM criteria","air_exhaust"]]){const result=analyzeDiagnosticCase({...crankBase,entries:{[id]:{choice}}},crankPlan);assert.equal(result.recommendation.stepId,target);}
