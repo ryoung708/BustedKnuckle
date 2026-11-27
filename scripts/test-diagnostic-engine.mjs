@@ -51,3 +51,11 @@ for (const choice of ["Repair not verified","Cause unverified","Repair verified 
   recordStep(s,last,{choice});
   assert.equal(evaluateSession(s).status,"needs-more-evidence",choice);
 }
+
+const edited=createSession({workflowId:"crank_no_start"});
+const first=workflows.crank_no_start.steps[0];
+edited.entries[first.id]={choice:"",evidence:[{id:"existing-evidence"}],faultCodes:[{code:"P016F00"}],skipped:true};
+recordStep(edited,0,{choice:first.choices[0]});
+assert.equal(edited.entries[first.id].evidence[0].id,"existing-evidence");
+assert.equal(edited.entries[first.id].faultCodes[0].code,"P016F00");
+assert.equal(edited.entries[first.id].skipped,false);

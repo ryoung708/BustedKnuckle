@@ -40,7 +40,7 @@ assert.equal(dcc.caseEnvelope.reviewState,"unreviewed");
 assert.throws(()=>createCaseRecord({}, "wiringhound"),/id is required/);
 console.log("Shared case schema tests passed.");
 
-import {createDiagnosticHandoff,isValidHandoff,matchesHandoffVehicle,handoffReferenceMarkup} from "../js/diagnostic-handoff.js";
+import {createIntakeHandoff,createDiagnosticHandoff,isValidHandoff,matchesHandoffVehicle,handoffReferenceMarkup} from "../js/diagnostic-handoff.js";
 const handoffCase={id:"source-1",workflowId:"starting_system",vehicle:{year:"2020",make:"Mack",model:"Anthem",engine:"MP8",vinLast6:"123456"},complaint:"No start",entries:{start_battery:{choice:"Voltage within limits under load",measurements:{actual:"Recorded loaded result"},notes:"<script>test</script>",faultCodes:[{code:"P016F00",status:"active",controller:"EMS"}],evidence:[{storage_path:"private/path"}]}}};
 const transfer=createDiagnosticHandoff(handoffCase,"wiringhound","dcc",1000);
 assert.equal(isValidHandoff(transfer,"dcc",1001),true);
@@ -55,3 +55,11 @@ assert.doesNotMatch(handoffReferenceMarkup(transfer),/<script>/);
 assert.match(handoffReferenceMarkup(transfer),/Reference only/);
 assert.match(handoffReferenceMarkup(transfer),/No receiving-workflow tests have been marked complete/);
 assert.equal(handoffCase.entries.start_battery.choice,"Voltage within limits under load");
+
+const intakeTransfer=createIntakeHandoff(handoffCase.vehicle,"No crank",["P016F00","P016F00","P009B13"],1000);
+assert.equal(intakeTransfer.sourceCaseId,"");assert.equal(intakeTransfer.rows[0].faults.length,2);
+assert.ok(intakeTransfer.rows[0].faults.every(f=>f.status==="unknown"));
+assert.equal(isValidHandoff(intakeTransfer,"wiringhound",1001),true);
+assert.equal(isValidHandoff(intakeTransfer,"dcc",1001),false);
+assert.equal(isValidHandoff(intakeTransfer,"wiringhound",601001),false);
+assert.match(handoffReferenceMarkup(intakeTransfer),/Source: unsaved intake/);

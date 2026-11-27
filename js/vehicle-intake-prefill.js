@@ -40,10 +40,11 @@ function latestSavedCase() {
   return rows.map(fromCase).find(hasDetails) || null;
 }
 export function applyVehiclePrefill() {
-  const query = fromQuery();
+  const query = new URLSearchParams(location.search).has("handoff") ? {} : fromQuery();
   const stored = readStored();
   const source = hasDetails(query) ? "carried over from the other diagnostic workspace" :
     hasDetails(stored) ? "your last diagnostic case" : "your most recent saved case";
+  if(new URLSearchParams(location.search).get("handoff")==="1") return null;
   const profile = hasDetails(query) ? query : (hasDetails(stored) ? stored : latestSavedCase());
   if (!hasDetails(profile)) return null;
   let filled = 0;
@@ -53,7 +54,7 @@ export function applyVehiclePrefill() {
   }
   const note = document.getElementById("vehiclePrefillStatus");
   if (note) {
-    note.textContent = (hasDetails(query) ? "Vehicle details carried over from DCC." : "Vehicle details prefilled from saved history.") +
+    note.textContent = (hasDetails(query) ? "Vehicle details carried over from another diagnostic workspace." : "Vehicle details prefilled from saved history.") +
       " Verify this is the correct truck before starting a new case.";
     note.hidden = false;
   }
@@ -74,6 +75,7 @@ export function bindVehiclePrefillControls() {
   const clear = document.getElementById("clearVehiclePrefill");
   clear?.addEventListener("click", () => {
     for (const id of Object.keys(FIELD_MAP)) { const field=document.getElementById(id); if(field) { field.value=""; field.dispatchEvent(new Event("input", {bubbles:true})); } }
+    const fullVin=document.getElementById("ikFullVin");if(fullVin)fullVin.value="";
     try { localStorage.removeItem(STORAGE_KEY); } catch {}
     const note=document.getElementById("vehiclePrefillStatus");
     if(note) { note.textContent="Saved vehicle details cleared. Enter the current truck."; note.hidden=false; }

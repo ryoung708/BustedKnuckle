@@ -191,11 +191,14 @@ export function recordStep(session, stepIndex, payload={}) {
   const stepId=flow.steps[stepIndex].id;
   const previous=session.entries[stepId]||{};
   session.entries[stepId] = {
+    ...previous,
+    skipped:false,
     choice: payload.choice || "",
     measurements: payload.measurements || {},
     notes: payload.notes || "",
     faultCodes: Array.isArray(payload.faultCodes) ? payload.faultCodes : (previous.faultCodes || []),
-    recordedAt: new Date().toISOString()
+    recordedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
   session.currentStep=Math.min(stepIndex+1,flow.steps.length-1);
   session.updatedAt=new Date().toISOString();
