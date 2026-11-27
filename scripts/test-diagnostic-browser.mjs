@@ -42,11 +42,28 @@ try{
   try{
    await page.goto(origin+"/diagnostics.html");
    await page.locator('#workflow option[value="crank_no_start"]').waitFor({state:"attached"});
+   await page.locator("#complaint").fill("No crank; starter does not engage");
+   await page.locator("#vin").fill("654321");
+   await page.locator("#intakeFaultCodes").fill("P016F00");
+   await page.locator("#start").click();
+   await page.getByRole("button",{name:"Use transferred case details"}).click();
+   assert.equal(new URL(page.url()).search,"?handoff=1");
+   assert.equal(await page.locator("#vin").inputValue(),"654321");
+   assert.equal(await page.locator("#complaint").inputValue(),"No crank; starter does not engage");
+   await page.locator("#startCase").click();
+   await title(".step-title",/What happens when you request a start/i);
+   await page.getByText("Transferred findings — Diagnostic Command Center",{exact:true}).click();
+   assert.ok(await page.getByText("Previous scan: P016F00",{exact:false}).isVisible());
+   await page.goto(origin+"/diagnostics.html");
+   await page.locator('#workflow option[value="crank_no_start"]').waitFor({state:"attached"});
    for(const [id,value] of Object.entries({year:"2020",make:"Mack",model:"Anthem",engine:"MP8",vin:"123456",complaint:"Cranks but will not start"}))await page.locator("#"+id).fill(value);
    await page.locator("#workflow").selectOption("crank_no_start");await page.locator("#start").click();
    await title(".step-focus h2",/Scan all relevant/i);
    await dcc("No relevant faults found",/start authorization/i);
    await screen("dcc-authorization",".choice-list");
+   await page.locator("#next").click();
+   await title(".step-focus h2",/start authorization/i);
+   assert.ok(await page.getByText("Stage saved as incomplete.",{exact:false}).isVisible());
    await dcc("Start enable missing",/Isolate the start inhibit/i);
    await dcc("Inhibit cause corrected",/start authorization/i);
    await dcc("Enable and sync appear valid",/fuel supply/i);
@@ -68,13 +85,15 @@ try{
    assert.ok(await page.getByText("Transferred findings — Diagnostic Command Center",{exact:true}).isVisible());
    await wh(0,/sensor supply and return/i);
    await screen("wh-sensor",'[data-observation="0"]');
+   await page.locator("#workflowSelect").evaluate(el=>{el.value="light_inop";el.dispatchEvent(new Event("change"));});
+   await title(".step-title",/sensor supply and return/i);
    await wh(1,/Isolate the supply or return/i);
    await wh(0,/sensor supply and return/i);
    await wh(0,/signal and scan data/i);
    await page.locator('[data-observation="-1"]').click();await page.locator("#nextStep").click();
    await title(".step-title",/signal and scan data/i);
    assert.equal(errors.length,0,errors.join("\n"));
-   console.log("PASS "+name+" DCC branching, terminal controls, reopen, handoff and sensor isolation/hold");
+   console.log("PASS "+name+" DCC branching, blank-result hold, intake and saved handoffs, active workflow isolation and sensor retest");
   }catch(error){await page.screenshot({path:"browser-evidence/"+name+"-failure.png",fullPage:true});throw error;}
   finally{await context.close();}
  }
