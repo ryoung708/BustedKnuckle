@@ -418,15 +418,18 @@ const lowPowerScanClear=analyzeDiagnosticCase({...lowPowerBase,entries:{codes:{c
 assert.equal(lowPowerScanClear.recommendation.stepId,"airfuel");
 
 const lowPowerAir=analyzeDiagnosticCase({...lowPowerBase,entries:{airfuel:{choice:"Air-path discrepancy"}}},lowPowerSteps);
-assert.equal(lowPowerAir.recommendation.state,"hold");
+assert.equal(lowPowerAir.recommendation.state,"next");
+assert.equal(lowPowerAir.recommendation.stepId,"air_isolate");
 assert.match(lowPowerAir.recommendation.action,/charge-air leak/i);
 
 const lowPowerFuel=analyzeDiagnosticCase({...lowPowerBase,entries:{airfuel:{choice:"Fuel delivery discrepancy"}}},lowPowerSteps);
-assert.equal(lowPowerFuel.recommendation.state,"hold");
+assert.equal(lowPowerFuel.recommendation.state,"next");
+assert.equal(lowPowerFuel.recommendation.stepId,"delivery_isolate");
 assert.match(lowPowerFuel.recommendation.action,/low-pressure supply or high-pressure rail/i);
 
 const lowPowerSensor=analyzeDiagnosticCase({...lowPowerBase,entries:{airfuel:{choice:"Sensor plausibility issue"}}},lowPowerSteps);
-assert.equal(lowPowerSensor.recommendation.state,"hold");
+assert.equal(lowPowerSensor.recommendation.state,"next");
+assert.equal(lowPowerSensor.recommendation.stepId,"plausibility_isolate");
 assert.match(lowPowerSensor.recommendation.action,/sensor power, ground, signal/i);
 
 const lowPowerAirFuelPass=analyzeDiagnosticCase({...lowPowerBase,entries:{airfuel:{choice:"No discrepancy identified"}}},lowPowerSteps);
@@ -524,16 +527,18 @@ const afterScanClear=analyzeDiagnosticCase({...afterBase,entries:{codes:{choice:
 assert.equal(afterScanClear.recommendation.stepId,"data");
 
 const afterSensorConcern=analyzeDiagnosticCase({...afterBase,entries:{data:{choice:"Sensor or data plausibility concern"}}},afterSteps);
-assert.equal(afterSensorConcern.recommendation.stepId,"data");
-assert.equal(afterSensorConcern.recommendation.state,"hold");
+assert.equal(afterSensorConcern.recommendation.state,"next");
+assert.equal(afterSensorConcern.recommendation.stepId,"after_sensor_isolate");
 assert.match(afterSensorConcern.recommendation.action,/related sensors/i);
 
 const afterPressureConcern=analyzeDiagnosticCase({...afterBase,entries:{data:{choice:"Pressure / restriction evidence"}}},afterSteps);
-assert.equal(afterPressureConcern.recommendation.state,"hold");
+assert.equal(afterPressureConcern.recommendation.state,"next");
+assert.equal(afterPressureConcern.recommendation.stepId,"after_pressure_isolate");
 assert.match(afterPressureConcern.recommendation.action,/pressure tubes/i);
 
 const afterDosingConcern=analyzeDiagnosticCase({...afterBase,entries:{data:{choice:"Dosing / DEF system concern"}}},afterSteps);
-assert.equal(afterDosingConcern.recommendation.state,"hold");
+assert.equal(afterDosingConcern.recommendation.state,"next");
+assert.equal(afterDosingConcern.recommendation.stepId,"after_dosing_isolate");
 assert.match(afterDosingConcern.recommendation.action,/DEF\/dosing pinpoint procedure/i);
 
 const afterDataPass=analyzeDiagnosticCase({...afterBase,entries:{data:{choice:"Values appear within specification"}}},afterSteps);
@@ -748,3 +753,11 @@ assert.match(p205NoneReturned.recommendation.stepTitle,/No UQLS replacement indi
 console.log("IronKnuckle Diagnostic Brain v3 specialist and knowledge tests passed.");
 
 for(const [id,choice,target] of [["enable","Engine speed / sync data abnormal","sync_isolate"],["enable_isolate","Inhibit cause corrected","enable"],["sync_isolate","Speed or synchronization cause corrected","enable"],["injection_check","Injection delivery or authorization abnormal","injection_isolate"],["injection_isolate","Injection defect corrected","injection_check"],["injection_check","Injection delivery and authorization meet OEM criteria","air_exhaust"]]){const result=analyzeDiagnosticCase({...crankBase,entries:{[id]:{choice}}},crankPlan);assert.equal(result.recommendation.stepId,target);}
+
+for(const [base,steps,repeat,ids] of [[lowPowerBase,lowPowerSteps,"airfuel",["air_isolate","delivery_isolate","plausibility_isolate"]],[afterBase,afterSteps,"data",["after_sensor_isolate","after_pressure_isolate","after_dosing_isolate"]]]){
+ for(const id of ids){
+  const stage=steps.find(x=>x.id===id);assert.ok(stage?.optional);
+  for(const choice of stage.choices){const decision=analyzeDiagnosticCase({...base,entries:{[id]:{choice}}},steps).recommendation;assert.equal(decision.state,choice==="Defect isolated and corrected"?"next":"hold");assert.equal(decision.stepId,choice==="Defect isolated and corrected"?repeat:id);}
+ }
+ const retest=analyzeDiagnosticCase({...base,entries:{[repeat]:{choice:"Original symptom resolved after confirmed correction"}}},steps).recommendation;assert.equal(retest.stepId,"verify");
+}

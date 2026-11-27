@@ -516,20 +516,25 @@ function powertrainRecommendation(record, steps) {
         return go(steps.find(item=>item.id==="airfuel"),"The complete controller scan is reviewed and no uninvestigated primary active fault explains the power loss.","Compare the applicable air-path, turbo-control and fuel-supply data under the load/RPM conditions that produced the complaint.");
     }
     if(step.id==="airfuel"){
-      if(/air-path discrepancy/i.test(choice)) return hold(
+      if(choice==="original symptom resolved after confirmed correction") return go(steps.find(item=>item.id==="verify"),"The original symptom is reported resolved after correction.","Record the confirmed cause and complete the OEM post-repair verification under original conditions.");
+      if(/air-path discrepancy/i.test(choice)) return go(steps.find(item=>item.id==="air_isolate"),
         "The air-path data does not agree with the expected engine operation.",
         "Use the exact engine-specific pinpoint procedure to distinguish intake restriction, charge-air leak, turbo actuator/control response and sensor plausibility. Compare commanded/actual values at the specified load and RPM; do not condemn the turbo from a boost discrepancy alone."
       );
-      if(/fuel delivery discrepancy/i.test(choice)) return hold(
+      if(/fuel delivery discrepancy/i.test(choice)) return go(steps.find(item=>item.id==="delivery_isolate"),
         "The fuel-delivery data does not agree with the expected engine operation.",
         "Identify whether the discrepancy is on the low-pressure supply or high-pressure rail side, then follow the matching engine/serial-specific OEM test. Record the test point, commanded/actual values and operating conditions; do not replace a pump or injector from a broad symptom."
       );
-      if(/sensor plausibility issue/i.test(choice)) return hold(
+      if(/sensor plausibility issue/i.test(choice)) return go(steps.find(item=>item.id==="plausibility_isolate"),
         "One or more engine sensor values may be implausible.",
         "Compare the suspect value with related sensors and known operating conditions using the OEM plausibility procedure. Verify sensor power, ground, signal and harness only as directed by the wiring diagram; record the measured values before considering replacement."
       );
       if(/no discrepancy identified/i.test(choice))
         return go(steps.find(item=>item.id==="exhaust"),"The reviewed air/fuel values agree with the applicable specification under the recorded conditions.","Review exhaust/after-treatment temperatures, differential pressure, regeneration state and fault data for a supported restriction or derate cause.");
+    }
+    if(["air_isolate","delivery_isolate","plausibility_isolate"].includes(step.id)){
+      if(choice==="defect isolated and corrected") return go(steps.find(item=>item.id==="airfuel"),"A correction has been recorded.","Repeat the original data checks under the same conditions; select the actual result.");
+      return hold("The indicated defect remains unverified or repair is pending.","Complete the authorized isolation and repair, or obtain the missing OEM procedure.");
     }
     if(step.id==="exhaust"){
       if(/aftertreatment issue supported by data/i.test(choice)) return hold(
@@ -662,15 +667,16 @@ function powertrainRecommendation(record, steps) {
         return go(steps.find(item=>item.id==="data"),"The complete scan has been reviewed and no uninvestigated primary active fault remains.","Compare the applicable sensor, pressure, dosing and regeneration data under the exact operating conditions and calibration-specific limits.");
     }
     if(step.id==="data"){
-      if(/sensor or data plausibility concern/i.test(choice)) return hold(
+      if(choice==="original symptom resolved after confirmed correction") return go(steps.find(item=>item.id==="verify"),"The original symptom is reported resolved after correction.","Record the confirmed cause and complete the OEM post-repair verification under original conditions.");
+      if(/sensor or data plausibility concern/i.test(choice)) return go(steps.find(item=>item.id==="after_sensor_isolate"),
         "One or more after-treatment sensor values may be implausible.",
         "Compare the suspect value with related sensors and ambient/engine conditions using the OEM plausibility test. Verify the sensor's wiring, connector, supply and ground only as directed by the wiring diagram; record actual values and limits before considering replacement."
       );
-      if(/pressure \/ restriction evidence/i.test(choice)) return hold(
+      if(/pressure \/ restriction evidence/i.test(choice)) return go(steps.find(item=>item.id==="after_pressure_isolate"),
         "The data indicates a possible exhaust or after-treatment restriction.",
         "Verify the differential-pressure sensor and both pressure tubes/ports for blockage, damage, leaks or incorrect routing. Compare the measured pressure with the exact OEM limit at the specified engine speed/load and regeneration state; do not condemn the DPF from a single reading."
       );
-      if(/dosing \/ def system concern/i.test(choice)) return hold(
+      if(/dosing \/ def system concern/i.test(choice)) return go(steps.find(item=>item.id==="after_dosing_isolate"),
         "The dosing/DEF data indicates a possible supply, quality or control concern.",
         "Follow the engine-specific DEF/dosing pinpoint procedure. Verify fluid quality and level, tank temperature where relevant, commanded dosing, supply pressure and electrical control using OEM limits. Do not command a dosing test or replace the doser unless the procedure authorizes it."
       );
@@ -680,6 +686,10 @@ function powertrainRecommendation(record, steps) {
         "The after-treatment data review is incomplete.",
         "Identify the missing parameter, operating condition or OEM specification. Capture the correct commanded/actual values and event data before moving to physical inspection."
       );
+    }
+    if(["after_sensor_isolate","after_pressure_isolate","after_dosing_isolate"].includes(step.id)){
+      if(choice==="defect isolated and corrected") return go(steps.find(item=>item.id==="data"),"A correction has been recorded.","Repeat the original data checks under the same conditions; select the actual result.");
+      return hold("The indicated defect remains unverified or repair is pending.","Complete the authorized isolation and repair, or obtain the missing OEM procedure.");
     }
     if(step.id==="inspection"){
       if(/defect isolated and corrected per oem procedure/i.test(choice))
