@@ -35,3 +35,10 @@ assert.equal(aliases.engineModel,"MP8");
 assert.equal(aliases.transmissionModel,"mDRIVE");
 assert.equal(aliases.emissionsFamily,"US21");
 console.log("Canonical vehicle context tests passed.");
+
+import {suggestEmissions,vinLookupFields} from "../js/vehicle-intake-prefill.js";
+assert.match(suggestEmissions("2019","Mack","MP8"),/confirm OBD/);
+assert.equal(suggestEmissions("2019","Mack","X15"),"");
+assert.equal(suggestEmissions("2024","Volvo","D13"),"");
+assert.equal(suggestEmissions("2019","Freightliner","DD15"),"");
+assert.deepEqual(vinLookupFields({ModelYear:"2019",Make:"MACK",Model:"AN",VIN:"secret"}),{year:"2019",make:"MACK",model:"AN",engineMake:"",engine:""});
