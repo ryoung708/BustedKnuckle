@@ -724,20 +724,18 @@ function powertrainRecommendation(record, steps) {
         return go(steps.find(item=>item.id==="enable"),"The available controller scan is complete and no primary no-start fault remains to be evaluated.","Check the start-enable state, cranking engine-speed signal, cam/crank synchronization and only the interlocks fitted to this vehicle. Record the source controller and actual live-data values.");
     }
     if(step.id==="enable"){
-      if(/start enable missing/i.test(choice)) return hold(
-        "The engine is not being granted start authorization.",
-        "Identify the controller that is withholding start enable and the exact inhibit reason. Verify the relevant configured interlock input at its source and at the receiving controller using the OEM diagram/live data. Check neutral/park, clutch/brake, PTO or immobilizer only if fitted; do not bypass an interlock."
-      );
-      if(/engine speed \/ sync data abnormal/i.test(choice)) return hold(
-        "Cranking speed or synchronization data is abnormal.",
-        "Use the engine-specific procedure to verify the crankshaft and camshaft speed/synchronization signals during cranking. Compare scan data with the approved physical test method, then inspect the supported sensor circuit, connector, harness or mechanical timing evidence. Do not invent a universal RPM or waveform limit."
-      );
+      if(choice==="Start enable missing") return go(steps.find(item=>item.id==="enable_isolate"),"Start authorization is denied.","Identify the inhibit reason and trace the relevant input.");
+      if(choice==="Engine speed / sync data abnormal") return go(steps.find(item=>item.id==="sync_isolate"),"Cranking speed or synchronization is abnormal.","Isolate the speed or synchronization fault using the OEM procedure.");
       if(/enable and sync appear valid/i.test(choice))
         return go(steps.find(item=>item.id==="fuel"),"Start authorization and synchronization appear valid under the recorded cranking conditions.","Verify low-pressure fuel supply during cranking with the exact engine/serial-specific test point and specification. Record actual pressure, units and test conditions.");
       if(/data unavailable/i.test(choice)) return hold(
         "Start authorization or synchronization has not been proven.",
         "Obtain the correct OEM live-data parameters and start-enable procedure for this engine/controller combination. Do not treat unavailable data as a pass."
       );
+    }
+    if(step.id==="enable_isolate"||step.id==="sync_isolate"){
+      if(["Inhibit cause corrected","Speed or synchronization cause corrected"].includes(choice)) return go(steps.find(item=>item.id==="enable"),"A correction was recorded; repeat authorization and synchronization checks.","Repeat the original cranking live-data test before proceeding.");
+      return hold("The abnormal condition is not yet resolved.","Keep the case open and obtain the required OEM procedure or isolate the remaining cause.");
     }
     if(step.id==="fuel"){
       if(/supply outside specification|air \/ restriction evidence/i.test(choice))
