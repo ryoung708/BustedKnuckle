@@ -832,9 +832,7 @@ function powertrainRecommendation(record, steps) {
     const p009bEmissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
     const k947Eligible=clean(vehicle.make).toLowerCase().includes("mack")&&p009bYear>=2018&&p009bYear<=2019&&/\b(?:MP7|MP8|11L|13L)\b/i.test(p009bEngine)&&/US17\+OBD(16|18)/.test(p009bEmissions);
     const p009bHoldReason="P009B-13 is active/intermittent and must be diagnosed before continuing the related P016F pressure path.";
-    const p009bHoldAction=k947Eligible
-      ?"This vehicle appears to fit the historical Mack CBR K94743326 scope; verify VIN/build and exact emissions before using it. Follow its EPRV circuit procedure first, including the specified EMS EA-to-VC1-to-EPRV continuity checks. Do not continue directly to low-side or K010 filter checks."
-      :"Do not apply K94743326 pinouts or replacement instructions to this vehicle unless VIN/build confirms its 2018–2019, MP7/MP8 or 11L/13L, US17+OBD16/18 scope. Diagnose P009B-13 first using the current PTT Guided Diagnostics and the exact vehicle-specific procedure.";
+    const p009bHoldAction="Review Mack FSB 237-021 revision 2 and service campaign S7567 for the OEM EPRV conversion (hardware 85156544, software 85156014). Candidate production range: 2016-11-14 through 2020-05-04, MP7/MP8, applicable US17–US19 configurations. Confirm exact build date, emissions, current campaign/bulletin applicability and whether the conversion was already performed. Use the current authorized procedure for P009B-13; do not assume valve replacement or conversion eligibility from a fault alone. Inspect rail-pressure sensor/harness applicability per OEM instructions. Do not program the conversion before completing its required hardware work. After the repair, rescan and reassess P016F-00."+(k947Eligible?" Historical K94743326 circuit guidance may be relevant only if still applicable to the original hardware and current OEM instructions.":"");
     if(p009bActive&&!/P009B-13 is also active/i.test(choice)) return hold(p009bHoldReason,p009bHoldAction);
     if(/P009B-13 is also active/i.test(choice)){
       if(!p009bActive) return hold(
