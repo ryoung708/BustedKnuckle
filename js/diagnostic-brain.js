@@ -724,8 +724,8 @@ function powertrainRecommendation(record, steps) {
         return go(steps.find(item=>item.id==="enable"),"The available controller scan is complete and no primary no-start fault remains to be evaluated.","Check the start-enable state, cranking engine-speed signal, cam/crank synchronization and only the interlocks fitted to this vehicle. Record the source controller and actual live-data values.");
     }
     if(step.id==="enable"){
-      if(choice==="Start enable missing") return go(steps.find(item=>item.id==="enable_isolate"),"Start authorization is denied.","Identify the inhibit reason and trace the relevant input.");
-      if(choice==="Engine speed / sync data abnormal") return go(steps.find(item=>item.id==="sync_isolate"),"Cranking speed or synchronization is abnormal.","Isolate the speed or synchronization fault using the OEM procedure.");
+      if(choice==="start enable missing") return go(steps.find(item=>item.id==="enable_isolate"),"Start authorization is denied.","Identify the inhibit reason and trace the relevant input.");
+      if(choice==="engine speed / sync data abnormal") return go(steps.find(item=>item.id==="sync_isolate"),"Cranking speed or synchronization is abnormal.","Isolate the speed or synchronization fault using the OEM procedure.");
       if(/enable and sync appear valid/i.test(choice))
         return go(steps.find(item=>item.id==="fuel"),"Start authorization and synchronization appear valid under the recorded cranking conditions.","Verify low-pressure fuel supply during cranking with the exact engine/serial-specific test point and specification. Record actual pressure, units and test conditions.");
       if(/data unavailable/i.test(choice)) return hold(
@@ -734,7 +734,7 @@ function powertrainRecommendation(record, steps) {
       );
     }
     if(step.id==="enable_isolate"||step.id==="sync_isolate"){
-      if(["Inhibit cause corrected","Speed or synchronization cause corrected"].includes(choice)) return go(steps.find(item=>item.id==="enable"),"A correction was recorded; repeat authorization and synchronization checks.","Repeat the original cranking live-data test before proceeding.");
+      if(["inhibit cause corrected","speed or synchronization cause corrected"].includes(choice)) return go(steps.find(item=>item.id==="enable"),"A correction was recorded; repeat authorization and synchronization checks.","Repeat the original cranking live-data test before proceeding.");
       return hold("The abnormal condition is not yet resolved.","Keep the case open and obtain the required OEM procedure or isolate the remaining cause.");
     }
     if(step.id==="fuel"){
@@ -774,12 +774,12 @@ function powertrainRecommendation(record, steps) {
       );
     }
     if(step.id==="injection_check"){
-      if(choice==="Injection delivery and authorization meet OEM criteria") return go(steps.find(item=>item.id==="air_exhaust"),"Injection prerequisites meet applicable criteria.","Check air, exhaust and mechanical prerequisites.");
-      if(choice==="Injection delivery or authorization abnormal") return go(steps.find(item=>item.id==="injection_isolate"),"Injection delivery or authorization is abnormal.","Follow the architecture-specific pinpoint procedure.");
+      if(choice==="injection delivery and authorization meet oem criteria") return go(steps.find(item=>item.id==="air_exhaust"),"Injection prerequisites meet applicable criteria.","Check air, exhaust and mechanical prerequisites.");
+      if(choice==="injection delivery or authorization abnormal") return go(steps.find(item=>item.id==="injection_isolate"),"Injection delivery or authorization is abnormal.","Follow the architecture-specific pinpoint procedure.");
       return hold("Injection prerequisites remain unverified.","Confirm the engine architecture and obtain applicable OEM data.");
     }
     if(step.id==="injection_isolate"){
-      if(choice==="Injection defect corrected") return go(steps.find(item=>item.id==="injection_check"),"A correction was recorded.","Repeat the original injection test.");
+      if(choice==="injection defect corrected") return go(steps.find(item=>item.id==="injection_check"),"A correction was recorded.","Repeat the original injection test.");
       return hold("Injection cause remains unresolved.","Continue the authorized pinpoint procedure; do not infer a failed component.");
     }
     if(step.id==="air_exhaust"){
