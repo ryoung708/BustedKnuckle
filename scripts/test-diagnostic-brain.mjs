@@ -232,14 +232,14 @@ assert.equal(k010Ready.recommendation.state,"next");
 // The selected K010/non-K010 branch must agree with attached codes and their status.
 const p009bActiveCase={...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"active"},{code:"P009B-13",status:"active"}]},p016f_confirm:{choice:"P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed"}}};
 const p009bActiveDecision=analyzeDiagnosticCase(p009bActiveCase,getP016F00Guidance({code:"P016F00"},p009bActiveCase).steps);
-assert.equal(p009bActiveDecision.recommendation.stepId,"p016f_confirm");
-assert.equal(p009bActiveDecision.recommendation.state,"hold");
+assert.equal(p009bActiveDecision.recommendation.stepId,"p016f_eprv_scope");
+assert.equal(p009bActiveDecision.recommendation.state,"next");
 assert.match(p009bActiveDecision.recommendation.reason,/diagnosed before continuing the related P016F pressure path/i);
 assert.match(p009bActiveDecision.recommendation.action,/do not apply K94743326 pinouts/i);
 
 const p009b2019Case={...p016fCase,vehicle:{...p016fCase.vehicle,year:"2019"},entries:{scan:{faultCodes:[{code:"P016F00",status:"active"},{code:"P009B-13",status:"active"}]},p016f_confirm:{choice:"P009B-13 is also active"}}};
 const p009b2019Decision=analyzeDiagnosticCase(p009b2019Case,getP016F00Guidance({code:"P016F00"},p009b2019Case).steps);
-assert.equal(p009b2019Decision.recommendation.state,"hold");
+assert.equal(p009b2019Decision.recommendation.state,"next");
 assert.match(p009b2019Decision.recommendation.action,/K94743326 scope/i);
 
 const p009bUnattached=analyzeDiagnosticCase({...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"active"}]},p016f_confirm:{choice:"P009B-13 is also active"}}},p016fPlan.steps);
@@ -761,3 +761,10 @@ for(const [base,steps,repeat,ids] of [[lowPowerBase,lowPowerSteps,"airfuel",["ai
  }
  const retest=analyzeDiagnosticCase({...base,entries:{[repeat]:{choice:"Original symptom resolved after confirmed correction"}}},steps).recommendation;assert.equal(retest.stepId,"verify");
 }
+
+const eprvRoutes=[["p016f_eprv_scope","Current OEM conversion procedure confirmed applicable; original EPRV fitted","p016f_eprv_repair"],["p016f_eprv_scope","Conversion already completed or current OEM procedure directs different repair","p016f_eprv_alternate"],["p016f_eprv_repair","Authorized repair completed; hardware and software requirements satisfied","p016f_eprv_retest"],["p016f_eprv_alternate","Authorized repair completed; hardware and software requirements satisfied","p016f_eprv_retest"],["p016f_eprv_retest","P009B inactive after repair; reassess P016F","p016f_confirm"],["p016f_eprv_retest","P009B remains active or intermittent","p016f_eprv_scope"]];
+for(const [id,choice,target] of eprvRoutes){const d=analyzeDiagnosticCase({...p016fCase,entries:{[id]:{choice}}},p016fPlan.steps).recommendation;assert.equal(d.stepId,target);assert.equal(d.state,"next");}
+for(const id of ["p016f_eprv_scope","p016f_eprv_repair","p016f_eprv_alternate","p016f_eprv_retest"]){const stage=p016fPlan.steps.find(x=>x.id===id);assert.equal(stage.optional,true);const choice=stage.choices.at(-1);const d=analyzeDiagnosticCase({...p016fCase,entries:{[id]:{choice}}},p016fPlan.steps).recommendation;assert.equal(d.state,"hold");}
+const bothInactive={...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"inactive"},{code:"P009B13",status:"inactive"}]},p016f_eprv_retest:{choice:"P009B inactive after repair; reassess P016F",recordedAt:"2026-01-01T00:00:00Z"},p016f_confirm:{choice:"Both faults inactive after EPRV repair; original conditions reproduced",recordedAt:"2026-01-01T00:01:00Z"}}};
+assert.equal(analyzeDiagnosticCase(bothInactive,p016fPlan.steps).recommendation.stepId,"p016f_verify");
+assert.equal(analyzeDiagnosticCase({...bothInactive,entries:{...bothInactive.entries,scan:{faultCodes:[{code:"P016F00",status:"inactive"},{code:"P009B13",status:"active"}]}}},p016fPlan.steps).recommendation.state,"hold");

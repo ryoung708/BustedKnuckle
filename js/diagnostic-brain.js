@@ -821,6 +821,20 @@ function powertrainRecommendation(record, steps) {
   }
   // Mack P016F00 CBR gates: a coexisting P009B-13 takes priority; K010 filter checks
   // are only prescribed when the code combination and vehicle applicability are confirmed.
+  if(step.id==="p016f_eprv_scope"){
+    if(choice==="current oem conversion procedure confirmed applicable; original eprv fitted")return go(steps.find(item=>item.id==="p016f_eprv_repair"),"Current OEM applicability was confirmed by the technician.","Follow the authorized repair instructions; complete the hardware requirements before programming.");
+    if(choice==="conversion already completed or current oem procedure directs different repair")return go(steps.find(item=>item.id==="p016f_eprv_alternate"),"The current configuration requires its applicable diagnostic path.","Confirm installed hardware, software and the OEM circuit procedure.");
+    return hold("Current vehicle applicability or hardware remains unconfirmed.","Verify VIN-specific OEM repair information and installed configuration.");
+  }
+  if(["p016f_eprv_repair","p016f_eprv_alternate"].includes(step.id)){
+    if(choice==="authorized repair completed; hardware and software requirements satisfied")return go(steps.find(item=>item.id==="p016f_eprv_retest"),"The authorized repair was reported complete.","Save a fresh scan, repeat the original conditions and update fault statuses.");
+    return hold("EPRV repair is incomplete or not authorized.","Complete only the applicable authorized procedure before retesting.");
+  }
+  if(step.id==="p016f_eprv_retest"){
+    if(choice==="p009b inactive after repair; reassess p016f")return go(steps.find(item=>item.id==="p016f_confirm"),"Repeat scan observation recorded.","Update both code statuses from the fresh scan and reassess P016F.");
+    if(choice==="p009b remains active or intermittent")return go(steps.find(item=>item.id==="p016f_eprv_scope"),"The P009B concern remains active.","Reassess hardware, configuration and the current OEM fault tree.");
+    return hold("The repeat scan is incomplete.","Capture current fault statuses and original operating conditions.");
+  }
   if(step.id==="p016f_confirm"){
     const attachedFaults=Object.values(record.entries||{}).flatMap(item=>Array.isArray(item?.faultCodes)?item.faultCodes:[]);
     const normalizeCode=value=>clean(value).toUpperCase().replace(/[^A-Z0-9]/g,"");
@@ -828,6 +842,11 @@ function powertrainRecommendation(record, steps) {
     const statusKnown=statuses=>statuses.length>0&&statuses.every(status=>["active","inactive","intermittent"].includes(status));
     const statusActive=statuses=>statuses.some(status=>status==="active"||status==="intermittent");
     const p016fStatuses=statusesFor("P016F00");
+    if(choice==="both faults inactive after eprv repair; original conditions reproduced"){
+      const p009b=statusesFor("P009B13");
+      if(record.entries?.p016f_eprv_retest?.choice!=="P009B inactive after repair; reassess P016F"||!statusKnown(p016fStatuses)||!statusKnown(p009b)||statusActive(p016fStatuses)||statusActive(p009b))return hold("The repeat scan does not yet establish both faults as inactive after the EPRV repair.","Complete the EPRV repair and repeat scan stages, then update both fault statuses from the fresh scan. Do not infer a pass.");
+      return go(steps.find(item=>item.id==="p016f_verify"),"Both faults were reported inactive after the recorded EPRV retest.","Verify the original conditions, compare before/after rail-pressure data and document the actual repair.");
+    }
     if(!statusKnown(p016fStatuses)) return hold(
       p016fStatuses.length
         ? "P016F-00 is attached, but its current active/inactive status is still unknown."
@@ -850,14 +869,14 @@ function powertrainRecommendation(record, steps) {
     const p009bEmissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
     const k947Eligible=clean(vehicle.make).toLowerCase().includes("mack")&&p009bYear>=2018&&p009bYear<=2019&&/\b(?:MP7|MP8|11L|13L)\b/i.test(p009bEngine)&&/US17\+OBD(16|18)/.test(p009bEmissions);
     const p009bHoldReason="P009B-13 is active/intermittent and must be diagnosed before continuing the related P016F pressure path.";
-    const p009bHoldAction="Review Mack FSB 237-021 revision 2 and service campaign S7567 for the OEM EPRV conversion (hardware 85156544, software 85156014). Candidate production range: 2016-11-14 through 2020-05-04, MP7/MP8, applicable US17–US19 configurations. Confirm exact build date, emissions, current campaign/bulletin applicability and whether the conversion was already performed. Use the current authorized procedure for P009B-13; do not assume valve replacement or conversion eligibility from a fault alone. Inspect rail-pressure sensor/harness applicability per OEM instructions. Do not program the conversion before completing its required hardware work. After the repair, rescan and reassess P016F-00."+(k947Eligible?" Historical K94743326 scope may be relevant only if still applicable to the original hardware and current OEM instructions.":" Do not apply K94743326 pinouts or replacement instructions outside its verified scope.");
-    if(p009bActive&&!/P009B-13 is also active/i.test(choice)) return hold(p009bHoldReason,p009bHoldAction);
+    const p009bHoldAction="Review Mack FSB 237-021 revision 2 and service campaign S7567 for the OEM EPRV conversion (hardware 85156544, software 85156014). FSB candidate production range: 2016-11-14 through 2020-05-04, MP7/MP8, applicable US17–US19 configurations. The September 2023 S7567 campaign record has a narrower build range ending 2018-12-20 and listed expiration 2024-12-31; verify current coverage separately. Confirm exact build date, emissions, current campaign/bulletin applicability and whether the conversion was already performed. Use the current authorized procedure for P009B-13; do not assume valve replacement or conversion eligibility from a fault alone. Inspect rail-pressure sensor/harness applicability per OEM instructions. Do not program the conversion before completing its required hardware work. After the repair, rescan and reassess P016F-00."+(k947Eligible?" Historical K94743326 scope may be relevant only if still applicable to the original hardware and current OEM instructions.":" Do not apply K94743326 pinouts or replacement instructions outside its verified scope.");
+    if(p009bActive&&!/P009B-13 is also active/i.test(choice)) return go(steps.find(item=>item.id==="p016f_eprv_scope"),p009bHoldReason,p009bHoldAction);
     if(/P009B-13 is also active/i.test(choice)){
       if(!p009bActive) return hold(
         "The selected result says P009B-13 is active, but no attached P009B-13 fault is confirmed active/intermittent.",
         "Attach P009B-13 and verify its status in the current scan. If it is inactive/historic, do not select the active EPRV-precedence branch."
       );
-      return hold(p009bHoldReason,p009bHoldAction);
+      return go(steps.find(item=>item.id==="p016f_eprv_scope"),p009bHoldReason,p009bHoldAction);
     }
     if(/vehicle, emissions or engine applicability unknown|outside listed cbr scope/i.test(choice))
       return hold("The Mack CBR applicability is not established.",
