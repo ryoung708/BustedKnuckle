@@ -13,8 +13,22 @@ export function createDiagnosticHandoff(record,source,target,now=Date.now()){
  const rows=Object.entries(record.entries||{}).filter(([,e])=>e&&typeof e==="object").slice(0,80).map(([id,e])=>({stage:clean(id,100),observation:clean(e.choice),measurements:Object.entries(e.measurements||{}).slice(0,20).map(([k,v])=>[clean(k,100),clean(typeof v==="object"?JSON.stringify(v):v)]).filter(([,v])=>v),notes:clean(e.notes),faults:(Array.isArray(e.faultCodes)?e.faultCodes:[]).slice(0,40).map(f=>({code:clean(f?.code,100),controller:clean(f?.controller,100),status:clean(f?.status,50)})).filter(f=>f.code),attachmentCount:Array.isArray(e.evidence)?e.evidence.length:0}));
  return {version:1,source,target,sourceCaseId:clean(record.id,160),sourceWorkflow:clean(record.workflowId,100),createdAt:now,vehicle:identity(record.vehicle),complaint:clean(record.complaint,2000),rows};
 }
+export function createIntakeHandoff(vehicle,complaint,codes=[],now=Date.now()){
+ const faults=[...new Set(codes.map(code=>clean(code,100)).filter(Boolean))].slice(0,40).map(code=>({code,controller:"",status:"unknown"}));
+ return {version:1,kind:"intake",source:"dcc",target:"wiringhound",sourceCaseId:"",sourceWorkflow:"",createdAt:now,vehicle:identity(vehicle),complaint:clean(complaint,2000),rows:faults.length?[{stage:"Intake scan codes",observation:"",measurements:[],notes:"",faults,attachmentCount:0}]:[]};
+}
+function navigateHandoff(value){
+ try{sessionStorage.setItem(KEY,JSON.stringify(value));location.href=(value.target==="dcc"?"./diagnostics.html":"./wiringhound.html")+"?handoff=1";return true;}
+ catch{alert("Could not prepare the transfer in this browser. Existing cases are unchanged.");return false;}
+}
+export function sendIntakeHandoff(){
+ const vehicle=Object.fromEntries(Object.entries(fields).map(([id,key])=>[key,document.getElementById(id)?.value||""]));
+ const complaint=document.getElementById("complaint")?.value||"";
+ const codes=(document.getElementById("intakeFaultCodes")?.value||"").split(/[;,\n]+/);
+ return navigateHandoff(createIntakeHandoff(vehicle,complaint,codes));
+}
 export function isValidHandoff(value,target,now=Date.now()){
- return !!(value&&value.version===1&&APPS.includes(value.source)&&APPS.includes(target)&&value.target===target&&value.source!==target&&value.sourceCaseId&&Number.isFinite(value.createdAt)&&now>=value.createdAt&&now-value.createdAt<=TTL&&value.vehicle&&Array.isArray(value.rows));
+ return !!(value&&value.version===1&&APPS.includes(value.source)&&APPS.includes(target)&&value.target===target&&value.source!==target&&(value.sourceCaseId||(value.kind==="intake"&&value.source==="dcc"&&target==="wiringhound"))&&Number.isFinite(value.createdAt)&&now>=value.createdAt&&now-value.createdAt<=TTL&&value.vehicle&&Array.isArray(value.rows));
 }
 export function matchesHandoffVehicle(handoff,record){
  const a=identity(handoff?.vehicle),b=identity(record?.vehicle);
@@ -23,7 +37,7 @@ export function matchesHandoffVehicle(handoff,record){
 export function handoffReferenceMarkup(ref){
  if(!ref||!APPS.includes(ref.source)||!Array.isArray(ref.rows))return "";
  const rows=ref.rows.filter(row=>row&&typeof row==="object").map(row=>'<article class="case-card"><b>'+esc(row.stage)+'</b>'+(row.observation?'<p>Recorded observation: '+esc(row.observation)+'</p>':"")+(Array.isArray(row.measurements)?row.measurements.filter(pair=>Array.isArray(pair)&&pair.length===2).map(([k,v])=>'<p>'+esc(k)+': '+esc(v)+'</p>').join(""):"")+(row.notes?'<p>Notes: '+esc(row.notes)+'</p>':"")+(Array.isArray(row.faults)?row.faults.filter(f=>f&&typeof f==="object").map(f=>'<p>Previous scan: '+esc(f.code)+' · '+esc(f.controller)+' · '+esc(f.status||"unknown")+'</p>').join(""):"")+(row.attachmentCount?'<p>Files remain in the original case.</p>':"")+'</article>').join("");
- return '<details class="details-card"><summary>Transferred findings — '+esc(label(ref.source))+'</summary><p class="small">Reference only. Reconfirm applicability, current fault status and test conditions. No receiving-workflow tests have been marked complete. Source case: '+esc(ref.sourceCaseId)+'</p>'+rows+'</details>';
+ return '<details class="details-card"><summary>Transferred findings — '+esc(label(ref.source))+'</summary><p class="small">Reference only. Reconfirm applicability, current fault status and test conditions. No receiving-workflow tests have been marked complete. '+(ref.sourceCaseId?'Source case: '+esc(ref.sourceCaseId):'Source: unsaved intake.')+'</p>'+rows+'</details>';
 }
 export function bindHandoffSender(source,getRecord){
  document.addEventListener("click",event=>{
@@ -32,7 +46,7 @@ export function bindHandoffSender(source,getRecord){
   const record=getRecord();if(!record)return;
   const target=source==="dcc"?"wiringhound":"dcc";
   if(!confirm("Carry the saved vehicle, complaint and recorded findings to "+label(target)+"? Files remain in the source case. Unsaved edits are not included."))return;
-  try{sessionStorage.setItem(KEY,JSON.stringify(createDiagnosticHandoff(record,source,target)));location.href=(target==="dcc"?"./diagnostics.html":"./wiringhound.html")+"?handoff=1";}catch{alert("Could not prepare the handoff in this browser. The source case is unchanged.");}
+  navigateHandoff(createDiagnosticHandoff(record,source,target));
  });
 }
 export function mountHandoffIntake(target){
@@ -43,8 +57,8 @@ export function mountHandoffIntake(target){
  if(!pending)return ()=>null;
  const complaint=document.getElementById("complaint");if(!complaint)return ()=>null;
  const panel=document.createElement("section");panel.className="case-card";panel.setAttribute("aria-label","Incoming diagnostic handoff");
- const heading=document.createElement("strong");heading.textContent="Incoming findings from "+label(pending.source);
- const description=document.createElement("p");description.textContent=[pending.vehicle.year,pending.vehicle.make,pending.vehicle.model,pending.vehicle.engine,pending.vehicle.vinLast6].filter(Boolean).join(" ")+" · "+pending.rows.length+" saved stages. Confirm this is the correct truck before accepting.";
+ const heading=document.createElement("strong");heading.textContent=(pending.kind==="intake"?"Incoming complaint from ":"Incoming findings from ")+label(pending.source);
+ const description=document.createElement("p");description.textContent=[pending.vehicle.year,pending.vehicle.make,pending.vehicle.model,pending.vehicle.engine,pending.vehicle.vinLast6].filter(Boolean).join(" ")+" · "+pending.rows.length+(pending.kind==="intake"?" intake evidence groups.":" saved stages.")+" Confirm this is the correct truck before accepting.";
  const use=document.createElement("button");use.type="button";use.className="btn";use.textContent="Use transferred case details";
  const discard=document.createElement("button");discard.type="button";discard.className="btn";discard.textContent="Discard transfer";
  panel.append(heading,description,use,discard);(complaint.closest(".field")||complaint).before(panel);
