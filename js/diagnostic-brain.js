@@ -741,7 +741,7 @@ function powertrainRecommendation(record, steps) {
       if(/supply outside specification|air \/ restriction evidence/i.test(choice))
         return go(steps.find(item=>item.id==="fuel_isolation"),"The low-pressure fuel supply did not pass during cranking; isolate the supply-side cause before moving to air/mechanical checks.","Follow the exact engine/serial-specific low-pressure pinpoint sequence to separate pump output, filter/line restriction, tank pickup/vent restriction and air ingress. Do not use generic pressure limits or replace a component from this result alone.");
       if(/fuel supply meets specification/i.test(choice))
-        return go(steps.find(item=>item.id==="air_exhaust"),"Fuel supply was verified within the applicable OEM specification during cranking.","Proceed to the engine-specific intake, exhaust and mechanical prerequisite checks using the exact vehicle-specific procedure. Preserve the fuel reading and the conditions under which it passed.");
+        return go(steps.find(item=>item.id==="injection_check")||steps.find(item=>item.id==="air_exhaust"),"Fuel supply was verified within the applicable OEM specification during cranking.","Confirm injection architecture and verify injection delivery and authorization before mechanical checks.");
       if(/not tested/i.test(choice)) return hold(
         "Fuel supply has not been tested during cranking.",
         "Perform the OEM low-pressure supply test at the specified test point and conditions. Record the actual value and applicable limit; do not advance on an untested fuel system."
@@ -765,13 +765,22 @@ function powertrainRecommendation(record, steps) {
     }
     if(step.id==="fuel_retest"){
       if(/fuel supply meets oem specification under cranking conditions/i.test(choice))
-        return go(steps.find(item=>item.id==="air_exhaust"),"The corrected low-pressure supply now meets the OEM specification during cranking.","Continue to the intake, exhaust and mechanical prerequisite checks. Preserve the before/after fuel readings and conditions.");
+        return go(steps.find(item=>item.id==="injection_check")||steps.find(item=>item.id==="air_exhaust"),"The corrected low-pressure supply now meets the OEM specification during cranking.","Confirm injection architecture and verify injection delivery and authorization before mechanical checks.");
       if(/supply remains outside oem specification|air \/ restriction evidence remains/i.test(choice))
         return go(steps.find(item=>item.id==="fuel_isolation"),"The repeat cranking test still shows an abnormal low-pressure supply.","Return to the low-pressure pinpoint tests. The repair has not restored the required supply; isolate the remaining delivery, restriction or air-ingress cause.");
       if(/retest incomplete|conditions not reproduced/i.test(choice)) return hold(
         "The repaired fuel supply has not been verified under the original cranking conditions.",
         "Repeat the exact OEM test with the same test point, equipment and cranking conditions. Do not advance until the low-pressure result is conclusive."
       );
+    }
+    if(step.id==="injection_check"){
+      if(choice==="Injection delivery and authorization meet OEM criteria") return go(steps.find(item=>item.id==="air_exhaust"),"Injection prerequisites meet applicable criteria.","Check air, exhaust and mechanical prerequisites.");
+      if(choice==="Injection delivery or authorization abnormal") return go(steps.find(item=>item.id==="injection_isolate"),"Injection delivery or authorization is abnormal.","Follow the architecture-specific pinpoint procedure.");
+      return hold("Injection prerequisites remain unverified.","Confirm the engine architecture and obtain applicable OEM data.");
+    }
+    if(step.id==="injection_isolate"){
+      if(choice==="Injection defect corrected") return go(steps.find(item=>item.id==="injection_check"),"A correction was recorded.","Repeat the original injection test.");
+      return hold("Injection cause remains unresolved.","Continue the authorized pinpoint procedure; do not infer a failed component.");
     }
     if(step.id==="air_exhaust"){
       if(/concern isolated and corrected; prerequisites now pass/i.test(choice))
