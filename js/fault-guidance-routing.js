@@ -54,13 +54,15 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
     relatedSources: [
       {title:"K01029637 · damaged secondary fuel-filter lip seal",url:"https://oemdtc.com/tsb/10153480/"},
       {title:"K40914241 · common-rail fuel-system fault family",url:"https://static.nhtsa.gov/odi/tsbs/2019/MC-10170139-9999.pdf"},
-      {title:"K94743326 · P009B-13 EPRV circuit open",url:"https://static.nhtsa.gov/odi/tsbs/2019/MC-10160190-9999.pdf"}
+      {title:"K94743326 · historical P009B-13 EPRV circuit open",url:"https://static.nhtsa.gov/odi/tsbs/2019/MC-10160190-9999.pdf"},
+      {title:"Mack FSB 237-021 rev 2 · EPRV technical repair",url:"https://static.nhtsa.gov/odi/tsbs/2021/MC-10195320-0001.pdf"},
+      {title:"Mack S7567 · September 2023 campaign record",url:"https://static.nhtsa.gov/odi/tsbs/2023/MC-10243451-0001.pdf"}
     ],
     steps: [
       {
         id: "p016f_confirm",
         title: "Confirm vehicle applicability, related codes and diagnostic access",
-        instruction: "Confirm Mack model, model year, engine family/serial, common-rail configuration and emissions generation from VIN/build data. Save the complete EMS readout and event data. Check for P0087-00, P016F-00, P228F-00 and P009B-13. CBR K40914241 lists the common-rail fault family and directs technicians to current PTT Guided Diagnostics; its published update specifies PTT 2.7.85 or newer. If P009B-13 is also active, diagnose it first under applicable CBR K94743326 before troubleshooting the related pressure codes. Do not assume K01029637 applies unless its code combination and emissions/year scope are met.",
+        instruction: "Confirm Mack model, model year, engine family/serial, common-rail configuration and emissions generation from VIN/build data. Save the complete EMS readout and event data. Check for P0087-00, P016F-00, P228F-00 and P009B-13. CBR K40914241 lists the common-rail fault family and directs technicians to current PTT Guided Diagnostics; its published update specifies PTT 2.7.85 or newer. If P009B-13 is active, use the current applicable OEM EPRV procedure first; historical K94743326 is not universal. Do not assume K01029637 applies unless its code combination and emissions/year scope are met.",
         test: "VIN/build applicability, emissions, engine family, full DTC readout and PTT version",
         prompt: "Use vehicle product details in PTT and the current Mack service portal. CBR K01029637 applies to P0087-00 + P016F-00 + P228F-00 combination; K40914241 lists the common-rail fault family.",
         choices: [
@@ -68,7 +70,8 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
           "P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed",
           "P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed",
           "Vehicle, emissions or engine applicability unknown / outside listed CBR scope",
-          "PTT unavailable or below 2.7.85; use alternate OEM service information"
+          "PTT unavailable or below 2.7.85; use alternate OEM service information",
+          "Both faults inactive after EPRV repair; original conditions reproduced"
         ]
       },
       {
@@ -132,7 +135,12 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
         prompt: "Repeat the same conditions captured in the first step and preserve before-and-after scan reports.",
         choices: ["Cause and repair verified under original conditions", "Repair complete; verification pending", "Cause remains unconfirmed"],
         terminal: true
-      }
+      },
+      {id:"p016f_eprv_scope",title:"Confirm EPRV hardware and current OEM repair scope",instruction:"Verify actual build date, engine serial, emissions and installed EPRV hardware in OEM service information. Check whether conversion is already completed. FSB 237-021 revision 2 and S7567 are separate technical and campaign references; check current VIN-specific eligibility. Do not infer repair eligibility from P016F alone.",choices:["Current OEM conversion procedure confirmed applicable; original EPRV fitted","Conversion already completed or current OEM procedure directs different repair","Applicability or hardware not confirmed"],optional:true},
+      {id:"p016f_eprv_repair",title:"Complete the authorized EPRV repair",instruction:"Use current authorized OEM service instructions with trained personnel. Confirm depressurization and fuel-system cleanliness. For an approved conversion, document hardware completion and conditional rail-pressure sensor/harness checks before software programming. Do not program the accessory kit before the required hardware work.",choices:["Authorized repair completed; hardware and software requirements satisfied","Repair pending or incomplete","Procedure or eligibility not confirmed"],optional:true},
+      {id:"p016f_eprv_alternate",title:"Diagnose the current P009B circuit configuration",instruction:"Use current VIN-specific OEM diagnostics to verify installed hardware, software configuration and the applicable circuit. Investigate connector, harness and electrical faults only with the correct diagram. Do not apply historical EPRV pinouts to a converted or out-of-scope vehicle.",choices:["Authorized repair completed; hardware and software requirements satisfied","Repair pending or incomplete","Procedure or eligibility not confirmed"],optional:true},
+      {id:"p016f_eprv_retest",title:"Repeat scan after EPRV repair",instruction:"Save a fresh EMS scan and repeat original fault conditions when safe. Update recorded P009B-13 and P016F-00 statuses from that scan. If P009B remains active/intermittent, continue its current OEM diagnostics before pressure testing.",choices:["P009B inactive after repair; reassess P016F","P009B remains active or intermittent","Retest incomplete or status unknown"],optional:true}
+
     ],
     caseFlags: {hasEprvPrecursor,hasK010Combination,k010Candidate}
   };
