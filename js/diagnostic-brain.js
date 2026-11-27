@@ -35,7 +35,7 @@ function hasActiveMackUqlsFault(record = {}) {
   );
 }
 const electricalWorkflowIds = new Set([
-  "starting_system","j1939_network","j1939_dropout","light_inop","general_electrical",
+  "sensor_circuit","starting_system","j1939_network","j1939_dropout","light_inop","general_electrical",
   "short_ground","short_power","open_circuit","voltage_drop","intermittent","power_loss"
 ]);
 const electricalTerms = /\b(j1939|can\s*(?:bus|high|low|h|l)|data.?link|communication dropout|controller offline|voltage drop|short to ground|short to power|open circuit|high resistance|harness|connector|power feed|ground path|electrical fault)\b/i;
