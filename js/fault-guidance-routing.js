@@ -32,7 +32,7 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
   codes.add(code);
   const has = value => codes.has(value);
   const hasEprvPrecursor = has("P009B13");
-  const hasK010Combination = has("P008700") && has("P016F00") && has("P228F00");
+  const hasK010Combination = has("P016F00") && (has("P008700") || has("P228F00"));
   const year = Number(vehicle.year || 0);
   const modelText = String(vehicle.model || vehicle.chassis || "").toUpperCase();
   const engineText = [vehicle.engine, vehicle.engineModel, vehicle.engineMake].filter(Boolean).join(" ").toUpperCase();
@@ -56,7 +56,7 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
       {title:"K40914241 · common-rail fuel-system fault family",url:"https://static.nhtsa.gov/odi/tsbs/2019/MC-10170139-9999.pdf"},
       {title:"K94743326 · historical P009B-13 EPRV circuit open",url:"https://static.nhtsa.gov/odi/tsbs/2019/MC-10160190-9999.pdf"},
       {title:"Mack FSB 237-021 rev 2 · EPRV technical repair",url:"https://static.nhtsa.gov/odi/tsbs/2021/MC-10195320-0001.pdf"},
-      {title:"Mack S7567 · September 2023 campaign record",url:"https://static.nhtsa.gov/odi/tsbs/2023/MC-10243451-0001.pdf"}
+      {title:"Mack S7567 · March 2021 campaign document, public copy with 2024 expiration",url:"https://static.nhtsa.gov/odi/tsbs/2023/MC-10243451-0001.pdf"}
     ],
     steps: [
       {
@@ -64,10 +64,11 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
         title: "Confirm vehicle applicability, related codes and diagnostic access",
         instruction: "Confirm Mack model, model year, engine family/serial, common-rail configuration and emissions generation from VIN/build data. Save the complete EMS readout and event data. Check for P0087-00, P016F-00, P228F-00 and P009B-13. CBR K40914241 lists the common-rail fault family and directs technicians to current PTT Guided Diagnostics; its published update specifies PTT 2.7.85 or newer. If P009B-13 is active, use the current applicable OEM EPRV procedure first; historical K94743326 is not universal. Do not assume K01029637 applies unless its code combination and emissions/year scope are met.",
         test: "VIN/build applicability, emissions, engine family, full DTC readout and PTT version",
-        prompt: "Use vehicle product details in PTT and the current Mack service portal. CBR K01029637 applies to P0087-00 + P016F-00 + P228F-00 combination; K40914241 lists the common-rail fault family.",
+        prompt: "Use vehicle product details in PTT and the current Mack service portal. CBR K01029637 discusses combinations among P0087-00, P016F-00 and P228F-00; verify current OEM applicability, including cases with two of these codes. K40914241 lists the common-rail fault family.",
         choices: [
           "P009B-13 is also active; diagnose EPRV circuit first",
           "P0087-00, P016F-00 and P228F-00 all present; K01029637 applicability confirmed",
+          "P016F-00 and one other K01029637 code present; current OEM applicability confirmed",
           "P016F-00 present; K01029637 combination not present; vehicle and current PTT applicability confirmed",
           "Vehicle, emissions or engine applicability unknown / outside listed CBR scope",
           "PTT unavailable or below 2.7.85; use alternate OEM service information",
@@ -77,7 +78,7 @@ export function getP016F00Guidance(fault = {}, caseRecord = {}) {
       {
         id: "p016f_cbr_filter",
         title: "Inspect the CBR fuel-tank vent filter and secondary-filter lip seal",
-        instruction: "For the applicable P0087-00 + P016F-00 + P228F-00 combination, follow CBR K01029637: verify the fuel-tank vent filter is present and not clogged; inspect the vent-filter hose connections at the filter housing and fuel tank; remove the secondary fuel filter and inspect its lip seal for damage. Photograph both vent-filter connections, the top of the secondary filter showing the lip seal, and the filter canister date code. Attach the photos and findings to the Mack eService case as directed. A damaged lip seal can allow unfiltered fuel to bypass the filter and enter the high-pressure system. Do not treat a visual pass as proof of correct fuel pressure.",
+        instruction: "For an OEM-confirmed applicable combination of the listed codes, follow CBR K01029637: verify the fuel-tank vent filter is present and not clogged; inspect the vent-filter hose connections at the filter housing and fuel tank; remove the secondary fuel filter and inspect its lip seal for damage. Photograph both vent-filter connections, the top of the secondary filter showing the lip seal, and the filter canister date code. Attach the photos and findings to the Mack eService case as directed. A damaged lip seal can allow unfiltered fuel to bypass the filter and enter the high-pressure system. Do not treat a visual pass as proof of correct fuel pressure.",
         test: "Fuel tank vent filter presence/condition and hose connections; secondary fuel-filter lip seal and date code",
         prompt: "Follow the inspection and photo requirements in Mack CBR K01029637. Do not substitute a different filter or assume a seal defect without inspecting the actual part.",
         choices: [

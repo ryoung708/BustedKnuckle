@@ -869,7 +869,7 @@ function powertrainRecommendation(record, steps) {
     const p009bEmissions=clean(vehicle.emissions||vehicle.emissionsFamily).toUpperCase().replace(/\s/g,"");
     const k947Eligible=clean(vehicle.make).toLowerCase().includes("mack")&&p009bYear>=2018&&p009bYear<=2019&&/\b(?:MP7|MP8|11L|13L)\b/i.test(p009bEngine)&&/US17\+OBD(16|18)/.test(p009bEmissions);
     const p009bHoldReason="P009B-13 is active/intermittent and must be diagnosed before continuing the related P016F pressure path.";
-    const p009bHoldAction="Review Mack FSB 237-021 revision 2 and service campaign S7567 for the OEM EPRV conversion (hardware 85156544, software 85156014). FSB candidate production range: 2016-11-14 through 2020-05-04, MP7/MP8, applicable US17–US19 configurations. The September 2023 S7567 campaign record has a narrower build range ending 2018-12-20 and listed expiration 2024-12-31; verify current coverage separately. Confirm exact build date, emissions, current campaign/bulletin applicability and whether the conversion was already performed. Use the current authorized procedure for P009B-13; do not assume valve replacement or conversion eligibility from a fault alone. Inspect rail-pressure sensor/harness applicability per OEM instructions. Do not program the conversion before completing its required hardware work. After the repair, rescan and reassess P016F-00."+(k947Eligible?" Historical K94743326 scope may be relevant only if still applicable to the original hardware and current OEM instructions.":" Do not apply K94743326 pinouts or replacement instructions outside its verified scope.");
+    const p009bHoldAction="Review Mack FSB 237-021 revision 2 and service campaign S7567 for the OEM EPRV conversion (hardware 85156544, software 85156014). FSB candidate production range: 2016-11-14 through 2020-05-04, MP7/MP8, applicable US17–US19 configurations. The public S7567 campaign copy dated March 29, 2021 has a narrower build range ending 2018-12-20 and listed expiration 2024-12-31; verify current coverage separately. Confirm exact build date, emissions, current campaign/bulletin applicability and whether the conversion was already performed. Use the current authorized procedure for P009B-13; do not assume valve replacement or conversion eligibility from a fault alone. Inspect rail-pressure sensor/harness applicability per OEM instructions. Do not program the conversion before completing its required hardware work. After the repair, rescan and reassess P016F-00."+(k947Eligible?" Historical K94743326 scope may be relevant only if still applicable to the original hardware and current OEM instructions.":" Do not apply K94743326 pinouts or replacement instructions outside its verified scope.");
     if(p009bActive&&!/P009B-13 is also active/i.test(choice)) return go(steps.find(item=>item.id==="p016f_eprv_scope"),p009bHoldReason,p009bHoldAction);
     if(/P009B-13 is also active/i.test(choice)){
       if(!p009bActive) return hold(
@@ -905,12 +905,15 @@ function powertrainRecommendation(record, steps) {
     const k010Statuses=k010Codes.map(statusesFor);
     const hasK010Combination=k010Statuses.every(statuses=>statuses.length>0);
     const k010ExplicitlyInactive=k010Statuses.some(statuses=>statuses.some(status=>status==="inactive"));
-    if(/P0087-00, P016F-00 and P228F-00 all present/i.test(choice)){
-      if(!hasK010Combination) return hold(
+    if(/P0087-00, P016F-00 and P228F-00 all present|P016F-00 and one other K01029637 code present/i.test(choice)){
+      const pairSelected=choice.includes("one other k01029637 code");
+      const presentPair=k010Statuses[1].length>0&&[k010Statuses[0],k010Statuses[2]].some(statuses=>statuses.length>0&&!statuses.includes("inactive"));
+      if(pairSelected&&!presentPair)return hold("The selected combination is not supported by the attached scan.","Attach P016F and at least one of P0087 or P228F; confirm the current OEM scope before continuing.");
+      if(!pairSelected&&!hasK010Combination) return hold(
         "The selected CBR option says all three trigger codes are present, but the complete P0087-00 / P016F-00 / P228F-00 set is not attached to this case.",
         "Attach the full scan-report fault set and confirm each code's controller and active/inactive status. Do not use the K01029637 filter inspection path until all three trigger codes are documented."
       );
-      if(k010ExplicitlyInactive) return hold(
+      if(!pairSelected&&k010ExplicitlyInactive) return hold(
         "At least one K01029637 trigger code is marked inactive/historic.",
         "The selected CBR option says all three codes are present, but one is marked inactive. Recheck the current scan and select the correct branch; unknown related-code status does not need to be changed to active."
       );
@@ -927,7 +930,7 @@ function powertrainRecommendation(record, steps) {
           "The vehicle details entered in the case do not establish K01029637 applicability.",
           "Before using the CBR filter inspection, verify the Mack model code, model year (2018 or newer), MP7/MP8 or 11L/13L engine family, and US17+OBD16/18/19 emissions from VIN/build data. If any item is outside scope or unknown, do not apply K01029637; use current PTT Guided Diagnostics and the correct vehicle-specific procedure."
         );
-      return go(steps.find(item=>item.id==="p016f_cbr_filter"),"The full K01029637 code combination is attached with active/intermittent status and the entered model/year/engine/emissions meet the bulletin's candidate scope; confirm common-rail configuration in the OEM build data.",
+      return go(steps.find(item=>item.id==="p016f_cbr_filter"),"The selected K01029637 code combination is documented and entered vehicle details meet candidate scope; confirm current OEM applicability and common-rail configuration.",
         "Follow CBR K01029637 only after the VIN/build confirms common-rail configuration and exact applicability: inspect the fuel-tank vent filter and both hose connections, then remove and inspect the secondary fuel-filter lip seal. Photograph the required locations and attach them to the eService case.");
     }
     if(/P016F-00 present; K01029637 combination not present/i.test(choice)){

@@ -768,3 +768,8 @@ for(const id of ["p016f_eprv_scope","p016f_eprv_repair","p016f_eprv_alternate","
 const bothInactive={...p016fCase,entries:{scan:{faultCodes:[{code:"P016F00",status:"inactive"},{code:"P009B13",status:"inactive"}]},p016f_eprv_retest:{choice:"P009B inactive after repair; reassess P016F",recordedAt:"2026-01-01T00:00:00Z"},p016f_confirm:{choice:"Both faults inactive after EPRV repair; original conditions reproduced",recordedAt:"2026-01-01T00:01:00Z"}}};
 assert.equal(analyzeDiagnosticCase(bothInactive,p016fPlan.steps).recommendation.stepId,"p016f_verify");
 assert.equal(analyzeDiagnosticCase({...bothInactive,entries:{...bothInactive.entries,scan:{faultCodes:[{code:"P016F00",status:"inactive"},{code:"P009B13",status:"active"}]}}},p016fPlan.steps).recommendation.state,"hold");
+
+const pairCase={...k010EligibleCase,entries:{scan:{faultCodes:k010Codes.slice(0,2)},p016f_confirm:{choice:"P016F-00 and one other K01029637 code present; current OEM applicability confirmed"}}};
+assert.equal(analyzeDiagnosticCase(pairCase,p016fPlan.steps).recommendation.stepId,"p016f_cbr_filter");
+assert.equal(analyzeDiagnosticCase({...pairCase,entries:{...pairCase.entries,scan:{faultCodes:[{code:"P016F00",status:"active"}]}}},p016fPlan.steps).recommendation.state,"hold");
+assert.equal(analyzeDiagnosticCase({...pairCase,vehicle:{...pairCase.vehicle,emissions:""}},p016fPlan.steps).recommendation.state,"hold");
