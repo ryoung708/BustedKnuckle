@@ -44,7 +44,7 @@ try{
    await page.locator('#workflow option[value="crank_no_start"]').waitFor({state:"attached"});
    for(const [id,value] of Object.entries({year:"2020",make:"Mack",model:"Anthem",engine:"MP8",vin:"123456",complaint:"Cranks but will not start"}))await page.locator("#"+id).fill(value);
    await page.locator("#workflow").selectOption("crank_no_start");await page.locator("#start").click();
-   await title(".step-focus h2",/Scan all relevant/);
+   await title(".step-focus h2",/Scan all relevant/i);
    await dcc("No relevant faults found",/start authorization/i);
    await screen("dcc-authorization",".choice-list");
    await dcc("Start enable missing",/Isolate the start inhibit/i);
