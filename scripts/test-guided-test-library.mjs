@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {getGuidedTest,renderGuidedTestMarkup} from "../js/guided-test-library.js";
+import {getGuidedTest,renderGuidedTestMarkup,renderTestVisual} from "../js/guided-test-library.js";
 const network=getGuidedTest({id:"resistance"},"j1939_network");
 assert.match(network.objective,/de-energized topology/i);
 assert.ok(network.stop.some(x=>/energized network/i.test(x)));
@@ -28,3 +28,10 @@ const hostile=renderGuidedTestMarkup({id:"x",title:"<img src=x>",test:"<script>b
 assert.doesNotMatch(hostile,/<img|<script>/);
 assert.match(hostile,/&lt;script&gt;/);
 console.log("Guided test library tests passed.");
+
+assert.match(renderTestVisual({id:"baseline"},"j1939_network"),/Measure each leg separately/i);
+assert.match(renderTestVisual({id:"segment"},"j1939_network"),/absence of voltage/i);
+assert.match(renderTestVisual({id:"sensor_supply"},"sensor_circuit"),/supply voltage measured to documented sensor return/i);
+assert.match(renderTestVisual({id:"sensor_signal"},"sensor_circuit"),/signal voltage measured to documented sensor return/i);
+assert.equal(renderTestVisual({id:"sensor_supply"},"unknown"),"");
+assert.equal(renderTestVisual({id:"sensor_identity"},"sensor_circuit"),"");

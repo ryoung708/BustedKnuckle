@@ -1,4 +1,4 @@
-import {startingRecommendation} from "./wiringhound-complaint-engine.js";
+import {startingRecommendation,sensorRecommendation} from "./wiringhound-complaint-engine.js";
 // IronKnuckle Diagnostic Brain v2
 // One shared reasoning core with system-specific specialist adapters.
 // Evidence-first rules only. Cross-system cues are prompts to investigate, never causal diagnoses.
@@ -35,7 +35,7 @@ function hasActiveMackUqlsFault(record = {}) {
   );
 }
 const electricalWorkflowIds = new Set([
-  "starting_system","j1939_network","j1939_dropout","light_inop","general_electrical",
+  "sensor_circuit","starting_system","j1939_network","j1939_dropout","light_inop","general_electrical",
   "short_ground","short_power","open_circuit","voltage_drop","intermittent","power_loss"
 ]);
 const electricalTerms = /\b(j1939|can\s*(?:bus|high|low|h|l)|data.?link|communication dropout|controller offline|voltage drop|short to ground|short to power|open circuit|high resistance|harness|connector|power feed|ground path|electrical fault)\b/i;
@@ -1084,6 +1084,7 @@ function powertrainRecommendation(record, steps) {
   );
 }
 function recommendationFor(record, steps, system) {
+  if(record.workflowId==="sensor_circuit") return sensorRecommendation(record,steps);
   if(record.workflowId==="starting_system") return startingRecommendation(record,steps);
   if (record.workflowId === "unexpected_shutdown") return shutdownRecommendation(record,steps);
   if (system === "electrical") return recommendNextStep(record, steps);
