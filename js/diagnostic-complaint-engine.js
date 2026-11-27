@@ -4,7 +4,11 @@ export function classifyDiagnosticComplaint(complaint = "") {
   const text = String(complaint || "").toLowerCase().replace(/\s+/g, " ").trim();
   const match = pattern => pattern.test(text);
 
-  if (match(/j1939|can\s*(?:bus|network|high|low|h|l)|data\s*link|communication (?:loss|drop|fault)|controllers?\s+(?:go\s+)?offline|network (?:dropout|drops? out)|no crank|won't crank|will not crank|starter|battery|alternator|charging system|voltage drop|low voltage|short to (?:ground|power)|open circuit|wiring|harness|fuse|relay|ground (?:fault|issue)|head.?lamp|headlight|marker light|turn signal|lighting|lamp inop|light inop|complete (?:vehicle )?power loss|total (?:vehicle )?power loss/)) {
+  // Explicit normal cranking distinguishes engine no-start from starter engagement.
+  if (match(/\b(?:cranks? (?:over )?(?:normally|fine|strongly)|normal crank(?:ing)?|starter (?:engages|cranks) normally)(?: but)?\s*(?:,\s*)?(?:no[ -]start|(?:will not|won't|does not|doesn't) start)\b/) && !match(/\b(?:no[ -]crank|slow crank|will not crank|won't crank|total (?:vehicle )?power loss|complete (?:vehicle )?power loss)\b/)) {
+    return {route:"dcc",workflowId:"crank_no_start",label:"Cranks but will not start",reason:"Normal cranking is explicitly reported; investigate engine start prerequisites rather than starter engagement."};
+  }
+  if (match(/j1939|can\s*(?:bus|network|high|low|h|l)|data\s*link|communication (?:loss|drop|fault)|controllers?\s+(?:go\s+)?offline|network (?:dropout|drops? out)|no[ -]crank|won't crank|will not crank|starter|battery|alternator|charging system|voltage drop|low voltage|short to (?:ground|power)|open circuit|wiring|harness|fuse|relay|ground (?:fault|issue)|head.?lamp|headlight|marker light|turn signal|lighting|lamp inop|light inop|complete (?:vehicle )?power loss|total (?:vehicle )?power loss/)) {
     return { route: "wiringhound", workflowId: "", label: "WiringHound — electrical diagnosis", reason: "The complaint points to an electrical, starting, lighting, power-distribution or network concern. WiringHound is the correct evidence-first workflow for that system." };
   }
   if (match(/\b(?:engine\s+)?(?:shuts?\s+off|shut\s+down|stalls?|cuts?\s+out|cuts?\s+off|dies?\s+while\s+running|quits?\s+running|unexpected\s+shutdown)\b|runs?\s+(?:for\s+)?(?:a\s+)?(?:few\s+seconds|short\s+time)\s+then\s+dies/)) {
