@@ -68,7 +68,7 @@ export function recommendNextStep(caseRecord,steps){
   }
 
   if(id==="verify"){
-    if(["repair verified","repair verified under original conditions","failure no longer occurs"].includes(answer.trim()))return result("verify","The technician recorded a successful verification.","Review original complaint conditions, before/after evidence and related faults before closing.","review");
+    if(["repair verified","repair verified under original conditions","failure no longer occurs","repair verified; original dropout no longer occurs"].includes(answer.trim()))return result("verify","The technician recorded a successful verification.","Review original complaint conditions, before/after evidence and related faults before closing.","review");
     return hold("The cause or repair has not been fully verified.","Keep the case open and identify the missing proof or repeat the original failure conditions.");
   }
 
